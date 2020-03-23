@@ -4,23 +4,10 @@ Jina Hub is a centralized place to host immutable Jina components, flows and app
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
+
 
 - [Build Your Pod into a Docker Image](#build-your-pod-into-a-docker-image)
-  - [Goal](#goal)
-  - [Why?](#why)
-  - [What to be packed?](#what-to-be-packed)
-  - [Step-by-step Example](#step-by-step-example)
-    - [1. Write Your Executor and Config](#1-write-your-executor-and-config)
-    - [2. Write a 3-Line `Dockerfile`](#2-write-a-3-line-dockerfile)
-      - [`FROM jinaai/jina:master-debian`](#from-jinaaijinamaster-debian)
-      - [`ADD *.py mwu_encoder.yml ./`](#add-py-mwu_encoderyml-)
-      - [`ENTRYPOINT ["jina", "pod", "--yaml_path", "mwu_encoder.yml"]`](#entrypoint-jina-pod---yaml_path-mwu_encoderyml)
-    - [3. Build the Pod Image](#3-build-the-pod-image)
 - [Use Your Pod Image](#use-your-pod-image)
-  - [Use the Pod image with Docker CLI](#use-the-pod-image-with-docker-cli)
-  - [Use the Pod image with Jina CLI](#use-the-pod-image-with-jina-cli)
-  - [Use the Pod image in the Flow API](#use-the-pod-image-in-the-flow-api)
 - [Upload Your Pod Image to Jina Hub](#upload-your-pod-image-to-jina-hub)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
