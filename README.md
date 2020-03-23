@@ -173,7 +173,7 @@ Congratulations! You can now re-use this Pod image how ever you want.
 
 ## Use Your Pod Image
 
-### Use the Pod image with Docker CLI
+### Use the Pod image via Docker CLI
 
 The most powerful way to use this Pod image is via Docker CLI directly:
 
@@ -206,7 +206,7 @@ To override the predefined entrypoint via `--entrypoint`, e.g.
 docker run --rm --entrypoint "jina" jinaai/hub.example.mwu_encoder check
 ```
 
-### Use the Pod image with Jina CLI
+### Use the Pod image via Jina CLI
 
 Another way to use the Pod image is simply give it to `jina pod` via `--image`,
 ```bash
@@ -226,7 +226,7 @@ Note the 🐳 represents that the log is piping from a Docker container.
 
 See `jina pod --help` for more usage.
 
-### Use the Pod image in the Flow API
+### Use the Pod image via Flow API
 
 Finally, one can use it via Flow API as well, e.g.
 
