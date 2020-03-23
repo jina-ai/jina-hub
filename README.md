@@ -1,6 +1,6 @@
 # jina-hub
 
-Jina Hub is a centralized place to host immutable Jina components, flows and applications via container images, enabling users to employ, ship, share and exchange their best-practice in different Jina search applications.
+Jina Hub is a centralized place to host immutable Jina components, flows and applications via container images. It enables users to employ, ship, share and exchange their best-practice in different Jina search applications.
 
 <!-- START doctoc -->
 <!-- END doctoc -->
