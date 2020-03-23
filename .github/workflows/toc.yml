@@ -8,5 +8,5 @@ jobs:
       - uses: technote-space/toc-generator@v2
         with:
           MAX_HEADER_LEVEL: 2
-          TOC_TITLE: ## Table of Contents
+          TOC_TITLE: '## Table of Contents'
           FOLDING: true
