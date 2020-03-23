@@ -72,12 +72,12 @@ Here are a list of reasons that may motivate you to build a Pod image:
 
 Typically, the following files are packed into the container image:
 
-|                  |                                                                                                     |
+| File             | Descriptions                                                                                        |
 |------------------|-----------------------------------------------------------------------------------------------------|
 | `Dockerfile`     | describes the dependency setup and expose the entry point;                                          |
-| `*.py`           | the Python file(s) describes the executor logic, if applicable;                                     |
+| `*.py`           | describes the executor logic written in Python, if applicable;                                      |
 | `*.yml`          | a YAML file describes the executor arguments and configs, if you want users to use your config;     |
-| Other data files | that may be required to run the executor, e.g. pre-trained model, fine-tuned model, home-made data. |
+| Other data files | may be required to run the executor, e.g. pre-trained model, fine-tuned model, home-made data.      |
 
 Except `Dockerfile`, all others are optional to build a valid Pod image depending on your case. 
     
