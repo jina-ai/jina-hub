@@ -38,7 +38,7 @@ More information about [the usage can be found here](#use-the-pod-image).
 
 ### Why?
 
-So you have implemented your awesome executor and want to reuse it in another Jina application, or share it with people in the world. Kind as you are, you want to offer people a ready-to-use interface and the best-practice without hassling them to repeat all steps and pitfalls you have done. The best way is thus to pack everything (python file, YAML config, pre-trained data, dependencies) into a container image and use Jina as the entry point. You can also annotate your image with some meta information to facilitate the search, archive and classification.
+So you have implemented an awesome executor and want to reuse it in another Jina application, or share it with people in the world. Kind as you are, you want to offer people a ready-to-use interface without hassling them to repeat all steps and pitfalls you have done. The best way is thus to pack everything (python file, YAML config, pre-trained data, dependencies) into a container image and use Jina as the entry point. You can also annotate your image with some meta information to facilitate the search, archive and classification.
 
 Here are a list of reasons that may motivate you to build a Pod image:
 
@@ -65,7 +65,7 @@ Typically, the following files are packed into the Docker image:
 
 Except `Dockerfile`, all others are optional to build a valid Pod image depending on your case. 
     
-### Step-by-step Example
+### Step-by-Step Example
 
 In this example, we consider the scenario where we creates a new executor and want to reuse it in another project, without touching [`jina-ai/jina`](https://github.com/jina-ai/jina/). All files required in this guide is available at [`hub/example/`](/hub/example).
 
