@@ -68,9 +68,9 @@ Here are a list of reasons that may motivate you to build a Pod image:
 - You are debugging, doing try-and-error on exploring new packages, and you don't want ruin your local dev environments. 
 
 
-### What to be packed?
+### What to be Packed?
 
-Typically, the following files are packed into the Docker image:
+Typically, the following files are packed into the container image:
 
 |                  |                                                                                                     |
 |------------------|-----------------------------------------------------------------------------------------------------|
@@ -113,11 +113,13 @@ ADD *.py mwu_encoder.yml ./
 ENTRYPOINT ["jina", "pod", "--yaml_path", "mwu_encoder.yml"]
 ```
 
+Let's now look at these three lines one by one.
+
 ##### `FROM jinaai/jina:master-debian` 
 
 In the first line, we choose `jinaai/jina:master-debian` as the base image, which corresponds to the latest master of [`jina-ai/jina`](https://github.com/jina-ai/jina). But of course you are free to use others, e.g. `tensorflow/tensorflow:nightly-gpu-jupyter`. 
 
-In practice, whether or not using Jina base image depends on the dependencies you would like to introduce. For example, someone provides a hard-to-compile package as a Docker image, much harder than compiling/installing Jina itself. In this case, you may want to use this image as the base image to save some troubles. But don't forget to install Python >=3.7 (if not included) and Jina afterwards, e.g.
+In practice, whether to use Jina base image depends on the dependencies you would like to introduce. For example, someone provides a hard-to-compile package as a Docker image, much harder than compiling/installing Jina itself. In this case, you may want to use this image as the base image to save some troubles. But don't forget to install Python >=3.7 (if not included) and Jina afterwards, e.g.
 
 ```Dockerfile
 FROM awesome-gpu-optimized-kit
