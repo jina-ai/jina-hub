@@ -14,7 +14,7 @@ Instead of
 jina pod --yaml_path hub/example/mwu_encoder.yml --port_in 55555 --port_out 55556
 ```
 
-After this tutorial, one can use the Pod image via:
+After this tutorial, you can use the Pod image via:
 ```bash
 docker run jinaai/hub.example.mwu_encoder --port_in 55555 --port_out 55556
 ```
@@ -28,7 +28,7 @@ f = (Flow()
         .add(name='my-indexer', yaml_path='indexer.yml'))
 ```
 
-or, use the Pod image in Jina CLI
+or, use the Pod image via Jina CLI
 ```bash
 jina pod --image jinaai/hub.example.mwu_encoder --port_in 55555 --port_out 55556
 ```
@@ -65,9 +65,9 @@ Typically, the following files are packed into the Docker image:
 
 Except `Dockerfile`, all others are optional to build a valid Pod image depending on your case. 
     
-### Step-by-step example: `hub/example/`
+### Step-by-step Example
 
-In this example, we consider the scenario where we creates a new executor and want to reuse it in another project, without touching [`jina-ai/jina`](https://github.com/jina-ai/jina/).
+In this example, we consider the scenario where we creates a new executor and want to reuse it in another project, without touching [`jina-ai/jina`](https://github.com/jina-ai/jina/). All files required in this guide is available at [`hub/example/`](/hub/example).
 
 #### 1. Write Your Executor and Config
 
