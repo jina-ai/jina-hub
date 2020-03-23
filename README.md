@@ -2,6 +2,9 @@
 
 Jina Hub is a centralized place to host immutable Jina components, flows and applications via container images, enabling users to employ, ship, share and exchange their best-practice in different Jina search applications.
 
+<!-- START doctoc -->
+<!-- END doctoc -->
+
 ## Build Your Pod into a Docker Image
 
 ### Goal
@@ -11,9 +14,9 @@ Instead of
 jina pod --yaml_path hub/example/mwu_encoder.yml --port_in 55555 --port_out 55556
 ```
 
-One can now use the Pod image via:
+After this tutorial, one can use the Pod image via:
 ```bash
-docker run --rm jinaai/hub.example.mwu_encoder --port_in 55555 --port_out 55556
+docker run jinaai/hub.example.mwu_encoder --port_in 55555 --port_out 55556
 ```
 
 or, use the Pod image in the Flow API:
