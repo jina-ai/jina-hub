@@ -1,0 +1,8 @@
+# Add 'label1' to any changes within 'example' folder or any subfolders
+area/docs:
+  - docs/**/*
+  - ./*.md
+
+area/housekeeping:
+  - .github/**/*
+  - ./.gitignore
