@@ -1,4 +1,4 @@
-name: Unit Test
+name: Docker Test
 
 on: [pull_request]
 
@@ -28,3 +28,52 @@ jobs:
           fetch-depth: 0
       - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
       - uses: wagoid/commitlint-github-action@v1
+
+  buildx:
+    needs: commit_lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - name: Available platforms
+        run: |
+          echo ${{ steps.buildx.outputs.platforms }}
+      - name: Changed Files Exporter
+        id: files
+        uses: futuratrepadeira/changed-files@v3.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          for changed_file in ${{ steps.files.outputs.files_created }}; do
+            echo "${changed_file}" >> build.tmp
+          done
+          for changed_file in ${{ steps.files.outputs.files_updated }}; do
+            echo "${changed_file}" >> build.tmp
+          done
+          for changed_file in ${{ steps.files.outputs.files_deleted }}; do
+            echo "${changed_file}" >> build.tmp
+          done
+          cat build.tmp | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq > build.tmp2
+          cat build.tmp2
+      - name: Build test
+        run: |
+          pip install -r builder/requirements.txt
+          cat build.tmp2 | xargs -n1 python builder/app.py
+
+  generateTOC:
+    needs: buildx
+    name: TOC Generator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/toc-generator@v2
+        with:
+          MAX_HEADER_LEVEL: 3
+          FOLDING: false
+          GITHUB_TOKEN: ${{ secrets.JINA_AI }}

@@ -1,8 +1,17 @@
-# Add 'label1' to any changes within 'example' folder or any subfolders
+# Add 'label1' to any changes within 'examples' folder or any subfolders
 area/docs:
   - docs/**/*
   - ./*.md
 
+area/example:
+  - hub/examples/
+
+area/builder:
+  - builder/**/*
+
 area/housekeeping:
   - .github/**/*
   - ./.gitignore
+
+area/hub:
+  - hub/**/*
