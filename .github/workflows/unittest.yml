@@ -44,7 +44,7 @@ jobs:
       - name: Available platforms
         run: |
           echo ${{ steps.buildx.outputs.platforms }}
-      - uses: lots0logs/gh-action-get-changed-files@2.0.5
+      - uses: lots0logs/gh-action-get-changed-files@2.0.6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: list json file
