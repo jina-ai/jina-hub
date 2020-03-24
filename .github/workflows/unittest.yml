@@ -64,6 +64,5 @@ jobs:
           cat build.tmp2
       - name: Build test
         run: |
-          pip install -r builder/requirements.txt
-          cat build.tmp2 | xargs -n1 python builder/app.py
+          if [[ -s build.tmp2 ]]; then pip install -r builder/requirements.txt && cat build.tmp2 | xargs -n1 python builder/app.py; else echo "nothing to build"; fi
 
