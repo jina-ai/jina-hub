@@ -9,7 +9,7 @@ Jina Hub is a centralized place to host immutable Jina components, flows and app
 - [Build Your Pod into a Docker Image](#build-your-pod-into-a-docker-image)
   - [Goal](#goal)
   - [Why?](#why)
-  - [What to be Packed?](#what-to-be-packed)
+  - [What should be in the Bundle?](#what-should-be-in-the-bundle)
   - [Step-by-Step Example](#step-by-step-example)
 - [Use Your Pod Image](#use-your-pod-image)
   - [Use the Pod image via Docker CLI](#use-the-pod-image-via-docker-cli)
