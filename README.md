@@ -2,11 +2,9 @@
 
 Jina Hub is a centralized place to host immutable Jina components, flows and applications via container images. It enables users to employ, ship, share and exchange their best-practice in different Jina search applications.
 
-## Quick Guide
-
 |                                    |         I want to ...         |                                  |
 |:----------------------------------:|:-----------------------------:|:--------------------------------:|
-| [know how to build my own Pod image](#build-your-pod-into-a-docker-image) | [use a Pod image in my project](#use-your-pod-image) | [publish my Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |
+| <h1>📦</h1><br>[build my own Pod image](#build-your-pod-into-a-docker-image) | <h1>🐳</h1><br>[use Pod image in my project](#use-your-pod-image) | <h1>🆙️</h1><br>[publish Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
