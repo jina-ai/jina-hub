@@ -30,6 +30,7 @@ jobs:
       - uses: wagoid/commitlint-github-action@v1
 
   buildx:
+    needs: commit_lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -44,15 +45,9 @@ jobs:
       - name: Available platforms
         run: |
           echo ${{ steps.buildx.outputs.platforms }}
-      - uses: lots0logs/gh-action-get-changed-files@2.0.6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: list json file
+      - name: Show build list
         run: |
-          cat ${HOME}/files.json
-          cat ${HOME}/files_modified.json
-          cat ${HOME}/files_added.json
-          cat ${HOME}/files_deleted.json
-      - name: Run Buildx and Upload to Docker Cloud
+          git --no-pager diff --name-only $(git merge-base FETCH_HEAD master) FETCH_HEAD | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq
+      - name: Build test
         run: |
-          docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+          git --no-pager diff --name-only $(git merge-base FETCH_HEAD master) FETCH_HEAD | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq | xargs -n1 python builder/app.py
