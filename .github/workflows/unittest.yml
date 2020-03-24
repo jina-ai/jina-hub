@@ -1,4 +1,4 @@
-name: Unit Test
+name: Docker Test
 
 on: [pull_request]
 
@@ -28,3 +28,31 @@ jobs:
           fetch-depth: 0
       - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
       - uses: wagoid/commitlint-github-action@v1
+
+  buildx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - name: Available platforms
+        run: |
+          echo ${{ steps.buildx.outputs.platforms }}
+      - uses: lots0logs/gh-action-get-changed-files@2.0.5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: list json file
+        run: |
+          cat ${HOME}/files.json
+          cat ${HOME}/files_modified.json
+          cat ${HOME}/files_added.json
+          cat ${HOME}/files_deleted.json
+      - name: Run Buildx and Upload to Docker Cloud
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
