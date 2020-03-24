@@ -2,6 +2,13 @@
 
 Jina Hub is a centralized place to host immutable Jina components, flows and applications via container images. It enables users to employ, ship, share and exchange their best-practice in different Jina search applications.
 
+## Quick Guide
+
+|                                    |         I want to ...         |                                  |
+|:----------------------------------:|:-----------------------------:|:--------------------------------:|
+| [know how to build my own Pod image](#build-your-pod-into-a-docker-image) | [use a Pod image in my project](#use-your-pod-image) | [publish my Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |
+
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
@@ -21,6 +28,7 @@ Jina Hub is a centralized place to host immutable Jina components, flows and app
   - [Steps to Publish Your Image](#steps-to-publish-your-image)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 ## Build Your Pod into a Docker Image
 
@@ -297,9 +305,11 @@ Note, large binary files (such as pretrained model, auxiliary data) are **not** 
 | `documentation` | URL to get documentation on the image (string) | `https://docs.jina.ai` |
 | `version` | version of the image, it should be [Semantic versioning-compatible](http://semver.org/) | `0.0.0` |
 | `vendor` | the name of the distributing entity, organization or individual (string) | `Jina AI Limited` |
-| `license` | license under which contained software is distributed, it should be [in this list](./builder/osi-approved.yml) | `apache-2.0` |
+| `license` | license under which contained software is distributed, it should be [in this list](builder/osi-approved.yml) | `apache-2.0` |
 | `avatar` | a picture that personalizes and distinguishes your image | None |
-| `platform` | a list of CPU architectures that your image is built on, each item should be [in this list](./builder/platforms.yml) | `[linux/amd64]` | 
+| `platform` | a list of CPU architectures that your image is built on, each item should be [in this list](builder/platforms.yml) | `[linux/amd64]` | 
+
+Please refer to [hub/examples/mwu_encoder/manifest.yml](hub/examples/mwu_encoder/manifest.yml) for the example.
 
 ### Steps to Publish Your Image
 
@@ -317,7 +327,11 @@ The image will be available at `jinaai/hub.executors.indexers.awesomeness:0.0.0`
 You can use it as [we described here](#use-your-pod-image).  
 
 
- 
+
+## License
+
+If you have downloaded a copy of the Jina binary or source code, please note that Jina's binary and source code are both licensed under the [Apache 2.0](LICENSE).
+
 
 
 

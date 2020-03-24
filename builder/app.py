@@ -154,7 +154,7 @@ def get_parser():
     parser.add_argument('--push', action='store_true', default=False,
                         help='push to the registry')
     parser.add_argument('--error_on_empty', action='store_true', default=False,
-                        help='stop and raise error when the target is empty')
+                        help='stop and raise error when the target is empty, otherwise just gracefully exit')
     return parser
 
 
