@@ -26,6 +26,7 @@ Jina Hub is a centralized place to host immutable Jina components, flows and app
   - [What Files Need to be Uploaded?](#what-files-need-to-be-uploaded)
   - [Schema of `manifest.yml`](#schema-of-manifestyml)
   - [Steps to Publish Your Image](#steps-to-publish-your-image)
+- [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
