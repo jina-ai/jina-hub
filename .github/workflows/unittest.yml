@@ -45,9 +45,10 @@ jobs:
       - name: Available platforms
         run: |
           echo ${{ steps.buildx.outputs.platforms }}
-      - name: Show build list
-        run: |
-          git --no-pager diff --name-only $(git merge-base FETCH_HEAD master) FETCH_HEAD | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq
+      - name: Changed Files Exporter
+        uses: futuratrepadeira/changed-files@v3.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build test
         run: |
-          git --no-pager diff --name-only $(git merge-base FETCH_HEAD master) FETCH_HEAD | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq | xargs -n1 python builder/app.py
+          pip install -r builder/requirements.txt
