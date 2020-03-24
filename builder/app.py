@@ -35,7 +35,10 @@ def load_manifest(args):
         if not os.path.exists(manifest_path):
             raise FileNotFoundError(f'{manifest_path} does not exist!')
     else:
-        raise NotADirectoryError(f'{args.target} is not a valid directory')
+        if args.error_on_empty:
+            raise NotADirectoryError(f'{args.target} is not a valid directory')
+        else:
+            return
 
     image_base_tag = os.path.relpath(args.target).replace('/', '.')
     check_image_base_tag(image_base_tag)
@@ -150,6 +153,8 @@ def get_parser():
                         help='the directory path of target Pod image, where manifest.yml and Dockerfile located')
     parser.add_argument('--push', action='store_true', default=False,
                         help='push to the registry')
+    parser.add_argument('--error_on_empty', action='store_true', default=False,
+                        help='stop and raise error when the target is empty')
     return parser
 
 
