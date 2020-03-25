@@ -22,14 +22,14 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - run: |
-        for changed_file in ${{ steps.files.outputs.files_created }}; do
-          echo "${changed_file}" >> build.tmp
-        done
-        for changed_file in ${{ steps.files.outputs.files_updated }}; do
-          echo "${changed_file}" >> build.tmp
-        done
-        for changed_file in ${{ steps.files.outputs.files_deleted }}; do
-          echo "${changed_file}" >> build.tmp
-        done
-        cat build.tmp | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq > build.tmp2
-        cat build.tmp2
+          for changed_file in ${{ steps.files.outputs.files_created }}; do
+            echo "${changed_file}" >> build.tmp
+          done
+          for changed_file in ${{ steps.files.outputs.files_updated }}; do
+            echo "${changed_file}" >> build.tmp
+          done
+          for changed_file in ${{ steps.files.outputs.files_deleted }}; do
+            echo "${changed_file}" >> build.tmp
+          done
+          cat build.tmp | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq > build.tmp2
+          cat build.tmp2
