@@ -107,7 +107,32 @@ def load_manifest(args):
     dockerbuild_action = '--push' if args.push else '--load'
     docker_cmd = dockerbuild_cmd + dockerbuild_args + [dockerbuild_action, args.target]
     subprocess.check_call(docker_cmd)
-    print('success!')
+    print('build success!')
+
+    if args.test:
+        img_name = f'{docker_registry}{image_base_tag}:{_manifest["version"]}'
+        test_docker_cli(img_name)
+        test_jina_cli(img_name)
+        test_flow_api(img_name)
+
+        print('all tests success!')
+
+
+def test_docker_cli(img_name):
+    print('testing image with docker run')
+    subprocess.check_call(['docker', 'run', '--rm', img_name, '--max_idle_time', '5', '--shutdown_idle'])
+
+
+def test_jina_cli(img_name):
+    print('testing image with jina cli')
+    subprocess.check_call(['jina', 'pod', '--image', img_name, '--max_idle_time', '5', '--shutdown_idle'])
+
+
+def test_flow_api(img_name):
+    print('testing image with jina flow API')
+    from jina.flow import Flow
+    with Flow().add(image=img_name, replicas=3).build():
+        pass
 
 
 def check_image_base_tag(s):
@@ -151,10 +176,14 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('target', type=str,
                         help='the directory path of target Pod image, where manifest.yml and Dockerfile located')
-    parser.add_argument('--push', action='store_true', default=False,
-                        help='push to the registry')
+    gp1 = parser.add_mutually_exclusive_group()
+    gp1.add_argument('--push', action='store_true', default=False,
+                     help='push to the registry')
+    gp1.add_argument('--test', action='store_true', default=False,
+                     help='test the pod image')
     parser.add_argument('--error_on_empty', action='store_true', default=False,
                         help='stop and raise error when the target is empty, otherwise just gracefully exit')
+
     return parser
 
 

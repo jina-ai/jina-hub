@@ -57,7 +57,7 @@ or, use the Pod image via Jina CLI
 jina pod --image jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
 ```
 
-More information about [the usage can be found here](#use-the-pod-image).
+More information about [the usage can be found here](#use-your-pod-image).
 
 
 ### Why?
@@ -90,7 +90,7 @@ Typically, the following files are packed into the container image:
 | `*.yml`          | a YAML file describes the executor arguments and configs, if you want users to use your config;     |
 | Other data files | may be required to run the executor, e.g. pre-trained model, fine-tuned model, home-made data.      |
 
-Except `Dockerfile`, all others are optional to build a valid Pod image depending on your case. `build.args` is only required when you want to [upload your image to Jina Hub](#upload-your-pod-image-to-jina-hub).
+Except `Dockerfile`, all others are optional to build a valid Pod image depending on your case. `build.args` is only required when you want to [upload your image to Jina Hub](#publish-your-pod-image-to-jina-hub).
     
 ### Step-by-Step Example
 
@@ -325,6 +325,18 @@ The image will be available at `jinaai/hub.executors.indexers.awesomeness:0.0.0`
 
 You can use it as [we described here](#use-your-pod-image).  
 
+### Why My Upload Fails on the CICD?
+
+Click "Details" and checkout the log of the CICD pipeline:
+
+![](.github/.README_images/d94f851e.png)
+
+Here is the checklist to help you locate the problem.
+
+- [ ] The required field in `manifest.yml` is missing.
+- [ ] Some field value is not in the correct format, not passing the sanity check.
+- [ ] The pod bundle is badly placed.
+- [ ] The build is success but it fails on [three basic usage tests](#use-your-pod-image).
 
 
 ## License
