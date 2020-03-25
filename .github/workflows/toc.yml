@@ -1,4 +1,4 @@
-name: TOC Generator
+name: Jina CD
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 
 jobs:
   generateTOC:
-    name: TOC Generator
     runs-on: ubuntu-latest
     steps:
       - uses: technote-space/toc-generator@v2
@@ -15,3 +14,22 @@ jobs:
           MAX_HEADER_LEVEL: 3
           FOLDING: false
           GITHUB_TOKEN: ${{ secrets.JINA_AI }}
+          TOC_TITLE: ''
+          TARGET_PATHS: '*.md'
+      - name: Changed Files Exporter
+        id: files
+        uses: futuratrepadeira/changed-files@v3.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+        for changed_file in ${{ steps.files.outputs.files_created }}; do
+          echo "${changed_file}" >> build.tmp
+        done
+        for changed_file in ${{ steps.files.outputs.files_updated }}; do
+          echo "${changed_file}" >> build.tmp
+        done
+        for changed_file in ${{ steps.files.outputs.files_deleted }}; do
+          echo "${changed_file}" >> build.tmp
+        done
+        cat build.tmp | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq > build.tmp2
+        cat build.tmp2
