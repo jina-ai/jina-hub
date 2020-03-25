@@ -15,7 +15,7 @@ jobs:
       - uses: wagoid/commitlint-github-action@v1
 
   label-pr:
-    needs: commit_lint
+    needs: commit-lint
     runs-on: ubuntu-latest
     steps:
       - uses: "pascalgn/size-label-action@v0.2.1"
@@ -26,7 +26,7 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
   buildx-test:
-    needs: commit_lint
+    needs: commit-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

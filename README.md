@@ -329,7 +329,7 @@ You can use it as [we described here](#use-your-pod-image).
 
 Click "Details" and checkout the log of the CICD pipeline:
 
-![](.github/.README_images/d94f851e.png)
+![](.github/.README_images/5f4181e9.png)
 
 Here is the checklist to help you locate the problem.
 
