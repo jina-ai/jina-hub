@@ -1,4 +1,4 @@
-name: Docker Test
+name: Jina Hub CI
 
 on: [pull_request]
 

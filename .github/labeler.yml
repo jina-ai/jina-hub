@@ -4,10 +4,7 @@ area/docs:
   - ./*.md
 
 area/example:
-  - hub/examples/
-
-area/builder:
-  - builder/**/*
+  - hub/examples/**/*
 
 area/housekeeping:
   - .github/**/*
@@ -15,3 +12,22 @@ area/housekeeping:
 
 area/hub:
   - hub/**/*
+
+area/cicd:
+  - .github/workflows/**/*
+  - builder/**/*
+
+component/executor:
+  - hub/executors/**/*
+
+component/encoder:
+  - hub/executors/encoders/**/*
+
+component/indexer:
+  - hub/executors/indexers/**/*
+
+component/ranker:
+  - hub/executors/rankers/**/*
+
+component/transformer:
+  - hub/executors/transformers/**/*
