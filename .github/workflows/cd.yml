@@ -25,8 +25,12 @@ jobs:
           python builder/app.py --reason "master got pushed" --push
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
-          git commit -m "chore: update readme and build history" --amend
-          git push --force
+          git add README.md builder/build-history.json
+          git commit -m "chore: update readme and build history" -a
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          force: true
       - uses: technote-space/toc-generator@v2
         with:
           MAX_HEADER_LEVEL: 3
