@@ -26,11 +26,9 @@ jobs:
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add README.md builder/build-history.json
-          git commit -m "chore: update readme and build history" -a
-      - uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.JINA_DEV_BOT }}
-          force: true
+          git commit -qm "chore: update readme and build history" -a
+          git show '--stat-count=10' HEAD
+          git push origin master:refs/heads/master
       - uses: technote-space/toc-generator@v2
         with:
           MAX_HEADER_LEVEL: 3
