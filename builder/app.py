@@ -17,6 +17,7 @@ sver_regex = r'^(=|>=|<=|=>|=<|>|<|!=|~|~>|\^)?(?P<major>0|[1-9]\d*)\.(?P<minor>
              r'(?:\.[0-9a-zA-Z-]+)*))?$'
 name_regex = r'^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{2,20}$'
 cur_dir = pathlib.Path(__file__).parent.absolute()
+root_dir = pathlib.Path(__file__).parents[1].absolute()
 image_tag_regex = r'^hub.[a-zA-Z_$][a-zA-Z_\s\-\.$0-9]*$'
 label_prefix = 'ai.jina.hub.'
 docker_registry = 'jinaai/'
@@ -40,8 +41,8 @@ def load_manifest(args):
         else:
             return
 
-    image_base_tag = os.path.relpath(args.target).replace('/', '.')
-    check_image_base_tag(image_base_tag)
+    image_canonical_name = os.path.relpath(args.target).replace('/', '.')
+    check_image_name(image_canonical_name)
 
     with open(os.path.join(cur_dir, 'manifest.yml')) as fp:
         _manifest = yaml.load(fp)  # type: dict
@@ -101,22 +102,23 @@ def load_manifest(args):
 
     dockerbuild_cmd = ['docker', 'buildx', 'build']
     dockerbuild_args = ['--platform', ','.join(v for v in _manifest['platform']),
-                        '-t', f'{docker_registry}{image_base_tag}:{_manifest["version"]}', '-t',
-                        f'{docker_registry}{image_base_tag}:latest',
+                        '-t', f'{docker_registry}{image_canonical_name}:{_manifest["version"]}', '-t',
+                        f'{docker_registry}{image_canonical_name}:latest',
                         '--file', dockerfile_path + '.tmp']
     dockerbuild_action = '--push' if args.push else '--load'
     docker_cmd = dockerbuild_cmd + dockerbuild_args + [dockerbuild_action, args.target]
     subprocess.check_call(docker_cmd)
     print('build success!')
+    img_name = f'{docker_registry}{image_canonical_name}:{_manifest["version"]}'
 
     if args.test:
-        img_name = f'{docker_registry}{image_base_tag}:{_manifest["version"]}'
         test_docker_cli(img_name)
         test_jina_cli(img_name)
         test_flow_api(img_name)
 
         print('all tests success!')
 
+    return img_name
 
 def test_docker_cli(img_name):
     print('testing image with docker run')
@@ -135,7 +137,7 @@ def test_flow_api(img_name):
         pass
 
 
-def check_image_base_tag(s):
+def check_image_name(s):
     if not re.match(image_tag_regex, s):
         raise ValueError(f'{s} is not a valid image name for a Jina Hub image, it should match with {image_tag_regex}')
 
@@ -172,6 +174,10 @@ def check_version(s):
         raise ValueError(f'{s} is not a valid semantic version number, see http://semver.org/')
 
 
+def find_potential_targets():
+    pass
+
+
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('target', type=str,
@@ -188,6 +194,4 @@ def get_parser():
 
 
 if __name__ == '__main__':
-    p = get_parser()
-    s = p.parse_args()
-    load_manifest(s)
+    load_manifest(get_parser().parse_args())
