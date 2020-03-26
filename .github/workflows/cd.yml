@@ -30,6 +30,8 @@ jobs:
           git show '--stat-count=10' HEAD
           git config --list
           git push origin master:refs/heads/master
+        env:
+          GITHUB_TOKEN: "${{ secrets.JINA_DEV_BOT }}"
       - uses: technote-space/toc-generator@v2
         with:
           MAX_HEADER_LEVEL: 3
