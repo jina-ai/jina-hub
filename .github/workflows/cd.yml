@@ -1,0 +1,42 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - run: |
+          echo ${{ steps.buildx.outputs.platforms }}
+          docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+          python builder/cron.py
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git add README.md builder/build-history.json
+          git commit -m "chore: update readme and build history" -a
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+
+  update-doc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/toc-generator@v2
+        with:
+          MAX_HEADER_LEVEL: 3
+          FOLDING: false
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          TOC_TITLE: ''
+          TARGET_PATHS: '*.md'

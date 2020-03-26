@@ -1,6 +1,11 @@
 # jina-hub
 
-Jina Hub is a centralized place to host immutable Jina components, flows and applications via container images. It enables users to employ, ship, share and exchange their best-practice in different Jina search applications.
+Jina Hub is a centralized registry to host immutable Jina components and flows via container images. It enables users to employ, ship, and exchange their best-practice in different Jina search applications.
+
+<! -- START_BUILD_BADGE -->
+** Last Build Status **
+![hub.examples.mwu_encoder](https://img.shields.io/badge/hub.examples.mwu__encoder-success-success?style=flat-square)
+<! -- END_BUILD_BADGE -->
 
 |                                    |         I want to ...         |                                  |
 |:----------------------------------:|:-----------------------------:|:--------------------------------:|

@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib
+import re
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -13,11 +14,24 @@ builder_files = list(Path(cur_dir).glob('**/*'))
 build_hist_path = os.path.join(cur_dir, 'build-history.json')
 
 root_dir = pathlib.Path(__file__).parents[1].absolute()
+readme_path = os.path.join(root_dir, 'README.md')
 hub_files = list(Path(root_dir).glob('hub/**/*.y*ml')) + \
             list(Path(root_dir).glob('hub/**/*Dockerfile')) + \
             list(Path(root_dir).glob('hub/**/*.py'))
 
 builder_revision = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip().decode()
+build_badge_regex = r'(?<=<! -- START_BUILD_BADGE -->)(.*)(?=<! -- END_BUILD_BADGE -->)'
+
+
+def safe_url_name(s):
+    return s.replace('-', '--').replace('_', '__').replace(' ', '_')
+
+
+def get_badge_md(img_name, is_success=True):
+    if is_success:
+        return f'![{img_name}](https://img.shields.io/badge/{safe_url_name(img_name)}-success-success?style=flat-square)'
+    else:
+        return f'![{img_name}](https://img.shields.io/badge/{safe_url_name(img_name)}-fail-critical?style=flat-square)'
 
 
 def get_now_timestamp():
@@ -82,9 +96,22 @@ def build_on_update():
             except Exception as ex:
                 status_map[canonic_name] = False
                 print(ex)
+
+        # update readme
+        with open(readme_path, 'r') as fp:
+            tmp = fp.read()
+            badge_str = ' '.join([get_badge_md(b) for b in status_map])
+            badge_header = f'> Last Build Status: {datetime.now()}'
+            tmp = re.sub(pattern=build_badge_regex,
+                         repl=f'\n{badge_header}\n{badge_str}\n',
+                         string=tmp, flags=re.DOTALL)
+
+        with open(readme_path, 'w') as fp:
+            fp.write(tmp)
     else:
         print('noting to build')
 
+    # update json track
     hist = {
         'LastBuildTime': get_now_timestamp(),
         'Images': image_map,
