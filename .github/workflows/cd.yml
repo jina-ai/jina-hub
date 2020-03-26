@@ -26,7 +26,7 @@ jobs:
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git commit -m "chore: update readme and build history" --amend
-          git push
+          git push --force
       - uses: technote-space/toc-generator@v2
         with:
           MAX_HEADER_LEVEL: 3
