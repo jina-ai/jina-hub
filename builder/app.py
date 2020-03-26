@@ -43,11 +43,10 @@ def safe_url_name(s):
 
 
 def get_badge_md(img_name, is_success=True):
-    if is_success:
-        return f'![{img_name}](https://img.shields.io/badge/{safe_url_name(img_name)}-success-success?style=flat-square)'
-    else:
-        return f'![{img_name}](https://img.shields.io/badge/{safe_url_name(img_name)}-fail-critical?style=flat-square)'
-
+    success_tag = 'success-success' if is_success else 'fail-critical'
+    return f'[![{img_name}](https://img.shields.io/badge/{safe_url_name(img_name)}-' \
+           f'{success_tag}?style=flat-square)]' \
+           f'(https://hub.docker.com/repository/docker/jinaai/{img_name})'
 
 def get_now_timestamp():
     now = datetime.now()
