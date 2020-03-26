@@ -21,7 +21,7 @@ jobs:
       - run: |
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-          python builder/cron.py --reason "master got pushed"
+          python builder/app.py --reason "master got pushed"
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add README.md builder/build-history.json
