@@ -108,6 +108,7 @@ def build_multi_targets(args):
             try:
                 args.target = p
                 image_name = build_target(args)
+                subprocess.check_call(['docker', 'pull', image_name])
                 tmp = subprocess.check_output(['docker', 'inspect', image_name]).strip().decode()
                 tmp = json.loads(tmp)[0]
                 image_map[tmp['Id']] = {
