@@ -35,7 +35,7 @@ hub_files = list(Path(root_dir).glob('hub/**/*.y*ml')) + \
             list(Path(root_dir).glob('hub/**/*.py'))
 
 builder_revision = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip().decode()
-build_badge_regex = r'(?<=<!-- START_BUILD_BADGE -->)(.*)(?=<!-- END_BUILD_BADGE -->)'
+build_badge_regex = r'<!-- START_BUILD_BADGE -->(.*)<!-- END_BUILD_BADGE -->'
 
 
 def safe_url_name(s):
@@ -47,6 +47,7 @@ def get_badge_md(img_name, is_success=True):
     return f'[![{img_name}](https://img.shields.io/badge/{safe_url_name(img_name)}-' \
            f'{success_tag}?style=flat-square)]' \
            f'(https://hub.docker.com/repository/docker/jinaai/{img_name})'
+
 
 def get_now_timestamp():
     now = datetime.now()
@@ -125,10 +126,14 @@ def build_multi_targets(args):
         # update readme
         with open(readme_path, 'r') as fp:
             tmp = fp.read()
-            badge_str = ' '.join([get_badge_md(b) for b in status_map])
-            badge_header = f'> Last Build Status: {datetime.now():%Y-%m-%d %H:%M:%S}'
+            badge_str = '\n'.join([get_badge_md(b) for b in status_map])
+            h1 = f'## Last Build at: {datetime.now():%Y-%m-%d %H:%M:%S}'
+            h2 = '**Reason**'
+            h3 = '**Images**'
+            reason = '\n'.join([v for v in args.reason])
+            reason = f'```text\n{reason}\n```'
             tmp = re.sub(pattern=build_badge_regex,
-                         repl=f'\n\n{badge_header}\n\n{badge_str}\n\n',
+                         repl='\n\n'.join([build_badge_regex, h1, h2, reason, h3, badge_str]),
                          string=tmp, flags=re.DOTALL)
 
         with open(readme_path, 'w') as fp:
