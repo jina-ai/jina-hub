@@ -29,6 +29,7 @@ jobs:
           git commit -qm "chore: update readme and build history" -a
           git show '--stat-count=10' HEAD
           git config --list
+          git remote set-url origin https://jina-bot:${{ secrets.JINA_DEV_BOT }}@github.com/jina-ai/jina.git
           git push origin master:refs/heads/master
         env:
           GITHUB_TOKEN: "${{ secrets.JINA_DEV_BOT }}"
