@@ -18,6 +18,11 @@ jobs:
         uses: crazy-max/ghaction-docker-buildx@v1
         with:
           version: latest
+      - name: Changed Files Exporter
+        id: files
+        uses: futuratrepadeira/changed-files@v3.0.0
+        with:
+          repo-token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
