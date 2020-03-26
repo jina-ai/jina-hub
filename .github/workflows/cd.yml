@@ -32,6 +32,7 @@ jobs:
           github_token: ${{ secrets.JINA_DEV_BOT }}
 
   update-doc:
+    needs: update-docker
     runs-on: ubuntu-latest
     steps:
       - uses: technote-space/toc-generator@v2
