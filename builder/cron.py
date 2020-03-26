@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import pathlib
@@ -49,7 +50,14 @@ def get_modified_time(p) -> int:
         return 0
 
 
-def build_on_update():
+def set_reason(args, reason):
+    if not args.reason:
+        args.reason = [reason]
+    else:
+        args.reason.append(reason)
+
+
+def build_on_update(args):
     try:
         with open(build_hist_path, 'r') as fp:
             hist = json.load(fp)
@@ -70,6 +78,7 @@ def build_on_update():
                   f'is later than last build time.\n'
                   f'means, I need to rebuild ALL images')
             is_builder_updated = True
+            set_reason(args, 'builder is updated need to rebuild all images')
             break
 
     update_targets = set()
@@ -80,10 +89,16 @@ def build_on_update():
             update_targets.add(target)
 
     if update_targets:
+        set_reason(args, f'{update_targets} are updated and need to be rebuilt')
         for p in update_targets:
             canonic_name = os.path.relpath(p).replace('/', '.')
             try:
-                image_name = load_manifest(get_parser().parse_args([p]))
+                if args.push:
+                    image_name = load_manifest(get_parser().parse_args([p, '--push']))
+                elif args.test:
+                    image_name = load_manifest(get_parser().parse_args([p, '--test']))
+                else:
+                    image_name = load_manifest(get_parser().parse_args([p]))
                 tmp = subprocess.check_output(['docker', 'inspect', image_name]).strip().decode()
                 tmp = json.loads(tmp)[0]
                 image_map[tmp['Id']] = {
@@ -101,27 +116,37 @@ def build_on_update():
         with open(readme_path, 'r') as fp:
             tmp = fp.read()
             badge_str = ' '.join([get_badge_md(b) for b in status_map])
-            badge_header = f'> Last Build Status: {datetime.now()}'
+            badge_header = f'> Last Build Status: {datetime.now():%Y-%m-%d %H:%M:%S}'
             tmp = re.sub(pattern=build_badge_regex,
-                         repl=f'\n{badge_header}\n{badge_str}\n',
+                         repl=f'\n\n{badge_header}\n\n{badge_str}\n\n',
                          string=tmp, flags=re.DOTALL)
 
         with open(readme_path, 'w') as fp:
             fp.write(tmp)
     else:
+        set_reason(args, f'but i have nothing to build')
         print('noting to build')
 
     # update json track
-    hist = {
-        'LastBuildTime': get_now_timestamp(),
-        'Images': image_map,
-        'BuildStatus': status_map,
-        'BuilderRevision': builder_revision
-    }
-
     with open(build_hist_path, 'w') as fp:
-        json.dump(hist, fp)
+        json.dump({
+            'LastBuildTime': get_now_timestamp(),
+            'LastBuildReason': args.reason,
+            'BuildStatus': status_map,
+            'BuilderRevision': builder_revision,
+            'Images': image_map,
+        }, fp)
+
+    print('delivery success')
 
 
 if __name__ == '__main__':
-    build_on_update()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--reason', type=str, nargs='*',
+                        help='the reason of the build')
+    gp1 = parser.add_mutually_exclusive_group()
+    gp1.add_argument('--push', action='store_true', default=False,
+                     help='push to the registry')
+    gp1.add_argument('--test', action='store_true', default=False,
+                     help='test the pod image')
+    build_on_update(parser.parse_args())
