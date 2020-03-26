@@ -27,9 +27,9 @@ docker_registry = 'jinaai/'
 
 # current date and time
 builder_files = list(Path(cur_dir).glob('**/*'))
-build_hist_path = os.path.join(cur_dir, 'build-history.json')
+build_hist_path = os.path.join(root_dir, 'status', 'build-history.json')
+readme_path = os.path.join(root_dir, 'status', 'README.md')
 
-readme_path = os.path.join(root_dir, 'README.md')
 hub_files = list(Path(root_dir).glob('hub/**/*.y*ml')) + \
             list(Path(root_dir).glob('hub/**/*Dockerfile')) + \
             list(Path(root_dir).glob('hub/**/*.py'))
