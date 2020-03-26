@@ -18,15 +18,10 @@ jobs:
         uses: crazy-max/ghaction-docker-buildx@v1
         with:
           version: latest
-      - name: Changed Files Exporter
-        id: files
-        uses: futuratrepadeira/changed-files@v3.0.0
-        with:
-          repo-token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-          pip install git+https://github.com/jina-ai/jina.git
+          pip install -r requirements.txt
           python builder/app.py --reason "master got pushed" --push
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
