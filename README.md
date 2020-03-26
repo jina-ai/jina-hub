@@ -6,9 +6,9 @@
 
 <!-- START_BUILD_BADGE -->
 
-> Last Build at 2020-03-26 17:37:58
+> Last Build Status: 2020-03-26 20:03:29
 
-![hub.examples.mwu_encoder](https://img.shields.io/badge/hub.examples.mwu__encoder-success-success?style=flat-square)
+[![hub.examples.mwu_encoder](https://img.shields.io/badge/hub.examples.mwu__encoder-success-success?style=flat-square)](https://hub.docker.com/repository/docker/jinaai/hub.examples.mwu_encoder)
 
 <!-- END_BUILD_BADGE -->
 
