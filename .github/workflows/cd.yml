@@ -17,34 +17,38 @@ jobs:
           repository: jina-ai/jina-hub-status
           path: main/status
           token: ${{ secrets.JINA_DEV_BOT }}
-#      - uses: actions/setup-python@v1
-#        with:
-#          python-version: 3.7
-#      - name: Set up Docker Buildx
-#        id: buildx
-#        uses: crazy-max/ghaction-docker-buildx@v1
-#        with:
-#          version: latest
-#      - run: |
-#          git clone https://github.com/jina-ai/jina-hub-status.git
-#          echo ${{ steps.buildx.outputs.platforms }}
-#          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-#          pip install -r builder/requirements.txt
-#          python builder/app.py --reason "master got pushed" --push
-#          git config user.email "dev-bot@jina.ai"
-#          git config user.name "Jina Dev Bot"
-#          git add README.md builder/build-history.json
-#          git commit -qm "chore: update readme and build history" -a
-#          git show '--stat-count=10' HEAD
-#          git config --list
-#          git remote set-url origin https://jina-bot:${{ secrets.JINA_DEV_BOT }}@github.com/jina-ai/jina-hub.git
-#          git push origin master:refs/heads/master
-#        env:
-#          GITHUB_TOKEN: "${{ secrets.JINA_DEV_BOT }}"
-#      - uses: technote-space/toc-generator@v2
-#        with:
-#          MAX_HEADER_LEVEL: 3
-#          FOLDING: false
-#          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
-#          TOC_TITLE: ''
-#          TARGET_PATHS: '*.md'
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - run: |
+          echo ${{ steps.buildx.outputs.platforms }}
+          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+          pip install -r main/builder/requirements.txt
+          python main/builder/app.py --reason "master got pushed" --push
+          cd main/status/
+          git config user.email "dev-bot@jina.ai"
+          git config user.name "Jina Dev Bot"
+          git add README.md build-history.json
+          git commit -qm "chore: update readme and build history" -a
+          git show '--stat-count=10' HEAD
+          git config --list
+          git push origin master:refs/heads/master
+          cd -
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          repository: jina-ai/jina-hub-status
+          force: true
+          directory: main/status/
+      - uses: technote-space/toc-generator@v2
+        with:
+          MAX_HEADER_LEVEL: 3
+          FOLDING: false
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          TOC_TITLE: ''
+          TARGET_PATHS: '*.md'

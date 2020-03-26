@@ -4,14 +4,6 @@
 ![CD](https://github.com/jina-ai/jina-hub/workflows/CD/badge.svg?branch=master)
 
 
-<!-- START_BUILD_BADGE -->
-
-> Last Build Status: 2020-03-26 20:03:29
-
-[![hub.examples.mwu_encoder](https://img.shields.io/badge/hub.examples.mwu__encoder-success-success?style=flat-square)](https://hub.docker.com/repository/docker/jinaai/hub.examples.mwu_encoder)
-
-<!-- END_BUILD_BADGE -->
-
 Jina Hub is a centralized registry to host immutable Jina components and flows via container images. It enables users to employ, ship, and exchange their best-practice in different Jina search applications.
 
 
