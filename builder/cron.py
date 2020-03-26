@@ -7,7 +7,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-from builder.app import load_manifest, get_parser
+from .app import load_manifest, get_parser
 
 # current date and time
 cur_dir = pathlib.Path(__file__).parent.absolute()
