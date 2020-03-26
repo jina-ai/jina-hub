@@ -6,13 +6,13 @@
 
 Jina Hub is a centralized registry to host immutable Jina components and flows via container images. It enables users to employ, ship, and exchange their best-practice in different Jina search applications.
 
-<! -- START_BUILD_BADGE -->
+<!-- START_BUILD_BADGE -->
 
 > Last Build Status: 2020-03-26 17:37:58
 
 ![hub.examples.mwu_encoder](https://img.shields.io/badge/hub.examples.mwu__encoder-success-success?style=flat-square)
 
-<! -- END_BUILD_BADGE -->
+<!-- END_BUILD_BADGE -->
 
 |                                    |         I want to ...         |                                  |
 |:----------------------------------:|:-----------------------------:|:--------------------------------:|
