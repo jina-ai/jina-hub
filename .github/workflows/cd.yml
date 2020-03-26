@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: "${{ secrets.JINA_DEV_BOT }}"
-          persist-credentials: false
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
@@ -22,6 +19,7 @@ jobs:
         with:
           version: latest
       - run: |
+          git clone https://github.com/jina-ai/jina-hub-status.git
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           pip install -r builder/requirements.txt
@@ -32,6 +30,7 @@ jobs:
           git commit -qm "chore: update readme and build history" -a
           git show '--stat-count=10' HEAD
           git config --list
+          git remote set-url origin https://jina-bot:${{ secrets.JINA_DEV_BOT }}@github.com/jina-ai/jina-hub.git
           git push origin master:refs/heads/master
         env:
           GITHUB_TOKEN: "${{ secrets.JINA_DEV_BOT }}"
