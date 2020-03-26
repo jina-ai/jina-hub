@@ -29,16 +29,15 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           pip install -r main/builder/requirements.txt
-          python main/builder/app.py --reason "master got pushed" --push
-          cd main/status/
+          cd main
+          python builder/app.py --reason "master got pushed" --push
+          cd status
           git config user.email "dev-bot@jina.ai"
           git config user.name "Jina Dev Bot"
           git add README.md build-history.json
           git commit -qm "chore: update readme and build history" -a
           git show '--stat-count=10' HEAD
           git config --list
-          git push origin master:refs/heads/master
-          cd -
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
