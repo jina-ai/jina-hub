@@ -36,6 +36,7 @@ hub_files = list(Path(root_dir).glob('hub/**/*.y*ml')) + \
 
 builder_revision = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip().decode()
 build_badge_regex = r'<!-- START_BUILD_BADGE -->(.*)<!-- END_BUILD_BADGE -->'
+build_badge_prefix = r'<!-- START_BUILD_BADGE --><!-- END_BUILD_BADGE -->'
 
 
 def safe_url_name(s):
@@ -127,13 +128,13 @@ def build_multi_targets(args):
         with open(readme_path, 'r') as fp:
             tmp = fp.read()
             badge_str = '\n'.join([get_badge_md(b) for b in status_map])
-            h1 = f'## Last Build at: {datetime.now():%Y-%m-%d %H:%M:%S}'
+            h1 = f'## Last Build at: {datetime.now():%Y-%m-%d %H:%M:%S %Z}'
             h2 = '**Reason**'
             h3 = '**Images**'
             reason = '\n'.join([v for v in args.reason])
             reason = f'```text\n{reason}\n```'
             tmp = re.sub(pattern=build_badge_regex,
-                         repl='\n\n'.join([build_badge_regex, h1, h2, reason, h3, badge_str]),
+                         repl='\n\n'.join([build_badge_prefix, h1, h2, reason, h3, badge_str]),
                          string=tmp, flags=re.DOTALL)
 
         with open(readme_path, 'w') as fp:
