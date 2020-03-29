@@ -57,10 +57,15 @@ jobs:
           version: latest
       - run: |
           echo ${{ steps.buildx.outputs.platforms }}
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina
+          path: jina/main
+          token: ${{ secrets.JINA_DEV_BOT }}
       - name: Docker Build and Test
         run: |
           if [[ -s build.tmp2 ]]; then
-            pip install git+https://github.com/jina-ai/jina.git
+            pip install ./jina/main
             cat build.tmp2 | xargs -n1 python builder/app.py --test --target
           else
             echo "nothing to build"
