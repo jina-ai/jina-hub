@@ -253,7 +253,7 @@ def build_target(args):
                              '-e', f'DOCKERHUB_REPOSITORY="{docker_registry}{image_canonical_name}"',
                              '-e', 'README_FILEPATH="/workspace/README.md"',
                              'peterevans/dockerhub-description:2.1']
-        print(subprocess.check_output(docker_readme_cmd, shell=True))
+        print(subprocess.check_output(docker_readme_cmd))
         print('upload readme success!')
 
     img_name = f'{docker_registry}{image_canonical_name}:{_manifest["version"]}'
