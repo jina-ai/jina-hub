@@ -8,7 +8,7 @@ Jina Hub is a centralized registry to host immutable Jina components and flows v
 
 
 
-|                                    |         I want to ...         |                                  |
+|                                    |         I want to ...         |     |                             |
 |:----------------------------------:|:-----------------------------:|:--------------------------------:|:--------------------------------:|
 | <h1>📦</h1><br>[build my own Pod image](#build-your-pod-into-a-docker-image) | <h1>🐳</h1><br>[use Pod image in my project](#use-your-pod-image) | <h1>🆙️</h1><br>[publish Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |  <h1>🗺️</h1><br>[View all images in Jina Hub](https://github.com/jina-ai/jina-hub-status/) |
 

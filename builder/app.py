@@ -247,14 +247,12 @@ def build_target(args):
 
     if args.push:
         docker_readme_cmd = ['docker', 'run', '-v', f'{args.target}:/workspace',
-                             '-e', 'DOCKERHUB_USERNAME="$DOCKERHUB_USERNAME"',
-                             '-e', 'DOCKERHUB_PASSWORD="$DOCKERHUB_PASSWORD"',
-                             '-e', f'DOCKERHUB_REPOSITORY="{docker_registry}{image_canonical_name}"',
-                             '-e', 'README_FILEPATH="/workspace/README.md"',
+                             '-e', f'DOCKERHUB_USERNAME={os.environ["DOCKERHUB_DEVBOT_USER"]}',
+                             '-e', f'DOCKERHUB_PASSWORD={os.environ["DOCKERHUB_DEVBOT_PWD"]}',
+                             '-e', f'DOCKERHUB_REPOSITORY={docker_registry}{image_canonical_name}',
+                             '-e', 'README_FILEPATH=/workspace/README.md',
                              'peterevans/dockerhub-description:2.1']
-        print(subprocess.check_output(docker_readme_cmd, env={'DOCKERHUB_USERNAME': os.environ['DOCKERHUB_DEVBOT_USER'],
-                                                              'DOCKERHUB_PASSWORD': os.environ[
-                                                                  'DOCKERHUB_DEVBOT_PWD']}))
+        print(subprocess.check_output(docker_readme_cmd))
         print('upload readme success!')
 
     img_name = f'{docker_registry}{image_canonical_name}:{_manifest["version"]}'
