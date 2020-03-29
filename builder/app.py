@@ -134,7 +134,6 @@ def build_multi_targets(args):
             h2 = '<summary>Reason</summary>'
             h3 = '**Images**'
             reason = '\n'.join([v for v in args.reason])
-            reason = f'```text\n{reason}```\n'
             tmp = re.sub(pattern=build_badge_regex,
                          repl='\n\n'.join([build_badge_prefix, h1, h3, badge_str,
                                            '<details>', h2, reason, '</details>']),
@@ -248,12 +247,14 @@ def build_target(args):
 
     if args.push:
         docker_readme_cmd = ['docker', 'run', '-v', f'{args.target}:/workspace',
-                             '-e', 'DOCKERHUB_USERNAME="$DOCKERHUB_DEVBOT_USER"',
-                             '-e', 'DOCKERHUB_PASSWORD="DOCKERHUB_DEVBOT_PWD"',
+                             '-e', 'DOCKERHUB_USERNAME="DOCKERHUB_USERNAME"',
+                             '-e', 'DOCKERHUB_PASSWORD="DOCKERHUB_PASSWORD"',
                              '-e', f'DOCKERHUB_REPOSITORY="{docker_registry}{image_canonical_name}"',
                              '-e', 'README_FILEPATH="/workspace/README.md"',
                              'peterevans/dockerhub-description:2.1']
-        print(subprocess.check_output(docker_readme_cmd))
+        print(subprocess.check_output(docker_readme_cmd, env={'DOCKERHUB_USERNAME': os.environ['DOCKERHUB_DEVBOT_USER'],
+                                                              'DOCKERHUB_PASSWORD': os.environ[
+                                                                  'DOCKERHUB_DEVBOT_PWD']}))
         print('upload readme success!')
 
     img_name = f'{docker_registry}{image_canonical_name}:{_manifest["version"]}'
