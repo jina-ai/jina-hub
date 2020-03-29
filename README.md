@@ -30,6 +30,7 @@ Jina Hub is a centralized registry to host immutable Jina components and flows v
   - [What Files Need to be Uploaded?](#what-files-need-to-be-uploaded)
   - [Schema of `manifest.yml`](#schema-of-manifestyml)
   - [Steps to Publish Your Image](#steps-to-publish-your-image)
+  - [What is the Name of My Image?](#what-is-the-name-of-my-image)
   - [Why My Upload Fails on the CICD?](#why-my-upload-fails-on-the-cicd)
 - [License](#license)
 
