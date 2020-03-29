@@ -269,12 +269,12 @@ def build_target(args):
 
 def test_docker_cli(img_name):
     print('testing image with docker run')
-    subprocess.check_call(['docker', 'run', '--rm', img_name, '--max_idle_time', '5', '--shutdown_idle'])
+    print(subprocess.check_output(['docker', 'run', '--rm', img_name, '--max_idle_time', '5', '--shutdown_idle']))
 
 
 def test_jina_cli(img_name):
     print('testing image with jina cli')
-    subprocess.check_call(['jina', 'pod', '--image', img_name, '--max_idle_time', '5', '--shutdown_idle'])
+    print(subprocess.check_output(['jina', 'pod', '--image', img_name, '--max_idle_time', '5', '--shutdown_idle']))
 
 
 def test_flow_api(img_name):
