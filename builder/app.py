@@ -247,8 +247,8 @@ def build_target(args):
 
     if args.push:
         docker_readme_cmd = ['docker', 'run', '-v', f'{args.target}:/workspace',
-                             '-e', 'DOCKERHUB_USERNAME="DOCKERHUB_USERNAME"',
-                             '-e', 'DOCKERHUB_PASSWORD="DOCKERHUB_PASSWORD"',
+                             '-e', 'DOCKERHUB_USERNAME="$DOCKERHUB_USERNAME"',
+                             '-e', 'DOCKERHUB_PASSWORD="$DOCKERHUB_PASSWORD"',
                              '-e', f'DOCKERHUB_REPOSITORY="{docker_registry}{image_canonical_name}"',
                              '-e', 'README_FILEPATH="/workspace/README.md"',
                              'peterevans/dockerhub-description:2.1']
