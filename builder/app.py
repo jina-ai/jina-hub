@@ -116,7 +116,7 @@ def build_multi_targets(args):
                 tmp = json.loads(tmp)[0]
                 if canonic_name not in image_map:
                     image_map[canonic_name] = []
-                image_map[canonic_name].add({
+                image_map[canonic_name].append({
                     'Status': True,
                     'LastBuildTime': get_now_timestamp(),
                     'Inspect': tmp,
@@ -252,7 +252,7 @@ def build_target(args):
                              '-e', f'DOCKERHUB_REPOSITORY={docker_registry}{image_canonical_name}',
                              '-e', 'README_FILEPATH=/workspace/README.md',
                              'peterevans/dockerhub-description:2.1']
-        print(subprocess.check_output(docker_readme_cmd))
+        subprocess.check_call(docker_readme_cmd)
         print('upload readme success!')
 
     img_name = f'{docker_registry}{image_canonical_name}:{_manifest["version"]}'
@@ -269,12 +269,12 @@ def build_target(args):
 
 def test_docker_cli(img_name):
     print('testing image with docker run')
-    print(subprocess.check_output(['docker', 'run', '--rm', img_name, '--max_idle_time', '5', '--shutdown_idle']))
+    subprocess.check_call(['docker', 'run', '--rm', img_name, '--max_idle_time', '5', '--shutdown_idle'])
 
 
 def test_jina_cli(img_name):
     print('testing image with jina cli')
-    print(subprocess.check_output(['jina', 'pod', '--image', img_name, '--max_idle_time', '5', '--shutdown_idle']))
+    subprocess.check_call(['jina', 'pod', '--image', img_name, '--max_idle_time', '5', '--shutdown_idle'])
 
 
 def test_flow_api(img_name):
