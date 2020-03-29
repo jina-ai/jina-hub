@@ -133,7 +133,7 @@ def build_multi_targets(args):
             h1 = f'## Last Build at: {datetime.now():%Y-%m-%d %H:%M:%S %Z}'
             h2 = '<summary>Reason</summary>'
             h3 = '**Images**'
-            reason = '\n'.join([v for v in args.reason])
+            reason = '\n\n'.join([v for v in args.reason])
             tmp = re.sub(pattern=build_badge_regex,
                          repl='\n\n'.join([build_badge_prefix, h1, h3, badge_str,
                                            '<details>', h2, reason, '</details>']),

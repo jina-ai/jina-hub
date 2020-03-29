@@ -40,7 +40,7 @@ Jina Hub is a centralized registry to host immutable Jina components and flows v
 
 ### Goal
 
-Instead of
+Instead of 
 ```bash
 jina pod --yaml_path hub/example/mwu_encoder.yml --port_in 55555 --port_out 55556
 ```
@@ -50,7 +50,7 @@ After this tutorial, you can use the Pod image via:
 docker run jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
 ```
 
-or, use the Pod image in the Flow API:
+...or use the Pod image in the Flow API:
 ```python
 from jina.flow import Flow
 
@@ -59,7 +59,7 @@ f = (Flow()
         .add(name='my-indexer', yaml_path='indexer.yml'))
 ```
 
-or, use the Pod image via Jina CLI
+... or use the Pod image via Jina CLI
 ```bash
 jina pod --image jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
 ```
@@ -297,6 +297,25 @@ Typically, the following files are required:
 
 Note, large binary files (such as pretrained model, auxiliary data) are **not** recommended to upload to this repository. You can use `RUN wget ...` or `RUN curl` inside the `Dockerfile` to download it from the web during the build.
 
+
+Your file bundle `awesomeness` should be uploaded to:
+```text
+hub/
+  |
+   - executors/
+       |
+        - encoders/
+            |
+            - awesomeness/
+                |
+                |- Dockerfile
+                |- manifest.yml
+                |- README.md
+                |- awesome_ai.py
+```
+
+Your image will be published as `jinaai/hub.executors.encoders.awesomeness`.
+
 ### Schema of `manifest.yml`
 
 `manifest.yml` must exist if you want to publish your Pod image to Jina Hub.
@@ -333,21 +352,6 @@ The image will be available at `jinaai/hub.executors.indexers.awesomeness:0.0.0`
 
 You can use the image as [the ways we described here](#use-your-pod-image).  
 
-### What is the Name of My Image?
-
-If you put your bundle `awesomeness` under
-```text
-hub/
-    executors/
-              encoders/
-                       awesomeness/
-                                   Dockerfile
-                                   manifest.yml
-                                   README.md
-                                   awesome_ai.py
-```
-
-Then the image will be published as `jinaai/hub.executors.encoders.awesomeness`.
 
 ### Why My Upload Fails on the CICD?
 
