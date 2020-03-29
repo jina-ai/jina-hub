@@ -131,12 +131,13 @@ def build_multi_targets(args):
             tmp = fp.read()
             badge_str = '\n'.join([get_badge_md(b) for b in status_map])
             h1 = f'## Last Build at: {datetime.now():%Y-%m-%d %H:%M:%S %Z}'
-            h2 = '<details>\n<summary>Reason</summary>\n\n'
+            h2 = '<summary>Reason</summary>'
             h3 = '**Images**'
             reason = '\n'.join([v for v in args.reason])
-            reason = f'```text\n{reason}```\n</details>'
+            reason = f'```text\n{reason}```\n'
             tmp = re.sub(pattern=build_badge_regex,
-                         repl='\n\n'.join([build_badge_prefix, h1, h3, badge_str, h2, reason]),
+                         repl='\n\n'.join([build_badge_prefix, h1, h3, badge_str,
+                                           '<details>', h2, reason, '</details>']),
                          string=tmp, flags=re.DOTALL)
 
         with open(readme_path, 'w') as fp:
@@ -252,7 +253,7 @@ def build_target(args):
                              '-e', f'DOCKERHUB_REPOSITORY="{docker_registry}{image_canonical_name}"',
                              '-e', 'README_FILEPATH="/workspace/README.md"',
                              'peterevans/dockerhub-description:2.1']
-        subprocess.check_call(docker_readme_cmd)
+        print(subprocess.check_output(docker_readme_cmd, shell=True))
         print('upload readme success!')
 
     img_name = f'{docker_registry}{image_canonical_name}:{_manifest["version"]}'
