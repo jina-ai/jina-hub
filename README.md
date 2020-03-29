@@ -1,4 +1,4 @@
-# jina-hub
+# Jina Hub (beta)
 
 ![CI](https://github.com/jina-ai/jina-hub/workflows/CI/badge.svg)
 ![CD](https://github.com/jina-ai/jina-hub/workflows/CD/badge.svg?branch=master)
@@ -291,6 +291,7 @@ Typically, the following files are required:
 |------------------|-----------------------------------------------------------------------------------------------------|
 | `Dockerfile`     | describes the dependency setup and expose the entry point;                                          |
 | `manifest.yml`   | metadata of the image, author, tags, etc. help the Hub to index and classify your image             |
+| `README.md`      | a instruction for guiding users to use your image                                                   | 
 | `*.py`           | describes the executor logic written in Python, if applicable;                                      |
 | `*.yml`          | a YAML file describes the executor arguments and configs, if you want users to use your config;     |
 
@@ -330,29 +331,40 @@ The CICD pipeline will work on building, uploading and tagging the image on the 
 
 The image will be available at `jinaai/hub.executors.indexers.awesomeness:0.0.0` assuming your version number is defined as `0.0.0` in `manifest.yml`.
 
-You can use it as [we described here](#use-your-pod-image).  
+You can use the image as [the ways we described here](#use-your-pod-image).  
+
+### What is the Name of My Image?
+
+If you put your bundle `awesomeness` under
+```text
+hub/
+    executors/
+              encoders/
+                       awesomeness/
+                                   Dockerfile
+                                   manifest.yml
+                                   README.md
+                                   awesome_ai.py
+```
+
+Then the image will be published as `jinaai/hub.executors.encoders.awesomeness`.
 
 ### Why My Upload Fails on the CICD?
 
-Click "Details" and checkout the log of the CICD pipeline:
-
-![](.github/.README_images/5f4181e9.png)
-
 Here is the checklist to help you locate the problem.
 
+- [ ] Required file `Dockerfile`, `manifest.yml`, `README.md` is missing. 
 - [ ] The required field in `manifest.yml` is missing.
 - [ ] Some field value is not in the correct format, not passing the sanity check.
 - [ ] The pod bundle is badly placed.
 - [ ] The build is success but it fails on [three basic usage tests](#use-your-pod-image).
 
+Click "Details" and checkout the log of the CICD pipeline:
+
+![](.github/.README_images/5f4181e9.png)
+
 
 ## License
 
 If you have downloaded a copy of the Jina binary or source code, please note that Jina's binary and source code are both licensed under the [Apache 2.0](LICENSE).
-
-
-
-
-
-
 

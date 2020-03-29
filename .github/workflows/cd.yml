@@ -38,6 +38,9 @@ jobs:
           git commit -qm "chore: update readme and build history" -a
           git show '--stat-count=10' HEAD
           git config --list
+        env:
+          DOCKERHUB_DEVBOT_USER: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          DOCKERHUB_DEVBOT_TOKEN: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}

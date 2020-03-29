@@ -78,7 +78,7 @@ def build_multi_targets(args):
             hist = json.load(fp)
             last_build_time = hist.get('LastBuildTime', 0)
             image_map = hist.get('Images', {})
-            status_map = hist.get('BuildStatus', {})
+            status_map = hist.get('LastBuildStatus', {})
     except:
         raise ValueError('can not fetch "LastBuildTime" from build-history.json')
 
@@ -104,7 +104,8 @@ def build_multi_targets(args):
             update_targets.add(target)
 
     if update_targets:
-        set_reason(args, f'{update_targets} are updated and need to be rebuilt')
+        if not is_builder_updated:
+            set_reason(args, f'{update_targets} are updated and need to be rebuilt')
         for p in update_targets:
             canonic_name = os.path.relpath(p).replace('/', '.')
             try:
@@ -113,12 +114,13 @@ def build_multi_targets(args):
                 subprocess.check_call(['docker', 'pull', image_name])
                 tmp = subprocess.check_output(['docker', 'inspect', image_name]).strip().decode()
                 tmp = json.loads(tmp)[0]
-                image_map[tmp['Id']] = {
+                if canonic_name not in image_map:
+                    image_map[canonic_name] = []
+                image_map[canonic_name].add({
                     'Status': True,
                     'LastBuildTime': get_now_timestamp(),
                     'Inspect': tmp,
-                    'DisplayName': canonic_name
-                }
+                })
                 status_map[canonic_name] = True
             except Exception as ex:
                 status_map[canonic_name] = False
@@ -129,12 +131,12 @@ def build_multi_targets(args):
             tmp = fp.read()
             badge_str = '\n'.join([get_badge_md(b) for b in status_map])
             h1 = f'## Last Build at: {datetime.now():%Y-%m-%d %H:%M:%S %Z}'
-            h2 = '**Reason**'
+            h2 = '<details>\n<summary>Reason</summary>\n\n'
             h3 = '**Images**'
             reason = '\n'.join([v for v in args.reason])
-            reason = f'```text\n{reason}\n```'
+            reason = f'```text\n{reason}```\n</details>'
             tmp = re.sub(pattern=build_badge_regex,
-                         repl='\n\n'.join([build_badge_prefix, h1, h2, reason, h3, badge_str]),
+                         repl='\n\n'.join([build_badge_prefix, h1, h3, badge_str, h2, reason]),
                          string=tmp, flags=re.DOTALL)
 
         with open(readme_path, 'w') as fp:
@@ -148,7 +150,7 @@ def build_multi_targets(args):
         json.dump({
             'LastBuildTime': get_now_timestamp(),
             'LastBuildReason': args.reason,
-            'BuildStatus': status_map,
+            'LastBuildStatus': status_map,
             'BuilderRevision': builder_revision,
             'Images': image_map,
         }, fp)
@@ -164,10 +166,10 @@ def build_target(args):
     if os.path.exists(args.target) and os.path.isdir(args.target):
         dockerfile_path = os.path.join(args.target, 'Dockerfile')
         manifest_path = os.path.join(args.target, 'manifest.yml')
-        if not os.path.exists(dockerfile_path):
-            raise FileNotFoundError(f'{dockerfile_path} does not exist!')
-        if not os.path.exists(manifest_path):
-            raise FileNotFoundError(f'{manifest_path} does not exist!')
+        readme_path = os.path.join(args.target, 'README.md')
+        for j in (dockerfile_path, manifest_path, readme_path):
+            if not os.path.exists(j):
+                raise FileNotFoundError(f'{j} does not exist and it is required for a valid hub image!')
     else:
         if args.error_on_empty:
             raise NotADirectoryError(f'{args.target} is not a valid directory')
@@ -242,6 +244,17 @@ def build_target(args):
     docker_cmd = dockerbuild_cmd + dockerbuild_args + [dockerbuild_action, args.target]
     subprocess.check_call(docker_cmd)
     print('build success!')
+
+    if args.push:
+        docker_readme_cmd = ['docker', 'run', '-v', f'{args.target}:/workspace',
+                             '-e', 'DOCKERHUB_USERNAME="$DOCKERHUB_DEVBOT_USER"',
+                             '-e', 'DOCKERHUB_PASSWORD="DOCKERHUB_DEVBOT_PWD"',
+                             '-e', f'DOCKERHUB_REPOSITORY="{docker_registry}{image_canonical_name}"',
+                             '-e', 'README_FILEPATH="/workspace/README.md"',
+                             'peterevans/dockerhub-description:2.1']
+        subprocess.check_call(docker_readme_cmd)
+        print('upload readme success!')
+
     img_name = f'{docker_registry}{image_canonical_name}:{_manifest["version"]}'
 
     if args.test:
