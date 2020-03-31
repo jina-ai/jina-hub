@@ -26,9 +26,10 @@ label_prefix = 'ai.jina.hub.'
 docker_registry = 'jinaai/'
 
 # current date and time
-builder_files = list(Path(cur_dir).glob('**/*'))
+builder_files = list(Path(root_dir).glob('builder/*'))
 build_hist_path = os.path.join(root_dir, 'status', 'build-history.json')
 readme_path = os.path.join(root_dir, 'status', 'README.md')
+hubbadge_path = os.path.join(root_dir, 'status', 'hub-stat.svg')
 
 hub_files = list(Path(root_dir).glob('hub/**/*.y*ml')) + \
             list(Path(root_dir).glob('hub/**/*Dockerfile')) + \
@@ -155,7 +156,19 @@ def build_multi_targets(args):
             'Images': image_map,
         }, fp)
 
+    update_hub_badge(len(image_map))
     print('delivery success')
+
+
+def update_hub_badge(img_count):
+    try:
+        import urllib.request
+
+        url = f'https://badgen.net/badge/Hub%20Images/{img_count}/cyan'
+        urllib.request.urlretrieve(url, 'hub-stat.svg')
+    except Exception as ex:
+        print(ex)
+        print('something wrong, badge is not updated')
 
 
 def remove_control_characters(s):
