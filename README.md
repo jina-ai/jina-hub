@@ -42,7 +42,7 @@ Jina Hub is a centralized registry to host immutable Jina components and flows v
 
 Instead of 
 ```bash
-jina pod --yaml_path hub/example/mwu_encoder.yml --port_in 55555 --port_out 55556
+jina pod --yaml_path hub/examples/mwu_encoder/mwu_encoder.yml --port_in 55555 --port_out 55556
 ```
 
 After this tutorial, you can use the Pod image via:
