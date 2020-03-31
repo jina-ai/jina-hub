@@ -26,7 +26,7 @@ label_prefix = 'ai.jina.hub.'
 docker_registry = 'jinaai/'
 
 # current date and time
-builder_files = list(Path(cur_dir).glob('**/*'))
+builder_files = list(Path(root_dir).glob('builder/*'))
 build_hist_path = os.path.join(root_dir, 'status', 'build-history.json')
 readme_path = os.path.join(root_dir, 'status', 'README.md')
 

@@ -1,7 +1,7 @@
 # Jina Hub (beta)
 
-![CI](https://github.com/jina-ai/jina-hub/workflows/CI/badge.svg)
-![CD](https://github.com/jina-ai/jina-hub/workflows/CD/badge.svg?branch=master)
+[![CI](https://github.com/jina-ai/jina-hub/workflows/CI/badge.svg)](https://github.com/jina-ai/jina-hub/actions?query=workflow%3ACI)
+[![CD](https://github.com/jina-ai/jina-hub/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina-hub/actions?query=workflow%3ACD)
 
 
 Jina Hub is a centralized registry to host immutable Jina components and flows via container images. It enables users to employ, ship, and exchange their best-practice in different Jina search applications.
@@ -9,7 +9,7 @@ Jina Hub is a centralized registry to host immutable Jina components and flows v
 
 |                                    |                |     |                             |
 |:----------------------------------:|:-----------------------------:|:--------------------------------:|:--------------------------------:|
-| <h1>📦</h1><br>[build my own Pod image](#build-your-pod-into-a-docker-image) | <h1>🐳</h1><br>[use Pod image in my project](#use-your-pod-image) | <h1>🆙️</h1><br>[publish Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |  <h1>🗺️</h1><br>[View all images in Jina Hub](https://github.com/jina-ai/jina-hub-status/) |
+| <h1>📦</h1><br>[build my own Pod image](#build-your-pod-into-a-docker-image) | <h1>🐳</h1><br>[use Pod image in my project](#use-your-pod-image) | <h1>🆙️</h1><br>[publish Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |  <h1>🗺️</h1><br>[View all images in Jina Hub](https://github.com/jina-ai/hub-status/) |
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -281,7 +281,7 @@ f = (Flow()
 
 ## Publish Your Pod Image to Jina Hub
 
-You can contribute your executor into this repository and it will be automatically built into an image and published to the Jina Hub via our CI/CD pipeline.
+You can contribute your executor into this repository and it will be **automatically built** into an image and published to the Jina Hub via our CI/CD pipeline.
 
 ### What Files Need to be Uploaded?
 
@@ -367,6 +367,11 @@ Click "Details" and checkout the log of the CICD pipeline:
 
 ![](.github/.README_images/5f4181e9.png)
 
+## Contributing
+
+We welcome all kinds of contributions from the open-source community, individuals and partners. Without your active involvement, Jina can't be successful.
+
+Please first read [the contributing guidelines](https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md) before the submission. 
 
 ## License
 

@@ -14,7 +14,7 @@ jobs:
           path: main
       - uses: actions/checkout@v2
         with:
-          repository: jina-ai/jina-hub-status
+          repository: jina-ai/hub-status
           path: main/status
           token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/setup-python@v1
@@ -44,7 +44,7 @@ jobs:
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
-          repository: jina-ai/jina-hub-status
+          repository: jina-ai/hub-status
           force: true
           directory: main/status/
       - uses: technote-space/toc-generator@v2
