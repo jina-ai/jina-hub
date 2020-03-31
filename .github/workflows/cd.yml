@@ -34,7 +34,7 @@ jobs:
           cd status
           git config user.email "dev-bot@jina.ai"
           git config user.name "Jina Dev Bot"
-          git add README.md build-history.json build-stat.svg
+          git add README.md build-history.json hub-stat.svg
           git commit -qm "chore: update readme and build history" -a
           git show '--stat-count=10' HEAD
           git config --list

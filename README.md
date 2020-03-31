@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/jina-ai/jina-hub/workflows/CI/badge.svg)](https://github.com/jina-ai/jina-hub/actions?query=workflow%3ACI)
 [![CD](https://github.com/jina-ai/jina-hub/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina-hub/actions?query=workflow%3ACD)
-![Hub Image](https://github.com/jina-ai/hub-status/blob/master/hub-stat.svg?sanitize=true)
+[![Hub Image](https://github.com/jina-ai/hub-status/blob/master/hub-stat.svg?sanitize=true)](https://github.com/jina-ai/jina-hub)
 
 Jina Hub is a centralized registry to host immutable Jina components and flows via container images. It enables users to employ, ship, and exchange their best-practice in different Jina search applications.
 
