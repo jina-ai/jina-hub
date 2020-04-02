@@ -3,6 +3,7 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import unicodedata
 from datetime import datetime
@@ -21,12 +22,14 @@ sver_regex = r'^(=|>=|<=|=>|=<|>|<|!=|~|~>|\^)?(?P<major>0|[1-9]\d*)\.(?P<minor>
 name_regex = r'^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{2,20}$'
 cur_dir = pathlib.Path(__file__).parent.absolute()
 root_dir = pathlib.Path(__file__).parents[1].absolute()
+jinasrc_dir = os.path.join(pathlib.Path(__file__).parents[2].absolute(), 'src', 'jina')
 image_tag_regex = r'^hub.[a-zA-Z_$][a-zA-Z_\s\-\.$0-9]*$'
 label_prefix = 'ai.jina.hub.'
 docker_registry = 'jinaai/'
 
 # current date and time
 builder_files = list(Path(root_dir).glob('builder/*'))
+
 build_hist_path = os.path.join(root_dir, 'status', 'build-history.json')
 readme_path = os.path.join(root_dir, 'status', 'README.md')
 hubbadge_path = os.path.join(root_dir, 'status', 'hub-stat.svg')
@@ -160,6 +163,10 @@ def build_multi_targets(args):
     print('delivery success')
 
 
+def copy_src_to_context(target_path):
+    shutil.copytree(jinasrc_dir, os.path.join(target_path, 'jina'))
+
+
 def update_hub_badge(img_count):
     try:
         import urllib.request
@@ -247,6 +254,8 @@ def build_target(args):
 
     with open(dockerfile_path + '.tmp', 'w') as fp:
         fp.writelines(revised_dockerfile)
+
+    copy_src_to_context(args.target)
 
     dockerbuild_cmd = ['docker', 'buildx', 'build']
     dockerbuild_args = ['--platform', ','.join(v for v in _manifest['platform']),
