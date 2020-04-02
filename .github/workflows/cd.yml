@@ -17,6 +17,11 @@ jobs:
           repository: jina-ai/hub-status
           path: main/status
           token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina
+          path: main/jina
+          token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7

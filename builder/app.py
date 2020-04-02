@@ -250,7 +250,8 @@ def build_target(args):
 
     dockerbuild_cmd = ['docker', 'buildx', 'build']
     dockerbuild_args = ['--platform', ','.join(v for v in _manifest['platform']),
-                        '-t', f'{docker_registry}{image_canonical_name}:{_manifest["version"]}', '-t',
+                        '-v', 'jina/main:/.jina-src'
+                              '-t', f'{docker_registry}{image_canonical_name}:{_manifest["version"]}', '-t',
                         f'{docker_registry}{image_canonical_name}:latest',
                         '--file', dockerfile_path + '.tmp']
     dockerbuild_action = '--push' if args.push else '--load'
