@@ -22,7 +22,7 @@ sver_regex = r'^(=|>=|<=|=>|=<|>|<|!=|~|~>|\^)?(?P<major>0|[1-9]\d*)\.(?P<minor>
 name_regex = r'^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{2,20}$'
 cur_dir = pathlib.Path(__file__).parent.absolute()
 root_dir = pathlib.Path(__file__).parents[1].absolute()
-jinasrc_dir = os.path.join(pathlib.Path(__file__).parents[2].absolute(), 'src', 'jina')
+jinasrc_dir = os.path.join(root_dir, 'src', 'jina')
 image_tag_regex = r'^hub.[a-zA-Z_$][a-zA-Z_\s\-\.$0-9]*$'
 label_prefix = 'ai.jina.hub.'
 docker_registry = 'jinaai/'
