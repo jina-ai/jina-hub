@@ -29,5 +29,5 @@ component/indexer:
 component/ranker:
   - hub/executors/rankers/**/*
 
-component/transformer:
-  - hub/executors/transformers/**/*
+component/crafter:
+  - hub/executors/crafter/**/*
