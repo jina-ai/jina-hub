@@ -7,4 +7,4 @@ python -c "from transformers import *; x='distilbert-base-uncased'; DistilBertMo
 
 ADD encoder.yml ./
 
-ENTRYPOINT ["jina", "pod", "--yaml_path", "encoder.yml", "--timeout_ready", "60000"]
+ENTRYPOINT ["jina", "pod", "--yaml_path", "encoder.yml"]
