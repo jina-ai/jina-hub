@@ -8,4 +8,4 @@ ADD jina .src
 
 RUN pip install .src/.
 
-ENTRYPOINT ["jina", "pod", "--yaml_path", "TransformerTextEncoder"]
+ENTRYPOINT ["jina", "pod", "--yaml_path", "TransformerTorchEncoder"]
