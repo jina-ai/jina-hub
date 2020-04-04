@@ -7,6 +7,7 @@ on:
 
 jobs:
   update-docker:
+    if: "!startsWith(github.event.head_commit.message, 'chore')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -59,4 +60,5 @@ jobs:
           FOLDING: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TOC_TITLE: ''
-          TARGET_PATHS: '*.md'
+          TARGET_PATHS: 'README.md'
+          COMMIT_MESSAGE: 'chore(docs): update TOC'
