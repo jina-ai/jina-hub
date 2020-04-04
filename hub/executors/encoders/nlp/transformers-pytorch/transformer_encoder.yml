@@ -1,3 +1,13 @@
 !TransformerTorchEncoder
 with:
   model_name: bert-base-uncased
+
+requests:
+  on:
+    [SearchRequest, IndexRequest]:
+      - !EncodeDriver
+        with:
+          method: encode
+
+    ControlRequest:
+      - !ControlReqDriver {}
