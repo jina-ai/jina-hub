@@ -3,6 +3,7 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import unicodedata
 from datetime import datetime
@@ -21,12 +22,14 @@ sver_regex = r'^(=|>=|<=|=>|=<|>|<|!=|~|~>|\^)?(?P<major>0|[1-9]\d*)\.(?P<minor>
 name_regex = r'^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{2,20}$'
 cur_dir = pathlib.Path(__file__).parent.absolute()
 root_dir = pathlib.Path(__file__).parents[1].absolute()
+jinasrc_dir = os.path.join(root_dir, 'src', 'jina')
 image_tag_regex = r'^hub.[a-zA-Z_$][a-zA-Z_\s\-\.$0-9]*$'
 label_prefix = 'ai.jina.hub.'
 docker_registry = 'jinaai/'
 
 # current date and time
 builder_files = list(Path(root_dir).glob('builder/*'))
+
 build_hist_path = os.path.join(root_dir, 'status', 'build-history.json')
 readme_path = os.path.join(root_dir, 'status', 'README.md')
 hubbadge_path = os.path.join(root_dir, 'status', 'hub-stat.svg')
@@ -160,6 +163,10 @@ def build_multi_targets(args):
     print('delivery success')
 
 
+def copy_src_to_context(target_path):
+    shutil.copytree(jinasrc_dir, os.path.join(target_path, 'jina'))
+
+
 def update_hub_badge(img_count):
     try:
         import urllib.request
@@ -179,8 +186,7 @@ def build_target(args):
     if os.path.exists(args.target) and os.path.isdir(args.target):
         dockerfile_path = os.path.join(args.target, 'Dockerfile')
         manifest_path = os.path.join(args.target, 'manifest.yml')
-        readme_path = os.path.join(args.target, 'README.md')
-        for j in (dockerfile_path, manifest_path, readme_path):
+        for j in (dockerfile_path, manifest_path):
             if not os.path.exists(j):
                 raise FileNotFoundError(f'{j} does not exist and it is required for a valid hub image!')
     else:
@@ -248,6 +254,8 @@ def build_target(args):
     with open(dockerfile_path + '.tmp', 'w') as fp:
         fp.writelines(revised_dockerfile)
 
+    copy_src_to_context(args.target)
+
     dockerbuild_cmd = ['docker', 'buildx', 'build']
     dockerbuild_args = ['--platform', ','.join(v for v in _manifest['platform']),
                         '-t', f'{docker_registry}{image_canonical_name}:{_manifest["version"]}', '-t',
@@ -259,6 +267,11 @@ def build_target(args):
     print('build success!')
 
     if args.push:
+        target_readme_path = os.path.join(args.target, 'README.md')
+        if not os.path.exists(target_readme_path):
+            with open(target_readme_path, 'w') as fp:
+                fp.write('#{name}\n\n#{description}\n'.format_map(_manifest))
+
         docker_readme_cmd = ['docker', 'run', '-v', f'{args.target}:/workspace',
                              '-e', f'DOCKERHUB_USERNAME={os.environ["DOCKERHUB_DEVBOT_USER"]}',
                              '-e', f'DOCKERHUB_PASSWORD={os.environ["DOCKERHUB_DEVBOT_PWD"]}',

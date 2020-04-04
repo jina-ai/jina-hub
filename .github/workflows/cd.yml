@@ -7,6 +7,7 @@ on:
 
 jobs:
   update-docker:
+    if: "!startsWith(github.event.head_commit.message, 'chore')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,6 +17,11 @@ jobs:
         with:
           repository: jina-ai/hub-status
           path: main/status
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina
+          path: src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/setup-python@v1
         with:
@@ -41,6 +47,7 @@ jobs:
         env:
           DOCKERHUB_DEVBOT_USER: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           DOCKERHUB_DEVBOT_PWD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
+        timeout-minutes: 20
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
@@ -53,4 +60,5 @@ jobs:
           FOLDING: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TOC_TITLE: ''
-          TARGET_PATHS: '*.md'
+          TARGET_PATHS: 'README.md'
+          COMMIT_MESSAGE: 'chore(docs): update TOC'

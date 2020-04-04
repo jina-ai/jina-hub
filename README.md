@@ -82,7 +82,7 @@ Here are a list of reasons that may motivate you to build a Pod image:
 - You use Kubernetes or Docker Swarm and this orchestration framework requires each microservice to run as a Docker container.
 - You are using Jina on the cloud and you want to deploy a immutable Pod and version control it.
 - You have figured out a set of parameters that works best for an executor, you want to write it down in a YAML config and share it to others.
-- You are debugging, doing try-and-error on exploring new packages, and you don't want ruin your local dev environments. 
+- You are debugging, doing try-and-error or exploring new packages, and you don't want ruin your local dev environments. 
 
 
 ### What Should be in the Image?
@@ -124,7 +124,7 @@ The documentations of the YAML syntax [can be found at here](http://0.0.0.0:8000
 The `Dockerfile` in this example is as simple as three lines, 
 
 ```Dockerfile
-FROM jinaai/jina:master-debian
+FROM jinaai/jina:devel
 
 ADD *.py mwu_encoder.yml ./
 
@@ -135,10 +135,10 @@ Let's now look at these three lines one by one.
 
 >
 ```Dockerfile
-FROM jinaai/jina:master-debian
+FROM jinaai/jina:devel
 ``` 
 
-In the first line, we choose `jinaai/jina:master-debian` as [the base image](https://docs.docker.com/glossary/#base-image), which corresponds to the latest master of [`jina-ai/jina`](https://github.com/jina-ai/jina). But of course you are free to use others, e.g. `tensorflow/tensorflow:nightly-gpu-jupyter`. 
+In the first line, we choose `jinaai/jina:devel` as [the base image](https://docs.docker.com/glossary/#base-image), which corresponds to the latest master of [`jina-ai/jina`](https://github.com/jina-ai/jina). But of course you are free to use others, e.g. `tensorflow/tensorflow:nightly-gpu-jupyter`. 
 
 In practice, whether to use Jina base image depends on the dependencies you would like to introduce. For example, someone provides a hard-to-compile package as a Docker image, much harder than compiling/installing Jina itself. In this case, you may want to use this image as the base image to save some troubles. But don't forget to install Python >=3.7 (if not included) and Jina afterwards, e.g.
 
@@ -151,7 +151,16 @@ RUN pip install jina --no-cache-dir --compile
 
 The ways of [installing Jina can be at found here](https://github.com/jina-ai/jina#run-without-docker).
 
-In this example, our dummy `MWUEncoder` only requires Jina and does not need any third-party framework. Thus, `jinaai/jina:master-debian` is used.
+ℹ️ In CI pipeline, one can also install Jina from the source via:
+
+```Dockerfile
+ADD jina .src
+RUN pip install .src/.
+```
+
+, where  `jina` is the master branch of [jina-ai/jina](https://github.com/jina-ai/jina) mounted to the building context by our CI pipeline.
+
+In this example, our dummy `MWUEncoder` only requires Jina and does not need any third-party framework. Thus, `jinaai/jina:devel` is used.
 
 ```Dockerfile
 ADD *.py mwu_encoder.yml ./
@@ -206,7 +215,7 @@ cd hub/example
 docker build -t jinaai/hub.examples.mwu_encoder .
 ```
 
-Depending on whether you want to use the latest Jina image, you may first pull it via `docker pull jinaai/jina:master-debian` before the build. For the sake of immutability, `docker build` will not automatically pull the latest image for you.
+Depending on whether you want to use the latest Jina image, you may first pull it via `docker pull jinaai/jina:devel` before the build. For the sake of immutability, `docker build` will not automatically pull the latest image for you.
 
 Congratulations! You can now re-use this Pod image how ever you want.
 
@@ -361,6 +370,7 @@ Here is the checklist to help you locate the problem.
 - [ ] The required field in `manifest.yml` is missing.
 - [ ] Some field value is not in the correct format, not passing the sanity check.
 - [ ] The pod bundle is badly placed.
+- [ ] Time of building + testing is longer than 10 minutes. 
 - [ ] The build is success but it fails on [three basic usage tests](#use-your-pod-image).
 
 Click "Details" and checkout the log of the CICD pipeline:

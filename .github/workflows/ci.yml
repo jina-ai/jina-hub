@@ -60,14 +60,16 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
-          path: jina/main
+          path: src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
       - name: Docker Build and Test
         run: |
           if [[ -s build.tmp2 ]]; then
-            pip install ./jina/main[docker]
+            pip install src/jina[docker]
+            pip install src/jina[http]
             cat build.tmp2 | xargs -n1 python builder/app.py --test --target
           else
             echo "nothing to build"
           fi
+        timeout-minutes: 20
 
