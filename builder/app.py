@@ -133,7 +133,7 @@ def build_multi_targets(args):
         # update readme
         with open(readme_path, 'r') as fp:
             tmp = fp.read()
-            badge_str = '\n'.join([get_badge_md(b) for b in status_map])
+            badge_str = '\n'.join([get_badge_md(k, v) for k, v in status_map.items()])
             h1 = f'## Last Build at: {datetime.now():%Y-%m-%d %H:%M:%S %Z}'
             h2 = '<summary>Reason</summary>'
             h3 = '**Images**'
@@ -171,7 +171,7 @@ def update_hub_badge(img_count):
     try:
         import urllib.request
 
-        url = f'https://badgen.net/badge/Hub%20Images/{img_count}/cyan'
+        url = f'https://img.shields.io/badge/Hub%20Images-{img_count}-cyan'
         urllib.request.urlretrieve(url, 'hub-stat.svg')
     except Exception as ex:
         print(ex)
