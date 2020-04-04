@@ -4,8 +4,8 @@ RUN pip install transformers --no-cache-dir --compile && \
     python -c "from transformers import *; x='bert-base-uncased'; BertModel.from_pretrained(x); BertTokenizer.from_pretrained(x)"
 
 # jina is not public yet, so we add from the local host and install it
-ADD jina .src transformer_encoder.yml ./
+ADD jina .src
 
 RUN pip install .src/.
 
-ENTRYPOINT ["jina", "pod", "--yaml_path", "transformer_encoder.yml"]
+ENTRYPOINT ["jina", "pod", "--yaml_path", "TransformerTorchEncoder"]
