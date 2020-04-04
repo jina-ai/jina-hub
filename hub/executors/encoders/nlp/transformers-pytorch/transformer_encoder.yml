@@ -1,0 +1,3 @@
+!TransformerTorchEncoder
+with:
+  model_name: bert-base-uncased
