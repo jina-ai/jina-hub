@@ -71,4 +71,5 @@ jobs:
           else
             echo "nothing to build"
           fi
+        timeout-minutes: 20
 

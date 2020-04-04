@@ -1,5 +1,5 @@
-name: Simple Transformer
-description: with only DistilBertModel support
+name: Demo Transformer
+description: Just an example to show how simple an executor could be.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub

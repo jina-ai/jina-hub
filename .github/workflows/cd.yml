@@ -46,6 +46,7 @@ jobs:
         env:
           DOCKERHUB_DEVBOT_USER: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           DOCKERHUB_DEVBOT_PWD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
+        timeout-minutes: 20
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
