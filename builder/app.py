@@ -169,10 +169,20 @@ def copy_src_to_context(target_path):
 
 def update_hub_badge(img_count):
     try:
-        import urllib.request
+        from urllib.request import Request, urlopen
+        request_headers = {
+            "Accept-Language": "en-US,en;q=0.5",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Referer": "http://thewebsite.com",
+            "Connection": "keep-alive"
+        }
+        url = f'https://badgen.net/badge/Hub%20Images/{img_count}/cyan'
+        request = Request(url, headers=request_headers)
 
-        url = f'https://img.shields.io/badge/Hub%20Images-{img_count}-cyan'
-        urllib.request.urlretrieve(url, 'hub-stat.svg')
+        with urlopen(request) as d, open(hubbadge_path, 'wb') as opfile:
+            data = d.read()
+            opfile.write(data)
     except Exception as ex:
         print(ex)
         print('something wrong, badge is not updated')
