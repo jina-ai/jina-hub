@@ -9,6 +9,7 @@ ADD jina .src
 RUN pip install .src/.
 
 ENV TMP_WORKSPACE /tmp/jina/webqa/
+ENV BATCH_SIZE 8
 
 ADD *.py *.yml ./
 
