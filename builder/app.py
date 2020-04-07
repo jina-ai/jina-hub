@@ -305,12 +305,12 @@ def build_target(args):
 
 def test_docker_cli(img_name):
     print('testing image with docker run')
-    subprocess.check_call(['docker', 'run', '--rm', img_name, '--max_idle_time', '5', '--shutdown_idle'])
+    subprocess.check_call(['docker', 'run', '--rm', img_name, '--max-idle-time', '5', '--shutdown-idle'])
 
 
 def test_jina_cli(img_name):
     print('testing image with jina cli')
-    subprocess.check_call(['jina', 'pod', '--image', img_name, '--max_idle_time', '5', '--shutdown_idle'])
+    subprocess.check_call(['jina', 'pod', '--image', img_name, '--max-idle-time', '5', '--shutdown-idle'])
 
 
 def test_flow_api(img_name):
@@ -366,7 +366,7 @@ def get_parser():
                      help='push to the registry')
     gp1.add_argument('--test', action='store_true', default=False,
                      help='test the pod image')
-    parser.add_argument('--error_on_empty', action='store_true', default=False,
+    parser.add_argument('--error-on-empty', action='store_true', default=False,
                         help='stop and raise error when the target is empty, otherwise just gracefully exit')
     parser.add_argument('--reason', type=str, nargs='*',
                         help='the reason of the build')
