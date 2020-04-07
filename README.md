@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/jina-ai/jina-hub/workflows/CI/badge.svg)](https://github.com/jina-ai/jina-hub/actions?query=workflow%3ACI)
 [![CD](https://github.com/jina-ai/jina-hub/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina-hub/actions?query=workflow%3ACD)
-[![Hub Image](https://github.com/jina-ai/hub-status/blob/master/hub-stat.svg?sanitize=true)](https://github.com/jina-ai/jina-hub)
+[![Hub Image](https://github.com/jina-ai/hub-status/blob/master/hub-stat.svg?sanitize=true)](https://github.com/jina-ai/hub-status)
 
 Jina Hub is a centralized registry to host immutable Jina components and flows via container images. It enables users to employ, ship, and exchange their best-practice in different Jina search applications.
 
@@ -42,12 +42,12 @@ Jina Hub is a centralized registry to host immutable Jina components and flows v
 
 Instead of 
 ```bash
-jina pod --yaml_path hub/examples/mwu_encoder/mwu_encoder.yml --port_in 55555 --port_out 55556
+jina pod --yaml-path hub/examples/mwu_encoder/mwu_encoder.yml --port-in 55555 --port-out 55556
 ```
 
 After this tutorial, you can use the Pod image via:
 ```bash
-docker run jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
+docker run jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
 
 ...or use the Pod image in the Flow API:
@@ -61,7 +61,7 @@ f = (Flow()
 
 ... or use the Pod image via Jina CLI
 ```bash
-jina pod --image jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
+jina pod --image jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
 
 More information about [the usage can be found here](#use-your-pod-image).
@@ -128,7 +128,7 @@ FROM jinaai/jina:devel
 
 ADD *.py mwu_encoder.yml ./
 
-ENTRYPOINT ["jina", "pod", "--yaml_path", "mwu_encoder.yml"]
+ENTRYPOINT ["jina", "pod", "--yaml-path", "mwu_encoder.yml"]
 ```
 
 Let's now look at these three lines one by one.
@@ -172,7 +172,7 @@ In this example, our dummy `MWUEncoder` does not require extra data files.
 
 > 
 ```Dockerfile
-ENTRYPOINT ["jina", "pod", "--yaml_path", "mwu_encoder.yml"]
+ENTRYPOINT ["jina", "pod", "--yaml-path", "mwu_encoder.yml"]
 ``` 
 
 The last step is to specify the entrypoint of this image, usually via `jina pod`.
@@ -185,24 +185,24 @@ docker run jinaai/hub.examples.mwu_encoder
  
 It is equal to:
 ```bash
-jina pod --yaml_path hub/example/mwu_encoder.yml
+jina pod --yaml-path hub/example/mwu_encoder.yml
 ```
 
 Any followed key-value arguments after `docker run jinaai/hub.examples.mwu_encoder` will be passed to `jina pod`. For example,
 
 ```bash
-docker run jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
+docker run jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
  
 It is equal to:
 ```bash
-jina pod --yaml_path hub/example/mwu_encoder.yml --port_in 55555 --port_out 55556
+jina pod --yaml-path hub/example/mwu_encoder.yml --port-in 55555 --port-out 55556
 ```
 
 One can also override the internal YAML config by giving an out-of-docker external YAML config via:
 
 ```bash
-docker run $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml_path /ext.yml
+docker run $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml-path /ext.yml
 ```
 
 
@@ -226,7 +226,7 @@ Congratulations! You can now re-use this Pod image how ever you want.
 The most powerful way to use this Pod image is via Docker CLI directly:
 
 ```bash
-docker run --rm -p 55555:55555 -p 55556:55556 jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
+docker run --rm -p 55555:55555 -p 55556:55556 jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
 
 Note, the exposure of ports `-p 55555:55555 -p 55556:55556` is required for other Pods (local/remote) to communicate this Pod. One may also want to use `--network host` and let the Pod share the network layer of the host.
@@ -237,7 +237,7 @@ One can mount a host path to the container via `--volumes` or `-v`. For example,
 
 ```bash
 # assuming $pwd is the root dir of this repo 
-docker run --rm -v $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml_path /ext.yml
+docker run --rm -v $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml-path /ext.yml
 ```
 
 ```text
