@@ -13,4 +13,4 @@ ENV BATCH_SIZE 8
 
 ADD *.py *.yml ./
 
-ENTRYPOINT ["jina", "pod", "--yaml_path", "roberta.yml"]
+ENTRYPOINT ["jina", "pod", "--yaml-path", "roberta.yml"]
