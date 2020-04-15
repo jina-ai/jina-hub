@@ -76,6 +76,18 @@ def set_reason(args, reason):
         args.reason.append(reason)
 
 
+def clean_docker():
+    for k in ['df -h',
+              'docker stop $(docker ps -aq)',
+              'docker rm $(docker ps -aq)',
+              'docker rmi $(docker image ls -aq)',
+              'df -h']:
+        try:
+            subprocess.check_call(k, shell=True)
+        except:
+            pass
+
+
 def build_multi_targets(args):
     try:
         with open(build_hist_path, 'r') as fp:
@@ -193,6 +205,8 @@ def remove_control_characters(s):
 
 
 def build_target(args):
+    clean_docker()
+
     if os.path.exists(args.target) and os.path.isdir(args.target):
         dockerfile_path = os.path.join(args.target, 'Dockerfile')
         manifest_path = os.path.join(args.target, 'manifest.yml')
