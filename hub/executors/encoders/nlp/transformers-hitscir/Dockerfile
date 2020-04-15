@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:1.4-cuda10.1-cudnn7-runtime
+FROM pytorch/pytorch:latest
 
 RUN pip install transformers --no-cache-dir --compile && \
     python -c "from transformers import *; x='hfl/chinese-roberta-wwm-ext'; BertModel.from_pretrained(x); BertTokenizer.from_pretrained(x)"
