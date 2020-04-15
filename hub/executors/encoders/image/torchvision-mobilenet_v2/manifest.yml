@@ -1,0 +1,8 @@
+name: Torch Image Encoder with mobilenet.v2
+description: an image with the encoder of mobilenet.v2 from torchvision
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+vendor: Jina AI Limited
+license: apache-2.0
