@@ -3,6 +3,9 @@ name: CD
 on:
   schedule:
     - cron: "*/20 * * * *"
+  push:
+    branches:
+      - master
 
 jobs:
   update-docker:
