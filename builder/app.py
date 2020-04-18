@@ -2,7 +2,6 @@ import argparse
 import json
 import os
 import pathlib
-import random
 import re
 import shutil
 import subprocess
@@ -49,8 +48,13 @@ def safe_url_name(s):
     return s.replace('-', '--').replace('_', '__').replace(' ', '_')
 
 
-def get_badge_md(img_name, is_success=True):
-    success_tag = 'success-success' if is_success else 'fail-critical'
+def get_badge_md(img_name, status):
+    if status == 'success':
+        success_tag = 'success-success'
+    elif status == 'fail':
+        success_tag = 'fail-critical'
+    else:
+        success_tag = 'pending-yellow'
     return f'[![{img_name}](https://img.shields.io/badge/{safe_url_name(img_name)}-' \
            f'{success_tag}?style=flat-square)]' \
            f'(https://hub.docker.com/repository/docker/jinaai/{img_name})'
@@ -158,30 +162,31 @@ def build_multi_targets(args):
             set_reason(args, f'{update_targets} are updated and need to be rebuilt')
         else:
             set_reason(args, 'builder is updated need to rebuild all images')
-        update_targets = list(update_targets)
-        random.shuffle(update_targets)
         for p in update_targets:
-            canonic_name = os.path.relpath(p).replace('/', '.')
-            try:
-                args.target = p
-                image_name = build_target(args)
-                subprocess.check_call(['docker', 'pull', image_name])
-                tmp = subprocess.check_output(['docker', 'inspect', image_name]).strip().decode()
-                tmp = json.loads(tmp)[0]
-                if canonic_name not in image_map:
-                    image_map[canonic_name] = []
-                image_map[canonic_name].append({
-                    'Status': True,
-                    'LastBuildTime': get_now_timestamp(),
-                    'Inspect': tmp,
-                })
-                status_map[canonic_name] = True
-            except Exception as ex:
-                status_map[canonic_name] = False
-                print(ex)
-            last_build_time[canonic_name] = get_now_timestamp()
-            # build one target at time
-            break
+            canonic_name = get_canonic_name(p)
+            status_map[canonic_name] = 'pending'
+
+        # build one target at time
+        p = update_targets.pop()
+        canonic_name = get_canonic_name(p)
+        try:
+            args.target = p
+            image_name = build_target(args)
+            subprocess.check_call(['docker', 'pull', image_name])
+            tmp = subprocess.check_output(['docker', 'inspect', image_name]).strip().decode()
+            tmp = json.loads(tmp)[0]
+            if canonic_name not in image_map:
+                image_map[canonic_name] = []
+            image_map[canonic_name].append({
+                'Status': True,
+                'LastBuildTime': get_now_timestamp(),
+                'Inspect': tmp,
+            })
+            status_map[canonic_name] = 'success'
+        except Exception as ex:
+            status_map[canonic_name] = 'fail'
+            print(ex)
+        last_build_time[canonic_name] = get_now_timestamp()
 
         # update readme
         with open(readme_path, 'r') as fp:
