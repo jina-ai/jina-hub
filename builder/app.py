@@ -116,7 +116,7 @@ def get_update_targets():
     for p in hub_files:
         modified_time = get_modified_time(p)
         target = str(pathlib.Path(str(p)).parent.absolute())
-        last_image_build_time = last_build_time.get(target, 0)
+        last_image_build_time = last_build_time.get(get_canonic_name(target), 0)
         _add = False
         if last_builder_update > last_image_build_time:
             is_builder_updated = True
@@ -126,12 +126,16 @@ def get_update_targets():
 
         if _add:
             update_targets.add(target)
-            print(f'{target} is added')
+            print(f'\n{target} is added')
             print(f'last_builder_update: {last_builder_update}')
             print(f'last_image_build_time: {last_image_build_time}')
             print(f'modified_time: {modified_time}')
 
     return update_targets, is_builder_updated
+
+
+def get_canonic_name(target):
+    return os.path.relpath(target).replace('/', '.')
 
 
 def build_multi_targets(args):
