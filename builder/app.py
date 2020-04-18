@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import pathlib
+import random
 import re
 import shutil
 import subprocess
@@ -122,6 +123,8 @@ def build_multi_targets(args):
     if update_targets:
         if not is_builder_updated:
             set_reason(args, f'{update_targets} are updated and need to be rebuilt')
+        update_targets = list(update_targets)
+        random.shuffle(update_targets)
         for p in update_targets:
             canonic_name = os.path.relpath(p).replace('/', '.')
             try:
@@ -141,6 +144,8 @@ def build_multi_targets(args):
             except Exception as ex:
                 status_map[canonic_name] = False
                 print(ex)
+            # build one target at time
+            break
 
         # update readme
         with open(readme_path, 'r') as fp:
