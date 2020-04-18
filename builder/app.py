@@ -93,7 +93,10 @@ def get_update_targets():
     try:
         with open(build_hist_path, 'r') as fp:
             hist = json.load(fp)
-            last_build_time = hist.get('LastBuildTime', 0)
+            last_build_time = hist.get('LastBuildTime', {})
+            # backward support
+            if not isinstance(last_build_time, dict):
+                last_build_time = {}
     except:
         raise ValueError('can not fetch "LastBuildTime" from build-history.json')
 
@@ -101,21 +104,22 @@ def get_update_targets():
 
     # check if builder is updated
     is_builder_updated = False
+
+    last_builder_update = 0
     for p in builder_files:
-        if get_modified_time(p) > last_build_time:
-            print(f'builder is updated '
-                  f'because of the modified time of {p} '
-                  f'is later than last build time.\n'
-                  f'means, I need to rebuild ALL images')
-            is_builder_updated = True
-            break
+        _t = get_modified_time(p)
+        if _t > last_builder_update:
+            last_builder_update = _t
 
     update_targets = set()
     for p in hub_files:
         modified_time = get_modified_time(p)
-        if modified_time > last_build_time or is_builder_updated:
-            target = str(pathlib.Path(str(p)).parent.absolute())
+        target = str(pathlib.Path(str(p)).parent.absolute())
+        if modified_time > last_build_time.get(target, 0) \
+                or last_builder_update > modified_time:
             update_targets.add(target)
+        if last_builder_update > modified_time:
+            is_builder_updated = True
     return update_targets, is_builder_updated
 
 
@@ -123,18 +127,16 @@ def build_multi_targets(args):
     try:
         with open(build_hist_path, 'r') as fp:
             hist = json.load(fp)
-            last_build_time = hist.get('LastBuildTime', 0)
             image_map = hist.get('Images', {})
             status_map = hist.get('LastBuildStatus', {})
+            last_build_time = hist.get('LastBuildTime', {})
+            # backward support
+            if not isinstance(last_build_time, dict):
+                last_build_time = {}
     except:
         raise ValueError('can not fetch "LastBuildTime" from build-history.json')
 
-    update_targets, is_builder_updated = get_update_targets(args)
-    for p in hub_files:
-        modified_time = get_modified_time(p)
-        if modified_time > last_build_time or is_builder_updated:
-            target = str(pathlib.Path(str(p)).parent.absolute())
-            update_targets.add(target)
+    update_targets, is_builder_updated = get_update_targets()
 
     if update_targets:
         if not is_builder_updated:
@@ -162,6 +164,7 @@ def build_multi_targets(args):
             except Exception as ex:
                 status_map[canonic_name] = False
                 print(ex)
+            last_build_time[canonic_name] = get_now_timestamp()
             # build one target at time
             break
 
@@ -187,7 +190,7 @@ def build_multi_targets(args):
     # update json track
     with open(build_hist_path, 'w') as fp:
         json.dump({
-            'LastBuildTime': get_now_timestamp(),
+            'LastBuildTime': last_build_time,
             'LastBuildReason': args.reason,
             'LastBuildStatus': status_map,
             'BuilderRevision': builder_revision,
