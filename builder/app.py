@@ -29,7 +29,8 @@ label_prefix = 'ai.jina.hub.'
 docker_registry = 'jinaai/'
 
 # current date and time
-builder_files = list(Path(root_dir).glob('builder/*'))
+builder_files = list(Path(root_dir).glob('builder/app.py')) + \
+                list(Path(root_dir).glob('builder/*.yml'))
 
 build_hist_path = os.path.join(root_dir, 'status', 'build-history.json')
 readme_path = os.path.join(root_dir, 'status', 'README.md')
@@ -116,11 +117,19 @@ def get_update_targets():
         modified_time = get_modified_time(p)
         target = str(pathlib.Path(str(p)).parent.absolute())
         last_image_build_time = last_build_time.get(target, 0)
+        _add = False
         if last_builder_update > last_image_build_time:
             is_builder_updated = True
-            update_targets.add(target)
+            _add = True
         elif modified_time > last_image_build_time:
+            _add = True
+
+        if _add:
             update_targets.add(target)
+            print(f'{target} is added')
+            print(f'last_builder_update: {last_builder_update}')
+            print(f'last_image_build_time: {last_image_build_time}')
+            print(f'modified_time: {modified_time}')
 
     return update_targets, is_builder_updated
 
