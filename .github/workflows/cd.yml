@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  update-docker:
+  prepare-docker:
     if: "!startsWith(github.event.head_commit.message, 'chore')"
     runs-on: ubuntu-latest
     steps:
@@ -29,14 +29,19 @@ jobs:
         uses: crazy-max/ghaction-docker-buildx@v1
         with:
           version: latest
+
+
+  build-docker:
+    runs-on: self-host
+    needs: prepare-docker
+    steps:
       - run: |
-          echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           pip install -r builder/requirements.txt
           python builder/app.py --reason "master got pushed" --push
           cd status
-          git config user.email "dev-bot@jina.ai"
-          git config user.name "Jina Dev Bot"
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local  user.name "Jina Dev Bot"
           git add README.md build-history.json hub-stat.svg
           git commit -qm "chore: update readme and build history" -a
           git show '--stat-count=10' HEAD
@@ -45,6 +50,12 @@ jobs:
           DOCKERHUB_DEVBOT_USER: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           DOCKERHUB_DEVBOT_PWD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
         timeout-minutes: 20
+
+
+  update-status:
+    needs: build-docker
+    runs-on: ubuntu-latest
+    steps:
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
