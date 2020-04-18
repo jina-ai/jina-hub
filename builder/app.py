@@ -115,11 +115,13 @@ def get_update_targets():
     for p in hub_files:
         modified_time = get_modified_time(p)
         target = str(pathlib.Path(str(p)).parent.absolute())
-        if modified_time > last_build_time.get(target, 0) \
-                or last_builder_update > modified_time:
-            update_targets.add(target)
-        if last_builder_update > modified_time:
+        last_image_build_time = last_build_time.get(target, 0)
+        if last_builder_update > last_image_build_time:
             is_builder_updated = True
+            update_targets.add(target)
+        elif modified_time > last_image_build_time:
+            update_targets.add(target)
+
     return update_targets, is_builder_updated
 
 
