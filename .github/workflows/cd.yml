@@ -15,20 +15,27 @@ jobs:
           repository: jina-ai/hub-status
           path: status
           token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: check if rebuild necessary
+        run: |
+          pip install -r builder/requirements.txt
+          python builder/app.py --check-only
+      - if: failure()
+        run: echo "nothing to rebuild"
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
           path: src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
-      - uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
       - name: Set up Docker Buildx
         id: buildx
         uses: crazy-max/ghaction-docker-buildx@v1
         with:
           version: latest
-      - run: |
+      - name: build all new images
+        run: |
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           pip install -r builder/requirements.txt

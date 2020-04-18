@@ -89,13 +89,11 @@ def clean_docker():
             pass
 
 
-def build_multi_targets(args):
+def get_update_targets():
     try:
         with open(build_hist_path, 'r') as fp:
             hist = json.load(fp)
             last_build_time = hist.get('LastBuildTime', 0)
-            image_map = hist.get('Images', {})
-            status_map = hist.get('LastBuildStatus', {})
     except:
         raise ValueError('can not fetch "LastBuildTime" from build-history.json')
 
@@ -110,10 +108,28 @@ def build_multi_targets(args):
                   f'is later than last build time.\n'
                   f'means, I need to rebuild ALL images')
             is_builder_updated = True
-            set_reason(args, 'builder is updated need to rebuild all images')
             break
 
     update_targets = set()
+    for p in hub_files:
+        modified_time = get_modified_time(p)
+        if modified_time > last_build_time or is_builder_updated:
+            target = str(pathlib.Path(str(p)).parent.absolute())
+            update_targets.add(target)
+    return update_targets, is_builder_updated
+
+
+def build_multi_targets(args):
+    try:
+        with open(build_hist_path, 'r') as fp:
+            hist = json.load(fp)
+            last_build_time = hist.get('LastBuildTime', 0)
+            image_map = hist.get('Images', {})
+            status_map = hist.get('LastBuildStatus', {})
+    except:
+        raise ValueError('can not fetch "LastBuildTime" from build-history.json')
+
+    update_targets, is_builder_updated = get_update_targets(args)
     for p in hub_files:
         modified_time = get_modified_time(p)
         if modified_time > last_build_time or is_builder_updated:
@@ -123,6 +139,8 @@ def build_multi_targets(args):
     if update_targets:
         if not is_builder_updated:
             set_reason(args, f'{update_targets} are updated and need to be rebuilt')
+        else:
+            set_reason(args, 'builder is updated need to rebuild all images')
         update_targets = list(update_targets)
         random.shuffle(update_targets)
         for p in update_targets:
@@ -389,11 +407,20 @@ def get_parser():
                         help='stop and raise error when the target is empty, otherwise just gracefully exit')
     parser.add_argument('--reason', type=str, nargs='*',
                         help='the reason of the build')
+    parser.add_argument('--check-only', action='store_true', default=False,
+                        help='check if the there is anything to update')
     return parser
 
 
 if __name__ == '__main__':
     a = get_parser().parse_args()
+    if a.check_only:
+        t = get_update_targets()[0]
+        if t:
+            exit(0)
+        else:
+            # nothing to update exit with 1
+            exit(1)
     if a.target:
         build_target(a)
     else:
