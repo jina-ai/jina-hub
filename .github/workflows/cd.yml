@@ -32,7 +32,7 @@ jobs:
 
 
   build-docker:
-    runs-on: self-host
+    runs-on: self-hosted
     needs: prepare-docker
     steps:
       - run: |
