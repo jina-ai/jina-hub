@@ -15,6 +15,7 @@ jobs:
       updated: ${{ steps.updatestatus.outputs.updated }}
     steps:
       - uses: actions/checkout@v2
+      - run: git fetch --prune --unshallow
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/hub-status
