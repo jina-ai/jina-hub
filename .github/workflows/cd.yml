@@ -31,7 +31,7 @@ jobs:
           python builder/app.py --check-only && echo "::set-output name=updated::true" || echo "::set-output name=updated::false"
   build-update:
     needs: checkupdate
-    if: "needs.checkupdate.output.updated == true"
+    if: "needs.checkupdate.outputs.updated == true"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
