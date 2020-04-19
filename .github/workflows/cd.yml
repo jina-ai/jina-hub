@@ -8,9 +8,11 @@ on:
       - master
 
 jobs:
-  update-docker:
+  checkupdate:
     if: "!startsWith(github.event.head_commit.message, 'chore')"
     runs-on: ubuntu-latest
+    outputs:
+      updated: ${{ steps.updatestatus.outputs.updated }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
@@ -22,11 +24,15 @@ jobs:
         with:
           python-version: 3.7
       - name: check if rebuild necessary
+        id: updatestatus
         run: |
           pip install -r builder/requirements.txt
-          python builder/app.py --check-only
-      - if: failure()
-        run: echo "nothing to rebuild"
+          python builder/app.py --check-only && echo "::set-output name=updated::true" || echo "nothing to rebuild"
+  build-update:
+    needs: checkupdate
+    if: "needs.checkupdate.output.updated == true"
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
