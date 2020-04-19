@@ -27,7 +27,7 @@ jobs:
         id: updatestatus
         run: |
           pip install -r builder/requirements.txt
-          python builder/app.py --check-only && echo "::set-output name=updated::true" || echo "nothing to rebuild"
+          python builder/app.py --check-only && echo "::set-output name=updated::true" || echo "::set-output name=updated::false"
   build-update:
     needs: checkupdate
     if: "needs.checkupdate.output.updated == true"
