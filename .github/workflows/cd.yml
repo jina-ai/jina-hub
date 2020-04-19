@@ -29,9 +29,10 @@ jobs:
         run: |
           pip install -r builder/requirements.txt
           python builder/app.py --check-only && echo "::set-output name=updated::true" || echo "::set-output name=updated::false" || true
+
   build-update:
     needs: checkupdate
-    if: "needs.checkupdate.outputs.updated == true"
+    #    if: "needs.checkupdate.outputs.updated == true"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
