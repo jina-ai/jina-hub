@@ -46,6 +46,9 @@ jobs:
           repository: jina-ai/jina
           path: src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
       - name: Set up Docker Buildx
         id: buildx
         uses: crazy-max/ghaction-docker-buildx@v1
