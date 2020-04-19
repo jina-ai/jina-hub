@@ -32,7 +32,7 @@ jobs:
 
   build-update:
     needs: checkupdate
-    #    if: "needs.checkupdate.outputs.updated == 1"
+    if: "needs.checkupdate.outputs.updated == 'true'"
     runs-on: ubuntu-latest
     steps:
       - run: echo ${{needs.checkupdate.outputs.updated}} 'true'
