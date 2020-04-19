@@ -35,7 +35,7 @@ jobs:
     #    if: "needs.checkupdate.outputs.updated == 1"
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{needs.checkupdate.outputs.updated}} ${{needs.job1.outputs.output2}}
+      - run: echo ${{needs.checkupdate.outputs.updated}} 'true'
 #    steps:
 #      - uses: actions/checkout@v2
 #      - run: git fetch --prune --unshallow
