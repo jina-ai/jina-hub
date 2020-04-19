@@ -36,6 +36,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/hub-status
+          path: status
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
           path: src/jina
