@@ -92,12 +92,12 @@ Typically, the following files are packed into the container image:
 | File             | Descriptions                                                                                        |
 |------------------|-----------------------------------------------------------------------------------------------------|
 | `Dockerfile`     | describes the dependency setup and expose the entry point;                                          |
-| `build.args`     | metadata of the image, author, tags, etc. help the Hub to index and classify your image             |
+| `manifest.yml`   | metadata of the image, author, tags, etc. help the Hub to index and classify your image             |
 | `*.py`           | describes the executor logic written in Python, if applicable;                                      |
 | `*.yml`          | a YAML file describes the executor arguments and configs, if you want users to use your config;     |
 | Other data files | may be required to run the executor, e.g. pre-trained model, fine-tuned model, home-made data.      |
 
-Except `Dockerfile`, all others are optional to build a valid Pod image depending on your case. `build.args` is only required when you want to [upload your image to Jina Hub](#publish-your-pod-image-to-jina-hub).
+Except `Dockerfile`, all others are optional to build a valid Pod image depending on your case. `manifest.yml` is only required when you want to [upload your image to Jina Hub](#publish-your-pod-image-to-jina-hub).
     
 ### Step-by-Step Example
 
