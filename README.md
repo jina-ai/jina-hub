@@ -4,12 +4,22 @@
 [![CD](https://github.com/jina-ai/jina-hub/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina-hub/actions?query=workflow%3ACD)
 [![Hub Image](https://github.com/jina-ai/hub-status/blob/master/hub-stat.svg?sanitize=true)](https://github.com/jina-ai/hub-status)
 
-Jina Hub is a centralized registry to host immutable Jina components and flows via container images. It enables users to employ, ship, and exchange their best-practice in different Jina search applications.
+Jina Hub is a centralized registry to host immutable Jina components (e.g. Pods, Flows) via container images. It enables users to employ, ship, and exchange their best-practice from various Jina search applications.
+
+**Features**
+
+✅ **Complex dependency? Solved!** A clean way to make your deep learning models and fancy algorithms reproducible and accessible everywhere. 
+
+👐 **Simply Share** - You only need to upload a Python file, a Dockerfile and a YAML. Leave the rest of work to us. The building, version control is automatically done on the cloud side.
+
+☁️  **Cloud-native** - You can easily scale out the images as elastic microservices using Flow API, Docker Swarm, Kubernetes or your favorite orchestration framework.
+
+🦄 **Community-driven** - Hub images are made and owned by the community. You can search and follow the image you like, comment and discuss on the problem you met.
 
 
 |                                    |                |     |                             |
 |:----------------------------------:|:-----------------------------:|:--------------------------------:|:--------------------------------:|
-| <h1>📦</h1><br>[build my own Pod image](#build-your-pod-into-a-docker-image) | <h1>🐳</h1><br>[use Pod image in my project](#use-your-pod-image) | <h1>🆙️</h1><br>[publish Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |  <h1>🗺️</h1><br>[View all images in Jina Hub](https://github.com/jina-ai/hub-status/) |
+| <h1>📦</h1><br>[Build my own Pod image](#build-your-pod-into-a-docker-image) | <h1>🐳</h1><br>[Use Pod image in my project](#use-your-pod-image) | <h1>🆙️</h1><br>[Publish Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |  <h1>🗺️</h1><br>[View all images on Jina Hub](https://github.com/jina-ai/hub-status/) |
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
