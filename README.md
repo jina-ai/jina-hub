@@ -2,9 +2,18 @@
 
 [![CI](https://github.com/jina-ai/jina-hub/workflows/CI/badge.svg)](https://github.com/jina-ai/jina-hub/actions?query=workflow%3ACI)
 [![CD](https://github.com/jina-ai/jina-hub/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina-hub/actions?query=workflow%3ACD)
-[![Hub Image](https://github.com/jina-ai/hub-status/blob/master/hub-stat.svg?sanitize=true)](https://github.com/jina-ai/hub-status)
+[![Hub Image](https://github.com/jina-ai/hub-status/blob/master/hub-stat.svg?sanitize=true)](https://hubstatus.jina.ai)
+[![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg "Jina is licensed under Apache-2.0")](#license)
+[![Jina Docs](https://github.com/jina-ai/jina/blob/master/.github/badges/docs-badge.svg "Checkout our docs and learn Jina")](https://docs.jina.ai)
+[![We are hiring](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-corp-badge-hiring.svg "We are hiring full-time position at Jina")](https://jobs.jina.ai)
+<a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
+  <img src=".github/badges/twitter-badge.svg"
+       alt="tweet button" title="👍Share Jina with your friends on Twitter"></img>
+</a>
 
-Jina Hub is a centralized registry to host immutable Jina components (e.g. Pods, Flows) via container images. It enables users to employ, ship, and exchange their best-practice from various Jina search applications.
+Jina Hub is an open-registry for hosting immutable Jina components via container images. It enables users to ship, and exchange their best-practice across various Jina search applications.
+
+![](.github/.README_images/31a2e914.png)
 
 **Features**
 
@@ -19,7 +28,7 @@ Jina Hub is a centralized registry to host immutable Jina components (e.g. Pods,
 
 |                                    |                |     |                             |
 |:----------------------------------:|:-----------------------------:|:--------------------------------:|:--------------------------------:|
-| <h1>📦</h1><br>[Build my own Pod image](#build-your-pod-into-a-docker-image) | <h1>🐳</h1><br>[Use Pod image in my project](#use-your-pod-image) | <h1>🆙️</h1><br>[Publish Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |  <h1>🗺️</h1><br>[View all images on Jina Hub](https://github.com/jina-ai/hub-status/) |
+| <h1>📦</h1><br>[Build my own Pod image](#build-your-pod-into-a-docker-image) | <h1>🐳</h1><br>[Use Pod image in my project](#use-your-pod-image) | <h1>🆙️</h1><br>[Publish Pod image to Jina Hub](#publish-your-pod-image-to-jina-hub) |  <h1>🗺️</h1><br>[View all images on Jina Hub](https://dashboard.jina.ai/#/hub) |
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -395,5 +404,6 @@ Please first read [the contributing guidelines](https://github.com/jina-ai/jina/
 
 ## License
 
-If you have downloaded a copy of the Jina binary or source code, please note that Jina's binary and source code are both licensed under the [Apache 2.0](LICENSE).
+Copyright (c) 2020 Jina AI Limited. All rights reserved.
 
+Jina is licensed under the Apache License, Version 2.0. [See LICENSE for the full license text.](LICENSE)
