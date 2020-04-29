@@ -13,7 +13,7 @@
 
 Jina Hub is an open-registry for hosting immutable Jina components via container images. It enables users to ship, and exchange their best-practice across various Jina search applications.
 
-![](.github/.README_images/31a2e914.png)
+![](.github/.README_images/hub-demo.gif)
 
 **Features**
 
