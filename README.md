@@ -19,11 +19,11 @@ Jina Hub is an open-registry for hosting immutable Jina components via container
 
 ✅ **Complex dependency? Solved!** A clean way to make your deep learning models and fancy algorithms reproducible and accessible everywhere. 
 
-👐 **Simply Share** - You only need to upload a Python file, a Dockerfile and a YAML. Leave the rest of work to us. The building, version control is automatically done on the cloud side.
+👐 **Simply Share** - You only need to upload a Python file, a Dockerfile and a YAML. Leave the rest of the work to us. The building, version control is automatically done on the cloud side.
 
-☁️  **Cloud-native** - You can easily scale out the images as elastic microservices using Flow API, Docker Swarm, Kubernetes or your favorite orchestration framework.
+☁️  **Cloud-native** - You can easily scale out the images as elastic microservices using Flow API, Docker Swarm, Kubernetes, or your favorite orchestration framework.
 
-🦄 **Community-driven** - Hub images are made and owned by the community. You can search and follow the image you like, comment and discuss on the problem you met.
+🦄 **Community-driven** - Hub images are made and owned by the community. You can search and follow the image you like, comment, and discuss the problem you met.
 
 
 |                                    |                |     |                             |
@@ -88,20 +88,20 @@ More information about [the usage can be found here](#use-your-pod-image).
 
 ### Why?
 
-So you have implemented an awesome executor and want to reuse it in another Jina application, or share it with people in the world. Kind as you are, you want to offer people a ready-to-use interface without hasseling them to repeat all steps and pitfalls you have done. The best way is thus to pack everything (python file, YAML config, pre-trained data, dependencies) into a container image and use Jina as the entry point. You can also annotate your image with some meta information to facilitate the search, archive and classification.
+So you have implemented an awesome executor and want to reuse it in another Jina application, or share it with people in the world. Kind as you are, you want to offer people a ready-to-use interface without hassling them to repeat all steps and pitfalls you have done. The best way is thus to pack everything (python file, YAML config, pre-trained data, dependencies) into a container image and use Jina as the entry point. You can also annotate your image with some meta information to facilitate the search, archive, and classification.
 
 Here are a list of reasons that may motivate you to build a Pod image:
 
-- You want to use one of the built-in executor (e.g. pytorch-based) and you don't want to install pytorch dependencies on the host.
+- You want to use one of the built-in executors (e.g. pytorch-based) and you don't want to install pytorch dependencies on the host.
 - You modify or write a new executor and want to reuse it in another project, without touching [`jina-ai/jina`](https://github.com/jina-ai/jina/).
 - You customize the driver and want to reuse it in another project, without touching [`jina-ai/jina`](https://github.com/jina-ai/jina/).
 - You have a self-built library optimized for your architecture (e.g. tensorflow/numpy on GPU/CPU/x64/arm64), and you want this specific Pod to benefit from it.
 - Your awesome executor requires certain Linux headers that can only be installed via `apt` or `yum`, but you don't have `sudo` on the host.
-- You executor relies on a pretrained model, you want to include this 100MB file into the image so that people don't need to download it again.  
+- Your executor relies on a pre-trained model, you want to include this 100MB file into the image so that people don't need to download it again.  
 - You use Kubernetes or Docker Swarm and this orchestration framework requires each microservice to run as a Docker container.
-- You are using Jina on the cloud and you want to deploy a immutable Pod and version control it.
-- You have figured out a set of parameters that works best for an executor, you want to write it down in a YAML config and share it to others.
-- You are debugging, doing try-and-error or exploring new packages, and you don't want ruin your local dev environments. 
+- You are using Jina on the cloud and you want to deploy an immutable Pod and version control it.
+- You have figured out a set of parameters that works best for an executor, you want to write it down in a YAML config and share it with others.
+- You are debugging, doing try-and-error, or exploring new packages, and you don't want to ruin your local dev environments. 
 
 
 ### What Should be in the Image?
@@ -120,7 +120,7 @@ Except `Dockerfile`, all others are optional to build a valid Pod image dependin
     
 ### Step-by-Step Example
 
-In this example, we consider the scenario where we creates a new executor and want to reuse it in another project, without touching [`jina-ai/jina`](https://github.com/jina-ai/jina/). All files required in this guide is available at [`hub/examples/mwu_encoder`](/hub/examples/mwu_encoder).
+In this example, we consider the scenario where we create a new executor and want to reuse it in another project, without touching [`jina-ai/jina`](https://github.com/jina-ai/jina/). All files required in this guide are available at [`hub/examples/mwu_encoder`](/hub/examples/mwu_encoder).
 
 #### 1. Write Your Executor and Config
 
@@ -136,7 +136,7 @@ metas:
   workspace: ./
 ```
 
-The documentations of the YAML syntax [can be found at here](http://0.0.0.0:8000/chapters/yaml/yaml.html#executor-yaml-syntax). 
+The documentations of the YAML syntax [can be found here](http://0.0.0.0:8000/chapters/yaml/yaml.html#executor-yaml-syntax). 
 
 #### 2. Write a 3-Line `Dockerfile`
 
@@ -157,7 +157,7 @@ Let's now look at these three lines one by one.
 FROM jinaai/jina:devel
 ``` 
 
-In the first line, we choose `jinaai/jina:devel` as [the base image](https://docs.docker.com/glossary/#base-image), which corresponds to the latest master of [`jina-ai/jina`](https://github.com/jina-ai/jina). But of course you are free to use others, e.g. `tensorflow/tensorflow:nightly-gpu-jupyter`. 
+In the first line, we choose `jinaai/jina:devel` as [the base image](https://docs.docker.com/glossary/#base-image), which corresponds to the latest master of [`jina-ai/jina`](https://github.com/jina-ai/jina). But of course, you are free to use others, e.g. `tensorflow/tensorflow:nightly-gpu-jupyter`. 
 
 In practice, whether to use Jina base image depends on the dependencies you would like to introduce. For example, someone provides a hard-to-compile package as a Docker image, much harder than compiling/installing Jina itself. In this case, you may want to use this image as the base image to save some troubles. But don't forget to install Python >=3.7 (if not included) and Jina afterwards, e.g.
 
@@ -168,7 +168,7 @@ FROM awesome-gpu-optimized-kit
 RUN pip install jina --no-cache-dir --compile
 ```
 
-The ways of [installing Jina can be at found here](https://github.com/jina-ai/jina#run-without-docker).
+The ways of [installing Jina can be found here](https://github.com/jina-ai/jina#run-without-docker).
 
 ℹ️ In CI pipeline, one can also install Jina from the source via:
 
@@ -202,7 +202,7 @@ In this example, we set `mwu_encoder.yml` as a default YAML config. So if the us
 docker run jinaai/hub.examples.mwu_encoder
 ```
  
-It is equal to:
+It equals to:
 ```bash
 jina pod --yaml-path hub/example/mwu_encoder.yml
 ```
@@ -213,7 +213,7 @@ Any followed key-value arguments after `docker run jinaai/hub.examples.mwu_encod
 docker run jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
  
-It is equal to:
+It equals to:
 ```bash
 jina pod --yaml-path hub/example/mwu_encoder.yml --port-in 55555 --port-out 55556
 ```
@@ -275,7 +275,7 @@ docker run --rm --entrypoint "jina" jinaai/hub.examples.mwu_encoder check
 
 ### Use the Pod image via Jina CLI
 
-Another way to use the Pod image is simply give it to `jina pod` via `--image`,
+Another way to use the Pod image is simply giving it to `jina pod` via `--image`,
 ```bash
 jina pod --image jinaai/hub.examples.mwu_encoder
 ```
@@ -319,11 +319,11 @@ Typically, the following files are required:
 |------------------|-----------------------------------------------------------------------------------------------------|
 | `Dockerfile`     | describes the dependency setup and expose the entry point;                                          |
 | `manifest.yml`   | metadata of the image, author, tags, etc. help the Hub to index and classify your image             |
-| `README.md`      | a instruction for guiding users to use your image                                                   | 
+| `README.md`      | an instruction for guiding users to use your image                                                   | 
 | `*.py`           | describes the executor logic written in Python, if applicable;                                      |
 | `*.yml`          | a YAML file describes the executor arguments and configs, if you want users to use your config;     |
 
-Note, large binary files (such as pretrained model, auxiliary data) are **not** recommended to upload to this repository. You can use `RUN wget ...` or `RUN curl` inside the `Dockerfile` to download it from the web during the build.
+Note, large binary files (such as pretrained model, auxiliary data) are **not** recommended to upload to this repository. You can use `RUN wget ...` or `RUN curl` inside the `Dockerfile` to download them from the web during the build.
 
 
 Your file bundle `awesomeness` should be uploaded to:
@@ -354,14 +354,14 @@ Your image will be published as `jinaai/hub.executors.encoders.awesomeness`.
 | --- | --- | --- |
 | `name` | Human-readable title of the image (must match with `^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{3,20}$`) | Required |
 | `description` | Human-readable description of the software packaged in the image | Required |
-| `author` | contact details of the people or organization responsible for the image (string) | `Jina AI Dev-Team (dev-team@jina.ai)` |
+| `author` | Contact details of the people or organization responsible for the image (string) | `Jina AI Dev-Team (dev-team@jina.ai)` |
 | `url` | URL to find more information on the image (string) | `https://jina.ai` |
 | `documentation` | URL to get documentation on the image (string) | `https://docs.jina.ai` |
-| `version` | version of the image, it should be [Semantic versioning-compatible](http://semver.org/) | `0.0.0` |
-| `vendor` | the name of the distributing entity, organization or individual (string) | `Jina AI Limited` |
-| `license` | license under which contained software is distributed, it should be [in this list](builder/osi-approved.yml) | `apache-2.0` |
-| `avatar` | a picture that personalizes and distinguishes your image | None |
-| `platform` | a list of CPU architectures that your image is built on, each item should be [in this list](builder/platforms.yml) | `[linux/amd64]` | 
+| `version` | Version of the image, it should be [Semantic versioning-compatible](http://semver.org/) | `0.0.0` |
+| `vendor` | The name of the distributing entity, organization or individual (string) | `Jina AI Limited` |
+| `license` | License under which contained software is distributed, it should be [in this list](builder/osi-approved.yml) | `apache-2.0` |
+| `avatar` | A picture that personalizes and distinguishes your image | None |
+| `platform` | A list of CPU architectures that your image built on, each item should be [in this list](builder/platforms.yml) | `[linux/amd64]` | 
 
 Please refer to [hub/examples/mwu_encoder/manifest.yml](hub/examples/mwu_encoder/manifest.yml) for the example.
 
@@ -369,7 +369,7 @@ Please refer to [hub/examples/mwu_encoder/manifest.yml](hub/examples/mwu_encoder
 
 All you need is to publish your bundle into this repo, the Docker image building, uploading and tagging are all handled automatically by our CICD pipeline. 
 
-1. Let's say your organize [all files mentioned in here](#what-files-need-to-be-uploaded) in a folder called `awesomeness`. Depending on what you are contributing, you can put it into `hub/executors/indexers/awesomeness`.
+1. Let's say you organize [all files mentioned in here](#what-files-need-to-be-uploaded) in a folder called `awesomeness`. Depending on what you are contributing, you can put it into `hub/executors/indexers/awesomeness`.
 2. Make a Pull Request and commit your changes into this repository, remember to follow the commit lint style.
 3. Wait until the CICD finish and you get at least one reviewer's approval.
 4. Merge it! 
@@ -390,7 +390,7 @@ Here is the checklist to help you locate the problem.
 - [ ] Some field value is not in the correct format, not passing the sanity check.
 - [ ] The pod bundle is badly placed.
 - [ ] Time of building + testing is longer than 10 minutes. 
-- [ ] The build is success but it fails on [three basic usage tests](#use-your-pod-image).
+- [ ] The build is successful but it fails on [three basic usage tests](#use-your-pod-image).
 
 Click "Details" and checkout the log of the CICD pipeline:
 
@@ -398,7 +398,7 @@ Click "Details" and checkout the log of the CICD pipeline:
 
 ## Contributing
 
-We welcome all kinds of contributions from the open-source community, individuals and partners. Without your active involvement, Jina can't be successful.
+We welcome all kinds of contributions from the open-source community, individuals and partners. Without your active involvement, Jina won't be successful.
 
 Please first read [the contributing guidelines](https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md) before the submission. 
 
