@@ -1,8 +1,8 @@
 name: Demo Transformer
-description: Just an example to show how simple an executor could be.
+description: Using transformers for encoding text with pytorch backend. By default, bert-base-uncased is used with the pytorch backend.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.3
+version: 0.0.4
 vendor: Jina AI Limited
 license: apache-2.0
