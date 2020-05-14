@@ -8,3 +8,4 @@ metas:
 
 with:
   max_length: 128
+  pooling_strategy: cls

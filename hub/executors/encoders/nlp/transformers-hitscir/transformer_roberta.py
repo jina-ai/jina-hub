@@ -5,8 +5,6 @@ class TransformerRobertaEncoder(TransformerTorchEncoder):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = 'hfl/chinese-roberta-wwm-ext'
-        self.pooling_strategy = 'cls'
-        self.max_length = 32
 
     def get_tokenizer(self):
         from transformers import BertTokenizer
