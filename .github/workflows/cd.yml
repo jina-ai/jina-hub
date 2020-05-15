@@ -22,7 +22,6 @@ jobs:
           path: builder/hub
           token: ${{ secrets.JINA_DEV_BOT }}
 
-
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/hub-status
