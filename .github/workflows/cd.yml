@@ -60,7 +60,7 @@ jobs:
 
       - name: commit new hub readme and badge
         run: |
-          cd status
+          cd builder/status
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add README.md hub-stat.svg
@@ -74,11 +74,11 @@ jobs:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           repository: jina-ai/hub-status
           force: true
-          directory: status/
+          directory: builder/status/
 
       - name: commit build history
         run: |
-          cd api
+          cd builder/api
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add hub/build.json
@@ -92,7 +92,7 @@ jobs:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           repository: jina-ai/api
           force: true
-          directory: api/
+          directory: builder/api/
 
       - uses: technote-space/toc-generator@v2
         with:
