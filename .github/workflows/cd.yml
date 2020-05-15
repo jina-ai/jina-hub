@@ -30,6 +30,12 @@ jobs:
           path: builder/src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
 
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/api
+          path: builder/api
+          token: ${{ secrets.JINA_DEV_BOT }}
+
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
