@@ -3,7 +3,7 @@ name: CD
 on:
   push:
     branches:
-      - feature/build
+      - master
 
 jobs:
   build-update:
