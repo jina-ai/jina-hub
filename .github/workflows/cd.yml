@@ -13,10 +13,10 @@ jobs:
       - run: git fetch --prune --unshallow
 
       - uses: actions/checkout@v2
-          with:
-            repository: jina-ai/hub-builder
-            path: builder
-            token: ${{ secrets.JINA_DEV_BOT }}
+        with:
+          repository: jina-ai/hub-builder
+          path: builder
+          token: ${{ secrets.JINA_DEV_BOT }}
 
       - uses: actions/checkout@v2
         with:
