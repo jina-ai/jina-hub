@@ -13,21 +13,21 @@ jobs:
       - run: git fetch --prune --unshallow
 
       - uses: actions/checkout@v2
+          with:
+            repository: jina-ai/hub-builder
+            path: builder
+            token: ${{ secrets.JINA_DEV_BOT }}
+
+      - uses: actions/checkout@v2
         with:
           repository: jina-ai/hub-status
-          path: status
+          path: builder/status
           token: ${{ secrets.JINA_DEV_BOT }}
 
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
-          path: src/jina
-          token: ${{ secrets.JINA_DEV_BOT }}
-
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/hub-builder
-          path: builder
+          path: builder/src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
 
       - uses: actions/setup-python@v1
@@ -45,7 +45,7 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           pip install -r builder/builder/requirements.txt
-          python builder/app.py --reason "builder update" --bleach-first --push --update-strategy=hub-release
+          python builder/app.py --reason "hub update" --bleach-first --push --update-strategy=hub-release
         env:
           MONGODB_CREDENTIALS: ${{ secrets.MONGODB_CREDENTIALS }}
           DOCKERHUB_DEVBOT_USER: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
