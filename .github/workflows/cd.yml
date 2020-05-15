@@ -10,13 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: git fetch --prune --unshallow
-
-      - uses: actions/checkout@v2
         with:
           repository: jina-ai/hub-builder
           path: builder
           token: ${{ secrets.JINA_DEV_BOT }}
+
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina-hub
+          path: builder/hub
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: git fetch --prune --unshallow
 
       - uses: actions/checkout@v2
         with:
