@@ -56,13 +56,12 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           pip install -r builder/requirements.txt
-          git log -1
-          git status
           python app.py --reason "hub update" --bleach-first --push --update-strategy=hub-release
         env:
           MONGODB_CREDENTIALS: ${{ secrets.MONGODB_CREDENTIALS }}
           DOCKERHUB_DEVBOT_USER: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           DOCKERHUB_DEVBOT_TOKEN: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+          DOCKERHUB_DEVBOT_PWD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
         timeout-minutes: 30
 
       - name: commit new hub readme and badge
