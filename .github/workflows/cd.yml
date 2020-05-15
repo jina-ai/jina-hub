@@ -53,10 +53,11 @@ jobs:
 
       - name: build all images
         run: |
+          cd builder
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-          pip install -r builder/builder/requirements.txt
-          python builder/app.py --reason "hub update" --bleach-first --push --update-strategy=hub-release
+          pip install -r builder/requirements.txt
+          python app.py --reason "hub update" --bleach-first --push --update-strategy=hub-release
         env:
           MONGODB_CREDENTIALS: ${{ secrets.MONGODB_CREDENTIALS }}
           DOCKERHUB_DEVBOT_USER: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
