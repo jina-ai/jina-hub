@@ -1,38 +1,12 @@
 name: CD
 
 on:
-  schedule:
-    - cron: "*/20 * * * *"
   push:
     branches:
       - master
 
 jobs:
-  checkupdate:
-    if: "!startsWith(github.event.head_commit.message, 'chore')"
-    runs-on: ubuntu-latest
-    outputs:
-      updated: ${{ steps.updatestatus.outputs.updated }}
-    steps:
-      - uses: actions/checkout@v2
-      - run: git fetch --prune --unshallow
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/hub-status
-          path: status
-          token: ${{ secrets.JINA_DEV_BOT }}
-      - uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-      - name: check if rebuild necessary
-        id: updatestatus
-        run: |
-          pip install -r builder/requirements.txt
-          python builder/app.py --check-only && echo "::set-output name=updated::true" || echo "::set-output name=updated::false" || true
-
   build-update:
-    needs: checkupdate
-    if: "needs.checkupdate.outputs.updated == 'true'"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -47,6 +21,11 @@ jobs:
           repository: jina-ai/jina
           path: src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/checkout@v2
+          with:
+            repository: jina-ai/hub-builder
+            path: builder
+            token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
@@ -60,7 +39,7 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           pip install -r builder/requirements.txt
-          python builder/app.py --reason "master got pushed" --push
+          python builder/app.py --reason "hub update" --push --update-strategy=hub-release
           cd status
           git config user.email "dev-bot@jina.ai"
           git config user.name "Jina Dev Bot"

@@ -59,6 +59,11 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
       - uses: actions/checkout@v2
         with:
+          repository: jina-ai/hub-builder
+          path: builder
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/checkout@v2
+        with:
           repository: jina-ai/jina
           path: src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
@@ -67,7 +72,7 @@ jobs:
           if [[ -s build.tmp2 ]]; then
             pip install src/jina[docker]
             pip install src/jina[http]
-            cat build.tmp2 | xargs -n1 python builder/app.py --test --target
+            cat build.tmp2 | xargs -n1 python builder/app.py --bleach-first --test --target
           else
             echo "nothing to build"
           fi
