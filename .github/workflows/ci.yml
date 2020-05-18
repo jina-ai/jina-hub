@@ -65,15 +65,35 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/checkout@v2
         with:
+          repository: jina-ai/api
+          path: builder/api
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina-hub
+          path: builder/hub
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
+          rm -rf builder/hub
+          find ./ -maxdepth 1 -not -name builder -not -name ".*" -exec mv -v -f {} builder/hub \;
+      - uses: actions/checkout@v2
+        with:
           repository: jina-ai/jina
-          path: src/jina
+          path: builder/src/jina
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/hub-status
+          path: builder/status
           token: ${{ secrets.JINA_DEV_BOT }}
       - name: Docker Build and Test
         run: |
-          if [[ -s build.tmp2 ]]; then
+          cd builder
+          if [[ -s hub/build.tmp2 ]]; then
             pip install src/jina[docker]
             pip install src/jina[http]
-            cat build.tmp2 | xargs -n1 python builder/app.py --bleach-first --test --target
+            pip install -r builder/requirements.txt
+            cat hub/build.tmp2 | xargs -I % python app.py --bleach-first --test --target=%
           else
             echo "nothing to build"
           fi
