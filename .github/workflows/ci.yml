@@ -79,10 +79,10 @@ jobs:
           path: builder/src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/checkout@v2
-          with:
-            repository: jina-ai/hub-status
-            path: builder/status
-            token: ${{ secrets.JINA_DEV_BOT }}
+        with:
+          repository: jina-ai/hub-status
+          path: builder/status
+          token: ${{ secrets.JINA_DEV_BOT }}
       - name: Docker Build and Test
         run: |
           cd builder
