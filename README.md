@@ -361,9 +361,33 @@ Your image will be published as `jinaai/hub.executors.encoders.awesomeness`.
 | `vendor` | The name of the distributing entity, organization or individual (string) | `Jina AI Limited` |
 | `license` | License under which contained software is distributed, it should be [in this list](builder/osi-approved.yml) | `apache-2.0` |
 | `avatar` | A picture that personalizes and distinguishes your image | None |
-| `platform` | A list of CPU architectures that your image built on, each item should be [in this list](builder/platforms.yml) | `[linux/amd64]` | 
+| `platform` | A list of CPU architectures that your image built on, each item should be [in this list](builder/platforms.yml) | `[linux/amd64]` |
+| `update` | The update policy of the image, see the table below for details  | `nightly` |
+| `tag` | A list of strings help user to filter and locate your package  | None | 
 
 Please refer to [hub/examples/mwu_encoder/manifest.yml](hub/examples/mwu_encoder/manifest.yml) for the example.
+
+#### Remarks on the update policy
+
+The value in the `update` determines if the image is rebuilt under certain event. Specifically, 
+
+| `update` policy | HTTP endpoint trigger | `jina-hub`: push to master | `hub_builder`: push to master | `jina`: tag release | nightly cron job | `jina`: push to master |
+|-----------------|-----------------------|----------------------------|-------------------------------|---------------------|------------------|------------------------|
+| `never`         | ✅                     | ❌                          | ❌                             | ❌                   | ❌                | ❌                      |
+| `manual`        | ✅                     | ✅                          | ❌                             | ❌                   | ❌                | ❌                      |
+| `on-release`    | ✅                     | ✅                          | ✅                             | ✅                   | ❌                | ❌                      |
+| `nightly`       | ✅                     | ✅                          | ✅                             | ✅                   | ✅                | ❌                      |
+| `on-master`     | ✅                     | ✅                          | ✅                             | ✅                   | ✅                | ✅                      |
+
+**✅ = a rebuild job:**
+- Build the Docker image
+- Push the image to Docker hub
+- Update `jina-hub` database on MongoDB Atlas
+- Update `jina-ai/hub-status`
+- Update JSON in `jina-ai/api`
+
+**❌ = ignore**
+
 
 ### Steps to Publish Your Image
 
