@@ -74,8 +74,8 @@ jobs:
           path: builder/hub
           token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
-          rm -rf builder/hub
-          cp hub build.tmp2 -Rv builder/
+          rm -rf builder/hub/hub
+          cp hub build.tmp2 -Rv builder/hub
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
