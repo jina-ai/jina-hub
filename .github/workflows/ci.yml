@@ -7,7 +7,7 @@ jobs:
   commit-lint:
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -21,10 +21,10 @@ jobs:
     steps:
       - uses: "pascalgn/size-label-action@v0.2.1"
         env:
-          GITHUB_TOKEN: "${{ secrets.JINA_DEV_BOT }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - uses: actions/labeler@v2
         with:
-          repo-token: "${{ secrets.JINA_DEV_BOT }}"
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
   buildx-test:
     needs: commit-lint
@@ -38,7 +38,7 @@ jobs:
         id: files
         uses: futuratrepadeira/changed-files@v3.0.0
         with:
-          repo-token: ${{ secrets.JINA_DEV_BOT }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - run: |
           for changed_file in ${{ steps.files.outputs.files_created }}; do
             echo "${changed_file}" >> build.tmp
@@ -62,12 +62,12 @@ jobs:
         with:
           repository: jina-ai/hub-builder
           path: builder
-          token: ${{ secrets.JINA_DEV_BOT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
           path: src/jina
-          token: ${{ secrets.JINA_DEV_BOT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker Build and Test
         run: |
           if [[ -s build.tmp2 ]]; then
