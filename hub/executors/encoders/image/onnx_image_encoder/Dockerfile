@@ -1,8 +1,6 @@
 FROM onnx/onnx-base
 
-ADD jina .src
-
-RUN pip install .src/.
+RUN pip install jina
 RUN python -c "import onnx"
 
 ENTRYPOINT ["jina", "pod", "--yaml-path", "OnnxImageEncoder"]

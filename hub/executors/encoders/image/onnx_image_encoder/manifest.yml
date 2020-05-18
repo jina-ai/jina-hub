@@ -3,6 +3,6 @@ description: An image encoder with encoder of Open Neural Network Exchange (ONNX
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.3
+version: 0.0.2
 vendor: Jina AI Limited
 license: apache-2.0
