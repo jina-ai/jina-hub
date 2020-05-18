@@ -41,13 +41,13 @@ jobs:
           repo-token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
           for changed_file in ${{ steps.files.outputs.files_created }}; do
-            echo "${changed_file}" >> build.tmp
+            echo "hub/${changed_file}" >> build.tmp
           done
           for changed_file in ${{ steps.files.outputs.files_updated }}; do
-            echo "${changed_file}" >> build.tmp
+            echo "hub/${changed_file}" >> build.tmp
           done
           for changed_file in ${{ steps.files.outputs.files_deleted }}; do
-            echo "${changed_file}" >> build.tmp
+            echo "hub/${changed_file}" >> build.tmp
           done
           cat build.tmp | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq > build.tmp2
           cat build.tmp2
@@ -89,7 +89,7 @@ jobs:
             pip install builder/src/jina[docker]
             pip install builder/src/jina[http]
             pip install -r builder/builder/requirements.txt
-            cat build.tmp2 | xargs -n1 python builder/app.py --bleach-first --test --target
+            cat build.tmp2 | xargs -n1 python builder/app.py --bleach-first --test --target=
           else
             echo "nothing to build"
           fi
