@@ -62,7 +62,7 @@ jobs:
         with:
           repository: jina-ai/hub-builder
           path: builder
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.JINA_DEV_BOT }}  # this needs to be changed! when hub-builder is released
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
