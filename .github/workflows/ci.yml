@@ -74,6 +74,7 @@ jobs:
           path: builder/hub
           token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
+          rm -rf builder/hub
           find ./ -not -name builder -not -name ".*" -exec mv -f {} builder/hub \;
       - uses: actions/checkout@v2
         with:
