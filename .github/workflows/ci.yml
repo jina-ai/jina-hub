@@ -90,6 +90,8 @@ jobs:
             pip install builder/src/jina[http]
             pip install -r builder/builder/requirements.txt
             pwd
+            ls
+            cat build.tmp2
             cat build.tmp2 | xargs -I % python builder/app.py --bleach-first --test --target=%
           else
             echo "nothing to build"
