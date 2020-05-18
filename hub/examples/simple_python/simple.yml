@@ -1,7 +1,0 @@
-!MWUEncoder
-with:
-  greetings: im from internal yaml!
-metas:
-  name: simple-python-image
-  py_modules: simple.py
-  workspace: ./
