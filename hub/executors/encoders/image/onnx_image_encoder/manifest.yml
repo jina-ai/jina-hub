@@ -1,0 +1,9 @@
+name: Onnx Image Encoder
+description: An image encoder with encoder of Open Neural Network Exchange (ONNX) standard model
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.3
+vendor: Jina AI Limited
+license: apache-2.0
+
