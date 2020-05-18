@@ -76,6 +76,7 @@ jobs:
       - run: |
           rm -rf builder/hub
           mv hub -v /builder/
+          mv build.tmp build.tmp2 -v /builder/hub
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
