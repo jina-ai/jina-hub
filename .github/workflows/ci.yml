@@ -75,7 +75,7 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
           rm -rf builder/hub
-          find ./hub -exec mv -v -f {} builder/hub \;
+          mv hub -v /builder/
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
