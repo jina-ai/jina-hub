@@ -92,7 +92,7 @@ jobs:
             pip install builder/src/jina[docker]
             pip install builder/src/jina[http]
             pip install -r builder/builder/requirements.txt
-            cat builder/hub/build.tmp2 | xargs -I % python builder/app.py --bleach-first --test --target=hub/%
+            cat builder/hub/build.tmp2 | xargs -I % python builder/app.py --bleach-first --test --target=%
           else
             echo "nothing to build"
           fi
