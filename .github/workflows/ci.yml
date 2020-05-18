@@ -89,11 +89,11 @@ jobs:
       - name: Docker Build and Test
         run: |
           cd builder
-          if [[ -s hub/build.tmp2 ]]; then
+          if [[ -s build.tmp2 ]]; then
             pip install src/jina[docker]
             pip install src/jina[http]
             pip install -r builder/requirements.txt
-            cat hub/build.tmp2 | xargs -I % python app.py --bleach-first --test --target=%
+            cat build.tmp2 | xargs -I % python app.py --bleach-first --test --target=%
           else
             echo "nothing to build"
           fi
