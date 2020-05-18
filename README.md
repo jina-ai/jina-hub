@@ -363,7 +363,7 @@ Your image will be published as `jinaai/hub.executors.encoders.awesomeness`.
 | `avatar` | A picture that personalizes and distinguishes your image | None |
 | `platform` | A list of CPU architectures that your image built on, each item should be [in this list](builder/platforms.yml) | `[linux/amd64]` |
 | `update` | The update policy of the image, see the table below for details  | `nightly` |
-| `tag` | A list of strings help user to filter and locate your package  | None | 
+| `keywords` | A list of strings help user to filter and locate your package  | None | 
 
 Please refer to [hub/examples/mwu_encoder/manifest.yml](hub/examples/mwu_encoder/manifest.yml) for the example.
 
