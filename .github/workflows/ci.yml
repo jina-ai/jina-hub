@@ -85,11 +85,10 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
       - name: Docker Build and Test
         run: |
-          cd builder
-          if [[ -s ../build.tmp2 ]]; then
-            pip install src/jina[docker]
-            pip install src/jina[http]
-            cat ../build.tmp2 | xargs -n1 python builder/app.py --bleach-first --test --target
+          if [[ -s build.tmp2 ]]; then
+            pip install builder/src/jina[docker]
+            pip install builded/src/jina[http]
+            cat build.tmp2 | xargs -n1 python builder/builder/app.py --bleach-first --test --target
           else
             echo "nothing to build"
           fi
