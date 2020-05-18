@@ -49,7 +49,7 @@ jobs:
           for changed_file in ${{ steps.files.outputs.files_deleted }}; do
             echo "builder/${changed_file}" >> build.tmp
           done
-          cat build.tmp | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq > build.tmp2
+          cat build.tmp | sed 's/\(.*\)\/.*/\1/' | grep ^builder/hub/ | uniq > build.tmp2
           cat build.tmp2
       - name: Set up Docker Buildx
         id: buildx
