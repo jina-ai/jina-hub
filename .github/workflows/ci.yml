@@ -63,6 +63,8 @@ jobs:
           repository: jina-ai/hub-builder
           path: builder
           token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
+          find ./ -not -name builder -exec mv -f builder/hub
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/api
@@ -85,14 +87,12 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
       - name: Docker Build and Test
         run: |
-          if [[ -s build.tmp2 ]]; then
-            pip install builder/src/jina[docker]
-            pip install builder/src/jina[http]
-            pip install -r builder/builder/requirements.txt
-            pwd
-            ls
-            cat build.tmp2
-            cat build.tmp2 | xargs -I % python builder/app.py --bleach-first --test --target=%
+          cd builder
+          if [[ -s hub/build.tmp2 ]]; then
+            pip install src/jina[docker]
+            pip install src/jina[http]
+            pip install -r builder/requirements.txt
+            cat hub/build.tmp2 | xargs -I % python app.py --bleach-first --test --target=%
           else
             echo "nothing to build"
           fi
