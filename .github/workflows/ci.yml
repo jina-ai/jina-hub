@@ -70,8 +70,8 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/checkout@v2
         with:
-          repository: jina-ai/hub-builder
-          path: builder
+          repository: jina-ai/jina-hub
+          path: builder/hub
           token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/checkout@v2
         with:
