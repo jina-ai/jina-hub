@@ -59,15 +59,15 @@ jobs:
       - run: |
           echo ${{ steps.buildx.outputs.platforms }}
       - uses: actions/checkout@v2
-          with:
-            repository: jina-ai/hub-builder
-            path: builder
-            token: ${{ secrets.JINA_DEV_BOT }}
+        with:
+          repository: jina-ai/hub-builder
+          path: builder
+          token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/checkout@v2
-          with:
-            repository: jina-ai/api
-            path: builder/api
-            token: ${{ secrets.JINA_DEV_BOT }}
+        with:
+          repository: jina-ai/api
+          path: builder/api
+          token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/hub-builder
