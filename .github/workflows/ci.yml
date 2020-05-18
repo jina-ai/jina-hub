@@ -87,7 +87,7 @@ jobs:
         run: |
           if [[ -s build.tmp2 ]]; then
             pip install builder/src/jina[docker]
-            pip install builded/src/jina[http]
+            pip install builder/src/jina[http]
             cat build.tmp2 | xargs -n1 python builder/builder/app.py --bleach-first --test --target
           else
             echo "nothing to build"
