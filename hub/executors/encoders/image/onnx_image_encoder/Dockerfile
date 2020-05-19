@@ -1,4 +1,4 @@
-FROM onnx/onnx-base
+FROM onnx/onnx-ecosystem
 
 RUN pip install jina
 RUN python -c "import onnx"
