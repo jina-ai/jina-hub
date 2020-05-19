@@ -1,6 +1,5 @@
 !TransformerRobertaEncoder
 metas:
-  on_gpu: True
   batch_size: $BATCH_SIZE
   workspace: $TMP_WORKSPACE
   name: transformer_roberta_encoder
