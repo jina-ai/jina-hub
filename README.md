@@ -173,8 +173,7 @@ The ways of [installing Jina can be found here](https://github.com/jina-ai/jina#
 ℹ️ In CI pipeline, one can also install Jina from the source via:
 
 ```Dockerfile
-ADD jina .src
-RUN pip install .src/.
+RUN pip install https://github.com/jina-ai/jina.git
 ```
 
 , where  `jina` is the master branch of [jina-ai/jina](https://github.com/jina-ai/jina) mounted to the building context by our CI pipeline.
