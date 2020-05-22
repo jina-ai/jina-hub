@@ -56,7 +56,7 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           pip install -r builder/requirements.txt
-          python app.py --reason "hub update" --bleach-first --push --update-strategy=hub-release
+          python app.py --reason "hub update" --bleach-first --push --update-strategy=on-release
         env:
           MONGODB_CREDENTIALS: ${{ secrets.MONGODB_CREDENTIALS }}
           DOCKERHUB_DEVBOT_USER: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
@@ -84,10 +84,10 @@ jobs:
 
       - name: commit build history
         run: |
-          cd builder/api
+          cd builder/api/hub
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
-          git add hub/build.json
+          git add package.json package status.json status 
           git commit -qm "chore: update build history" -a
           git show '--stat-count=10' HEAD
           git config --list
