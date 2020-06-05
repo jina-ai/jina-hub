@@ -1,7 +1,7 @@
 FROM pytorch/pytorch:latest
 
 RUN pip install jina
-RUN python -c "import torchvision.models as models; models.densenet161(pretrained=True, progress=True)"
+RUN python -c "import torchvision.models as models; models.densenet161(pretrained=True)"
 
 ADD torchvision_densenet161.py manifest.yml ./
 

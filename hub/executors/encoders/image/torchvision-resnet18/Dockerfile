@@ -1,7 +1,7 @@
 FROM pytorch/pytorch:latest
 
 RUN pip install jina
-RUN python -c "import torchvision.models as models; models.resnet18(pretrained=True, progress=True)"
+RUN python -c "import torchvision.models as models; models.resnet18(pretrained=True)"
 
 ADD torchvision_resnet18.py manifest.yml ./
 
