@@ -15,6 +15,7 @@ class FaceNetTorchEncoder(BaseCVTorchEncoder):
         """
         :pretrained : The weights to load
         """
+
         super().__init__(*args, **kwargs)
         if pretrained not in ('vggface2','casia-webface'):
             raise NotImplementedError('unknown pretrained checkpoints: {}'.format(self.pretrained))
