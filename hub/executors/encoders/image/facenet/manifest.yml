@@ -1,7 +1,7 @@
 name: torch facenet
 description: an image with the encoder of facenet pytorch implementation
 author: Shivam Raj (connect2shivamraj@gmail.com)
-url:
+url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.3
 vendor: Jina AI Limited
