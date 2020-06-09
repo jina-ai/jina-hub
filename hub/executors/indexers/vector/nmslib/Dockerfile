@@ -1,7 +1,6 @@
 FROM jinaai/jina:devel
 
 RUN pip install nmslib
-RUN python -c "import nmslib;"
 
 RUN pip install jina
 
