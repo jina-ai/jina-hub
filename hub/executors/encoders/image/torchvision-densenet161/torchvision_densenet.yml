@@ -1,0 +1,8 @@
+!TorchVisionDenseNet161
+metas:
+  on_gpu: True
+  name: torchvision_densenet161
+  py_modules: torchvision_densenet161.py
+
+with:
+  pooling_strategy: mean

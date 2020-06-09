@@ -1,7 +1,7 @@
 from jina.executors.encoders.image.torchvision import ImageTorchEncoder
 
 
-class TorchVisionResNet18(ImageTorchEncoder):
+class TorchVisionDenseNet161(ImageTorchEncoder):
 
     def __init__(self, *args, **kwargs):
         from torchvision.models import densenet161

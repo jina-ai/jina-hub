@@ -1,0 +1,8 @@
+!TorchVisionResNet18
+metas:
+  on_gpu: True
+  name: torchvision_resnet18
+  py_modules: torchvision_resnet18.py
+
+with:
+  pooling_strategy: max
