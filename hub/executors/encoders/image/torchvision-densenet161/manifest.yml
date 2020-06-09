@@ -1,6 +1,6 @@
 name: pytorch densenet161
 description: an image with the encoder of DenseNet161 from torchvision models
-author: Saransh (https://github.com/saranshb)
+author: Saransh (https://github.com/saranshbh)
 url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.3

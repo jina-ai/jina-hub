@@ -1,6 +1,6 @@
 name: pytorch resnet18
 description: an image with the encoder of ResNet18 from torchvision models
-author: Saransh (https://github.com/saranshb)
+author: Saransh (https://github.com/saranshbh)
 url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.3
