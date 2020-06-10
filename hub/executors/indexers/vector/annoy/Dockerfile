@@ -5,4 +5,7 @@ RUN pip install annoy
 
 RUN pip install jina
 
-ENTRYPOINT ["jina", "pod", "--yaml-path", "AnnoyIndexer"]
+ENV TMP_WORKSPACE /tmp/jina/annoy/
+ADD *.py *.yml ./
+
+ENTRYPOINT ["jina", "pod", "--yaml-path", "annoy.yml"]

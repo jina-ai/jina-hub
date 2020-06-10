@@ -4,4 +4,7 @@ RUN pip install nmslib
 
 RUN pip install jina
 
-ENTRYPOINT ["jina", "pod", "--yaml-path", "NmslibIndexer"]
+ENV TMP_WORKSPACE /tmp/jina/nmslib/
+ADD *.py *.yml ./
+
+ENTRYPOINT ["jina", "pod", "--yaml-path", "nmslib.yml"]

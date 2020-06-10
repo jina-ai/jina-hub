@@ -5,4 +5,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y libopenblas-dev
 
 RUN pip install jina
 
-ENTRYPOINT ["jina", "pod", "--yaml-path", "FaissIndexer"]
+ENV TMP_WORKSPACE /tmp/jina/faiss_flat/
+ADD *.py *.yml ./
+
+ENTRYPOINT ["jina", "pod", "--yaml-path", "faiss.yml"]

@@ -1,0 +1,8 @@
+!AnnoyIndexer
+metas:
+  workspace: $TMP_WORKSPACE
+  name: indexer_annoy
+  py_modules: annoy.py
+
+with:
+  index_filename: np.test.gz

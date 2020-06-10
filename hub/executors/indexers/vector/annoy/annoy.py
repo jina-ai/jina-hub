@@ -1,0 +1,1 @@
+from jina.executors.indexers.vector.annoy import AnnoyIndexer

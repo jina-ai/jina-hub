@@ -1,0 +1,1 @@
+from jina.executors.indexers.vector.nmslib import NmslibIndexer

@@ -1,0 +1,8 @@
+!NmslibIndexer
+metas:
+  workspace: $TMP_WORKSPACE
+  name: indexer_nmslib
+  py_modules: nmslib.py
+
+with:
+  index_filename: np.test.gz
