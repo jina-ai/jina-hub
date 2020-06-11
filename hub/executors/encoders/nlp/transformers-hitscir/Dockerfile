@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:latest
+FROM pytorch/manylinux-cuda100:latest
 
 RUN pip install transformers --no-cache-dir --compile && \
     python -c "from transformers import *; x='hfl/chinese-roberta-wwm-ext'; BertModel.from_pretrained(x); BertTokenizer.from_pretrained(x)"
