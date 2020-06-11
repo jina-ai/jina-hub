@@ -6,3 +6,4 @@ documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.0
 vendor: Jina AI Limited
 license: apache-2.0
+update: nightly
