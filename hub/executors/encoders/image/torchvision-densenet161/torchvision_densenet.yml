@@ -1,8 +1,7 @@
-!TorchVisionDenseNet161
+!ImageTorchEncoder
 metas:
-  on_gpu: True
-  name: torchvision_densenet161
-  py_modules: torchvision_densenet161.py
+  on_gpu: true
+  model_name: densenet161
 
 with:
   pooling_strategy: mean
