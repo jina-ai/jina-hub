@@ -1,5 +1,5 @@
-FROM onnx/onnx-ecosystem:latest
 FROM jinaai/jina:devel
+FROM onnx/onnx-base:latest
 
 RUN pip install onnxruntime
 RUN pip install jina
