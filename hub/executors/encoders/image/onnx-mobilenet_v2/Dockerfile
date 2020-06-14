@@ -1,4 +1,3 @@
-FROM jinaai/jina:devel
 FROM onnx/onnx-base:latest
 
 RUN pip install onnxruntime
