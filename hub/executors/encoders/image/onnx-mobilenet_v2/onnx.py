@@ -1,0 +1,1 @@
+from jina.executors.encoders.image.onnx import OnnxImageEncoder

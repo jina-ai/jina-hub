@@ -1,0 +1,9 @@
+!OnnxImageEncoder
+metas:
+  workspace: $TMP_WORKSPACE
+  name: onnx_mobilenet
+  py_modules: onnx.py
+
+with:
+  output_feature: ImageNet
+  model_path: https://media.githubusercontent.com/media/onnx/models/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx
