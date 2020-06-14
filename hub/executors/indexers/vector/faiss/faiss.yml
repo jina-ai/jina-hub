@@ -1,9 +1,0 @@
-!FaissIndexer
-metas:
-  workspace: $TMP_WORKSPACE
-  name: indexer_faiss_flat
-  py_modules: faiss.py
-
-with:
-  index_key: Flat
-  index_filename: np.test.gz

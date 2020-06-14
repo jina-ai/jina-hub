@@ -1,1 +1,0 @@
-from jina.executors.indexers.vector.faiss import FaissIndexer

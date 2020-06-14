@@ -1,9 +1,0 @@
-name: faiss
-description: an image with the indexer faiss pre downloaded with Flat index factory
-author: Jina AI Dev-Team (dev-team@jina.ai)
-url: https://jina.ai
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.0
-vendor: Jina AI Limited
-license: apache-2.0
-update: nightly
