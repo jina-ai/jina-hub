@@ -1,7 +1,8 @@
 !ImageTorchEncoder
+
 metas:
-  on_gpu: false
-  model_name: resnet18
+  on_gpu: true
+  model_name: alexnet
 
 with:
   pooling_strategy: max

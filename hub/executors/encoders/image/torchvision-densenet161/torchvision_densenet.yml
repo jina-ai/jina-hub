@@ -1,6 +1,6 @@
 !ImageTorchEncoder
 metas:
-  on_gpu: true
+  on_gpu: false
   model_name: densenet161
 
 with:

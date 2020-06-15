@@ -1,5 +1,5 @@
-name: pytorch densenet161
-description: an image with the encoder of DenseNet161 from torchvision models
+name: pytorch AlexNet
+description: an image encoder of AlexNet from torchvision models
 author: Saransh (github.com/saranshbh)
 url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub
@@ -8,7 +8,7 @@ update: nightly
 vendor: Jina AI Limited
 license: apache-2.0
 keywords:
-  - pretrained
+  - AlexNet model
   - ImageNet
-  - average search
-  - densenet cnn
+  - Relu search
+  - pretrained
