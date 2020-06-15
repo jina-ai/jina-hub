@@ -5,5 +5,5 @@ metas:
   py_modules: onnx.py
 
 with:
-  output_feature: ImageNet
+  output_feature: np.random.randn(10, 3, 224, 224).astype(np.float32)
   model_path: https://media.githubusercontent.com/media/onnx/models/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx
