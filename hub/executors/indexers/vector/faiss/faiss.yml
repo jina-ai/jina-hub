@@ -1,0 +1,6 @@
+!FaissIndexer
+with:
+  index_key: 'IVF10,PQ4'
+  index_filename: 'faiss.tgz'
+metas:
+  workspace: './workspace'
