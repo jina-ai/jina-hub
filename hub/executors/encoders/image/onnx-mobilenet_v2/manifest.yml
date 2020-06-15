@@ -1,6 +1,6 @@
 name: onnx mobilenet_v2
 description: an image with pre downloaded encoder of mobilenet_v2 from onnx
-author: Kashyap Vadrevu (kashyap.vad@gmail.com
+author: Kashyap Vadrevu (kashyap.vad@gmail.com)
 url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.0
