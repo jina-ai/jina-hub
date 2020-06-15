@@ -1,9 +1,8 @@
 !OnnxImageEncoder
 metas:
-  workspace: $TMP_WORKSPACE
+  workspace: './workspace'
   name: onnx_mobilenet
-  py_modules: onnx.py
 
 with:
-  output_feature: np.random.randn(10, 3, 224, 224).astype(np.float32)
+  output_feature: data
   model_path: https://media.githubusercontent.com/media/onnx/models/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx
