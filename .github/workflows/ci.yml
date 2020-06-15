@@ -62,17 +62,17 @@ jobs:
         with:
           repository: jina-ai/hub-builder
           path: builder
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/api
           path: builder/api
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/jina-hub
           path: builder/hub
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
           rm -rf builder/hub/hub
           cp hub build.tmp2 -Rv builder/hub
@@ -80,12 +80,12 @@ jobs:
         with:
           repository: jina-ai/jina
           path: builder/src/jina
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/hub-status
           path: builder/status
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.JINA_DEV_BOT }}
       - name: Docker Build and Test
         run: |
           if [[ -s builder/hub/build.tmp2 ]]; then
