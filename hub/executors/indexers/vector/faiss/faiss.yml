@@ -4,3 +4,4 @@ with:
   index_filename: 'faiss.tgz'
 metas:
   workspace: './workspace'
+  name: 'faiss_indexer'
