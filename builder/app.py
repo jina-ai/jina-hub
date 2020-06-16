@@ -13,7 +13,7 @@ from ruamel.yaml import YAML
 
 yaml = YAML()
 allowed = {'name', 'description', 'author', 'url', 'documentation', 'version', 'vendor', 'license', 'avatar',
-           'platform', 'update'}
+           'platform', 'update', 'keywords'}
 required = {'name', 'description'}
 sver_regex = r'^(=|>=|<=|=>|=<|>|<|!=|~|~>|\^)?(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)' \
              r'\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)' \
