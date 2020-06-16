@@ -3,7 +3,6 @@ name: CI
 on: [pull_request]
 
 jobs:
-
   commit-lint:
     runs-on: ubuntu-latest
     steps:
@@ -13,7 +12,7 @@ jobs:
       - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
       - uses: wagoid/commitlint-github-action@v1
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   label-pr:
     needs: commit-lint
@@ -60,40 +59,17 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
       - uses: actions/checkout@v2
         with:
-          repository: jina-ai/hub-builder
-          path: builder
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/api
-          path: builder/api
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/jina-hub
-          path: builder/hub
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          rm -rf builder/hub/hub
-          cp hub build.tmp2 -Rv builder/hub
-      - uses: actions/checkout@v2
-        with:
           repository: jina-ai/jina
-          path: builder/src/jina
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/hub-status
-          path: builder/status
+          path: src/jina
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker Build and Test
         run: |
-          if [[ -s builder/hub/build.tmp2 ]]; then
-            pip install builder/src/jina[docker]
-            pip install builder/src/jina[http]
-            pip install -r builder/builder/requirements.txt
-            cat builder/hub/build.tmp2 | xargs -I % python builder/app.py --bleach-first --test --target=%
+          if [[ -s build.tmp2 ]]; then
+            pip install src/jina[docker]
+            pip install src/jina[http]
+            cat build.tmp2 | xargs -n1 python builder/app.py --test --target
           else
             echo "nothing to build"
           fi
         timeout-minutes: 20
+
