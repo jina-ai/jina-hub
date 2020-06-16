@@ -1,0 +1,6 @@
+!TernausNetEncoder
+metas:
+  on_gpu: true
+  workspace: './workspace'
+  name: auto_encoder_pytorch
+  py_modules: terausnet.py
