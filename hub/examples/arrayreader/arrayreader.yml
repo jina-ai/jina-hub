@@ -1,0 +1,5 @@
+!ArrayReader
+metas:
+  name: my-io
+  py_modules: io.py
+  workspace: ./
