@@ -1,0 +1,7 @@
+!NmslibIndexer
+metas:
+  workspace: './workspace'
+  name: indexer_nmslib
+
+with:
+  index_filename: np.test.gz

@@ -1,0 +1,7 @@
+!AnnoyIndexer
+metas:
+  workspace: './workspace'
+  name: indexer_annoy
+
+with:
+  index_filename: np.test.gz
