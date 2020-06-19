@@ -1,0 +1,8 @@
+!OnnxImageEncoder
+metas:
+  workspace: './workspace'
+  name: onnx_mobilenet
+
+with:
+  output_feature: data
+  model_path: https://media.githubusercontent.com/media/onnx/models/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx
