@@ -1,0 +1,9 @@
+!ImageTorchEncoder
+
+metas:
+  on_gpu: false
+  workspace: $TMP_WORKSPACE
+  model_name: squeezenet1_0
+
+with:
+  pooling_strategy: max

@@ -1,0 +1,10 @@
+!ImageTorchEncoder
+
+metas:
+  on_gpu: false
+  batch_size: $BATCH_SIZE
+  workspace: $TMP_WORKSPACE
+  model_name: resnext50_32x4d
+
+with:
+  pooling_strategy: max

@@ -1,0 +1,13 @@
+name: pytorch Inception_v3
+description: an image encoder of Inception_v3 model from torchvision pretrained on ImageNet dataset.
+author: Saransh (github.com/saranshbh)
+url: https://jina.ai
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.3
+update: nightly
+vendor: Jina AI Limited
+license: apache-2.0
+keywords:
+  - Inception_v3 model
+  - ImageNet pretrained
+  - fixed image size

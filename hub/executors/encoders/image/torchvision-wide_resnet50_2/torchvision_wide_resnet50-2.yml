@@ -1,0 +1,10 @@
+!ImageTorchEncoder
+
+metas:
+  on_gpu: false
+  batch_size: $BATCHSIZE
+  workspace: $TMP_WORKSPACE
+  model_name: wide_resnet50_2
+
+with:
+  pooling_strategy: max

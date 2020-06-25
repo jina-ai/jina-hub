@@ -1,0 +1,14 @@
+name: pytorch GoogLeNet
+description: an image encoder of GoogLeNet from torchvision models
+author: Saransh (github.com/saranshbh)
+url: https://jina.ai
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.3
+update: nightly
+vendor: Jina AI Limited
+license: apache-2.0
+keywords:
+  - GoogLeNet model
+  - ImageNet pretrained
+  - inception-upgrade
+  - fixed image size
