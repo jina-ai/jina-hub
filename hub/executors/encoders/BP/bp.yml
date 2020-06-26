@@ -1,0 +1,5 @@
+!bp
+metas:
+  name: bp
+  py_modules: BP.py
+  workspace: ./
