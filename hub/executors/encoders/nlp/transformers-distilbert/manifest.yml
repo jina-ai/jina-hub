@@ -1,0 +1,8 @@
+name: Distilbert Transformer
+description: Using transformers for encoding text with pytorch backend. By default, distilbert-base-cased is used with the pytorch backend.
+author: Jayashri Masilamani (jayashri1394@gmail.com)
+url: https://jina.ai
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+vendor: Jina AI Limited
+license: apache-2.0
