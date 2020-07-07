@@ -8,3 +8,4 @@ RUN pip install transformers --no-cache-dir --compile && \
 RUN pip install jina
 
 ENTRYPOINT ["jina", "pod", "--yaml-path", "distilbert.yml"]
+
