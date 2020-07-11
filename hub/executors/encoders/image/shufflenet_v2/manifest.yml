@@ -1,0 +1,10 @@
+name: paddle shufflenet_v2
+description: An image encoder of shufflenet v2 based on paddlehub
+author: Weiwei Wang (weiweiwangnk@gmail.com)
+url: NA
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.4
+keywords:
+  - image
+  - shufflenet v2
+  - encoder

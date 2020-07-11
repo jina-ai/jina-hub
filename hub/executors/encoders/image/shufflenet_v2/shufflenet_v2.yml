@@ -1,0 +1,4 @@
+!ImagePaddlehubEncoder
+with:
+  model_name: 'shufflenet_v2_imagenet'
+
