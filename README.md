@@ -120,11 +120,11 @@ Except `Dockerfile`, all others are optional to build a valid Pod image dependin
     
 ### Step-by-Step Example
 
-In this example, we consider the scenario where we create a new executor and want to reuse it in another project, without touching [`jina-ai/jina`](https://github.com/jina-ai/jina/). All files required in this guide are available at [`hub/examples/mwu_encoder`](/hub/examples/mwu_encoder).
+In this example, we consider the scenario where we create a new executor and want to reuse it in another project, without touching [`jina-ai/jina`](https://github.com/jina-ai/jina/). All files required in this guide are available at [`hub/examples/mwu_encoder`](/legacy/hub/examples/mwu_encoder).
 
 #### 1. Write Your Executor and Config
 
-We write a new dummy encoder named `MWUEncoder` in [`mwu_encoder.py`](hub/examples/mwu_encoder/mwu_encoder.py) which encodes any input into a random 3-dimensional vector. This encoder has a dummy parameter `greetings` which prints a greeting message on start and on every encode. In [`mwu_encoder.yml`](hub/examples/mwu_encoder/mwu_encoder.yml), the `metas.py_modules` tells Jina to load the class of this executor from `mwu_encoder.py`.
+We write a new dummy encoder named `MWUEncoder` in [`mwu_encoder.py`](legacy/hub/examples/mwu_encoder/mwu_encoder.py) which encodes any input into a random 3-dimensional vector. This encoder has a dummy parameter `greetings` which prints a greeting message on start and on every encode. In [`mwu_encoder.yml`](legacy/hub/examples/mwu_encoder/mwu_encoder.yml), the `metas.py_modules` tells Jina to load the class of this executor from `mwu_encoder.py`.
 
 ```yaml
 !MWUEncoder
@@ -301,7 +301,7 @@ from jina.flow import Flow
 
 f = (Flow()
         .add(name='my-encoder', image='jinaai/hub.examples.mwu_encoder',
-             volumes='./abc', yaml_path='hub/examples/mwu-encoder/mwu_encoder_ext.yml', 
+             volumes='./abc', yaml_path='legacy/hub/examples/mwu-encoder/mwu_encoder_ext.yml', 
              port_in=55555, port_out=55556)
         .add(name='my-indexer', yaml_path='indexer.yml'))
 ```
@@ -358,13 +358,13 @@ Your image will be published as `jinaai/hub.executors.encoders.awesomeness`.
 | `documentation` | URL to get documentation on the image (string) | `https://docs.jina.ai` |
 | `version` | Version of the image, it should be [Semantic versioning-compatible](http://semver.org/) | `0.0.0` |
 | `vendor` | The name of the distributing entity, organization or individual (string) | `Jina AI Limited` |
-| `license` | License under which contained software is distributed, it should be [in this list](builder/osi-approved.yml) | `apache-2.0` |
+| `license` | License under which contained software is distributed, it should be [in this list](legacy/builder/osi-approved.yml) | `apache-2.0` |
 | `avatar` | A picture that personalizes and distinguishes your image | None |
-| `platform` | A list of CPU architectures that your image built on, each item should be [in this list](builder/platforms.yml) | `[linux/amd64]` |
+| `platform` | A list of CPU architectures that your image built on, each item should be [in this list](legacy/builder/platforms.yml) | `[linux/amd64]` |
 | `update` | The update policy of the image, see the table below for details  | `nightly` |
 | `keywords` | A list of strings help user to filter and locate your package  | None | 
 
-Please refer to [hub/examples/mwu_encoder/manifest.yml](hub/examples/mwu_encoder/manifest.yml) for the example.
+Please refer to [hub/examples/mwu_encoder/manifest.yml](legacy/hub/examples/mwu_encoder/manifest.yml) for the example.
 
 #### Remarks on the update policy
 
