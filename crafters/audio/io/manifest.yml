@@ -10,3 +10,4 @@ update: nightly
 keywords:
   - audio
   - librosa
+manifest_version: 1
