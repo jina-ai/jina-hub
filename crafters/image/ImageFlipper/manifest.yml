@@ -1,0 +1,11 @@
+manifest_version: 1
+name: ImageFlipper
+type: crafter
+description: flips the image horizontally or vertically. Flip image in the left/right or up/down direction respectively.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [Some keywords to describe the executor, separated by commas]
