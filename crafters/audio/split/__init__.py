@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 from typing import Dict, List
 
 import numpy as np
@@ -13,6 +10,7 @@ class AudioSegmenter(BaseSegmenter):
     .. warning::
         :class:'AudioSegmenter' is intended to be used internally.
     """
+
     def __init__(self, frame_length: int, hop_length: int, *args, **kwargs):
         """
         :param frame_length: the number of samples in each frame
