@@ -132,11 +132,15 @@ class HubIO:
         self._check_completeness()
 
         with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger):
-            image, log = self._client.images.build(path=self.args.path,
-                                                   tag=self.canonical_name,
-                                                   pull=self.args.pull,
-                                                   dockerfile=self.dockerfile_path_revised,
-                                                   rm=True)
+            import docker
+            try:
+                image, log = self._client.images.build(path=self.args.path,
+                                                       tag=self.canonical_name,
+                                                       pull=self.args.pull,
+                                                       dockerfile=self.dockerfile_path_revised,
+                                                       rm=True)
+            except docker.errors.BuildError:
+                self.logger.error(log)
 
         self.logger.success(
             f'🎉 built {image.tags[0]} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
