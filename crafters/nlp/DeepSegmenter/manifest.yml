@@ -1,0 +1,11 @@
+manifest_version: 1
+name: DeepSegmenter
+type: crafter
+description: Designed with ASR outputs in mind, DeepSegment uses BiLSTM + CRF for automatic sentence boundary detection. It significantly outperforms the standard libraries (spacy, nltk, corenlp ..) on imperfect text and performs similarly for perfectly punctuated text.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [Some keywords to describe the executor, separated by commas]
