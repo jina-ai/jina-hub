@@ -35,31 +35,6 @@ class AudioSegmenter(BaseSegmenter):
         return frames
 
 
-class AudioSlicer(AudioSegmenter):
-    """
-    :class:`AudioSlicer` segments the audio signal on the doc-level into frames on the chunk-level.
-    """
-
-    def __init__(self, frame_size: int, *args, **kwargs):
-        """
-        :param frame_size: the number of samples in each frame
-        """
-        super().__init__(frame_size, frame_size, *args, **kwargs)
-
-    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
-        """
-        Slices the input audio signal array into frames and saves the `ndarray` of each frame in the `blob` of each
-        Chunk.
-
-        :param blob: the ndarray of the audio signal
-        :return: a list of Chunk dicts with audio frames
-        """
-        frames = self.segment(blob)
-
-        return [dict(offset=idx, weight=1.0, blob=frame, length=frames.shape[0])
-                for idx, frame in enumerate(frames)]
-
-
 class SlidingWindowAudioSlicer(AudioSegmenter):
     """
     :class:`SlidingWindowAudioSlicer` segments the audio signal on the doc-level into frames on the chunk-level with a
