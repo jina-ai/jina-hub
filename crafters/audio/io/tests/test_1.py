@@ -1,10 +1,8 @@
-import unittest
-
-from . import AudioReader
+from .. import AudioReader
 
 
-class MyTestCase(unittest.TestCase):
-    def test_io(self):
+class TestClass:
+    def test_1(self):
         import librosa
         audio_file_path = librosa.util.example_audio_file()
 
@@ -12,8 +10,4 @@ class MyTestCase(unittest.TestCase):
         crafted_doc = crafter.craft(audio_file_path, 0)
 
         signal = crafted_doc['blob']
-        self.assertEqual(signal.shape, (2, 1355168))
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert signal.shape == (2, 1355168)

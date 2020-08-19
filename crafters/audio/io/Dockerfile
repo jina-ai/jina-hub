@@ -1,6 +1,13 @@
 FROM jinaai/jina:devel
 
-ADD * ./
-RUN pip install -r requirements.txt && python -m unittest test.py
+# setup the workspace
+COPY . /workspace
+WORKDIR /workspace
+
+# install the third-party requirements
+RUN pip install -r requirements.txt
+
+# for testing the image
+RUN pip install pytest && pytest
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
