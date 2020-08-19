@@ -1,12 +1,9 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
-from typing import Tuple, Dict, List, Union
+from typing import Tuple, Dict, List
 
 import numpy as np
 from jina.executors.crafters import BaseSegmenter
 
-from .helper import _crop_image, _move_channel_axis, _load_image
+from .helper import _move_channel_axis
 
 
 class SlidingWindowImageCropper(BaseSegmenter):
