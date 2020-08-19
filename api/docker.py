@@ -41,7 +41,12 @@ class HubIO:
         self.args = args
         try:
             import docker
+            from docker import APIClient
+
             self._client = docker.from_env()
+
+            # low-level client
+            self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
         except (ImportError, ModuleNotFoundError):
             self.logger.critical('requires "docker" dependency, please install it via "pip install jina[docker]"')
             raise
@@ -132,15 +137,20 @@ class HubIO:
         self._check_completeness()
 
         with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger):
-            import docker
-            try:
-                image, log = self._client.images.build(path=self.args.path,
-                                                       tag=self.canonical_name,
-                                                       pull=self.args.pull,
-                                                       dockerfile=self.dockerfile_path_revised,
-                                                       rm=True)
-            except docker.errors.BuildError:
-                self.logger.error(log)
+
+            streamer = self._raw_client.build(
+                decode=True,
+                path=self.args.path,
+                tag=self.canonical_name,
+                pull=self.args.pull,
+                dockerfile=self.dockerfile_path_revised,
+                rm=True
+            )
+
+            for chunk in streamer:
+                if 'stream' in chunk:
+                    for line in chunk['stream'].splitlines():
+                        self.logger.info(line)
 
         self.logger.success(
             f'🎉 built {image.tags[0]} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
