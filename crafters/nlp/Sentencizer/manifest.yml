@@ -1,6 +1,6 @@
 manifest_version: 1
 name: Sentencizer
-category: crafter
+kind:  crafter
 type: pod
 description: split the text on the doc-level into sentences on the chunk-level with a rule-base strategy.
 author: Jina AI Dev-Team (dev-team@jina.ai)

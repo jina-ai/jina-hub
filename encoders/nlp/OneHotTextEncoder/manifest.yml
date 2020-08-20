@@ -1,6 +1,6 @@
 manifest_version: 1
 name: OneHotTextEncoder
-category: encoder
+kind:  encoder
 type: pod
 description: One-hot Encoder encodes the characters into one-hot vectors. ONLY FOR TESTING USAGES.
 author: Jina AI Dev-Team (dev-team@jina.ai)

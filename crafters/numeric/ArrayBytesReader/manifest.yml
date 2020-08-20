@@ -1,6 +1,6 @@
 manifest_version: 1
 name: ArrayBytesReader
-category: crafter
+kind:  crafter
 type: pod
 description: converts a byte stream into a numpy array and save to the Document.
 author: Jina AI Dev-Team (dev-team@jina.ai)

@@ -1,6 +1,6 @@
 manifest_version: 1
 name: AudioSlicer
-category: crafter
+kind:  crafter
 type: pod
 description: provides the functions for segmenting audio signal.
 author: Jina AI Dev-Team (dev-team@jina.ai)

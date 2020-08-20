@@ -1,6 +1,6 @@
 manifest_version: 1
 name: NumpyIndexer
-category: indexer
+kind:  indexer
 type: pod
 description: An exhaustive vector indexers implemented with numpy and scipy.
 author: Jina AI Dev-Team (dev-team@jina.ai)

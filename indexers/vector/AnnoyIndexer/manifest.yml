@@ -1,6 +1,6 @@
 manifest_version: 1
 name: AnnoyIndexer
-category: indexer
+kind:  indexer
 type: pod
 description: """Annoy powered vector indexer"""
 version: 0.0.1

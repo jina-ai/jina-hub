@@ -1,6 +1,6 @@
 manifest_version: 1
 name: NGTIndexer
-category: indexer
+kind:  indexer
 type: pod
 description: NGT powered vector indexer
 author: Jina AI Dev-Team (dev-team@jina.ai)

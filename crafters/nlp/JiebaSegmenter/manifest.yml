@@ -1,6 +1,6 @@
 manifest_version: 1
 name: JiebaSegmenter
-category: crafter
+kind:  crafter
 type: pod
 description: split the chinese text on the doc-level into words on the chunk-level with `jieba`.
 author: Jina AI Dev-Team (dev-team@jina.ai)

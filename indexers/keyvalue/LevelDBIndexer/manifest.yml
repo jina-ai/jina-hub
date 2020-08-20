@@ -1,6 +1,6 @@
 manifest_version: 1
 name: LevelDBIndexer
-category: indexer
+kind:  indexer
 type: pod
 description: use `LevelDB` to save and query protobuf document.
 author: Jina AI Dev-Team (dev-team@jina.ai)

@@ -1,6 +1,6 @@
 manifest_version: 1
 name: RandomImageCropper
-category: crafter
+kind:  crafter
 type: pod
 description: crops the image with a random crop box. The coordinate is the same coordinate-system
 author: Jina AI Dev-Team (dev-team@jina.ai)

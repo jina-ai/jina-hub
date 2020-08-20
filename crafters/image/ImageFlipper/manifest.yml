@@ -1,6 +1,6 @@
 manifest_version: 1
 name: ImageFlipper
-category: crafter
+kind:  crafter
 type: pod
 description: flips the image horizontally or vertically. Flip image in the left/right or up/down direction respectively.
 author: Jina AI Dev-Team (dev-team@jina.ai)

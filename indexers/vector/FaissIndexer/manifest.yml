@@ -1,6 +1,6 @@
 manifest_version: 1
 name: FaissIndexer
-category: indexer
+kind:  indexer
 type: pod
 description: Faiss powered vector indexer
 author: Jina AI Dev-Team (dev-team@jina.ai)
