@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from .. import TransformEncoder
 
+
 class RandomGaussianEncoder(TransformEncoder):
     """
     :class:`RandomGaussianEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
