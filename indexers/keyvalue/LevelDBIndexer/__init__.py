@@ -9,9 +9,9 @@ from jina.executors.indexers.keyvalue import BasePbIndexer
 from jina.proto import jina_pb2
 
 
-class LeveldbIndexer(BasePbIndexer):
+class LevelDBIndexer(BasePbIndexer):
     """
-    :class:`LeveldbIndexer` use `LevelDB` to save and query protobuf chunk/document.
+    :class:`LevelDBIndexer` use `LevelDB` to save and query protobuf document.
     """
 
     def get_add_handler(self):
