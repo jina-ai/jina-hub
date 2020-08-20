@@ -7,7 +7,32 @@ import numpy as np
 from jina.executors.indexers.vector import BaseNumpyIndexer
 
 
-class NaiveIndexer(BaseNumpyIndexer):
+def _ext_arrs(A, B):
+    nA, dim = A.shape
+    A_ext = np.ones((nA, dim * 3))
+    A_ext[:, dim:2 * dim] = A
+    A_ext[:, 2 * dim:] = A ** 2
+
+    nB = B.shape[0]
+    B_ext = np.ones((dim * 3, nB))
+    B_ext[:dim] = (B ** 2).T
+    B_ext[dim:2 * dim] = -2.0 * B.T
+    return A_ext, B_ext
+
+
+def _euclidean(A, B):
+    A_ext, B_ext = _ext_arrs(A, B)
+    sqdist = A_ext.dot(B_ext).clip(min=0)
+    return np.sqrt(sqdist)
+
+
+def _cosine(A, B):
+    A_ext, B_ext = _ext_arrs(A / np.linalg.norm(A, ord=2, axis=1, keepdims=True),
+                             B / np.linalg.norm(B, ord=2, axis=1, keepdims=True))
+    return A_ext.dot(B_ext).clip(min=0) / 2
+
+
+class NumpyIndexer(BaseNumpyIndexer):
     """An exhaustive vector indexers implemented with numpy and scipy. """
 
     def __init__(self, metric: str = 'euclidean',
@@ -58,32 +83,3 @@ class NaiveIndexer(BaseNumpyIndexer):
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         return vecs
-
-
-class NumpyIndexer(NaiveIndexer):
-    """Depreciated, will be removed in the future"""
-
-
-def _ext_arrs(A, B):
-    nA, dim = A.shape
-    A_ext = np.ones((nA, dim * 3))
-    A_ext[:, dim:2 * dim] = A
-    A_ext[:, 2 * dim:] = A ** 2
-
-    nB = B.shape[0]
-    B_ext = np.ones((dim * 3, nB))
-    B_ext[:dim] = (B ** 2).T
-    B_ext[dim:2 * dim] = -2.0 * B.T
-    return A_ext, B_ext
-
-
-def _euclidean(A, B):
-    A_ext, B_ext = _ext_arrs(A, B)
-    sqdist = A_ext.dot(B_ext).clip(min=0)
-    return np.sqrt(sqdist)
-
-
-def _cosine(A, B):
-    A_ext, B_ext = _ext_arrs(A / np.linalg.norm(A, ord=2, axis=1, keepdims=True),
-                             B / np.linalg.norm(B, ord=2, axis=1, keepdims=True))
-    return A_ext.dot(B_ext).clip(min=0) / 2
