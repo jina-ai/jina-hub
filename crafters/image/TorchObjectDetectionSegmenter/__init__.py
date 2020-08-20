@@ -30,7 +30,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
 
     def __init__(self, model_name: str = None,
                  channel_axis: int = 0,
-                 confidence_threshold: int = 0.0,
+                 confidence_threshold: float = 0.0,
                  label_name_map: Dict[int, str] = None,
                  *args, **kwargs):
         """

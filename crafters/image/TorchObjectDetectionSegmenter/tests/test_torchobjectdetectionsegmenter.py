@@ -1,15 +1,21 @@
 import os
-from unittest.mock import patch
-
 import numpy as np
+from PIL import Image
 
+from unittest.mock import patch
 from .. import TorchObjectDetectionSegmenter
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
+def create_test_image(output_fn, size_width=50, size_height=50):
+    image = Image.new('RGB', size=(size_width, size_height), color=(155, 0, 0))
+    with open(output_fn, "wb") as f:
+        image.save(f, 'jpeg')
+
 def create_random_img_array(img_height, img_width):
     import numpy as np
     return np.random.randint(0, 256, (img_height, img_width, 3))
+
 
 class MockModel:
     def __init__(self):
@@ -69,8 +75,7 @@ def test_encoding_fasterrcnn_results():
     assert len(chunks) == 0
 
 
-def test_encoding_fasterrcnn_results_real_image(self):
-    from PIL import Image
+def test_encoding_fasterrcnn_results_real_image():
     """
     Credit for the image used in this test: 
     Photo by <a href="/photographer/createsima-47728">createsima</a> from <a href="https://freeimages.com/">FreeImages</a>
@@ -98,7 +103,7 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[0]['location'] == (541, 992)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[0]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (67, 24, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -108,7 +113,7 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[1]['location'] == (496, 201)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[1]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (104, 161, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -118,7 +123,7 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[2]['location'] == (524, 574)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[2]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (77, 131, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -128,7 +133,7 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[3]['location'] == (539, 969)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[3]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (66, 27, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -138,7 +143,7 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[4]['location'] == (530, 934)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[4]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (74, 18, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -148,7 +153,7 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[5]['location'] == (517, 377)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[5]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (82, 154, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -158,7 +163,7 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[6]['location'] == (532, 919)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[6]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (70, 19, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -169,7 +174,7 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[7]['location'] == (498, 702)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[7]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (106, 169, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -179,7 +184,7 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[8]['location'] == (522, 1046)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[8]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (88, 164, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -189,14 +194,14 @@ def test_encoding_fasterrcnn_results_real_image(self):
     assert chunks[9]['location'] == (536, 962)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[9]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (70, 17, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
 
-def test_encoding_maskrcnn_results(self):
-    img_array = self.create_random_img_array(128, 64)
+def test_encoding_maskrcnn_results():
+    img_array = create_random_img_array(128, 64)
     img_array = img_array / 255
     crafter = TorchObjectDetectionSegmenter(model_name='maskrcnn_resnet50_fpn',
                                             channel_axis=-1, confidence_threshold=0.98)
@@ -204,11 +209,9 @@ def test_encoding_maskrcnn_results(self):
     assert len(chunks) == 0
 
 
-
-def test_encoding_maskrcnn_results_real_image(self):
-    from PIL import Image
+def test_encoding_maskrcnn_results_real_image():
     """
-    Credit for the image used in this test: 
+    Credit for the image used in this test:
     Photo by <a href="/photographer/createsima-47728">createsima</a> from <a href="https://freeimages.com/">FreeImages</a>
     https://www.freeimages.com/photo/cars-1407390
     TorchObjectDete@31595[I]:detected car with confidence 0.996136486530304 at position (518, 379) and size (85, 152)
@@ -237,7 +240,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[0]['location'] == (518, 379)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[0]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (85, 152, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -247,7 +250,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[1]['location'] == (527, 572)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[1]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (74, 134, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -257,7 +260,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[2]['location'] == (541, 993)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[2]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (66, 23, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -267,7 +270,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[3]['location'] == (531, 934)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[3]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (74, 19, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -277,7 +280,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[4]['location'] == (499, 196)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[4]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (103, 165, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -287,7 +290,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[5]['location'] == (532, 917)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[5]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (71, 20, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -297,7 +300,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[6]['location'] == (539, 968)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[6]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (68, 27, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -308,7 +311,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[7]['location'] == (499, 700)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[7]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (107, 167, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -318,7 +321,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[8]['location'] == (534, 142)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[8]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (64, 65, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
@@ -328,7 +331,7 @@ def test_encoding_maskrcnn_results_real_image(self):
     assert chunks[9]['location'] == (521, 1037)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
     blob = chunks[9]['blob']
-    assert (blob.shape[1] == blob.shape[0]), img.size
+    assert (blob.shape[1], blob.shape[0]) == img.size
     assert blob.shape == (90, 175, 3)
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
