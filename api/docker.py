@@ -135,7 +135,7 @@ class HubIO:
     def build(self):
         """A wrapper of docker build """
         self._check_completeness()
-
+        is_build_success = True
         with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger):
 
             streamer = self._raw_client.build(
@@ -144,24 +144,42 @@ class HubIO:
                 tag=self.canonical_name,
                 pull=self.args.pull,
                 dockerfile=self.dockerfile_path_revised,
-                rm=True
+                rm=False
             )
 
             for chunk in streamer:
                 if 'stream' in chunk:
                     for line in chunk['stream'].splitlines():
-                        self.logger.info(line)
+                        if 'error' in line.lower():
+                            self.logger.critical(line)
+                            is_build_success = False
+                        elif 'warning' in line.lower():
+                            self.logger.warning(line)
+                        else:
+                            self.logger.info(line)
 
-        self.logger.success(
-            f'🎉 built {image.tags[0]} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
+        if is_build_success:
+            # compile it again, but this time don't show the log
+            image, log = self._client.images.build(path=self.args.path,
+                                                   tag=self.canonical_name,
+                                                   pull=self.args.pull,
+                                                   dockerfile=self.dockerfile_path_revised,
+                                                   rm=True)
 
-        if self.args.push:
-            self.push(image.tags[0], self.readme_path)
+            # success
+            self.logger.success(
+                f'🎉 built {image.tags[0]} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
+
+            if self.args.push:
+                self.push(image.tags[0], self.readme_path)
+        else:
+            self.logger.error(f'can not build the image, please double check the log')
 
     def _check_completeness(self):
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
         self.manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
+        self.requirements_path = get_exist_path(self.args.path, 'requirements.txt')
 
         yaml_glob = glob.glob(os.path.join(self.args.path, '*.yml'))
         if yaml_glob:
@@ -169,12 +187,16 @@ class HubIO:
 
         py_glob = glob.glob(os.path.join(self.args.path, '*.py'))
 
+        test_glob = glob.glob(os.path.join(self.args.path, 'tests/test_*.py'))
+
         completeness = {
             'Dockerfile': self.dockerfile_path,
             'manifest.yml': self.manifest_path,
             'README.md': os.path.exists(self.readme_path),
+            'requirements.txt': os.path.exists(self.readme_path),
             '*.yml': yaml_glob,
-            '*.py': py_glob
+            '*.py': py_glob,
+            'tests': test_glob
         }
 
         self.logger.info(
