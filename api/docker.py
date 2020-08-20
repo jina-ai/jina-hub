@@ -48,8 +48,18 @@ class HubIO:
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
         except (ImportError, ModuleNotFoundError):
-            self.logger.critical('requires "docker" dependency, please install it via "pip install jina[docker]"')
+            self.logger.critical('requires "docker" dependency, please install it via "pip install docker"')
             raise
+
+    def new(self):
+        """Create a new executor using cookiecutter template """
+        try:
+            from cookiecutter.main import cookiecutter
+        except (ImportError, ModuleNotFoundError):
+            self.logger.critical('requires "cookiecutter" dependency, please install it via "pip install cookiecutter"')
+            raise
+
+        cookiecutter(self.args.template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
 
     def push(self, name: str = None, readme_path: str = None):
         """A wrapper of docker push """
