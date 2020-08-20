@@ -1,2 +1,0 @@
-Python packages required to install
- separated by commas
