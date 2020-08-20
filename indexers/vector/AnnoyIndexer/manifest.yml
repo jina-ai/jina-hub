@@ -1,6 +1,7 @@
 manifest_version: 1
 name: AnnoyIndexer
-type: indexer
+category: indexer
+type: pod
 description: """Annoy powered vector indexer"""
 version: 0.0.1
 license: apache-2.0

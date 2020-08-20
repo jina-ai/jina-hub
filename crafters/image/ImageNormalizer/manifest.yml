@@ -1,6 +1,7 @@
 manifest_version: 1
 name: ImageNormalizer
-type: crafter
+category: crafter
+type: pod
 description: it receives values of file names on the doc-level and returns image matrix on the chunk-level
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai

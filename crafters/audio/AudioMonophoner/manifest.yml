@@ -1,6 +1,7 @@
 manifest_version: 1
 name: AudioMonophoner
-type: crafter
+category: crafter
+type: pod
 description: makes the audio signal monophonic on doc-level.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai

@@ -1,6 +1,7 @@
 manifest_version: 1
 name: TorchObjectDetectionSegmenter
-type: crafter
+category: crafter
+type: pod
 description:  detects objects from an image using `torchvision detection models` and crops
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
