@@ -2,7 +2,7 @@ import os
 import shutil
 import numpy as np
 from jina.executors.indexers import BaseIndexer
-from jina.hub.indexers.vector.NumpyIndexer import NumpyIndexer
+from jina.executors.indexers.vector import NumpyIndexer
 
 from .. import NmsLibIndexer
 
