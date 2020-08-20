@@ -25,7 +25,6 @@ def rm_files(file_paths):
 
 
 def test_faiss_indexer():
-    print(f'JOAN')
     train_filepath = os.path.join(cur_dir, 'train.tgz')
     train_data = np.array(np.random.random([1024, 10]), dtype=np.float32)
     with gzip.open(train_filepath, 'wb', compresslevel=1) as f:
