@@ -35,7 +35,6 @@ def test_minranker():
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(np.array(match_idx), query_chunk_meta, match_chunk_meta)
     # check the matched docs are in descending order of the scores
-    # check the matched docs are in descending order of the scores
     assert doc_idx[0][1] > doc_idx[1][1]
     assert doc_idx[0][0] == 4294967294
     assert doc_idx[1][0] == 1
