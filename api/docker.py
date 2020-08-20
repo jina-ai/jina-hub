@@ -144,7 +144,7 @@ class HubIO:
                 tag=self.canonical_name,
                 pull=self.args.pull,
                 dockerfile=self.dockerfile_path_revised,
-                rm=False
+                rm=True
             )
 
             for chunk in streamer:
