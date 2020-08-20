@@ -8,7 +8,11 @@ from jina.executors.indexers import BaseVectorIndexer
 
 
 class MilvusIndexer(BaseVectorIndexer):
+    """Milvus powered vector indexer
 
+        For more information about Milvus:
+            - https://github.com/milvus-io/milvus/
+    """
     def __init__(self, host: str, port: int,
                  collection_name: str, index_type: str,
                  index_params: dict, *args, **kwargs):
@@ -20,7 +24,7 @@ class MilvusIndexer(BaseVectorIndexer):
         self.index_params = index_params
 
     def post_init(self):
-        from .milvusdb.milvusdbhandler import MilvusDBHandler
+        from .MilvusDBHandler import MilvusDBHandler
         super().post_init()
         self.milvus = MilvusDBHandler(self.host, self.port, self.collection_name)
 

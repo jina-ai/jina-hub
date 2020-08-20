@@ -3,27 +3,18 @@ import numpy as np
 from PIL import Image
 
 from unittest.mock import patch
-
 from .. import TorchObjectDetectionSegmenter
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
 
 def create_test_image(output_fn, size_width=50, size_height=50):
     image = Image.new('RGB', size=(size_width, size_height), color=(155, 0, 0))
     with open(output_fn, "wb") as f:
         image.save(f, 'jpeg')
 
-
 def create_random_img_array(img_height, img_width):
     import numpy as np
     return np.random.randint(0, 256, (img_height, img_width, 3))
-
-
-def create_test_img_array():
-    import numpy as np
-    img = np.array([i for i in range(100)]).reshape(10, 10)
-    return np.repeat(img[:, :, np.newaxis], 3, axis=2)
 
 
 class MockModel:
@@ -55,7 +46,7 @@ class MockModel:
         return self
 
 
-def test_encoding_mock_model_results(mocker):
+def test_encoding_mock_model_results():
     import torchvision.models.detection as detection_models
     img_array = create_random_img_array(128, 64)
     img_array = img_array / 255
