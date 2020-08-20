@@ -7,7 +7,7 @@ import numpy as np
 from jina.executors.indexers.vector import BaseNumpyIndexer
 
 
-class NmslibIndexer(BaseNumpyIndexer):
+class NmsLibIndexer(BaseNumpyIndexer):
     """nmslib powered vector indexer
 
     For documentation and explanation of each parameter, please refer to
