@@ -3,7 +3,7 @@ import shutil
 import numpy as np
 
 from jina.executors.indexers import BaseIndexer
-from jina.hub.indexers.vector.numpy import NumpyIndexer
+from jina.hub.indexers.vector.NumpyIndexer import NumpyIndexer
 from .. import AnnoyIndexer
 
 # fix the seed here
