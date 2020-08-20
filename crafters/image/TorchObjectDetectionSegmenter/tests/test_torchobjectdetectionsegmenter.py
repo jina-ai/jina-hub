@@ -1,7 +1,9 @@
 import os
-
 import numpy as np
 from PIL import Image
+
+from unittest.mock import patch
+
 from .. import TorchObjectDetectionSegmenter
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -57,7 +59,7 @@ def test_encoding_mock_model_results(mocker):
     import torchvision.models.detection as detection_models
     img_array = create_random_img_array(128, 64)
     img_array = img_array / 255
-    with mocker.patch(detection_models, 'fasterrcnn_resnet50_fpn', return_value=MockModel()):
+    with patch.object(detection_models, 'fasterrcnn_resnet50_fpn', return_value=MockModel()):
         crafter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.9,
                                                 label_name_map={0: 'zero',
                                                                 1: 'one',
