@@ -41,3 +41,5 @@ def test_minranker():
     assert doc_idx[1][0] == 1
     # check the number of matched docs
     assert len(doc_idx) == 2
+
+
