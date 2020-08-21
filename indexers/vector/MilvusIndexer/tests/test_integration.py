@@ -1,9 +1,9 @@
 import os
 import shutil
 import time
-import pytest
 
 import numpy as np
+import pytest
 from milvus import Milvus
 
 from .. import MilvusIndexer

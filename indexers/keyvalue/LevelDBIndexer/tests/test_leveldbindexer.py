@@ -4,6 +4,7 @@ import shutil
 import jina.proto.jina_pb2 as jina_pb2
 from google.protobuf.json_format import MessageToJson
 from jina.executors.indexers import BaseIndexer
+
 from .. import LevelDBIndexer
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

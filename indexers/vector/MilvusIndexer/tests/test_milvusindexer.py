@@ -2,6 +2,7 @@ import os
 import shutil
 
 from jina.executors.indexers import BaseIndexer
+
 from .. import MilvusIndexer
 
 

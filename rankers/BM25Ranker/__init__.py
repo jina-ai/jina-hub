@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 from typing import Dict
 
 import numpy as np
-
 from jina.executors.rankers import Chunk2DocRanker
 
 

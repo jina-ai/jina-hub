@@ -3,7 +3,6 @@ import numpy as np
 from .. import AudioNormalizer
 
 
-
 def test_audionormalizer():
     """here is my test code
 

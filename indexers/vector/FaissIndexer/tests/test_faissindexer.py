@@ -1,9 +1,10 @@
-import os
 import gzip
+import os
 import shutil
 
 import numpy as np
 from jina.executors.indexers import BaseIndexer
+
 from .. import FaissIndexer
 
 # fix the seed here
