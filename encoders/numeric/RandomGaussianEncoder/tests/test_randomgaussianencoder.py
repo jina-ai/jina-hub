@@ -6,7 +6,7 @@ import numpy as np
 
 from .. import RandomGaussianEncoder
 from jina.executors import BaseExecutor
-
+from ..transformerencoder import TransformEncoder
 
 
 input_dim = 28
@@ -39,9 +39,11 @@ def test_randomgaussianencoderload():
     encoder.train(train_data)
     filename = 'random_gaussian_model.model'
     pickle.dump(encoder.model, open(filename, 'wb'))
+    transform_encoder = TransformEncoder(model_path=filename)
     encoding_results(encoder)
     save_and_load(encoder, requires_train_after_load)
     save_and_load_config(encoder, requires_train_after_load, train_data)
+
 
 
 def encoding_results(encoder):
