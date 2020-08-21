@@ -1,20 +1,16 @@
 import os
-import shutil
-import numpy as np
 import pickle
+import shutil
+
+import numpy as np
 
 from .. import RandomGaussianEncoder
-from .. import TransformEncoder
+from jina.executors import BaseExecutor
 
-workspace = os.path.join(os.environ['TEST_WORKDIR'], 'test_tmp')
 
-def get_encoder(encoder):
-    assert encoder is not None
-    if encoder is not None:
-        encoder.workspace = workspace
-        assert os.path.exists(encoder.index_abspath)
-        tmp_files = encoder.save_abspath
-    return encoder
+
+input_dim = 28
+target_output_dim = 2
 
 
 def rm_files(file_paths):
@@ -26,25 +22,63 @@ def rm_files(file_paths):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
-def test_randomgaussianencodertrain(self):
-    input_dim = 28
-    target_output_dim = 7
-    encoder = get_encoder(RandomGaussianEncoder(output_dim=target_output_dim))
+def test_randomgaussianencodertrain():
+    requires_train_after_load = True
+    encoder = RandomGaussianEncoder(output_dim=target_output_dim)
     train_data = np.random.rand(2000, input_dim)
-    encoded_data = encoder.encode(train_data)
-    self.assertEqual(encoded_data.shape, (train_data.shape[0], self.target_output_dim))
-    self.assertIs(type(encoded_data), np.ndarray)
     encoder.train(train_data)
+    encoding_results(encoder)
+    save_and_load(encoder, requires_train_after_load)
+    save_and_load_config(encoder, requires_train_after_load, train_data)
 
 
-def test_randomgaussianencoderload(self):
-    input_dim = 28
-    target_output_dim = 2
-    encoder = get_encoder(RandomGaussianEncoder(output_dim=target_output_dim))
+def test_randomgaussianencoderload():
+    requires_train_after_load = False
+    encoder = RandomGaussianEncoder(output_dim=target_output_dim)
     train_data = np.random.rand(2000, input_dim)
     encoder.train(train_data)
     filename = 'random_gaussian_model.model'
-    assert os.path.exists(filename.index_abspath)
-    index_abspath = filename.index_abspath
     pickle.dump(encoder.model, open(filename, 'wb'))
-    rm_files([index_abspath])
+    encoding_results(encoder)
+    save_and_load(encoder, requires_train_after_load)
+    save_and_load_config(encoder, requires_train_after_load, train_data)
+
+
+def encoding_results(encoder):
+    assert encoder is not None
+    test_data = np.random.rand(10, input_dim)
+    encoded_data = encoder.encode(test_data)
+    assert encoded_data.shape == (test_data.shape[0], target_output_dim)
+    assert type(encoded_data) == np.ndarray
+
+
+def save_and_load(encoder, requires_train_after_load):
+    assert encoder is not None
+    test_data = np.random.rand(10, input_dim)
+    encoded_data_control = encoder.encode(test_data)
+    encoder.touch()
+    encoder.save()
+    assert os.path.exists(encoder.save_abspath)
+    encoder_loaded = BaseExecutor.load(encoder.save_abspath)
+
+    if not requires_train_after_load:
+        # some models are not deterministic when training, so even with same training data, we cannot ensure
+        # same encoding results
+        encoded_data_test = encoder_loaded.encode(test_data)
+        np.testing.assert_array_equal(
+            encoded_data_test, encoded_data_control)
+
+
+def save_and_load_config( encoder, requires_train_after_load,  train_data):
+    assert encoder is not None
+
+    encoder.save_config()
+    assert os.path.exists(encoder.save_abspath)
+    encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
+
+    if requires_train_after_load:
+        encoder_loaded.train(train_data)
+
+    test_data = np.random.rand(10, input_dim)
+    encoded_data_test = encoder_loaded.encode(test_data)
+    assert encoded_data_test.shape == (10, target_output_dim)

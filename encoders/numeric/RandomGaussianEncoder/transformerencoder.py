@@ -9,6 +9,7 @@ from jina.executors.decorators import batching
 from jina.executors.encoders import BaseNumericEncoder
 
 
+
 class TransformEncoder(BaseNumericEncoder):
     """
     :class:`TransformEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
