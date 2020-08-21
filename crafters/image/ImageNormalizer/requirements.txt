@@ -1,1 +1,3 @@
 
+jina
+Pillow
