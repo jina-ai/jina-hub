@@ -11,7 +11,6 @@ from ..transformerencoder import TransformEncoder
 input_dim = 28
 target_output_dim = 2
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-tmp_filepath = os.path.join(cur_dir, '/tmp')
 
 
 def rm_files(file_paths):
@@ -24,33 +23,28 @@ def rm_files(file_paths):
 
 
 def test_randomgaussianencodertrain():
+    train_data = np.random.rand(2000, input_dim)
     requires_train_after_load = True
     encoder = RandomGaussianEncoder(output_dim=target_output_dim)
-    train_data = np.random.rand(2000, input_dim)
     encoder.train(train_data)
     encoding_results(encoder)
     save_and_load(encoder, requires_train_after_load)
     save_and_load_config(encoder, requires_train_after_load, train_data)
-    rm_files([encoder.save_abspath])
 
 
 def test_randomgaussianencoderload():
+    train_data = np.random.rand(2000, input_dim)
     requires_train_after_load = False
     encoder = RandomGaussianEncoder(output_dim=target_output_dim)
-    train_data = np.random.rand(2000, input_dim)
-    encoder.train(train_data)
+    #encoder.train(train_data)
     filename = 'random_gaussian_model.model'
-    with open(tmp_filepath, 'wb') as f:
-        pickle.dump(encoder.model, f)
+    pickle.dump(encoder.model.fit_transform(train_data), open(filename, 'wb'))
     transform_encoder = TransformEncoder(model_path=filename)
-    encoding_results(encoder)
-    save_and_load(encoder, requires_train_after_load)
-    save_and_load_config(encoder, requires_train_after_load, train_data)
-
-    encoding_results(transform_encoder)
     save_and_load(transform_encoder, requires_train_after_load)
     save_and_load_config(transform_encoder, requires_train_after_load, train_data)
+    rm_files([transform_encoder.save_abspath])
     rm_files([filename])
+    rm_files([encoder.save_abspath])
 
 
 def encoding_results(encoder):
@@ -64,13 +58,15 @@ def encoding_results(encoder):
 def save_and_load(encoder, requires_train_after_load):
     assert encoder is not None
     test_data = np.random.rand(10, input_dim)
+
     encoded_data_control = encoder.encode(test_data)
+
     encoder.touch()
     encoder.save()
     assert os.path.exists(encoder.save_abspath)
-    encoder_loaded = BaseExecutor.load(encoder.save_abspath)
 
     if not requires_train_after_load:
+        encoder_loaded = BaseExecutor.load(encoder.save_abspath)
         # some models are not deterministic when training, so even with same training data, we cannot ensure
         # same encoding results
         encoded_data_test = encoder_loaded.encode(test_data)
@@ -91,4 +87,4 @@ def save_and_load_config(encoder, requires_train_after_load, train_data):
     test_data = np.random.rand(10, input_dim)
     encoded_data_test = encoder_loaded.encode(test_data)
     assert encoded_data_test.shape == (10, target_output_dim)
-    rm_files([encoder_loaded.config_abspath])
+    # rm_files([encoder_loaded.config_abspath])
