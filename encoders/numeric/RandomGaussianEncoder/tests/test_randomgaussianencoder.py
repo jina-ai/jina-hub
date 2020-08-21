@@ -10,7 +10,6 @@ from ..transformerencoder import TransformEncoder
 
 input_dim = 28
 target_output_dim = 2
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def rm_files(file_paths):
