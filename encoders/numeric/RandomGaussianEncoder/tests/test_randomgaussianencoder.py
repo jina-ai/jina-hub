@@ -8,9 +8,10 @@ from .. import RandomGaussianEncoder
 from jina.executors import BaseExecutor
 from ..transformerencoder import TransformEncoder
 
-
 input_dim = 28
 target_output_dim = 2
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+tmp_filepath = os.path.join(cur_dir, '/tmp')
 
 
 def rm_files(file_paths):
@@ -30,6 +31,7 @@ def test_randomgaussianencodertrain():
     encoding_results(encoder)
     save_and_load(encoder, requires_train_after_load)
     save_and_load_config(encoder, requires_train_after_load, train_data)
+    rm_files([encoder.save_abspath])
 
 
 def test_randomgaussianencoderload():
@@ -38,12 +40,17 @@ def test_randomgaussianencoderload():
     train_data = np.random.rand(2000, input_dim)
     encoder.train(train_data)
     filename = 'random_gaussian_model.model'
-    pickle.dump(encoder.model, open(filename, 'wb'))
+    with open(tmp_filepath, 'wb') as f:
+        pickle.dump(encoder.model, f)
     transform_encoder = TransformEncoder(model_path=filename)
     encoding_results(encoder)
     save_and_load(encoder, requires_train_after_load)
     save_and_load_config(encoder, requires_train_after_load, train_data)
 
+    encoding_results(transform_encoder)
+    save_and_load(transform_encoder, requires_train_after_load)
+    save_and_load_config(transform_encoder, requires_train_after_load, train_data)
+    rm_files([filename])
 
 
 def encoding_results(encoder):
@@ -71,7 +78,7 @@ def save_and_load(encoder, requires_train_after_load):
             encoded_data_test, encoded_data_control)
 
 
-def save_and_load_config( encoder, requires_train_after_load,  train_data):
+def save_and_load_config(encoder, requires_train_after_load, train_data):
     assert encoder is not None
 
     encoder.save_config()
@@ -84,3 +91,4 @@ def save_and_load_config( encoder, requires_train_after_load,  train_data):
     test_data = np.random.rand(10, input_dim)
     encoded_data_test = encoder_loaded.encode(test_data)
     assert encoded_data_test.shape == (10, target_output_dim)
+    rm_files([encoder_loaded.config_abspath])
