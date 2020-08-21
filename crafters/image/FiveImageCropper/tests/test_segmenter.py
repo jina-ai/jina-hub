@@ -1,4 +1,3 @@
-from . import JinaImageTestCase
 from .. import FiveImageCropper
 
 
