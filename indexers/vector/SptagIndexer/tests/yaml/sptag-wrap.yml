@@ -1,4 +1,4 @@
-!NmsLibIndexer
+!SptagIndexer
 with:
   ref_indexer:
     !NumpyIndexer
