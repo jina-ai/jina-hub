@@ -1,6 +1,5 @@
 from .. import TransformEncoder
 
-
 class FastICAEncoder(TransformEncoder):
     """
     :class:`FastICAEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
@@ -33,3 +32,4 @@ class FastICAEncoder(TransformEncoder):
                 n_components=self.output_dim,
                 whiten=self.whiten,
                 max_iter=self.max_iter)
+
