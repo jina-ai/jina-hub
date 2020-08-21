@@ -11,3 +11,5 @@ keywords:
   - audio
   - librosa
 manifest_version: 1
+type: pod
+kind: crafter
