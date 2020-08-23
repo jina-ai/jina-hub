@@ -1,0 +1,14 @@
+manifest_version: 1
+name: BigTransferEncoder
+kind: encoder
+description:
+  |
+  `BiTImageEncoder` is Big Transfer (BiT) presented by Google (https://github.com/google-research/big_transfer), this class use pretrained BiT to encode data from a ndarray, potentially B x (Channel x Height x Width) into a ndarray of `B x D`. Internally, :class:`BiTImageEncoder` wraps the models from https://storage.googleapis.com/bit_models/.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [Tensorflow, Computer Vision]
+type: pod
