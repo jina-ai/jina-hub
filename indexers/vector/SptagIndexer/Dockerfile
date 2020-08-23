@@ -13,7 +13,9 @@ RUN wget https://cmake.org/files/v3.15/cmake-3.15.5.tar.gz && \
     make -j2 && make install
 
 RUN git clone https://github.com/microsoft/SPTAG.git
-RUN cd SPTAG && mkdir build && cd build && cmake .. && make -j2 && ls .. && mv ../Release /app
+RUN cd SPTAG && mkdir build && cd build && cmake .. && \
+grep -rl python2.7 CMakeCache.txt | xargs sed -i 's/python2.7/python3.7/g' && \
+make -j2 && mv ../Release /app
 
 # so python can find the SPTAG module
 ENV PYTHONPATH=/app/Release

@@ -18,7 +18,7 @@ class SptagIndexer(BaseNumpyIndexer):
         sptag package dependency is only required at the query time.
     """
 
-    def __init__(self, dist_calc_method: str = 'L2', method: str = 'BKT',
+    def __init__(self, dist_calc_method: str = 'Cosine', method: str = 'BKT',
                  num_threads: int = 1,
                  *args, **kwargs):
         """
@@ -42,15 +42,12 @@ class SptagIndexer(BaseNumpyIndexer):
 
         # Set the thread number to speed up the build procedure in parallel
         _index.SetBuildParam("NumberOfThreads", str(self.num_threads))
-        _index.SetBuildParam("DistCalcMethod", self.method)
+        _index.SetBuildParam("DistCalcMethod", self.space)
 
         if _index.Build(vecs, vecs.shape[0]):
             return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        # if keys.dtype != np.float32:
-        #     raise ValueError('vectors should be ndarray of float32')
-
         ret = self.query_handler.Search(keys, top_k)
         idx, dist = zip(*ret)
         return self.int2ext_key[np.array(idx)], np.array(dist)

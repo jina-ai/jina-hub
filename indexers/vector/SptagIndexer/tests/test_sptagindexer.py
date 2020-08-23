@@ -26,7 +26,7 @@ def rm_files(file_paths):
 
 
 def test_sptagindexer():
-    with SptagIndexer(index_filename='np.test.gz', space='l2') as indexer:
+    with SptagIndexer(index_filename='np.test.gz') as indexer:
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
