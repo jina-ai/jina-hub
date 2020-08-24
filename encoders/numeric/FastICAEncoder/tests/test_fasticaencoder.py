@@ -3,6 +3,7 @@ import os
 import pickle
 import shutil
 
+from jina.executors.encoders.numeric import TransformEncoder
 from jina.executors import BaseExecutor
 from .. import FastICAEncoder
 
@@ -12,12 +13,11 @@ train_data = np.random.rand(2000, input_dim)
 
 def rm_files(tmp_files):
     for file in tmp_files:
-        if file:
-            if os.path.exists(file):
-                if os.path.isfile(file):
-                    os.remove(file)
-                elif os.path.isdir(file):
-                    shutil.rmtree(file, ignore_errors=False, onerror=None)
+        if file and os.path.exists(file):
+            if os.path.isfile(file):
+                os.remove(file)
+            elif os.path.isdir(file):
+                shutil.rmtree(file, ignore_errors=False, onerror=None)
 
 
 def test_FastICATestCaseTrainCase():
@@ -28,18 +28,20 @@ def test_FastICATestCaseTrainCase():
     encoding_results(encoder)
     save_and_load(encoder, requires_train_after_load)
     save_and_load_config(encoder, requires_train_after_load)
+    rm_files([encoder.save_abspath, encoder.config_abspath, encoder.model_path])
 
 def test_FastICATestCaseLoadCase():
     requires_train_after_load = False
     encoder = FastICAEncoder(
         output_dim=target_output_dim, whiten=True, num_features=input_dim, max_iter=200)
-
     encoder.train(train_data)
     filename = 'ica_model.model'
     pickle.dump(encoder.model, open(filename, 'wb'))
+    encoder = TransformEncoder(model_path=filename)
     encoding_results(encoder)
     save_and_load(encoder, requires_train_after_load)
     save_and_load_config(encoder, requires_train_after_load)
+    rm_files([encoder.save_abspath, encoder.config_abspath, encoder.model_path])
 
 
 def encoding_results(encoder):
@@ -47,7 +49,7 @@ def encoding_results(encoder):
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (test_data.shape[0], target_output_dim)
     assert type(encoded_data) is np.ndarray
-    rm_files([encoder.save_abspath, encoder.config_abspath, encoder.model_path])
+
 
 
 def save_and_load(encoder, requires_train_after_load):
@@ -64,10 +66,11 @@ def save_and_load(encoder, requires_train_after_load):
         encoded_data_test = encoder_loaded.encode(test_data)
         np.testing.assert_array_equal(
             encoded_data_test, encoded_data_control)
-    rm_files([encoder.save_abspath, encoder.config_abspath, encoder.model_path])
+
 
 
 def save_and_load_config(encoder, requires_train_after_load):
+    test_data = np.random.rand(10, input_dim)
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
@@ -75,7 +78,7 @@ def save_and_load_config(encoder, requires_train_after_load):
     if requires_train_after_load:
         encoder_loaded.train(train_data)
 
-    test_data = np.random.rand(10, input_dim)
+
     encoded_data_test = encoder_loaded.encode(test_data)
     assert encoded_data_test.shape == (10, target_output_dim)
-    rm_files([encoder.save_abspath, encoder.config_abspath, encoder.model_path])
+
