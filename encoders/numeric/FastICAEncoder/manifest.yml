@@ -1,0 +1,11 @@
+manifest_version: 1
+name: FastICAEncoder
+type: encoder
+description: `FastICAEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [encoder, numeric, ica]
