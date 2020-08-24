@@ -4,9 +4,7 @@ Scann powered vector indexer
 
 ## Usage
 
-If you are using linux 
-
-To build Scann from source  [follow instructions from here](https://github.com/google-research/google-research/tree/master/scann). 
+If you are using are not using linux it is necessary to build from source  [follow instructions from here](https://github.com/google-research/google-research/tree/master/scann). 
 
 ## Possible bugs
 
