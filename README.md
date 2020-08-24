@@ -143,7 +143,7 @@ The documentations of the YAML syntax [can be found here](http://0.0.0.0:8000/ch
 The `Dockerfile` in this example is as simple as three lines, 
 
 ```Dockerfile
-FROM jinaai/jina:devel
+FROM jinaai/jina
 
 ADD *.py mwu_encoder.yml ./
 
@@ -154,7 +154,7 @@ Let's now look at these three lines one by one.
 
 >
 ```Dockerfile
-FROM jinaai/jina:devel
+FROM jinaai/jina
 ``` 
 
 In the first line, we choose `jinaai/jina:devel` as [the base image](https://docs.docker.com/glossary/#base-image), which corresponds to the latest master of [`jina-ai/jina`](https://github.com/jina-ai/jina). But of course, you are free to use others, e.g. `tensorflow/tensorflow:nightly-gpu-jupyter`. 

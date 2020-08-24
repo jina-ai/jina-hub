@@ -1,7 +1,10 @@
 manifest_version: 1
 name: FastICAEncoder
-type: encoder
-description: `FastICAEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
+kind: encoder
+type: pod
+description:
+  |
+  `FastICAEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
