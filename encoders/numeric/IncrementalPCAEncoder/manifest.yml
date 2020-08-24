@@ -10,5 +10,5 @@ vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.1
 license: apache-2.0
-keywords: [sklearn, decomposition, IncrementalPCA, pca]
+keywords: [sklearn,decomposition,IncrementalPCA,pca]
 type: pod
