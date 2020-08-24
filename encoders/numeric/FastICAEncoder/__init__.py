@@ -1,4 +1,4 @@
-from .. import TransformEncoder
+from jina.executors.encoders.numeric import TransformEncoder
 
 class FastICAEncoder(TransformEncoder):
     """
