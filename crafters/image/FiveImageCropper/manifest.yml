@@ -1,6 +1,7 @@
 manifest_version: 1
 name: FiveImageCropper
-type: crafter
+kind:  crafter
+type: pod
 description: crops the image into four corners and the central crop.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai

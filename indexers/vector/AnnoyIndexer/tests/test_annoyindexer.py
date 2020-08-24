@@ -1,9 +1,10 @@
 import os
 import shutil
-import numpy as np
 
+import numpy as np
 from jina.executors.indexers import BaseIndexer
-from jina.hub.indexers.vector.numpy import NumpyIndexer
+from jina.executors.indexers.vector import NumpyIndexer
+
 from .. import AnnoyIndexer
 
 # fix the seed here

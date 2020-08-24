@@ -9,7 +9,6 @@ from jina.executors.crafters import BaseCrafter
 from .helper import _crop_image, _move_channel_axis, _load_image
 
 
-
 class CenterImageCropper(BaseCrafter):
     """
     :class:`CenterImageCropper` crops the image with the center crop box. The coordinate is the same coordinate-system
