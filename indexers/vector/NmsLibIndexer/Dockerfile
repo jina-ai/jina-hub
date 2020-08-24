@@ -4,7 +4,6 @@ FROM jinaai/jina
 COPY . /workspace
 WORKDIR /workspace
 
-RUN apt-get update && apt-get install --no-install-recommends -y gcc libboost-all-dev libgsl0-dev libeigen3-dev
 # install the third-party requirements
 RUN pip install -r requirements.txt
 
