@@ -1,8 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from .transformerencoder import TransformEncoder
-
+from jina.executors.encoders.numeric import TransformEncoder
 
 class RandomSparseEncoder(TransformEncoder):
     """
