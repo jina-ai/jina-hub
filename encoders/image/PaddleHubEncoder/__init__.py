@@ -7,11 +7,11 @@ from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BasePaddleEncoder
 
 
-class ImagePaddlehubEncoder(BasePaddleEncoder):
+class PaddleHubEncoder(BasePaddleEncoder):
     """
-    :class:`ImagePaddlehubEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
+    :class:`PaddleHubEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
-    Internally, :class:`ImagePaddlehubEncoder` wraps the models from `paddlehub`.
+    Internally, :class:`PaddleHubEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
     """
 
