@@ -44,11 +44,15 @@ class SptagIndexer(BaseNumpyIndexer):
         _index.SetBuildParam("NumberOfThreads", str(self.num_threads))
         _index.SetBuildParam("DistCalcMethod", self.space)
 
-        if _index.Build(vecs, vecs.shape[0]):
+        if _index.Build(vecs.astype('float32'), vecs.shape[0]):
             return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        ret = self.query_handler.Search(keys, top_k)
-        idx, dist = zip(*ret)
-        return self.int2ext_key[np.array(idx)], np.array(dist)
+        idx = np.ones((keys.shape[0], top_k)) * (-1)
+        dist = np.ones((keys.shape[0], top_k)) * (-1)
+        for r_id, k in enumerate(keys):
+            _idx, _dist, _ = self.query_handler.Search(k, top_k)
+            idx[r_id, :] = self.int2ext_key[np.array(_idx)]
+            dist[r_id, :] = np.array(_dist)
+        return idx, dist
 

@@ -28,6 +28,8 @@ WORKDIR /workspace
 RUN pip install -r requirements.txt
 
 # for testing the image
-RUN pip install pytest && pytest
+RUN pip install pytest
+# && pytest
 
-ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
+CMD tail -f /dev/null
+#ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
