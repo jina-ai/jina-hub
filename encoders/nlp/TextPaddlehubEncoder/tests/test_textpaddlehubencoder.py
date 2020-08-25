@@ -33,7 +33,7 @@ class MockModule:
 
 
 def _test_textpaddlehubencoder_encode():
-    encoder = TextPaddlehubEncoder()
+    encoder = TextPaddlehubEncoder(max_length=10)
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
     add_tmpfile(encoder.save_abspath, encoder.config_abspath)
