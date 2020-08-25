@@ -19,8 +19,7 @@ def get_encoder():
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
-    return BigTransferEncoder(
-        model_path='/tmp/bit_models/Imagenet21k/R152x4/feature_vectors', channel_axis=1, metas=metas)
+    return BigTransferEncoder(model_path = 'pretrained', channel_axis=1, metas=metas)
 
 
 def test_encoding_results():
