@@ -30,7 +30,7 @@ def test_randomgaussianencodertrain():
     transform_encoder = None
     save_and_load(encoder, transform_encoder, requires_train_after_load)
     save_and_load_config(encoder, transform_encoder, requires_train_after_load, train_data)
-    rm_files([encoder.save_abspath])
+    rm_files([encoder.save_abspath, encoder.config_abspath])
 
 
 def test_randomgaussianencoderload():
@@ -45,6 +45,7 @@ def test_randomgaussianencoderload():
     rm_files([transform_encoder.save_abspath])
     rm_files([filename])
     rm_files([encoder.save_abspath])
+    rm_files([encoder.save_abspath, encoder.config_abspath])
 
 def encoding_results(encoder):
     assert encoder is not None
