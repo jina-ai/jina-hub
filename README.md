@@ -4,6 +4,14 @@ Jina Hub is an open-registry for hosting Jina executors via container images. It
 
 From Jina 0.4.10, Jina Hub is referred as a Git Submodule in [`jina-ai/jina`](https://github.com/jina-ai/jina).
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
 ## Create a New Executor
 
 ```bash
@@ -33,6 +41,33 @@ jina hub build /MyAwesomeExecutor/
 ```
 
 More Hub CLI usage can be found via `jina hub build --help`
+
+## References
+
+### Schema of `manifest.yml`
+
+`manifest.yml` must exist if you want to publish your Pod image to Jina Hub.
+
+`manifest.yml` annotates your image so that it can be managed by Jina Hub. To get better appealing on Jina Hub, you should carefully set `manifest.yml` to the correct values.
+
+| Key | Description | Default |
+| --- | --- | --- |
+| `manifest_version` | The version of the manifest protocol | `1` |
+| `type` | The type of the image | Required |
+| `kind` | The kind of the executor | Required |
+| `name` | Human-readable title of the image (must match with `^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{3,30}$`) | Required |
+| `description` | Human-readable description of the software packaged in the image | Required |
+| `author` | Contact details of the people or organization responsible for the image (string) | `Jina AI Dev-Team (dev-team@jina.ai)` |
+| `url` | URL to find more information on the image (string) | `https://jina.ai` |
+| `documentation` | URL to get documentation on the image (string) | `https://docs.jina.ai` |
+| `version` | Version of the image, it should be [Semantic versioning-compatible](http://semver.org/) | `0.0.0` |
+| `vendor` | The name of the distributing entity, organization or individual (string) | `Jina AI Limited` |
+| `license` | License under which contained software is distributed, it should be [in this list](legacy/builder/osi-approved.yml) | `apache-2.0` |
+| `avatar` | A picture that personalizes and distinguishes your image | None |
+| `platform` | A list of CPU architectures that your image built on, each item should be [in this list](legacy/builder/platforms.yml) | `[linux/amd64]` |
+| `update` | The update policy of the image, see the table below for details  | `nightly` |
+| `keywords` | A list of strings help user to filter and locate your package  | None | 
+
 
 ## Contributing
 
