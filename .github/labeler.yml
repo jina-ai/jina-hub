@@ -11,22 +11,22 @@ area/cicd:
   - .github/workflows/**/*
 
 type/manifest:
-  - ./**/manifest.yml
+  - '**/manifest.yml'
 
 type/dockerfile:
-  - ./**/Dockerfile
+  - '**/Dockerfile'
 
 type/python:
-  - ./**/*.py
+  - '**/*.py'
 
 type/readme:
-  - ./**/README
+  - '**/README'
 
 type/config:
-  - ./**/config.yml
+  - '**/config.yml'
 
 tests:
-  - ./**/tests/*
+  - '**/tests/*'
 
 component/executor:
   - executors/**/*
