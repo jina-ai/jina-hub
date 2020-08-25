@@ -7,6 +7,7 @@ from .. import FarmTextEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
+
 def get_metas():
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
@@ -33,8 +34,6 @@ def test_encoding_results():
     print(encoder.__dict__)
     assert encoded_data.shape == (2, target_output_dim)
 
-
-
 # @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
 def test_save_and_load():
     metas = get_metas()
@@ -50,7 +49,6 @@ def test_save_and_load():
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
     rm_files([encoder.save_abspath])
 
-
 # @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
 def test_save_and_load_config():
     metas = get_metas()
@@ -60,3 +58,8 @@ def test_save_and_load_config():
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
     assert encoder_loaded.model_name == encoder.model_name
     rm_files([encoder.config_abspath])
+
+
+def teardown_module():
+    mlflow_dir = 'mlruns'
+    rm_files([mlflow_dir])
