@@ -25,51 +25,10 @@ jobs:
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
-  buildx-test:
-    needs: commit-lint
+  hub_builder:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-      - name: Changed Files Exporter
-        id: files
-        uses: futuratrepadeira/changed-files@v3.0.0
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          for changed_file in ${{ steps.files.outputs.files_created }}; do
-            echo "${changed_file}" >> build.tmp
-          done
-          for changed_file in ${{ steps.files.outputs.files_updated }}; do
-            echo "${changed_file}" >> build.tmp
-          done
-          for changed_file in ${{ steps.files.outputs.files_deleted }}; do
-            echo "${changed_file}" >> build.tmp
-          done
-          cat build.tmp | sed 's/\(.*\)\/.*/\1/' | grep ^hub/ | uniq > build.tmp2
-          cat build.tmp2
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: crazy-max/ghaction-docker-buildx@v1
-        with:
-          version: latest
-      - run: |
-          echo ${{ steps.buildx.outputs.platforms }}
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/jina
-          path: src/jina
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Docker Build and Test
-        run: |
-          if [[ -s build.tmp2 ]]; then
-            pip install src/jina[docker]
-            pip install src/jina[http]
-            cat build.tmp2 | xargs -n1 python builder/app.py --test --target
-          else
-            echo "nothing to build"
-          fi
-        timeout-minutes: 20
-
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Jina Hub Image Builder
+        uses: jina-ai/hub-builder@v0.2
