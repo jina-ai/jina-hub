@@ -7,7 +7,6 @@ from .. import FlairTextEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
-
 target_output_dim = 100
 
 def get_metas():
