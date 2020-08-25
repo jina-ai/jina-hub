@@ -1,13 +1,23 @@
 import os
-import pytest
 import numpy as np
 import shutil
+import mock
 
 from .. import FlairTextEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
 target_output_dim = 100
+
+
+class MockModule:
+    def __init__(self):
+        print('i am a mocker module')
+
+    def get_embedding(self, texts, *args, **kwargs):
+        print('i am a mocker embedding')
+        return [[np.random.random(target_output_dim), None]] * len(texts)
+
 
 def get_metas():
     metas = get_default_metas()
@@ -23,7 +33,7 @@ def rm_files(tmp_files):
             elif os.path.isdir(file):
                 shutil.rmtree(file, ignore_errors=False, onerror=None)
 
-# @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
+@mock.patch('paddlehub.Module', return_value=MockModule())
 def test_encoding_results():
     metas = get_metas()
     encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean', metas=metas)
@@ -33,7 +43,7 @@ def test_encoding_results():
     rm_files([encoder.config_abspath, encoder.save_abspath])
 
 
-# @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
+@mock.patch('paddlehub.Module', return_value=MockModule())
 def test_save_and_load():
     metas = get_metas()
     encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean', metas=metas)
@@ -49,7 +59,7 @@ def test_save_and_load():
     rm_files([encoder.config_abspath, encoder.save_abspath])
 
 
-# @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
+@mock.patch('paddlehub.Module', return_value=MockModule())
 def test_save_and_load_config():
     metas = get_metas()
     encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean', metas=metas)
