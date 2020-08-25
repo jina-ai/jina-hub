@@ -6,7 +6,7 @@ from typing import Optional
 
 import numpy as np
 from jina.executors.decorators import batching, as_ndarray
-from jina.executors.devices import TFDevice, TorchDevice
+from jina.executors.devices import TorchDevice
 from jina.executors.encoders import BaseEncoder
 from jina.executors.encoders.helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from jina.helper import cached_property
@@ -29,9 +29,9 @@ def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: 
     return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
 
 
-class BaseTransformerEncoder(BaseEncoder):
+class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     """
-    :class:`BaseTransformerEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
+    Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
 
     def __init__(self,
@@ -69,6 +69,52 @@ class BaseTransformerEncoder(BaseEncoder):
         self.model_save_path = model_save_path
         self.truncation_strategy = truncation_strategy
 
+    def __getstate__(self):
+        if self.model_save_path:
+            if not os.path.exists(self.model_abspath):
+                self.logger.info(f'create folder for saving transformer models: {self.model_abspath}')
+                os.mkdir(self.model_abspath)
+            self.model.save_pretrained(self.model_abspath)
+            self.tokenizer.save_pretrained(self.model_abspath)
+        return super().__getstate__()
+
+    def array2tensor(self, array):
+        import torch
+        tensor = torch.tensor(array)
+        return tensor.cuda() if self.on_gpu else tensor
+
+    def tensor2array(self, tensor):
+        return tensor.cpu().numpy() if self.on_gpu else tensor.numpy()
+
+    @property
+    def model_abspath(self) -> str:
+        """Get the file path of the encoder model storage
+        """
+        return self.get_file_from_workspace(self.model_save_path)
+
+    @cached_property
+    def model(self):
+        from transformers import AutoModelForPreTraining
+        model = AutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
+        self.to_device(model)
+        return model
+
+    @cached_property
+    def no_gradients(self):
+        import torch
+        return torch.no_grad
+
+    @cached_property
+    def tensor_func(self):
+        import torch
+        return torch.tensor
+
+    @cached_property
+    def tokenizer(self):
+        from transformers import AutoTokenizer
+        _tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
+        return _tokenizer
+
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
@@ -92,7 +138,7 @@ class BaseTransformerEncoder(BaseEncoder):
                                                         pad_to_max_length=True)
         token_ids_batch = self.array2tensor(ids_info['input_ids'])
         mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
-        with self.session():
+        with self.no_gradients():
             outputs = self.model(token_ids_batch,
                                  attention_mask=mask_ids_batch,
                                  output_hidden_states=True)
@@ -114,77 +160,3 @@ class BaseTransformerEncoder(BaseEncoder):
                 raise NotImplementedError
         return output
 
-    def __getstate__(self):
-        if self.model_save_path:
-            if not os.path.exists(self.model_abspath):
-                self.logger.info(f'create folder for saving transformer models: {self.model_abspath}')
-                os.mkdir(self.model_abspath)
-            self.model.save_pretrained(self.model_abspath)
-            self.tokenizer.save_pretrained(self.model_abspath)
-        return super().__getstate__()
-
-    def array2tensor(self, array):
-        return self.tensor_func(array)
-
-    def tensor2array(self, tensor):
-        return tensor.numpy()
-
-    @property
-    def model_abspath(self) -> str:
-        """Get the file path of the encoder model storage
-        """
-        return self.get_file_from_workspace(self.model_save_path)
-
-    @cached_property
-    def model(self):
-        return self.get_model()
-
-    @cached_property
-    def session(self):
-        return self.get_session()
-
-    @cached_property
-    def tensor_func(self):
-        return self.get_tensor_func()
-
-    @cached_property
-    def tokenizer(self):
-        return self.get_tokenizer()
-
-    def get_tokenizer(self):
-        from transformers import AutoTokenizer
-        _tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
-        return _tokenizer
-
-    def get_model(self):
-        raise NotImplementedError
-
-    def get_session(self):
-        raise NotImplementedError
-
-    def get_tensor_func(self):
-        raise NotImplementedError
-
-
-class TransformerTFEncoder(TFDevice, BaseTransformerEncoder):
-    """
-    Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
-    """
-
-    def __init__(self, model_name: str = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.model_name = model_name
-
-    def get_model(self):
-        from transformers import TFAutoModelForPreTraining
-        _model = TFAutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
-        return _model
-
-    def get_session(self):
-        import tensorflow as tf
-        return tf.GradientTape
-
-    def get_tensor_func(self):
-        self.to_device()
-        import tensorflow as tf
-        return tf.constant
