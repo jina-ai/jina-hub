@@ -1,19 +1,15 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
+from jina.executors.encoders.numeric import TransformEncoder
 
-from . import TransformEncoder
-
-
-class IncrementalPCAEncoder(TransformEncoder):
+class FastICAEncoder(TransformEncoder):
     """
-    :class:`IncrementalPCAEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
+    :class:`FastICAEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
 
     .. note::
-        :class:`IncrementalPCAEncoder` must be trained before calling ``encode()``. This encoder can be trained in an
-        incremental way.
+        :class:`FastICAEncoder` must be trained before calling ``encode()``.
     """
 
-    def __init__(self, num_features: int = None, whiten: bool = False, *args, **kwargs):
+    def __init__(self, num_features: int = None, whiten: bool = False,
+                 max_iter: int = 200, *args, **kwargs):
         """
 
         :param output_dim: the output size.
@@ -25,12 +21,15 @@ class IncrementalPCAEncoder(TransformEncoder):
         self.whiten = whiten
         self.num_features = num_features
         self.is_trained = False
+        self.max_iter = max_iter
         self.model = None
 
     def post_init(self):
         super().post_init()
         if not self.model:
-            from sklearn.decomposition import IncrementalPCA
-            self.model = IncrementalPCA(
+            from sklearn.decomposition import FastICA
+            self.model = FastICA(
                 n_components=self.output_dim,
-                whiten=self.whiten)
+                whiten=self.whiten,
+                max_iter=self.max_iter)
+

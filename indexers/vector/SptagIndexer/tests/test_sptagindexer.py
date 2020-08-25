@@ -10,9 +10,13 @@ from .. import SptagIndexer
 # fix the seed here
 np.random.seed(500)
 retr_idx = None
-vec_idx = np.random.randint(0, high=100, size=[10])
-vec = np.random.random([10, 10])
-query = np.array(np.random.random([10, 10]), dtype=np.float32)
+num_dimensions = 10
+num_vectors = 30
+num_queries = 20
+top_k = 4
+vec_idx = np.random.randint(0, high=100, size=[num_vectors])
+vec = np.random.random([num_vectors, num_dimensions]).astype(np.float32)
+query = np.random.random([num_queries, num_dimensions]).astype(np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -26,7 +30,7 @@ def rm_files(file_paths):
 
 
 def test_sptagindexer():
-    with SptagIndexer(index_filename='np.test.gz', space='l2') as indexer:
+    with SptagIndexer(index_filename='np.test.gz') as indexer:
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
@@ -35,14 +39,14 @@ def test_sptagindexer():
 
     with BaseIndexer.load(indexer.save_abspath) as indexer:
         assert isinstance(indexer, SptagIndexer)
-        idx, dist = indexer.query(query, top_k=4)
+        idx, dist = indexer.query(query, top_k=top_k)
         global retr_idx
         if retr_idx is None:
             retr_idx = idx
         else:
             np.testing.assert_almost_equal(retr_idx, idx)
         assert idx.shape == dist.shape
-        assert idx.shape == (10, 4)
+        assert idx.shape == (num_queries, top_k)
 
     rm_files([index_abspath, save_abspath])
 
@@ -57,13 +61,13 @@ def test_sptag_wrap_indexer():
 
     with BaseIndexer.load_config(os.path.join(cur_dir, 'yaml/sptag-wrap.yml')) as indexer:
         assert isinstance(indexer, SptagIndexer)
-        idx, dist = indexer.query(query, top_k=4)
+        idx, dist = indexer.query(query, top_k=top_k)
         global retr_idx
         if retr_idx is None:
             retr_idx = idx
         else:
             np.testing.assert_almost_equal(retr_idx, idx)
         assert idx.shape == dist.shape
-        assert idx.shape == (10, 4)
+        assert idx.shape == (num_queries, top_k)
 
     rm_files([index_abspath, save_abspath])
