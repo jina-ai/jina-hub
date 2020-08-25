@@ -9,4 +9,3 @@ with:
       compress_level: 1
       index_filename: wrap-npidx
       metric: euclidean
-  space: l2

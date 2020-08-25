@@ -21,7 +21,7 @@ def rm_files(file_paths):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
-class TestNet(nn.Module):
+class ExampleNet(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 10, 5)
@@ -46,7 +46,7 @@ def get_encoder():
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
     path = tempfile.NamedTemporaryFile().name
-    model = TestNet()
+    model = ExampleNet()
     torch.save(model, path)
     return CustomImageTorchEncoder(model_path=path, layer_name='conv1', metas=metas)
 
@@ -74,13 +74,3 @@ def test_save_and_load():
     assert encoder_loaded.channel_axis == encoder.channel_axis
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
     rm_files([encoder.save_abspath, encoder.config_abspath, encoder.model_path])
-
-
-def test_save_and_load_config():
-    encoder = get_encoder()
-    encoder.save_config()
-    assert os.path.exists(encoder.config_abspath)
-    encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-    assert encoder_loaded.channel_axis == encoder.channel_axis
-    rm_files([encoder.save_abspath, encoder.config_abspath, encoder.model_path])
-
