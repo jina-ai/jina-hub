@@ -4,7 +4,8 @@ Scann powered vector indexer
 
 ## Usage
 
-For Ubuntu 16.04 or later and Python 3.7
+For Ubuntu 16.04 or later and Python 3.7.
+
 If you are not using linux it is necessary to build Scann from source  [follow instructions from here](https://github.com/google-research/google-research/tree/master/scann). 
 
 ## Possible bugs
