@@ -1,0 +1,12 @@
+manifest_version: 1
+name: FlairTextEncoder
+kind: encoder
+description: `FlairTextEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [flair, nlp, encoder, torch]
+type: pod
