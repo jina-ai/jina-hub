@@ -12,10 +12,15 @@ From Jina 0.4.10, Jina Hub is referred as a Git Submodule in [`jina-ai/jina`](ht
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-## Create a New Executor
+
+
+## Contribute to This Repository
+
+### Create a New Executor
 
 ```bash
 pip install jina[hub]
+git clone https://github.com/jina-ai/jina-hub.git
 jina hub new
 ```
 
@@ -34,13 +39,28 @@ It will start a wizard in CLI to guide you create your first executor. The resul
         |- __init__.py
 ```
 
-## Test an Executor Locally
+### Test an Executor Locally
 
 ```bash
 jina hub build /MyAwesomeExecutor/
 ```
 
 More Hub CLI usage can be found via `jina hub build --help`
+
+## Work with Your Own Repository
+
+1. Create a new repository
+2. `pip install jina[hub] && jina hub new`
+3. 
+```
+git checkout -b feat-new-executor
+git add .
+git commit -m "feat: add new executor"
+git push
+```
+4. Add [hub-builder Github Action](https://github.com/jina-ai/hub-builder) to your Github workflow
+5. Make a Pull Request on `feat-new-executor -> master`
+
 
 ## References
 
