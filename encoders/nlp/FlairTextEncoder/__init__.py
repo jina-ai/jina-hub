@@ -70,7 +70,7 @@ class FlairTextEncoder(BaseTorchEncoder):
         :return: an ndarray in size `B x D`
         """
         import torch
-        from flair.embeddings import Sentence
+        from flair.data import Sentence
         c_batch = [Sentence(row) for row in data]
         self.model.embed(c_batch)
         result = torch.stack([c_text.get_embedding() for c_text in c_batch]).detach()
