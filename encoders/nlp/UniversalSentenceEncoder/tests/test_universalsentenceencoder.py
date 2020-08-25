@@ -26,6 +26,7 @@ def rm_files(tmp_files):
 class MockModule:
     def __call__(self, data, *args, **kwargs):
         print('i am a mocker function')
+        assert len(data.shape) == 1
         return np.stack([[i for i in range(target_output_dim)]] * data.shape[0])
 
 
