@@ -1,0 +1,4 @@
+jina
+paddlepaddle
+paddlehub
+Pillow
