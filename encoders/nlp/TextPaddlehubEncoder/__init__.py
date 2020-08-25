@@ -11,11 +11,7 @@ class TextPaddlehubEncoder(BasePaddleEncoder):
     https://github.com/PaddlePaddle/PaddleHub
     """
 
-    def __init__(self,
-                 model_name: str = None,
-                 max_length: int = 128,
-                 *args,
-                 **kwargs):
+    def __init__(self, model_name: str = None, *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include
@@ -27,19 +23,16 @@ class TextPaddlehubEncoder(BasePaddleEncoder):
             ``chinese-electra-base``, ``chinese-electra-small``,
             ``chinese-roberta-wwm-ext``, ``chinese-roberta-wwm-ext-large``,
             ``rbt3``, ``rbtl3``
-        :param max_length: the max length to truncate the tokenized sequences to.
 
         For models' details refer to
             https://www.paddlepaddle.org.cn/hublist?filter=en_category&value=SemanticModel
         """
         super().__init__(*args, **kwargs)
         self.model_name = model_name or 'ernie_tiny'
-        self.max_length = max_length
 
     def post_init(self):
         import paddlehub as hub
         self.model = hub.Module(name=self.model_name)
-        self.model.MAX_SEQ_LEN = self.max_length
 
     @batching
     @as_ndarray

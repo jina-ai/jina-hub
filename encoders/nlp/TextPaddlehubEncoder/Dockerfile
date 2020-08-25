@@ -11,6 +11,6 @@ RUN apt-get update && \
 RUN pip install -r requirements.txt && pip uninstall -y pathlib
 
 # for testing the image
-RUN pip install -y pytest pytest-mock mock && JINA_TEST_PRETRAINED='true' pytest
+RUN pip install pytest pytest-mock mock && JINA_TEST_PRETRAINED='true' pytest
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
