@@ -73,6 +73,5 @@ def test_imagepaddlehubencoder_save_and_load_config(mocker):
     add_tmpfile(encoder.save_abspath, encoder.config_abspath)
     teardown()
 
-@pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
 def test_imagepaddlehubencoder_encode_with_pretrained_model():
     _test_imagepaddlehubencoder_encode()
