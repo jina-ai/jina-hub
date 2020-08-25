@@ -1,12 +1,11 @@
 import os
-import pytest
+import mock
 import numpy as np
 import shutil
 
 from .. import FarmTextEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
-
 
 def get_metas():
     metas = get_default_metas()
@@ -22,23 +21,30 @@ def rm_files(tmp_files):
             elif os.path.isdir(file):
                 shutil.rmtree(file, ignore_errors=False, onerror=None)
 
+class MockModule:
+    def __init__(self):
+        pass
 
+    def extract_vectors(self, dicts, *args, **kwargs):
+        print('i am a mocker function')
+        for k in dicts:
+            k['vec'] = np.array([i for i in range(target_output_dim)])
+        return dicts
 
-# @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
-def test_encoding_results():
-    target_output_dim = 768
+target_output_dim = 768
+test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+
+@mock.patch('farm.infer.Inferencer.load', return_value=MockModule())
+def test_encoding_results(mocker):
     metas = get_metas()
     encoder = FarmTextEncoder(metas=metas)
-    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
-    print(encoder.__dict__)
     assert encoded_data.shape == (2, target_output_dim)
 
-# @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
-def test_save_and_load():
+@mock.patch('farm.infer.Inferencer.load', return_value=MockModule())
+def test_save_and_load(mocker):
     metas = get_metas()
     encoder = FarmTextEncoder(metas=metas)
-    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data_control = encoder.encode(test_data)
     encoder.touch()
     encoder.save()
@@ -49,8 +55,8 @@ def test_save_and_load():
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
     rm_files([encoder.save_abspath])
 
-# @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
-def test_save_and_load_config():
+@mock.patch('farm.infer.Inferencer.load', return_value=MockModule())
+def test_save_and_load_config(mocker):
     metas = get_metas()
     encoder = FarmTextEncoder(metas=metas)
     encoder.save_config()
@@ -58,8 +64,3 @@ def test_save_and_load_config():
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
     assert encoder_loaded.model_name == encoder.model_name
     rm_files([encoder.config_abspath])
-
-
-def teardown_module():
-    mlflow_dir = 'mlruns'
-    rm_files([mlflow_dir])
