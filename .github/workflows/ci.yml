@@ -14,17 +14,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  label-pr:
-    needs: commit-lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: "pascalgn/size-label-action@v0.2.1"
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      - uses: actions/labeler@v2
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
   hub-builder:
     runs-on: ubuntu-latest
     steps:
