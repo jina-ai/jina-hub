@@ -1,11 +1,6 @@
-#FROM jinaai/jina
 FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive
-
-# setup the workspace
-#COPY . /workspace
-#WORKDIR /workspace
 
 WORKDIR /
 
