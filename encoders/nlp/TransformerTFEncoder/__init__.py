@@ -6,7 +6,7 @@ from typing import Optional
 
 import numpy as np
 from jina.executors.decorators import batching, as_ndarray
-from jina.executors.devices import TFDevice, TorchDevice
+from jina.executors.devices import TFDevice
 from jina.executors.encoders import BaseEncoder
 from jina.executors.encoders.helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from jina.helper import cached_property
@@ -29,9 +29,9 @@ def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: 
     return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
 
 
-class BaseTransformerEncoder(BaseEncoder):
+class TransformerTFEncoder(TFDevice, BaseEncoder):
     """
-    :class:`BaseTransformerEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
+    Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
 
     def __init__(self,
@@ -69,51 +69,6 @@ class BaseTransformerEncoder(BaseEncoder):
         self.model_save_path = model_save_path
         self.truncation_strategy = truncation_strategy
 
-    @batching
-    @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        """
-        :param data: a 1d array of string type in size `B`
-        :return: an ndarray in size `B x D`
-        """
-        try:
-            if self.tokenizer.pad_token is None:
-                self.tokenizer.pad_token = self.tokenizer.eos_token
-                if self.tokenizer.pad_token is None:
-                    self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-            ids_info = self.tokenizer.batch_encode_plus(data,
-                                                        max_length=self.max_length,
-                                                        truncation=self.truncation_strategy,
-                                                        pad_to_max_length=True)
-        except ValueError:
-            self.model.resize_token_embeddings(len(self.tokenizer))
-            ids_info = self.tokenizer.batch_encode_plus(data,
-                                                        max_length=self.max_length,
-                                                        pad_to_max_length=True)
-        token_ids_batch = self.array2tensor(ids_info['input_ids'])
-        mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
-        with self.session():
-            outputs = self.model(token_ids_batch,
-                                 attention_mask=mask_ids_batch,
-                                 output_hidden_states=True)
-
-            hidden_states = outputs[-1]
-            output_embeddings = hidden_states[0]
-            _mask_ids_batch = self.tensor2array(mask_ids_batch)
-            _seq_output = self.tensor2array(output_embeddings)
-            if self.pooling_strategy == 'auto':
-                output = auto_reduce(_seq_output, _mask_ids_batch, self.model.base_model_prefix)
-            elif self.pooling_strategy == 'mean':
-                output = reduce_mean(_seq_output, _mask_ids_batch)
-            elif self.pooling_strategy == 'max':
-                output = reduce_max(_seq_output, _mask_ids_batch)
-            elif self.pooling_strategy == 'min':
-                output = reduce_min(_seq_output, _mask_ids_batch)
-            else:
-                self.logger.error(f'pooling strategy not found: {self.pooling_strategy}')
-                raise NotImplementedError
-        return output
-
     def __getstate__(self):
         if self.model_save_path:
             if not os.path.exists(self.model_abspath):
@@ -137,54 +92,68 @@ class BaseTransformerEncoder(BaseEncoder):
 
     @cached_property
     def model(self):
-        return self.get_model()
-
-    @cached_property
-    def session(self):
-        return self.get_session()
-
-    @cached_property
-    def tensor_func(self):
-        return self.get_tensor_func()
-
-    @cached_property
-    def tokenizer(self):
-        return self.get_tokenizer()
-
-    def get_tokenizer(self):
-        from transformers import AutoTokenizer
-        _tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
-        return _tokenizer
-
-    def get_model(self):
-        raise NotImplementedError
-
-    def get_session(self):
-        raise NotImplementedError
-
-    def get_tensor_func(self):
-        raise NotImplementedError
-
-
-class TransformerTFEncoder(TFDevice, BaseTransformerEncoder):
-    """
-    Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
-    """
-
-    def __init__(self, model_name: str = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.model_name = model_name
-
-    def get_model(self):
         from transformers import TFAutoModelForPreTraining
-        _model = TFAutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
-        return _model
+        model = TFAutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
+        return model
 
-    def get_session(self):
+    @cached_property
+    def no_gradients(self):
         import tensorflow as tf
         return tf.GradientTape
 
-    def get_tensor_func(self):
+    @cached_property
+    def tensor_func(self):
         self.to_device()
         import tensorflow as tf
         return tf.constant
+
+    @cached_property
+    def tokenizer(self):
+        from transformers import AutoTokenizer
+        tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
+        return tokenizer
+
+    @batching
+    @as_ndarray
+    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+        :param data: a 1d array of string type in size `B`
+        :return: an ndarray in size `B x D`
+        """
+        try:
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token
+                if self.tokenizer.pad_token is None:
+                    self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            ids_info = self.tokenizer.batch_encode_plus(data,
+                                                        max_length=self.max_length,
+                                                        truncation=self.truncation_strategy,
+                                                        pad_to_max_length=True)
+        except ValueError:
+            self.model.resize_token_embeddings(len(self.tokenizer))
+            ids_info = self.tokenizer.batch_encode_plus(data,
+                                                        max_length=self.max_length,
+                                                        pad_to_max_length=True)
+        token_ids_batch = self.array2tensor(ids_info['input_ids'])
+        mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
+        with self.no_gradients():
+            outputs = self.model(token_ids_batch,
+                                 attention_mask=mask_ids_batch,
+                                 output_hidden_states=True)
+
+            hidden_states = outputs[-1]
+            output_embeddings = hidden_states[0]
+            _mask_ids_batch = self.tensor2array(mask_ids_batch)
+            _seq_output = self.tensor2array(output_embeddings)
+            if self.pooling_strategy == 'auto':
+                output = auto_reduce(_seq_output, _mask_ids_batch, self.model.base_model_prefix)
+            elif self.pooling_strategy == 'mean':
+                output = reduce_mean(_seq_output, _mask_ids_batch)
+            elif self.pooling_strategy == 'max':
+                output = reduce_max(_seq_output, _mask_ids_batch)
+            elif self.pooling_strategy == 'min':
+                output = reduce_min(_seq_output, _mask_ids_batch)
+            else:
+                self.logger.error(f'pooling strategy not found: {self.pooling_strategy}')
+                raise NotImplementedError
+        return output

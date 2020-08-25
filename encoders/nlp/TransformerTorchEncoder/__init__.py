@@ -31,7 +31,7 @@ def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: 
 
 class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     """
-    Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
+    Internally, TransformerTorchEncoder wraps the tensorflow-version of transformers from huggingface.
     """
 
     def __init__(self,
@@ -112,8 +112,8 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     @cached_property
     def tokenizer(self):
         from transformers import AutoTokenizer
-        _tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
-        return _tokenizer
+        tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
+        return tokenizer
 
     @batching
     @as_ndarray
