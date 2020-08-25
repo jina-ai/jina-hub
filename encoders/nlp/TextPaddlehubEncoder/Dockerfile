@@ -1,14 +1,13 @@
-FROM paddlepaddle/paddle
+FROM jinaai/jina
 
 # setup the workspace
 COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-# RUN pip install -r requirements.txt
-RUN pip install jina
+RUN pip install -r requirements.txt
 
 # for testing the image
-RUN pip install pytest && pytest
+RUN pip install pytest pytest-mock && pytest
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
