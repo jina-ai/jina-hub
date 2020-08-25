@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MODEL_NAME="R152x4"
+MODEL_NAME="R50x1"
 MODEL_DIR="pretrained"
 MODEL_VAR_DIR=$MODEL_DIR/variables
 mkdir -p ${MODEL_DIR}

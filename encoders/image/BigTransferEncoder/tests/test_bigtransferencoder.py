@@ -24,7 +24,7 @@ def get_encoder():
 
 def test_encoding_results():
     input_dim = 48
-    output_dim = 8192
+    output_dim = 2048
     encoder = get_encoder()
     test_data = np.random.rand(2, 3, input_dim, input_dim)
     encoded_data = encoder.encode(test_data)
