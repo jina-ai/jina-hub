@@ -1,3 +1,3 @@
-# OnnxImageEncoder
+# ImageOnnxEncoder
 
-`OnnxImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a ndarray of `B x D`. Internally :class:`OnnxImageEncoder` wraps the models from `onnxruntime`.
+`ImageOnnxEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a ndarray of `B x D`. Internally :class:`ImageOnnxEncoder` wraps the models from `onnxruntime`.

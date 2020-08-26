@@ -1,7 +1,7 @@
 import os
 import shutil
 import numpy as np
-from .. import OnnxImageEncoder
+from .. import ImageOnnxEncoder
 from jina.executors.metas import get_default_metas
 from jina.executors import BaseExecutor
 
@@ -19,8 +19,8 @@ def get_encoder(model_path):
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
-    return OnnxImageEncoder(output_feature='mobilenetv20_features_relu1_fwd',
-        model_path=model_path, metas=metas)
+    return ImageOnnxEncoder(output_feature='mobilenetv20_features_relu1_fwd',
+                            model_path=model_path, metas=metas)
 
 input_dim = 224
 output_dim = 1280
