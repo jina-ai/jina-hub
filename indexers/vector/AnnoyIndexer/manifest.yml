@@ -1,9 +1,9 @@
 manifest_version: 1
 name: AnnoyIndexer
-kind:  indexer
+kind: indexer
 type: pod
-description: "Annoy powered vector indexer"
-version: 0.0.1
+description: Annoy powered vector indexer
+version: 0.0.2
 license: apache-2.0
 keywords: [indexer, annoy, ANN]
 author: Jina AI Dev-Team (dev-team@jina.ai)
