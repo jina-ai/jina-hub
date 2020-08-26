@@ -11,7 +11,7 @@ from jina.executors.metas import get_default_metas
 input_dim = 224
 target_output_dim = 2048
 num_doc = 2
-test_data = np.random.rand(num_doc, 3, input_dim, input_dim)
+test_data = np.random.rand(num_doc, 3, 3, input_dim, input_dim)
 tmp_files = []
 
 def teardown():
