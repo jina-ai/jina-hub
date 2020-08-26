@@ -2,6 +2,7 @@ import os
 import mock
 import numpy as np
 import shutil
+import pytest
 
 from .. import UniversalSentenceEncoder
 from jina.executors import BaseExecutor
@@ -33,13 +34,21 @@ class MockModule:
 target_output_dim = 768
 test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
 
-
-@mock.patch('tensorflow_hub.load', return_value=MockModule())
-def test_encoding_results(mocker):
+def _test_encoding_results():
     metas = get_metas()
     encoder = UniversalSentenceEncoder(metas=metas)
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
+
+
+@pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
+def test_encoding_result():
+    _test_encoding_results()
+
+
+@mock.patch('tensorflow_hub.load', return_value=MockModule())
+def test_encoding_result_local(mocker):
+    _test_encoding_results()
 
 
 @mock.patch('tensorflow_hub.load', return_value=MockModule())
