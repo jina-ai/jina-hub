@@ -30,18 +30,21 @@ for fpath in glob.glob(f'./**/{version_file}', recursive=True):
     with open(fpath, 'w') as fp:
         yaml.dump(info, fp)
     try:
+        print('preparing the branch ...')
         new_branch = repo.create_head(f'chore-{dname.lower()}-{new_ver.replace(".", "")}')
         new_branch.checkout()
+
+        print(f'bumping version to {new_ver} and committing to {new_branch}...')
         repo.git.add(update=True)
-        repo.index.commit(f'chore: bump version to {new_ver}')
+        repo.index.commit(f'chore: bump {dname} version to {new_ver}')
         origin.push()
 
         # make PR using `gh`
+        print('making a PR ...')
         title_string = f'bumping version for {dname} to {new_ver}'
         body_string = f'bumping version from {old_ver} to {new_ver}'
         pr_command = f'gh pr create -f'
         subprocess.call(pr_command, shell=True)
-        break
     except:
         raise
     finally:
