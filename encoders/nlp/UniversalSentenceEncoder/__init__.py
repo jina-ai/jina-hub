@@ -26,7 +26,7 @@ class UniversalSentenceEncoder(BaseTFEncoder):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self.model_url = 'https://tfhub.dev/google/universal-sentence-encoder/4' or model_url
+        self.model_url = model_url
 
     def post_init(self):
         self.to_device()
