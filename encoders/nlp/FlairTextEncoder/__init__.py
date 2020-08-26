@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 from typing import Union, Tuple, List
 
 import numpy as np
@@ -38,20 +35,22 @@ class FlairTextEncoder(BaseTorchEncoder):
     def post_init(self):
         import flair
         flair.device = self.device
-        from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings, \
-            DocumentPoolEmbeddings
         embeddings_list = []
         for e in self.embeddings:
             model_name, model_id = e.split(':', maxsplit=1)
             emb = None
             try:
                 if model_name == 'flair':
+                    from flair.embeddings import FlairEmbeddings
                     emb = FlairEmbeddings(model_id)
                 elif model_name == 'pooledflair':
+                    from flair.embeddings import PooledFlairEmbeddings
                     emb = PooledFlairEmbeddings(model_id)
                 elif model_name == 'word':
+                    from flair.embeddings import WordEmbeddings
                     emb = WordEmbeddings(model_id)
                 elif model_name == 'byte-pair':
+                    from flair.embeddings import BytePairEmbeddings
                     emb = BytePairEmbeddings(model_id)
             except ValueError:
                 self.logger.error(f'embedding not found: {e}')
@@ -59,24 +58,25 @@ class FlairTextEncoder(BaseTorchEncoder):
             if emb is not None:
                 embeddings_list.append(emb)
         if embeddings_list:
+            from flair.embeddings import DocumentPoolEmbeddings
             self.model = DocumentPoolEmbeddings(embeddings_list, pooling=self.pooling_strategy)
             self.logger.info(f'flair encoder initialized with embeddings: {self.embeddings}')
         else:
             self.logger.error('flair encoder initialization failed.')
 
-    @batching
-    @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
-        import torch
-        from flair.embeddings import Sentence
+        from flair.data import Sentence
         c_batch = [Sentence(row) for row in data]
         self.model.embed(c_batch)
-        result = torch.stack([c_text.get_embedding() for c_text in c_batch]).detach()
-        if self.on_gpu:
-            result = result.cpu()
-        return result.numpy()
+        result = [self.tensor2array(c_text.embedding) for c_text in c_batch]
+        return np.vstack(result)
+
+    def tensor2array(self, tensor):
+        if isinstance(tensor, np.ndarray):
+            return tensor
+        return tensor.cpu().numpy() if self.on_gpu else tensor.numpy()
