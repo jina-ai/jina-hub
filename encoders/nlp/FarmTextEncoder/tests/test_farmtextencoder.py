@@ -2,6 +2,7 @@ import os
 import mock
 import numpy as np
 import shutil
+import pytest
 
 from .. import FarmTextEncoder
 from jina.executors import BaseExecutor
@@ -34,12 +35,22 @@ class MockModule:
 target_output_dim = 768
 test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
 
-@mock.patch('farm.infer.Inferencer.load', return_value=MockModule())
-def test_encoding_results(mocker):
+def _test_encoding_results():
     metas = get_metas()
     encoder = FarmTextEncoder(metas=metas)
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
+
+
+os.environ['JINA_TEST_PRETRAINED'] = '1'
+
+@pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
+def test_encoding_results():
+    _test_encoding_results()
+
+@mock.patch('farm.infer.Inferencer.load', return_value=MockModule())
+def test_encoding_results_local(mocker):
+    _test_encoding_results()
 
 @mock.patch('farm.infer.Inferencer.load', return_value=MockModule())
 def test_save_and_load(mocker):
