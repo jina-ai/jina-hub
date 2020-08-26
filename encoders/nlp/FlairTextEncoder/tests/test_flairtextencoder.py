@@ -1,7 +1,8 @@
 import os
-import pytest
 import numpy as np
 import shutil
+import mock
+import pytest
 
 from .. import FlairTextEncoder
 from jina.executors import BaseExecutor
@@ -9,11 +10,13 @@ from jina.executors.metas import get_default_metas
 
 target_output_dim = 100
 
+
 def get_metas():
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
     return metas
+
 
 def rm_files(tmp_files):
     for file in tmp_files:
@@ -23,36 +26,61 @@ def rm_files(tmp_files):
             elif os.path.isdir(file):
                 shutil.rmtree(file, ignore_errors=False, onerror=None)
 
-# @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
-def test_encoding_results():
-    metas = get_metas()
-    encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean', metas=metas)
-    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+
+test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+
+
+class MockEmbedding:
+    pass
+
+
+class MockDocumentEmbedding:
+    def embed(self, sentences):
+        return np.random.random((len(sentences), target_output_dim))
+
+
+class MockSentence:
+    @property
+    def embedding(self):
+        return np.random.random((1, target_output_dim))
+
+
+def _test_encoding_results(*args, **kwargs):
+    encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean')
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
     rm_files([encoder.config_abspath, encoder.save_abspath])
 
 
-# @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
-def test_save_and_load():
-    metas = get_metas()
-    encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean', metas=metas)
-    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
-    encoded_data_control = encoder.encode(test_data)
+@mock.patch('flair.device', return_value='')
+@mock.patch('flair.embeddings.WordEmbeddings', return_value=MockEmbedding())
+@mock.patch('flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding())
+@mock.patch('flair.data.Sentence', return_value=MockSentence())
+def test_encoding_results(*args, **kwargs):
+    _test_encoding_results(*args, **kwargs)
+
+
+@mock.patch('flair.device', return_value='')
+@mock.patch('flair.embeddings.WordEmbeddings', return_value=MockEmbedding())
+@mock.patch('flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding())
+@mock.patch('flair.data.Sentence', return_value=MockSentence())
+def test_save_and_load(*args, **kwargs):
+    encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean')
     encoder.touch()
     encoder.save()
     assert os.path.exists(encoder.save_abspath)
     encoder_loaded = BaseExecutor.load(encoder.save_abspath)
-    encoded_data_test = encoder_loaded.encode(test_data)
     assert encoder_loaded.embeddings == encoder.embeddings
-    np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
     rm_files([encoder.config_abspath, encoder.save_abspath])
 
 
-# @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
-def test_save_and_load_config():
-    metas = get_metas()
-    encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean', metas=metas)
+@mock.patch('flair.device', return_value='')
+@mock.patch('flair.embeddings.WordEmbeddings', return_value=MockEmbedding())
+@mock.patch('flair.embeddings.FlairEmbeddings', return_value=MockEmbedding())
+@mock.patch('flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding())
+@mock.patch('flair.data.Sentence', return_value=MockSentence())
+def test_save_and_load_config(*args, **kwargs):
+    encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean')
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
@@ -60,6 +88,6 @@ def test_save_and_load_config():
     rm_files([encoder.config_abspath, encoder.save_abspath])
 
 
-
-
-
+@pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
+def test_encoding_results(*args, **kwargs):
+    _test_encoding_results(*args, **kwargs)
