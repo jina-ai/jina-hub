@@ -37,7 +37,7 @@ for fpath in glob.glob(f'./**/{version_file}', recursive=True):
         print(f'bumping version to {new_ver} and committing to {new_branch}...')
         repo.git.add(update=True)
         repo.index.commit(f'chore: bump {dname} version to {new_ver}')
-        origin.push()
+        repo.git.push("--set-upstream", origin, repo.head.ref)
 
         # make PR using `gh`
         print('making a PR ...')
