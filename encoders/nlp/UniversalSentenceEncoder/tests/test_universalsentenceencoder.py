@@ -8,8 +8,6 @@ from .. import UniversalSentenceEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
-# os.environ['JINA_TEST_PRETRAINED'] = '1'
-
 def get_metas():
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
