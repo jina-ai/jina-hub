@@ -42,7 +42,6 @@ def _test_encoding_results():
     assert encoded_data.shape == (2, target_output_dim)
 
 
-# os.environ['JINA_TEST_PRETRAINED'] = '1'
 
 @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
 def test_encoding_results():
