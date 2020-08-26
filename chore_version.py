@@ -41,7 +41,7 @@ for fpath in glob.glob(f'./**/{version_file}', recursive=True):
 
         # make PR using `gh`
         print('making a PR ...')
-        title_string = f'bumping version for {dname} to {new_ver}'
+        title_string = f'bumping version for {dname} to {new_ve   r}'
         body_string = f'bumping version from {old_ver} to {new_ver}'
         pr_command = f'gh pr create -f'
         subprocess.call(pr_command, shell=True)
