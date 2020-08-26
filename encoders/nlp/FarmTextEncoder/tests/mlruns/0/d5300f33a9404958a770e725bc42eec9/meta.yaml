@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/edz/Desktop/work/github/jina-hub/encoders/nlp/FarmTextEncoder/tests/mlruns/0/d5300f33a9404958a770e725bc42eec9/artifacts
+end_time: 1598418271303
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: d5300f33a9404958a770e725bc42eec9
+run_uuid: d5300f33a9404958a770e725bc42eec9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1598418260255
+status: 3
+tags: []
+user_id: edz

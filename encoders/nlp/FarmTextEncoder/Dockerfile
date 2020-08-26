@@ -4,12 +4,12 @@ FROM jinaai/jina
 COPY . /workspace
 WORKDIR /workspace
 
-ENV JINA_TEST_PRETRAINED='true'
-
 # install the third-party requirements
 RUN pip install -r requirements.txt
 
+RUN apt-get install gcc
+
 # for testing the image
-RUN pip install pytest pytest-mock mock && pytest
+RUN pip install pytest pytest-mock mock && JINA_TEST_PRETRAINED='true' pytest
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
