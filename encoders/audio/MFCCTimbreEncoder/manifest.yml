@@ -1,0 +1,12 @@
+manifest_version: 1
+name: MFCCTimbreEncoder
+kind: encoder
+description: encodes an audio signal from a `Batch x Signal Length` ndarray into a `Batch x Concatenated Features` ndarray.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [encoder, audio]
+type: pod
