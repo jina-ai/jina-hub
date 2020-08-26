@@ -17,6 +17,7 @@ yaml = YAML()
 
 version_file = 'manifest.yml'
 repo = git.Repo()
+origin = repo.remote(name='origin')
 previous_branch = repo.active_branch
 
 for fpath in glob.glob(f'./**/{version_file}', recursive=True):
@@ -33,7 +34,6 @@ for fpath in glob.glob(f'./**/{version_file}', recursive=True):
         new_branch.checkout()
         repo.git.add(update=True)
         repo.index.commit(f'chore: bump version to {new_ver}')
-        origin = repo.remote(name='origin')
         origin.push()
 
         # make PR using `gh`
