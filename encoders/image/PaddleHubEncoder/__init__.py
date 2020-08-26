@@ -17,7 +17,6 @@ class PaddleHubEncoder(BasePaddleEncoder):
 
     def __init__(self,
                  model_name: str = None,
-                 output_feature: str = None,
                  pool_strategy: str = None,
                  channel_axis: int = -3,
                  *args,
@@ -51,17 +50,12 @@ class PaddleHubEncoder(BasePaddleEncoder):
         """
         super().__init__(*args, **kwargs)
         self.pool_strategy = pool_strategy
-        self.outputs_name = output_feature
-        self.inputs_name = None
         self.channel_axis = channel_axis
+        self.model_name = model_name or 'xception71_imagenet'
+        self.pool_strategy = pool_strategy or 'mean'
         self._default_channel_axis = -3
-        self.model_name = model_name
-        if self.model_name is None:
-            self.model_name = 'xception71_imagenet'
-        if self.outputs_name is None:
-            self.outputs_name = None
-        if self.pool_strategy is None:
-            self.pool_strategy = 'mean'
+        self.inputs_name = None
+        self.outputs_name = None
 
     def post_init(self):
         super().post_init()

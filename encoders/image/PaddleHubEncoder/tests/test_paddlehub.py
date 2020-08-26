@@ -9,7 +9,8 @@ from jina.executors import BaseExecutor
 
 input_dim = 224
 target_output_dim = 2048
-test_data = np.random.rand(2, 3, input_dim, input_dim)
+num_doc = 2
+test_data = np.random.rand(num_doc, 3, input_dim, input_dim)
 tmp_files = []
 
 def teardown():
@@ -33,26 +34,62 @@ def get_encoder():
 
 class MockModule:
     def get_embedding(self, texts, *args, **kwargs):
-        print('i am a mocker embedding')
         return [[np.random.random(target_output_dim), None]] * len(texts)
 
+    def context(self, *args, **kwargs):
+        return {'image': MockTensor('input')}, {'feature_map': MockTensor('output')}, MockModel()
 
 
-def _test_imagepaddlehubencoder_encode():
+class MockTensor:
+    def __init__(self, name):
+        self.name = name
+
+
+class MockModel:
+    pass
+
+
+class MockExecutor:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def close(self):
+        pass
+
+    def run(self, feed, *args, **kwargs):
+        feature_map = np.random.random((num_doc, target_output_dim))
+        return feature_map, None
+
+
+class MockCUDADevice:
+    pass
+
+
+class MockCPUDevice:
+    pass
+
+
+def _test_imagepaddlehubencoder_encode(*args, **kwargs):
     encoder = get_encoder()
     encoded_data = encoder.encode(test_data)
-    assert encoded_data.shape == (2, target_output_dim)
+    assert encoded_data.shape == (num_doc, target_output_dim)
     add_tmpfile(encoder.save_abspath, encoder.config_abspath)
     teardown()
 
 
 @mock.patch('paddlehub.Module', return_value=MockModule())
-def test_imagepaddlehubencoder_encode(mocker):
-    _test_imagepaddlehubencoder_encode()
+@mock.patch('paddle.fluid.Executor', return_value=MockExecutor())
+@mock.patch('paddle.fluid.CUDAPlace', return_value=MockCUDADevice())
+@mock.patch('paddle.fluid.CPUPlace', return_value=MockCPUDevice())
+def test_imagepaddlehubencoder_encode(*args, **kwargs):
+    _test_imagepaddlehubencoder_encode(*args, **kwargs)
 
 
 @mock.patch('paddlehub.Module', return_value=MockModule())
-def test_imagepaddlehubencoder_save_and_load(mocker):
+@mock.patch('paddle.fluid.Executor', return_value=MockExecutor())
+@mock.patch('paddle.fluid.CUDAPlace', return_value=MockCUDADevice())
+@mock.patch('paddle.fluid.CPUPlace', return_value=MockCPUDevice())
+def test_imagepaddlehubencoder_save_and_load(*args, **kwargs):
     encoder = get_encoder()
     encoder.touch()
     encoder.save()
@@ -64,7 +101,10 @@ def test_imagepaddlehubencoder_save_and_load(mocker):
 
 
 @mock.patch('paddlehub.Module', return_value=MockModule())
-def test_imagepaddlehubencoder_save_and_load_config(mocker):
+@mock.patch('paddle.fluid.Executor', return_value=MockExecutor())
+@mock.patch('paddle.fluid.CUDAPlace', return_value=MockCUDADevice())
+@mock.patch('paddle.fluid.CPUPlace', return_value=MockCPUDevice())
+def test_imagepaddlehubencoder_save_and_load_config(*args, **kwargs):
     encoder = get_encoder()
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
@@ -73,5 +113,7 @@ def test_imagepaddlehubencoder_save_and_load_config(mocker):
     add_tmpfile(encoder.save_abspath, encoder.config_abspath)
     teardown()
 
+
+@pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
 def test_imagepaddlehubencoder_encode_with_pretrained_model():
     _test_imagepaddlehubencoder_encode()
