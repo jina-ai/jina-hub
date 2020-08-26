@@ -56,7 +56,7 @@ def _test_encoding_results(*args, **kwargs):
 @mock.patch('flair.embeddings.WordEmbeddings', return_value=MockEmbedding())
 @mock.patch('flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding())
 @mock.patch('flair.data.Sentence', return_value=MockSentence())
-def test_encoding_results(*args, **kwargs):
+def test_encoding_results_local(*args, **kwargs):
     _test_encoding_results(*args, **kwargs)
 
 
