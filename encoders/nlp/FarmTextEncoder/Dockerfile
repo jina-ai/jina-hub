@@ -5,7 +5,7 @@ COPY . /workspace
 WORKDIR /workspace
 
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y gcc
+    apt-get install --no-install-recommends -y gcc python-devel
 
 # install the third-party requirements
 RUN pip install -r requirements.txt
