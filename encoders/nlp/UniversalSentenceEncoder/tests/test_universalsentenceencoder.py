@@ -31,7 +31,7 @@ class MockModule:
         return np.stack([[i for i in range(target_output_dim)]] * data.shape[0])
 
 
-target_output_dim = 768
+target_output_dim = 512
 test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
 
 def _test_encoding_results():
