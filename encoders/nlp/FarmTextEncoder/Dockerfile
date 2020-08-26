@@ -4,10 +4,11 @@ FROM jinaai/jina
 COPY . /workspace
 WORKDIR /workspace
 
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y gcc
+
 # install the third-party requirements
 RUN pip install -r requirements.txt
-
-RUN apt-get install gcc
 
 # for testing the image
 RUN pip install pytest pytest-mock mock && JINA_TEST_PRETRAINED='true' pytest
