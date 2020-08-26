@@ -3,7 +3,7 @@ import mock
 import shutil
 import numpy as np
 import pytest
-from .. import PaddleHubEncoder
+from .. import ImagePaddlehubEncoder
 from jina.executors.metas import get_default_metas
 from jina.executors import BaseExecutor
 
@@ -13,6 +13,7 @@ num_doc = 2
 test_data = np.random.rand(num_doc, 3, input_dim, input_dim)
 tmp_files = []
 
+
 def teardown():
     for k in tmp_files:
         if os.path.exists(k):
@@ -20,6 +21,7 @@ def teardown():
                 os.remove(k)
             elif os.path.isdir(k):
                 shutil.rmtree(k, ignore_errors=False, onerror=None)
+
 
 def add_tmpfile(*path):
     tmp_files.extend(path)
@@ -29,7 +31,7 @@ def get_encoder():
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
-    return PaddleHubEncoder(metas=metas)
+    return ImagePaddlehubEncoder(metas=metas)
 
 
 class MockModule:
