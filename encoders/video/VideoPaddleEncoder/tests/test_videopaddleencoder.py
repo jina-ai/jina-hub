@@ -34,9 +34,6 @@ def get_encoder():
 
 
 class MockModule:
-    def get_embedding(self, texts, *args, **kwargs):
-        return [[np.random.random(target_output_dim), None]] * len(texts)
-
     def context(self, *args, **kwargs):
         input_name = MockModel()
         input_name.name="video"
