@@ -1,20 +1,17 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTorchEncoder
 
-
 class FarmTextEncoder(BaseTorchEncoder):
-    """FARM-based text encoder: (Framework for Adapting Representation Models)
+    """
+    FARM-based text encoder: (Framework for Adapting Representation Models)
     https://github.com/deepset-ai/FARM
 
     It encodes an array of string in size `B` into an ndarray in size `B x D`
     """
 
-    def __init__(self, model_name: str = 'deepset/bert-base-cased-squad2',
+    def __init__(self, pretrained_model_name_or_path: str = 'deepset/bert-base-cased-squad2',
                  num_processes: int = 0, extraction_strategy: str = 'cls_token',
                  extraction_layer: int = -1,
                  *args,
@@ -32,14 +29,14 @@ class FarmTextEncoder(BaseTorchEncoder):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self.model_name = 'deepset/bert-base-cased-squad2' or model_name
+        self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.num_processes = num_processes
         self.extraction_strategy = extraction_strategy
         self.extraction_layer = extraction_layer
 
     def post_init(self):
         from farm.infer import Inferencer
-        self.model = Inferencer.load(model_name_or_path=self.model_name, task_type='embeddings',
+        self.model = Inferencer.load(model_name_or_path=self.pretrained_model_name_or_path, task_type='embeddings',
                                      num_processes=self.num_processes)
 
     @batching
