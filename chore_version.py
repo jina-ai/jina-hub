@@ -25,6 +25,8 @@ for fpath in glob.glob(f'**/{version_file}'):
 		old_ver = info['version']
 		new_ver = '.'.join(old_ver.split('.')[:-1] + [str(int(old_ver.split('.')[-1])+1)])
 		info['version'] = new_ver
+	with open(fpath, 'w') as fp:
+		yaml.dump(info, fp)
 	new_branch = repo.create_head(f'chore-version-{dname}')
 	new_branch.checkout()
 	index = repo.index
