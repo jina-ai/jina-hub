@@ -8,8 +8,8 @@ from .. import VideoPaddleEncoder
 from jina.executors import BaseExecutor
 
 
-target_output_dim = 1024
-test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+target_output_dim = 2048
+test_data = np.random.rand(2, 3, 3, 224, 224)
 tmp_files = []
 
 
@@ -27,26 +27,41 @@ def add_tmpfile(*path):
 
 
 class MockModule:
-    def get_embedding(self, texts, *args, **kwargs):
+
+    def context(self, *args, **kwargs):
         print('i am a mocker embedding')
-        return [[np.random.random(target_output_dim), None]] * len(texts)
+        output_dim = 2048
+        tmp = MockModule()
+        tmp.name="videopaddle"
+        inputs = [tmp]
+        outputs= "output"
+        from paddle.fluid.framework import Program
+        model = Program()
+        return inputs, outputs, model
+
+class MockVideoPaddleEncoder:
+
+    def to_device(self):
+        import paddle.fluid as fluid
+        device = fluid.CPUPlace()
+        exe = fluid.Executor(device)
+        return exe
 
 
-def _test_textpaddlehubencoder_encode():
+def _test_videopaddlehubencoder_encode():
     encoder = VideoPaddleEncoder()
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
     add_tmpfile(encoder.save_abspath, encoder.config_abspath)
     teardown()
 
+@mock.patch('paddlehub.Module', return_value=MockModule())
+@mock.patch('..VideoPaddleEncoder', return_value=MockVideoPaddleEncoder())
+def test_videopaddlehubencoder_encode(mocker):
+    _test_videopaddlehubencoder_encode()
 
 @mock.patch('paddlehub.Module', return_value=MockModule())
-def test_textpaddlehubencoder_encode(mocker):
-    _test_textpaddlehubencoder_encode()
-
-
-@mock.patch('paddlehub.Module', return_value=MockModule())
-def test_textpaddlehubencoder_save_and_load(mocker):
+def test_videopaddlehubencoder_save_and_load(mocker):
     encoder = VideoPaddleEncoder()
     encoder.touch()
     encoder.save()
@@ -58,7 +73,7 @@ def test_textpaddlehubencoder_save_and_load(mocker):
 
 
 @mock.patch('paddlehub.Module', return_value=MockModule())
-def test_textpaddlehubencoder_save_and_load_config(mocker):
+def test_videopaddlehubencoder_save_and_load_config(mocker):
     encoder = VideoPaddleEncoder()
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
@@ -68,5 +83,5 @@ def test_textpaddlehubencoder_save_and_load_config(mocker):
     teardown()
 
 @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
-def test_textpaddlehubencoder_encode_with_pretrained_model():
-    _test_textpaddlehubencoder_encode()
+def test_videopaddlehubencoder_encode_with_pretrained_model():
+    _test_videopaddlehubencoder_encode()
