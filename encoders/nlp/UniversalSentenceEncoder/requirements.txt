@@ -1,4 +1,4 @@
 jina
+protobuf
 tensorflow
 tensorflow_hub
-protobuf
