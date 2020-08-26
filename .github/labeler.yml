@@ -3,31 +3,42 @@ area/docs:
   - docs/**/*
   - ./*.md
 
-area/example:
-  - hub/examples/**/*
-
 area/housekeeping:
   - .github/**/*
   - ./.gitignore
 
-area/hub:
-  - hub/**/*
-
 area/cicd:
   - .github/workflows/**/*
-  - builder/**/*
+
+type/manifest:
+  - '**/manifest.yml'
+
+type/dockerfile:
+  - '**/Dockerfile'
+
+type/python:
+  - '**/*.py'
+
+type/readme:
+  - '**/README'
+
+type/config:
+  - '**/config.yml'
+
+tests:
+  - '**/tests/*'
 
 component/executor:
-  - hub/executors/**/*
+  - executors/**/*
 
 component/encoder:
-  - hub/executors/encoders/**/*
+  - encoders/**/*
 
 component/indexer:
-  - hub/executors/indexers/**/*
+  - indexers/**/*
 
 component/ranker:
-  - hub/executors/rankers/**/*
+  - rankers/**/*
 
 component/crafter:
-  - hub/executors/crafter/**/*
+  - crafters/**/*

@@ -4,7 +4,7 @@ import shutil
 
 import numpy as np
 
-from .. import RandomGaussianEncoder
+from .. import IncrementalPCAEncoder
 from jina.executors import BaseExecutor
 from jina.executors.encoders.numeric import TransformEncoder
 
@@ -60,9 +60,9 @@ def save_and_load_config(encoder, requires_train_after_load, train_data):
         assert encoded_data_test.shape == (10, target_output_dim)
 
 
-def test_random_gaussian_encoder_train():
+def test_random_pca_encoder_train():
     train_data = np.random.rand(2000, input_dim)
-    encoder = RandomGaussianEncoder(output_dim=target_output_dim)
+    encoder = IncrementalPCAEncoder(output_dim=target_output_dim)
     encoder.train(train_data)
     encoding_results(encoder)
     save_and_load(encoder, True)
@@ -70,12 +70,12 @@ def test_random_gaussian_encoder_train():
     rm_files([encoder.save_abspath, encoder.config_abspath])
 
 
-def test_random_gaussian_encoder_load():
+def test_random_pca_encoder_load():
     train_data = np.random.rand(2000, input_dim)
 
-    from sklearn.random_projection import GaussianRandomProjection
-    model = GaussianRandomProjection(n_components=target_output_dim)
-    filename = 'random_gaussian_model.model'
+    from sklearn.decomposition import IncrementalPCA
+    model = IncrementalPCA(n_components=target_output_dim)
+    filename = 'incremental_pca_model.model'
     pickle.dump(model.fit(train_data), open(filename, 'wb'))
 
     encoder = TransformEncoder(model_path=filename)

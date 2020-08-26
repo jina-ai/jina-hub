@@ -35,10 +35,12 @@ def run_test(indexer):
             'd3': MessageToJson(create_document(3, 'bird', 0.3, 3)),
         }
         idx.add(data)
+        idx.touch()
         idx.save()
         save_abspath = idx.save_abspath
         index_abspath = idx.index_abspath
     assert os.path.exists(index_abspath)
+    assert os.path.exists(save_abspath)
 
     with BaseIndexer.load(save_abspath) as searcher:
         doc = searcher.query('d2')
