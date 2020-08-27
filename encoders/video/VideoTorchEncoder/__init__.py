@@ -68,11 +68,8 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
         _input = torch.from_numpy(data.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()
-        print(_input.ndim)
         _feature = self._get_features(_input).detach()
-        print(_feature.ndim)
         if self.on_gpu:
             _feature = _feature.cpu()
         _feature = _feature.numpy()
-        print(_feature.ndim)
         return self._get_pooling(_feature)
