@@ -1,14 +1,13 @@
 manifest_version: 1
 name: FeatureAgglomerationEncoder
 kind: encoder
-description:
-  |
+description: |
   class:`FeatureAgglomerationEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D` https://scikit-learn.org/stable/modules/generated/sklearn.cluster.FeatureAgglomeration.html
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.1
+version: 0.0.2
 license: apache-2.0
-keywords: [sklearn.cluster,FeatureAgglomeration]
+keywords: [sklearn.cluster, FeatureAgglomeration]
 type: pod

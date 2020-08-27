@@ -7,11 +7,6 @@ class AudioNormalizer(BaseCrafter):
     :class:`AudioNormalizer` normalizes the audio signal on doc-level..
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # your customized __init__ below
-        raise NotImplementedError
-
     def craft(self, blob: np.ndarray, *args, **kwargs):
         """
         Reads the `ndarray` of the audio signal, normalizes the signal and saves the `ndarray` of the normalized signal
