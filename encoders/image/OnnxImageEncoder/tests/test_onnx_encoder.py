@@ -45,7 +45,7 @@ def test_save_and_load():
     assert os.path.exists(encoder.save_abspath)
     encoder_loaded = BaseExecutor.load(encoder.save_abspath)
     encoded_data_test = encoder_loaded.encode(test_data)
-    assert encoder_loaded.model_path == encoder.model_path
+    assert encoder_loaded.raw_model_path == encoder.raw_model_path
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
     rm_files([encoder.save_abspath, encoder.config_abspath])
 
@@ -55,5 +55,5 @@ def test_save_and_load_config():
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-    assert encoder_loaded.model_path == encoder.model_path
+    assert encoder_loaded.raw_model_path == encoder.raw_model_path
     rm_files([encoder.save_abspath, encoder.config_abspath])
