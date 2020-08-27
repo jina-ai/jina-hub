@@ -4,6 +4,7 @@ FROM jinaai/jina:latest
 COPY . /workspace
 WORKDIR /workspace
 
+# install dependency and download pre-trained model
 RUN apt-get update && \
     apt-get install --no-install-recommends -y curl \
                                                gcc \
@@ -15,6 +16,6 @@ RUN apt-get update && \
 RUN pip install -r requirements.txt
 
 # for testing the image
-RUN pip install pytest && pytest
+RUN pip install pytest && JINA_TEST_PRETRAINED='true' pytest
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
