@@ -4,6 +4,9 @@ FROM jinaai/jina
 COPY . /workspace
 WORKDIR /workspace
 
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y libsndfile1
+
 # install the third-party requirements
 RUN pip install -r requirements.txt
 
