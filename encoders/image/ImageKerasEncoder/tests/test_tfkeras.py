@@ -1,7 +1,7 @@
 import os
 import shutil
 import numpy as np
-from .. import KerasImageEncoder
+from .. import ImageKerasEncoder
 from jina.executors.metas import get_default_metas
 from jina.executors import BaseExecutor
 
@@ -19,7 +19,7 @@ def get_encoder():
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
-    return KerasImageEncoder(channel_axis=1, metas=metas)
+    return ImageKerasEncoder(channel_axis=1, metas=metas)
 
 
 def test_encoding_results():
