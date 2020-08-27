@@ -1,13 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import os, sys
-import subprocess
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTorchEncoder
-from laserembeddings import Laser
 
 
 class LaserEncoder(BaseTorchEncoder):
@@ -18,13 +15,13 @@ class LaserEncoder(BaseTorchEncoder):
     """
 
     def __init__(
-        self,
-        path_to_bpe_codes: str = Laser.DEFAULT_BPE_CODES_FILE,
-        path_to_bpe_vocab: str = Laser.DEFAULT_BPE_VOCAB_FILE,
-        path_to_encoder: str = Laser.DEFAULT_ENCODER_FILE,
-        language: str = "en",
-        *args,
-        **kwargs,
+            self,
+            path_to_bpe_codes: str = 'Laser.DEFAULT_BPE_CODES_FILE',
+            path_to_bpe_vocab: str = 'Laser.DEFAULT_BPE_VOCAB_FILE',
+            path_to_encoder: str = 'Laser.DEFAULT_ENCODER_FILE',
+            language: str = 'en',
+            *args,
+            **kwargs,
     ):
         """
         :param path_to_bpe_codes: path to bpe codes from Laser. Defaults to Laser.DEFAULT_BPE_CODES_FILE.
@@ -41,6 +38,7 @@ class LaserEncoder(BaseTorchEncoder):
         self.language = language.lower()
 
     def post_init(self):
+        from laserembeddings import Laser
         self.model = Laser(
             bpe_codes=self._path_to_bpe_codes,
             bpe_vocab=self._path_to_bpe_vocab,
