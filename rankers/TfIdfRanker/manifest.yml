@@ -1,9 +1,8 @@
 manifest_version: 1
 name: TfIdfRanker
-kind:  ranker
+kind: ranker
 type: pod
-description:
-  |
+description: |
   `TfIdfRanker` calculates the weighted score from the matched chunks. The weights of each chunk is based on
   the tf-idf algorithm. Each query chunk is considered as a ``term``, and the frequency of the query chunk in a
   specific matched document is considered as the naive ``term-frequency``. All the matched results as a whole is
@@ -14,6 +13,6 @@ author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.1
+version: 0.0.2
 license: apache-2.0
-keywords: [ranker,toyexample,demo]
+keywords: [ranker, toyexample, demo]

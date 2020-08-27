@@ -16,8 +16,8 @@ class VideoPaddleEncoder(BasePaddleEncoder):
     """
 
     def __init__(self,
-                 model_name: str = None,
-                 output_feature: str = None,
+                 model_name: str = 'tsn_kinetics400',
+                 output_feature: str = '@HUB_tsn_kinetics400@reduce_mean_0.tmp_0',
                  pool_strategy: str = None,
                  channel_axis: int = 2,
                  *args, **kwargs):
@@ -37,8 +37,8 @@ class VideoPaddleEncoder(BasePaddleEncoder):
             - `max` means that global max pooling will be applied.
         """
         super().__init__(*args, **kwargs)
-        self.model_name = model_name or 'tsn_kinetics400'
-        self.outputs_name = output_feature or '@HUB_tsn_kinetics400@reduce_mean_0.tmp_0'
+        self.model_name = model_name
+        self.outputs_name = output_feature
         self.pool_strategy = pool_strategy
         self.channel_axis = channel_axis
         self._default_channel_axis = 2
