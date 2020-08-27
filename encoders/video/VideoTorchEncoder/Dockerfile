@@ -8,6 +8,6 @@ WORKDIR /workspace
 RUN pip install -r requirements.txt
 
 # for testing the image
-RUN pip install pytest && pytest -s
+RUN pip install pytest && pytest
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
