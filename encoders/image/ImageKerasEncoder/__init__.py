@@ -7,11 +7,11 @@ from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTFEncoder
 
 
-class KerasImageEncoder(BaseTFEncoder):
+class ImageKerasEncoder(BaseTFEncoder):
     """
-    :class:`KerasImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
+    :class:`ImageKerasEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
-    Internally, :class:`KerasImageEncoder` wraps the models from `tensorflow.keras.applications`.
+    Internally, :class:`ImageKerasEncoder` wraps the models from `tensorflow.keras.applications`.
     https://keras.io/applications/
     """
 
