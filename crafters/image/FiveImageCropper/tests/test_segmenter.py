@@ -6,7 +6,7 @@ def create_random_img_array(img_height, img_width):
     return np.random.randint(0, 256, (img_height, img_width, 3))
 
 
-def test_five_image_crop(self):
+def test_five_image_crop():
     img_size = 217
     img_array = create_random_img_array(img_size, img_size)
     output_dim = 20

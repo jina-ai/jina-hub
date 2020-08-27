@@ -20,32 +20,6 @@ def rm_files(file_paths):
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
-
-def test_randomsparseencodertrain():
-    train_data = np.random.rand(2000, input_dim)
-    requires_train_after_load = True
-    encoder = RandomSparseEncoder(output_dim=target_output_dim)
-    encoder.train(train_data)
-    encoding_results(encoder)
-    transform_encoder = None
-    save_and_load(encoder, transform_encoder, requires_train_after_load)
-    save_and_load_config(encoder, transform_encoder, requires_train_after_load, train_data)
-    rm_files([encoder.save_abspath])
-
-
-def test_randomsparsenencoderload():
-    train_data = np.random.rand(2000, input_dim)
-    requires_train_after_load = False
-    encoder = RandomSparseEncoder(output_dim=target_output_dim)
-    filename = 'random_sparse_model.model'
-    pickle.dump(encoder.model.fit_transform(train_data), open(filename, 'wb'))
-    transform_encoder = TransformEncoder(model_path=filename)
-    save_and_load(encoder, transform_encoder, requires_train_after_load)
-    save_and_load_config(encoder, transform_encoder, requires_train_after_load, train_data)
-    rm_files([transform_encoder.save_abspath])
-    rm_files([filename])
-    rm_files([encoder.save_abspath])
-
 def encoding_results(encoder):
     assert encoder is not None
     test_data = np.random.rand(10, input_dim)
@@ -57,6 +31,8 @@ def encoding_results(encoder):
 def save_and_load(encoder, requires_train_after_load):
     test_data = np.random.rand(10, input_dim)
     encoded_data_control = encoder.encode(test_data)
+    encoder.touch()
+    encoder.save()
     assert os.path.exists(encoder.save_abspath)
 
     if not requires_train_after_load:
@@ -70,17 +46,19 @@ def save_and_load(encoder, requires_train_after_load):
 
 
 def save_and_load_config(encoder, requires_train_after_load, train_data):
-    assert encoder is not None
     test_data = np.random.rand(10, input_dim)
+    encoder.save_config()
+    assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
 
     if requires_train_after_load:
         encoder_loaded.train(train_data)
-        encoded_data_test = encoder_loaded.encode(test_data)
-        assert encoded_data_test.shape == (10, target_output_dim)
+        
+    encoded_data_test = encoder_loaded.encode(test_data)
+    assert encoded_data_test.shape == (10, target_output_dim)
 
 
-def test_random_gaussian_encoder_train():
+def test_random_sparse_encoder_train():
     train_data = np.random.rand(2000, input_dim)
     encoder = RandomSparseEncoder(output_dim=target_output_dim)
     encoder.train(train_data)
@@ -90,7 +68,7 @@ def test_random_gaussian_encoder_train():
     rm_files([encoder.save_abspath, encoder.config_abspath])
 
 
-def test_random_gaussian_encoder_load():
+def test_random_sparse_encoder_load():
     train_data = np.random.rand(2000, input_dim)
 
     from sklearn.random_projection import SparseRandomProjection
