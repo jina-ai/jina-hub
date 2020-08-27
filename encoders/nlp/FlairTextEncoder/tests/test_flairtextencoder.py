@@ -80,7 +80,7 @@ def test_save_and_load(*args, **kwargs):
 @mock.patch('flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding())
 @mock.patch('flair.data.Sentence', return_value=MockSentence())
 def test_save_and_load_config(*args, **kwargs):
-    encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean')
+    encoder = FlairTextEncoder(embeddings=('flair:news-forward',), pooling_strategy='mean')
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
