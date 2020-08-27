@@ -5,7 +5,9 @@ COPY . /workspace
 WORKDIR /workspace
 
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y curl gcc && \
+    apt-get install --no-install-recommends -y curl \
+                                               gcc \
+                                               python-dev && \
     curl https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_large.pt --output /tmp/wav2vec_large.pt
 
 # install the third-party requirements
