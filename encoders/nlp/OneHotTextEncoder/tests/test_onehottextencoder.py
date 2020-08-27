@@ -8,6 +8,7 @@ tmp_files = []
 os.environ['TEST_WORKDIR'] = os.getcwd()
 
 def teardown():
+    print('tear down...')
     for k in tmp_files:
         if os.path.exists(k):
             if os.path.isfile(k):
