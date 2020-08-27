@@ -48,7 +48,6 @@ for fpath in glob.glob(f'./**/{version_file}', recursive=True):
         body_string = f'bumping version from {old_ver} to {new_ver}'
         pr_command = f'gh pr create -f'
         subprocess.call(pr_command, shell=True)
-        break
     except:
         raise
     finally:
