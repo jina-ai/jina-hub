@@ -16,9 +16,9 @@ class LaserEncoder(BaseTorchEncoder):
 
     def __init__(
             self,
-            path_to_bpe_codes: str = 'Laser.DEFAULT_BPE_CODES_FILE',
-            path_to_bpe_vocab: str = 'Laser.DEFAULT_BPE_VOCAB_FILE',
-            path_to_encoder: str = 'Laser.DEFAULT_ENCODER_FILE',
+            path_to_bpe_codes: str = None,
+            path_to_bpe_vocab: str = None,
+            path_to_encoder: str = None,
             language: str = 'en',
             *args,
             **kwargs,
@@ -32,9 +32,10 @@ class LaserEncoder(BaseTorchEncoder):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self._path_to_bpe_codes = path_to_bpe_codes
-        self._path_to_bpe_vocab = path_to_bpe_vocab
-        self._path_to_encoder = path_to_encoder
+        from laserembeddings import Laser
+        self._path_to_bpe_codes = path_to_bpe_codes or Laser.DEFAULT_BPE_CODES_FILE
+        self._path_to_bpe_vocab = path_to_bpe_vocab or Laser.DEFAULT_BPE_VOCAB_FILE
+        self._path_to_encoder = path_to_encoder or Laser.DEFAULT_ENCODER_FILE
         self.language = language.lower()
 
     def post_init(self):

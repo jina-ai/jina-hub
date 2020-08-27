@@ -1,10 +1,12 @@
 import os
 import shutil
+
 import numpy as np
 import pytest
-from .. import LaserEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
+
+from .. import LaserEncoder
 
 
 def rm_files(tmp_files):
