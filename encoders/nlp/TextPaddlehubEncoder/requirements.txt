@@ -1,4 +1,3 @@
-jina
 paddlepaddle
 paddlehub
 Pillow
