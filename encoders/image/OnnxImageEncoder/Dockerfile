@@ -12,9 +12,9 @@ RUN pip install -r requirements.txt
 COPY . /
 
 RUN git-lfs clone https://github.com/onnx/models.git && \
-    cd models &&
-    git lfs install &&
-    git lfs pull --include="vision/classification/mobilenet/model/mobilenetv2-7.onnx" --exclude="" &&
+    cd models && \
+    git lfs install && \
+    git lfs pull --include="vision/classification/mobilenet/model/mobilenetv2-7.onnx" --exclude="" && \
     cd ..
 
 # for downloading pre-trained model and testing the image
