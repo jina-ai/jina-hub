@@ -1,0 +1,5 @@
+jina
+protobuf>=3.9.2
+grpcio>=1.24.3
+laserembeddings[zh,ja]
+torch>=1.1.0
