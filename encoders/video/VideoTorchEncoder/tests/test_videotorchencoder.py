@@ -36,31 +36,31 @@ def get_encoder():
 #     print('test1finish')
 
 
-def test_save_and_load():
-    print('test2')
-    encoder = get_encoder()
-    test_data = np.random.rand(batch_size, num_frames, channel, input_dim, input_dim)
-    encoded_data_control = encoder.encode(test_data)
-    encoder.touch()
-    encoder.save()
-    assert os.path.exists(encoder.save_abspath)
-    encoder_loaded = BaseExecutor.load(encoder.save_abspath)
-    encoded_data_test = encoder_loaded.encode(test_data)
-    assert encoder_loaded.channel_axis == encoder.channel_axis
-    np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
-    rm_files([encoder.save_abspath, encoder.config_abspath])
-    print('test2finish')
-
-
-def test_save_and_load_config():
-    print('test3')
-    encoder = get_encoder()
-    encoder.save_config()
-    assert os.path.exists(encoder.config_abspath)
-    encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-    assert encoder_loaded.channel_axis == encoder.channel_axis
-    rm_files([encoder.save_abspath, encoder.config_abspath])
-    print('test3finish')
+# def test_save_and_load():
+#     print('test2')
+#     encoder = get_encoder()
+#     test_data = np.random.rand(batch_size, num_frames, channel, input_dim, input_dim)
+#     encoded_data_control = encoder.encode(test_data)
+#     encoder.touch()
+#     encoder.save()
+#     assert os.path.exists(encoder.save_abspath)
+#     encoder_loaded = BaseExecutor.load(encoder.save_abspath)
+#     encoded_data_test = encoder_loaded.encode(test_data)
+#     assert encoder_loaded.channel_axis == encoder.channel_axis
+#     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
+#     rm_files([encoder.save_abspath, encoder.config_abspath])
+#     print('test2finish')
+#
+#
+# def test_save_and_load_config():
+#     print('test3')
+#     encoder = get_encoder()
+#     encoder.save_config()
+#     assert os.path.exists(encoder.config_abspath)
+#     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
+#     assert encoder_loaded.channel_axis == encoder.channel_axis
+#     rm_files([encoder.save_abspath, encoder.config_abspath])
+#     print('test3finish')
 
 
 def test_pool_fn():
