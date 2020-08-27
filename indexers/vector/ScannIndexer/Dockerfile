@@ -20,7 +20,10 @@ RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
 
 # Scann needs gcc9 and default for (Ubuntu 18.04) is gcc7
 RUN apt update && apt install -y build-essential && \
-    apt-get install -y software-properties-common && \
+    apt-get install -y software-properties-common \
+                       libnvinfer6=6.0.1-1+cuda10.1 \
+                       libnvinfer-dev=6.0.1-1+cuda10.1 \
+                       libnvinfer-plugin6=6.0.1-1+cuda10.1 && \
     add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt update && \
     apt install -y gcc-9 g++-9
