@@ -9,7 +9,7 @@ batch_size = 2
 input_dim = 224
 output_dim = 512
 channel = 3
-frame = 4
+num_frames = 10
 def rm_files(file_paths):
     for file_path in file_paths:
         if os.path.exists(file_path):
@@ -28,7 +28,7 @@ def get_encoder():
 
 def test_encoding_results():
     encoder = get_encoder()
-    test_data = np.random.rand(batch_size, frame, channel, input_dim, input_dim)
+    test_data = np.random.rand(batch_size, num_frames, channel, input_dim, input_dim)
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (batch_size, output_dim)
     rm_files([encoder.save_abspath, encoder.config_abspath])
@@ -36,7 +36,7 @@ def test_encoding_results():
 
 def test_save_and_load():
     encoder = get_encoder()
-    test_data = np.random.rand(batch_size, frame, channel, input_dim, input_dim)
+    test_data = np.random.rand(batch_size, num_frames, channel, input_dim, input_dim)
     encoded_data_control = encoder.encode(test_data)
     encoder.touch()
     encoder.save()
@@ -58,7 +58,7 @@ def test_save_and_load_config():
 
 
 def test_pool_fn():
-    test_data = np.random.rand(batch_size, frame, channel, input_dim, input_dim)
+    test_data = np.random.rand(batch_size, num_frames, channel, input_dim, input_dim)
     encoder = get_encoder()
     encoded_data = encoder.pool_fn(test_data,axis=(2, 3))
     assert encoded_data.ndim == test_data.ndim - 2
