@@ -1,9 +1,7 @@
 manifest_version: 1
 name: Wav2VecSpeechEncoder
 kind: encoder
-description:
-  |
-  uses a pre-trained model to encode an audio signal from a `Batch x Signal Length` ndarray into a `Batch x Concatenated Features` ndarray
+description: uses a pre-trained model to encode an audio signal from a `Batch x Signal Length` ndarray into a `Batch x Concatenated Features` ndarray
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited

@@ -22,7 +22,7 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
         Wav2vec model produces a representation for each time step at a rate of 100 Hz.
 
         :param model_path: the path of the pre-trained model. The pre-trained model can be downloaded at
-            https://github.com/pytorch/fairseq/tree/master/examples/wav2vec/README.md#pre-trained-models
+            https://github.com/pytorch/fairseq/tree/master/examples/wav2vec/README.md#wav2vec
         :param input_sample_rate: input sampling rate in Hz (22050 by default)
         """
         super().__init__(*args, **kwargs)

@@ -4,6 +4,10 @@ FROM jinaai/jina
 COPY . /workspace
 WORKDIR /workspace
 
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y curl gcc && \
+    curl https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_large.pt --output /tmp/wav2vec_large.pt
+
 # install the third-party requirements
 RUN pip install -r requirements.txt
 

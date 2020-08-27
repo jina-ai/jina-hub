@@ -1,4 +1,4 @@
-# Wav2VecSpeechEncoder(
+# Wav2VecSpeechEncoder
 
    
    `Wav2VecSpeechEncoder` is a speech encoder based on `wav2vec` - unsupervised pre-training for speech
