@@ -4,13 +4,10 @@ __license__ = "Apache-2.0"
 from typing import Tuple
 
 import numpy as np
-import scann
-
 from jina.executors.indexers.vector import BaseNumpyIndexer
 
 
 class ScannIndexer(BaseNumpyIndexer):
-
     """Scann powered vector indexer
 
     For more information about the Scann supported parameters, please consult:
@@ -79,8 +76,9 @@ class ScannIndexer(BaseNumpyIndexer):
         It will take the top k-distances and re-compute the distance.
         Then the top-k from this new measurement will be selected.
         """
-        index = scann.ScannBuilder(vecs, self.training_iterations, self.distance_measure).\
-            score_ah(self.dimensions_per_block, self.anisotropic_quantization_threshold).\
+        import scann
+        index = scann.ScannBuilder(vecs, self.training_iterations, self.distance_measure). \
+            score_ah(self.dimensions_per_block, self.anisotropic_quantization_threshold). \
             reorder(self.reordering_num_neighbors).create_pybind()
         return index
 
@@ -90,4 +88,3 @@ class ScannIndexer(BaseNumpyIndexer):
 
         neighbors, dist = self.query_handler.search_batched(keys, top_k)
         return neighbors, dist
-
