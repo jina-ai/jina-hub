@@ -7,6 +7,7 @@ WORKDIR /workspace
 RUN apt-get update && \
     apt-get install --no-install-recommends -y curl \
                                                gcc \
+                                               gcc-c++ \
                                                python-dev && \
     curl https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_large.pt --output /tmp/wav2vec_large.pt
 
