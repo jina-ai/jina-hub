@@ -26,14 +26,14 @@ def get_encoder():
     return VideoTorchEncoder(metas=metas)
 
 
-def test_encoding_results():
-    print('test1')
-    encoder = get_encoder()
-    test_data = np.random.rand(batch_size, num_frames, channel, input_dim, input_dim)
-    encoded_data = encoder.encode(test_data)
-    assert encoded_data.shape == (batch_size, output_dim)
-    rm_files([encoder.save_abspath, encoder.config_abspath])
-    print('test1finish')
+# def test_encoding_results():
+#     print('test1')
+#     encoder = get_encoder()
+#     test_data = np.random.rand(batch_size, num_frames, channel, input_dim, input_dim)
+#     encoded_data = encoder.encode(test_data)
+#     assert encoded_data.shape == (batch_size, output_dim)
+#     rm_files([encoder.save_abspath, encoder.config_abspath])
+#     print('test1finish')
 
 
 def test_save_and_load():
