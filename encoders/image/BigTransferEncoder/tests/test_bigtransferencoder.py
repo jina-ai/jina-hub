@@ -22,10 +22,12 @@ def get_encoder():
     return BigTransferEncoder(model_path='pretrained', channel_axis=1, metas=metas)
 
 
+encoder = get_encoder()
+
+
 def test_encoding_results():
     input_dim = 48
     output_dim = 2048
-    encoder = get_encoder()
     test_data = np.random.rand(2, 3, input_dim, input_dim)
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, output_dim)
@@ -33,7 +35,6 @@ def test_encoding_results():
 
 
 def test_save_and_load():
-    encoder = get_encoder()
     encoder.touch()
     encoder.save()
     assert os.path.exists(encoder.save_abspath)
@@ -43,7 +44,6 @@ def test_save_and_load():
 
 
 def test_save_and_load_config():
-    encoder = get_encoder()
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
