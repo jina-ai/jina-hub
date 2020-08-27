@@ -58,7 +58,7 @@ def save_and_load_config(encoder, requires_train_after_load, train_data):
     assert encoded_data_test.shape == (10, target_output_dim)
 
 
-def test_random_gaussian_encoder_train():
+def test_random_sparse_encoder_train():
     train_data = np.random.rand(2000, input_dim)
     encoder = RandomSparseEncoder(output_dim=target_output_dim)
     encoder.train(train_data)
@@ -68,7 +68,7 @@ def test_random_gaussian_encoder_train():
     rm_files([encoder.save_abspath, encoder.config_abspath])
 
 
-def test_random_gaussian_encoder_load():
+def test_random_sparse_encoder_load():
     train_data = np.random.rand(2000, input_dim)
 
     from sklearn.random_projection import SparseRandomProjection
