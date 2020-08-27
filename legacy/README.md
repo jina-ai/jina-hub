@@ -157,7 +157,7 @@ Let's now look at these three lines one by one.
 FROM jinaai/jina
 ``` 
 
-In the first line, we choose `jinaai/jina:devel` as [the base image](https://docs.docker.com/glossary/#base-image), which corresponds to the latest master of [`jina-ai/jina`](https://github.com/jina-ai/jina). But of course, you are free to use others, e.g. `tensorflow/tensorflow:nightly-gpu-jupyter`. 
+In the first line, we choose `jinaai/jina` as [the base image](https://docs.docker.com/glossary/#base-image), which corresponds to the latest master of [`jina-ai/jina`](https://github.com/jina-ai/jina). But of course, you are free to use others, e.g. `tensorflow/tensorflow:nightly-gpu-jupyter`. 
 
 In practice, whether to use Jina base image depends on the dependencies you would like to introduce. For example, someone provides a hard-to-compile package as a Docker image, much harder than compiling/installing Jina itself. In this case, you may want to use this image as the base image to save some troubles. But don't forget to install Python >=3.7 (if not included) and Jina afterwards, e.g.
 
@@ -178,7 +178,7 @@ RUN pip install https://github.com/jina-ai/jina.git
 
 , where  `jina` is the master branch of [jina-ai/jina](https://github.com/jina-ai/jina) mounted to the building context by our CI pipeline.
 
-In this example, our dummy `MWUEncoder` only requires Jina and does not need any third-party framework. Thus, `jinaai/jina:devel` is used.
+In this example, our dummy `MWUEncoder` only requires Jina and does not need any third-party framework. Thus, `jinaai/jina` is used.
 
 ```Dockerfile
 ADD *.py mwu_encoder.yml ./
@@ -233,7 +233,7 @@ cd hub/example
 docker build -t jinaai/hub.examples.mwu_encoder .
 ```
 
-Depending on whether you want to use the latest Jina image, you may first pull it via `docker pull jinaai/jina:devel` before the build. For the sake of immutability, `docker build` will not automatically pull the latest image for you.
+Depending on whether you want to use the latest Jina image, you may first pull it via `docker pull jinaai/jina` before the build. For the sake of immutability, `docker build` will not automatically pull the latest image for you.
 
 Congratulations! You can now re-use this Pod image how ever you want.
 
