@@ -33,17 +33,12 @@ def test_encoding_results():
 
 
 def test_save_and_load():
-    input_dim = 48
     encoder = get_encoder()
-    test_data = np.random.rand(2, 3, input_dim, input_dim)
-    encoded_data_control = encoder.encode(test_data)
     encoder.touch()
     encoder.save()
     assert os.path.exists(encoder.save_abspath)
     encoder_loaded = BaseExecutor.load(encoder.save_abspath)
-    encoded_data_test = encoder_loaded.encode(test_data)
     assert encoder_loaded.channel_axis == encoder.channel_axis
-    np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
     rm_files([encoder.save_abspath, encoder.config_abspath])
 
 
