@@ -50,8 +50,6 @@ def test_encoding_results():
     target_output_dim = 10
     input_dim = 224
     encoder = get_encoder()
-    if encoder is None:
-        return
     test_data = np.random.rand(2, 3, input_dim, input_dim)
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
@@ -59,8 +57,6 @@ def test_encoding_results():
 def test_save_and_load():
     input_dim = 224
     encoder = get_encoder()
-    if encoder is None:
-        return
     test_data = np.random.rand(2, 3, input_dim, input_dim)
     encoded_data_control = encoder.encode(test_data)
     encoder.touch()
@@ -73,8 +69,6 @@ def test_save_and_load():
 
 def test_save_and_load_config():
     encoder = get_encoder()
-    if encoder is None:
-        return
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
