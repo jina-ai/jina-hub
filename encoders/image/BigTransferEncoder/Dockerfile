@@ -13,6 +13,10 @@ COPY . /
 # for downloading pre-trained model
 RUN bash download.sh
 
+RUN pip list | grep tensorflow
+
+RUN ls
+
 # for testing the image
 RUN pip install pytest && pytest -v
 
