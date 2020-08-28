@@ -5,8 +5,9 @@ import numpy as np
 
 from .. import CustomKerasImageEncoder
 from jina.executors.metas import get_default_metas
-from tests.unit.executors.encoders.image import ImageTestCase
 from jina.executors import BaseExecutor
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, Activation, Flatten, Dense
 
 
 def rm_files(file_paths):
@@ -36,44 +37,45 @@ class TestNet:
         self.model.add(self.activation_softmax)
         return self.model
 
-def _get_encoder(self, metas):
-    from tensorflow.keras.models import Sequential
-    from tensorflow.keras.layers import Conv2D, Activation, Flatten, Dense
+def get_encoder():
+    metas = get_default_metas()
+    if 'JINA_TEST_GPU' in os.environ:
+        metas['on_gpu'] = True
     path = tempfile.NamedTemporaryFile().name
-    self.add_tmpfile(path)
     model = TestNet().create_model()
     model.save(path)
-    self.target_output_dim = 10
-    self.input_dim = 224
-    return CustomKerasImageEncoder(channel_axis=1, model_path=path, layer_name='dense')
+    return CustomKerasImageEncoder(channel_axis=1, model_path=path, layer_name='dense', metas=metas)
 
-def test_encoding_results(self):
-    encoder = self.get_encoder()
+def test_encoding_results():
+    target_output_dim = 10
+    input_dim = 224
+    encoder = get_encoder()
     if encoder is None:
         return
-    test_data = np.random.rand(2, 3, self.input_dim, self.input_dim)
+    test_data = np.random.rand(2, 3, input_dim, input_dim)
     encoded_data = encoder.encode(test_data)
-    assert encoded_data.shape == (2, self.target_output_dim)
+    assert encoded_data.shape == (2, target_output_dim)
 
-def test_save_and_load(self):
-    encoder = self.get_encoder()
+def test_save_and_load():
+    input_dim = 224
+    encoder = get_encoder()
     if encoder is None:
         return
-    test_data = np.random.rand(2, 3, self.input_dim, self.input_dim)
+    test_data = np.random.rand(2, 3, input_dim, input_dim)
     encoded_data_control = encoder.encode(test_data)
     encoder.touch()
     encoder.save()
-    self.assertTrue(os.path.exists(encoder.save_abspath))
+    assert os.path.exists(encoder.save_abspath)
     encoder_loaded = BaseExecutor.load(encoder.save_abspath)
     encoded_data_test = encoder_loaded.encode(test_data)
     assert encoder_loaded.channel_axis == encoder.channel_axis
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
 
-def test_save_and_load_config(self):
-    encoder = self.get_encoder()
+def test_save_and_load_config():
+    encoder = get_encoder()
     if encoder is None:
         return
     encoder.save_config()
-    self.assertTrue(os.path.exists(encoder.config_abspath))
+    assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
     assert encoder_loaded.channel_axis == encoder.channel_axis
