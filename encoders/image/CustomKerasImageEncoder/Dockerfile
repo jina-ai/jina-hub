@@ -5,11 +5,7 @@ COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-RUN apt-get update && apt-get install --no-install-recommends -y git curl && \
-    pip install -r requirements.txt
-
-# RUN pip install -r requirements.txt
-COPY . /
+RUN pip install -r requirements.txt
 
 # for testing the image
 RUN pip install pytest && pytest -v
