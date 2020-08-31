@@ -142,7 +142,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
                                  output_hidden_states=True)
 
             hidden_states = outputs[-1]
-            output_embeddings = hidden_states[0]
+            output_embeddings = hidden_states[-1]
             _mask_ids_batch = self.tensor2array(mask_ids_batch)
             _seq_output = self.tensor2array(output_embeddings)
             if self.pooling_strategy == 'auto':

@@ -62,6 +62,7 @@ def test_encoding_results(encoder):
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
+    assert not np.allclose(encoded_data[0], encoded_data[1])
 
 
 @pytest.mark.parametrize('encoder', encoders)
