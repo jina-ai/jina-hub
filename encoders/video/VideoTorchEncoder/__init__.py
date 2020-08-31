@@ -18,7 +18,7 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
     def __init__(self,
                  model_name: str = 'r3d_18',
                  channel_axis: int = 1,
-                 pool_strategy: str = 'mean',
+                 pool_strategy: str = None,
                  *args, **kwargs):
         """
         :param model_name: the name of the model. Supported models include ``r3d_18``, ``mc3_18``, ``r2plus1d_18``
@@ -69,7 +69,7 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
         if self.on_gpu:
             _input = _input.cuda()
         _feature = self._get_features(_input).detach()
-        if self.on_gpu:
+        if not self.on_gpu:
             _feature = _feature.cpu()
         _feature = _feature.numpy()
         return self._get_pooling(_feature)
