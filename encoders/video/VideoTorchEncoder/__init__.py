@@ -69,7 +69,7 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
         if self.on_gpu:
             _input = _input.cuda()
         _feature = self._get_features(_input).detach()
-        if self.on_gpu:
+        if not self.on_gpu:
             _feature = _feature.cpu()
         _feature = _feature.numpy()
         return self._get_pooling(_feature)
