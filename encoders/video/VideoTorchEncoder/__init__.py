@@ -18,7 +18,7 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
     def __init__(self,
                  model_name: str = 'r3d_18',
                  channel_axis: int = 1,
-                 pool_strategy: str = None,
+                 pool_strategy: str = 'mean',
                  *args, **kwargs):
         """
         :param model_name: the name of the model. Supported models include ``r3d_18``, ``mc3_18``, ``r2plus1d_18``
