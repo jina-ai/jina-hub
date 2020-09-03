@@ -25,36 +25,43 @@ if 'JINA_TEST_GPU' in os.environ:
 encoders = [
     TransformerTorchEncoder(
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased',
         metas=metas),
     TransformerTorchEncoder(
-        polling_strategy='mean',
+        pooling_strategy='mean',
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased-mean',
         metas=metas),
     TransformerTorchEncoder(
-        polling_strategy='min',
+        pooling_strategy='min',
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased-min',
         metas=metas),
     TransformerTorchEncoder(
-        polling_strategy='max',
+        pooling_strategy='max',
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased-max',
         metas=metas),
     TransformerTorchEncoder(
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased',
         metas=metas),
     TransformerTorchEncoder(
-        polling_strategy='mean',
+        pooling_strategy='mean',
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased-mean',
         metas=metas),
     TransformerTorchEncoder(
-        polling_strategy='min',
+        pooling_strategy='min',
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased-min',
         metas=metas),
     TransformerTorchEncoder(
-        polling_strategy='max',
+        pooling_strategy='max',
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased-max',
         metas=metas),
 ]
-
 
 @pytest.mark.parametrize('encoder', encoders)
 def test_encoding_results(encoder):
@@ -64,14 +71,12 @@ def test_encoding_results(encoder):
     assert encoded_data.shape == (2, target_output_dim)
     assert not np.allclose(encoded_data[0], encoded_data[1])
 
-
 @pytest.mark.parametrize('encoder', encoders)
 def test_save_and_load(encoder):
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
     test_data = np.array(['a', 'b', 'c', 'x', '!'])
     encoded_data_control = encoder.encode(test_data)
-
     encoder.touch()
     encoder.save()
     assert os.path.exists(encoder.save_abspath)
