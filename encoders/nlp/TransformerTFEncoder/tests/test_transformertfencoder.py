@@ -27,30 +27,30 @@ encoders = [
         pretrained_model_name_or_path='bert-base-uncased',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='mean',
+        pooling_strategy='mean',
         pretrained_model_name_or_path='bert-base-uncased',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='min',
+        pooling_strategy='min',
         pretrained_model_name_or_path='bert-base-uncased',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='max',
+        pooling_strategy='max',
         pretrained_model_name_or_path='bert-base-uncased',
         metas=metas),
     TransformerTFEncoder(
         pretrained_model_name_or_path='xlnet-base-cased',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='mean',
+        pooling_strategy='mean',
         pretrained_model_name_or_path='xlnet-base-cased',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='min',
+        pooling_strategy='min',
         pretrained_model_name_or_path='xlnet-base-cased',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='max',
+        pooling_strategy='max',
         pretrained_model_name_or_path='xlnet-base-cased',
         metas=metas),
 ]
