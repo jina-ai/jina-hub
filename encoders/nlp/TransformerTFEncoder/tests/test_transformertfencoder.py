@@ -25,36 +25,43 @@ if 'JINA_TEST_GPU' in os.environ:
 encoders = [
     TransformerTFEncoder(
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='mean',
+        pooling_strategy='mean',
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased-mean',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='min',
+        pooling_strategy='min',
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased-min',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='max',
+        pooling_strategy='max',
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased-max',
         metas=metas),
     TransformerTFEncoder(
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='mean',
+        pooling_strategy='mean',
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased-mean',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='min',
+        pooling_strategy='min',
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased-min',
         metas=metas),
     TransformerTFEncoder(
-        polling_strategy='max',
+        pooling_strategy='max',
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased-max',
         metas=metas),
 ]
-
 
 @pytest.mark.parametrize('encoder', encoders)
 def test_encoding_results(encoder):
@@ -63,7 +70,6 @@ def test_encoding_results(encoder):
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
     assert not np.allclose(encoded_data[0], encoded_data[1])
-
 
 @pytest.mark.parametrize('encoder', encoders)
 def test_save_and_load(encoder):
