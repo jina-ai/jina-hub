@@ -7,7 +7,7 @@ import pytest
 from milvus import Milvus
 
 from .. import MilvusIndexer
-from ..MilvusDBHandler import MilvusDBHandler
+from ..milvusdbhandler import MilvusDBHandler
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
