@@ -5,6 +5,7 @@ from jina.executors.crafters import BaseCrafter
 
 
 class PDFTextExtractor(BaseCrafter):
+    import PyPDF2
     """
     :class:`PDFTextExtractor` Extracts text from PDF.
     """
