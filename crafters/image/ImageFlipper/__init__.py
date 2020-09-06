@@ -4,7 +4,7 @@ from typing import Dict
 import numpy as np
 from jina.executors.crafters import BaseCrafter
 
-from .helper import _load_image, _move_channel_axis
+from helper import _load_image, _move_channel_axis
 
 
 class ImageFlipper(BaseCrafter):
