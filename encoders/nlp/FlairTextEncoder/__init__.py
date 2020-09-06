@@ -1,7 +1,6 @@
 from typing import Union, Tuple, List
 
 import numpy as np
-from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 

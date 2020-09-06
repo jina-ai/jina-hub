@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 # for testing the image
 RUN pip install pytest pytest-mock mock && JINA_TEST_PRETRAINED='true' pytest
 
-ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
+ENTRYPOINT ["jina", "pod", "--uses", "config.yml", "--timeout-ready", "60000"]
