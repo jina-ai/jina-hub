@@ -3,7 +3,7 @@ from typing import Tuple, Dict, Union
 import numpy as np
 from jina.executors.crafters import BaseCrafter
 
-from .helper import _load_image, _move_channel_axis, _crop_image, _resize_short
+from helper import _load_image, _move_channel_axis, _crop_image, _resize_short
 
 
 class ImageNormalizer(BaseCrafter):
@@ -11,7 +11,7 @@ class ImageNormalizer(BaseCrafter):
         it receives values of file names on the doc-level and returns image matrix on the chunk-level """
 
     def __init__(self,
-                 target_size: Union[Tuple[int, int], int],
+                 target_size: Union[Tuple[int, int], int] = 224,
                  img_mean: Tuple[float] = (0, 0, 0),
                  img_std: Tuple[float] = (1, 1, 1),
                  resize_dim: int = 256,
