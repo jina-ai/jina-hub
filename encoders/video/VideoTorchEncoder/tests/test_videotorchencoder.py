@@ -7,7 +7,6 @@ import pytest
 from .. import VideoTorchEncoder
 from jina.executors.metas import get_default_metas
 from jina.executors import BaseExecutor
-from typing import TypeVar
 
 batch_size = 2
 input_dim = 224
@@ -37,6 +36,7 @@ class MockModel:
     def to(self, *args, **kwargs):
         pass
 
+
 class MockFeature:
     def numpy(self):
         np.random.seed(0)
@@ -55,6 +55,7 @@ def get_encoder(*args, **kwargs):
         metas['on_gpu'] = True
     return VideoTorchEncoder(metas=metas)
 
+
 def _test_encoding_results(*args, **kwargs):
     encoder = get_encoder(*args, **kwargs)
     test_data = np.random.rand(batch_size, num_frames, channel, input_dim, input_dim)
@@ -62,10 +63,12 @@ def _test_encoding_results(*args, **kwargs):
     assert encoded_data.shape == (batch_size, output_dim)
     rm_files([encoder.save_abspath, encoder.config_abspath])
 
+
 @mock.patch('torchvision.models.video', return_value=MockModels())
 @mock.patch.object(VideoTorchEncoder, '_get_features', return_value=MockFeature())
 def test_encoding_results(*args, **kwargs):
     _test_encoding_results(*args, **kwargs)
+
 
 @mock.patch('torchvision.models.video', return_value=MockModels())
 @mock.patch.object(VideoTorchEncoder, '_get_features', return_value=MockFeature())
@@ -82,6 +85,7 @@ def test_save_and_load(*args, **kwargs):
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
     rm_files([encoder.save_abspath, encoder.config_abspath])
 
+
 @mock.patch('torchvision.models.video', return_value=MockModels())
 @mock.patch.object(VideoTorchEncoder, '_get_features', return_value=MockFeature())
 def test_save_and_load_config(*args, **kwargs):
@@ -92,11 +96,13 @@ def test_save_and_load_config(*args, **kwargs):
     assert encoder_loaded.channel_axis == encoder.channel_axis
     rm_files([encoder.save_abspath, encoder.config_abspath])
 
+
 def test_pool_fn():
     test_data = np.random.rand(batch_size, num_frames, channel, input_dim, input_dim)
     encoder = get_encoder()
     encoded_data = encoder.pool_fn(test_data, axis=(2, 3))
     assert encoded_data.ndim == test_data.ndim - 2
+
 
 @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
 def test_video_torch_encode_with_pretrained_model():
