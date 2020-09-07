@@ -3,7 +3,7 @@ description: AudioReader reads and resamples the audio signal on doc-level.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.2
+version: 0.0.5
 vendor: Jina AI Limited
 license: apache-2.0
 update: nightly
