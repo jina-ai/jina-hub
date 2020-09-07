@@ -9,10 +9,7 @@ def test_io_uri():
 
 
 def test_io_buffer():
-    import requests
-    url = 'http://ceur-ws.org/Vol-2410/paper35.pdf'
-    response = requests.get(url)
-
+    pdf_obj = open('paper35.pdf', 'rb')
     crafter = PDFTextExtractor()
-    text = crafter.craft(uri=None, buffer=response.content)
+    text = crafter.craft(uri=None, buffer=pdf_obj)
     print(text)
