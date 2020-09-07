@@ -16,9 +16,13 @@ class PDFTextExtractor(BaseCrafter):
 
     def craft(self, uri: str, *args, **kwargs):
         import PyPDF2
+        text = ""
         pdf_obj = open(uri, 'rb')
         pdf_reader = PyPDF2.PdfFileReader(pdf_obj)
-        page_obj = pdf_reader.getPage(0)
-        text = page_obj.extractText()
+        count = pdf_reader.numPages
+        for i in range(count):
+            page = pdf_reader.getPage(i)
+            text += page.extractText()
+
         return text
 
