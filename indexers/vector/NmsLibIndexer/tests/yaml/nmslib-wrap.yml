@@ -10,5 +10,3 @@ with:
       index_filename: wrap-npidx
       metric: euclidean
   space: l2
-metas:
-  py_modules: __init__.py

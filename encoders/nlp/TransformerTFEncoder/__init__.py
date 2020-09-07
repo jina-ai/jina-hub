@@ -93,6 +93,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder, Transformer):
     def model(self):
         from transformers import TFAutoModelForPreTraining
         model = TFAutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
+        self.to_device()
         return model
 
     @cached_property
@@ -102,7 +103,6 @@ class TransformerTFEncoder(TFDevice, BaseEncoder, Transformer):
 
     @cached_property
     def tensor_func(self):
-        self.to_device()
         import tensorflow as tf
         return tf.constant
 

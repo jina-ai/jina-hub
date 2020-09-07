@@ -3,7 +3,7 @@ from typing import Tuple, Dict, List, Union
 import numpy as np
 from jina.executors.crafters import BaseSegmenter
 
-from .helper import _crop_image, _move_channel_axis, _load_image
+from helper import _crop_image, _move_channel_axis, _load_image
 
 
 class RandomImageCropper(BaseSegmenter):
@@ -13,7 +13,7 @@ class RandomImageCropper(BaseSegmenter):
     """
 
     def __init__(self,
-                 target_size: Union[Tuple[int], int],
+                 target_size: Union[Tuple[int], int] = 224,
                  num_patches: int = 1,
                  channel_axis: int = -1,
                  *args,

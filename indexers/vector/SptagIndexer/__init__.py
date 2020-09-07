@@ -55,4 +55,3 @@ class SptagIndexer(BaseNumpyIndexer):
             idx[r_id, :] = self.int2ext_key[np.array(_idx)]
             dist[r_id, :] = np.array(_dist)
         return idx, dist
-
