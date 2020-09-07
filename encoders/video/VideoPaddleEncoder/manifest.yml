@@ -1,14 +1,13 @@
 manifest_version: 1
 name: VideoPaddleEncoder
 kind: encoder
-description:
-  |
+description: |
   class:`VideoPaddleEncoder` encodes data from a ndarray, potentially B x T x (Channel x Height x Width) into a ndarray of `B x D`. Internally, :class:`VideoPaddleEncoder` wraps the models from `paddlehub`. https://github.com/PaddlePaddle/PaddleHub
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.3
+version: 0.0.6
 license: apache-2.0
-keywords: [paddlehub,video]
+keywords: [paddlehub, video]
 type: pod
