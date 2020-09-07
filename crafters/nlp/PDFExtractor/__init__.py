@@ -5,7 +5,6 @@ from jina.executors.crafters import BaseCrafter
 
 
 class PDFTextExtractor(BaseCrafter):
-
     """
     :class:`PDFTextExtractor` Extracts text from PDF.
     """
@@ -13,11 +12,18 @@ class PDFTextExtractor(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-
-    def craft(self, uri: str, *args, **kwargs):
+    def craft(self, uri: str, buffer: bytes, *args, **kwargs):
         import PyPDF2
+        import io
+
         text = ""
-        pdf_obj = open(uri, 'rb')
+        if buffer:
+            pdf_obj = io.BytesIO(buffer)
+        elif uri:
+            pdf_obj = open(uri, 'rb')
+        else:
+            raise ValueError('no value found in "buffer" and "uri"')
+
         pdf_reader = PyPDF2.PdfFileReader(pdf_obj)
         count = pdf_reader.numPages
         for i in range(count):
@@ -27,4 +33,3 @@ class PDFTextExtractor(BaseCrafter):
         pdf_obj.close()
 
         return text
-
