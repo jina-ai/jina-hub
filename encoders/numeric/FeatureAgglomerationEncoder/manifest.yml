@@ -7,7 +7,7 @@ author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.2
+version: 0.0.5
 license: apache-2.0
 keywords: [sklearn.cluster, FeatureAgglomeration]
 type: pod
