@@ -14,11 +14,10 @@ class PDFTextExtractor(BaseCrafter):
 
     def craft(self, uri: str, buffer: bytes, *args, **kwargs):
         import PyPDF2
-        import io
 
         text = ""
         if buffer:
-            pdf_obj = io.BytesIO(buffer)
+            pdf_obj = buffer
         elif uri:
             pdf_obj = open(uri, 'rb')
         else:
