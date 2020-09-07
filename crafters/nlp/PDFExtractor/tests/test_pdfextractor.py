@@ -8,7 +8,6 @@ expected_text = "A cat poem\nI love cats, I love every kind of cat,\nI just wann
 def test_io_uri():
     crafter = PDFTextExtractor()
     text = crafter.craft(uri='cats_are_awesome.pdf', buffer=None)
-
     assert text == expected_text
 
 def test_io_buffer():

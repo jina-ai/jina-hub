@@ -27,14 +27,13 @@ class PDFTextExtractor(BaseCrafter):
         else:
             raise ValueError('No value found in "buffer" and "uri"')
 
-        try:
-            pdf_reader = PyPDF2.PdfFileReader(pdf_obj)
-            count = pdf_reader.numPages
-            for i in range(count):
-                page = pdf_reader.getPage(i)
-                text += page.extractText()
-        except IOError:
-            print("Could not open file")
+
+        pdf_reader = PyPDF2.PdfFileReader(pdf_obj)
+        count = pdf_reader.numPages
+        for i in range(count):
+            page = pdf_reader.getPage(i)
+            text += page.extractText()
+
 
         pdf_obj.close()
         return text
