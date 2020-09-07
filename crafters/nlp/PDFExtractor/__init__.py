@@ -12,23 +12,29 @@ class PDFTextExtractor(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def post_init(self):
+        import PyPDF2
+        import io
+
     def craft(self, uri: str, buffer: bytes, *args, **kwargs):
         import PyPDF2
-
+        import io
         text = ""
         if buffer:
-            pdf_obj = buffer
+            pdf_obj = io.BytesIO(buffer)
         elif uri:
             pdf_obj = open(uri, 'rb')
         else:
-            raise ValueError('no value found in "buffer" and "uri"')
+            raise ValueError('No value found in "buffer" and "uri"')
 
-        pdf_reader = PyPDF2.PdfFileReader(pdf_obj)
-        count = pdf_reader.numPages
-        for i in range(count):
-            page = pdf_reader.getPage(i)
-            text += page.extractText()
+        try:
+            pdf_reader = PyPDF2.PdfFileReader(pdf_obj)
+            count = pdf_reader.numPages
+            for i in range(count):
+                page = pdf_reader.getPage(i)
+                text += page.extractText()
+        except IOError:
+            print("Could not open file")
 
         pdf_obj.close()
-
         return text
