@@ -6,7 +6,7 @@ from typing import Dict
 import numpy as np
 from jina.executors.crafters import BaseCrafter
 
-from .helper import _crop_image, _move_channel_axis, _load_image
+from helper import _crop_image, _move_channel_axis, _load_image
 
 
 class ImageCropper(BaseCrafter):
@@ -15,7 +15,7 @@ class ImageCropper(BaseCrafter):
         the :py:mode:`PIL.Image`.
     """
 
-    def __init__(self, top: int, left: int, height: int, width: int, channel_axis: int = -1, *args, **kwargs):
+    def __init__(self, top: int = 0, left: int = 0, height: int = 224, width: int = 224, channel_axis: int = -1, *args, **kwargs):
         """
 
         :param top: the vertical coordinate of the top left corner of the crop box.

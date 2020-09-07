@@ -25,36 +25,43 @@ if 'JINA_TEST_GPU' in os.environ:
 encoders = [
     TransformerTFEncoder(
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased',
         metas=metas),
     TransformerTFEncoder(
         pooling_strategy='mean',
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased',
         metas=metas),
     TransformerTFEncoder(
         pooling_strategy='min',
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased',
         metas=metas),
     TransformerTFEncoder(
         pooling_strategy='max',
         pretrained_model_name_or_path='bert-base-uncased',
+        model_save_path='bert-base-uncased',
         metas=metas),
     TransformerTFEncoder(
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased',
         metas=metas),
     TransformerTFEncoder(
         pooling_strategy='mean',
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased',
         metas=metas),
     TransformerTFEncoder(
         pooling_strategy='min',
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased',
         metas=metas),
     TransformerTFEncoder(
         pooling_strategy='max',
         pretrained_model_name_or_path='xlnet-base-cased',
+        model_save_path='xlnet-base-cased',
         metas=metas),
 ]
-
 
 @pytest.mark.parametrize('encoder', encoders)
 def test_encoding_results(encoder):
