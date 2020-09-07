@@ -63,7 +63,6 @@ encoders = [
         metas=metas),
 ]
 
-
 @pytest.mark.parametrize('encoder', encoders)
 def test_encoding_results(encoder):
     target_output_dim = 768
