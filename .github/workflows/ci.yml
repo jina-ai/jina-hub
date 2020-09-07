@@ -20,4 +20,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Jina Hub Image Builder
-        uses: jina-ai/hub-builder@v0.5
+        uses: jina-ai/hub-builder@master
