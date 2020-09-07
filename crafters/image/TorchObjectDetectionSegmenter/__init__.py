@@ -4,7 +4,7 @@ import numpy as np
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.devices import TorchDevice
 
-from .helper import _crop_image, _move_channel_axis, _load_image
+from helper import _crop_image, _move_channel_axis, _load_image
 
 
 class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
