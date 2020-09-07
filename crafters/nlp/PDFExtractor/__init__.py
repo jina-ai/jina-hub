@@ -5,15 +5,20 @@ from jina.executors.crafters import BaseCrafter
 
 
 class PDFTextExtractor(BaseCrafter):
-    import PyPDF2
+
     """
     :class:`PDFTextExtractor` Extracts text from PDF.
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # your customized __init__ below
-        raise NotImplementedError
 
-    def craft(self, *args, **kwargs):
-        raise NotImplementedError
+
+    def craft(self, uri: str, *args, **kwargs):
+        import PyPDF2
+        pdf_obj = open(uri, 'rb')
+        pdf_reader = PyPDF2.PdfFileReader(pdf_obj)
+        page_obj = pdf_reader.getPage(0)
+        text = page_obj.extractText()
+        return text
+
