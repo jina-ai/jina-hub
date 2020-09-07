@@ -24,5 +24,7 @@ class PDFTextExtractor(BaseCrafter):
             page = pdf_reader.getPage(i)
             text += page.extractText()
 
+        pdf_obj.close()
+
         return text
 
