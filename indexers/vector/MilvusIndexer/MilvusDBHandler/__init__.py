@@ -5,8 +5,11 @@ import operator
 from functools import reduce
 
 import numpy as np
-from jina.excepts import MilvusDBException
 from jina.logging.base import get_logger
+
+
+class MilvusDBException(Exception):
+    """Any time Milvus client returns Status not OK"""
 
 
 class MilvusDBHandler:

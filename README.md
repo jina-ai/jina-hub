@@ -12,15 +12,24 @@ From Jina 0.4.10, Jina Hub is referred as a Git Submodule in [`jina-ai/jina`](ht
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
+## Use Hub Image in Flow API
 
+```python
+# my_image_tag is the the built image name
+
+from jina.flow import Flow
+with Flow().add(uses=my_image_tag):
+    pass
+```
 
 ## Contribute to This Repository
 
 ### Create a New Executor
 
 ```bash
-pip install jina[hub]
 git clone https://github.com/jina-ai/jina-hub.git
+
+pip install jina[hub]
 jina hub new
 ```
 

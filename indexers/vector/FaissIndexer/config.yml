@@ -6,3 +6,4 @@ with:
 metas:
   workspace: './workspace'
   name: 'faiss_indexer'
+  py_modules: __init__.py

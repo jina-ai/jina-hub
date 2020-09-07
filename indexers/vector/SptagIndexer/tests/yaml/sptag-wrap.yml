@@ -9,3 +9,5 @@ with:
       compress_level: 1
       index_filename: wrap-npidx
       metric: euclidean
+metas:
+  py_modules: __init__.py
