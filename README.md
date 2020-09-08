@@ -30,7 +30,7 @@ with Flow().add(uses=my_image_tag):
 git clone https://github.com/jina-ai/jina-hub.git
 
 pip install jina[hub]
-jina hub new
+jina hub new --type pod
 ```
 
 It will start a wizard in CLI to guide you create your first executor. The resulted file structure should look like the following:
@@ -59,7 +59,7 @@ More Hub CLI usage can be found via `jina hub build --help`
 ## Work with Your Own Repository
 
 1. Create a new repository
-2. `pip install jina[hub] && jina hub new`
+2. `pip install jina[hub] && jina hub new --type pod`
 3. 
 ```
 git checkout -b feat-new-executor
