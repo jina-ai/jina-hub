@@ -4,21 +4,21 @@ import numpy as np
 from jina.executors.crafters import BaseSegmenter
 
 
-class AudioSegmenter(BaseSegmenter):
+class SlidingWindowAudioSlicer(BaseSegmenter):
     """
-    :class:`AudioSegmenter` provides the functions for segmenting audio signal.
-    .. warning::
-        :class:'AudioSegmenter' is intended to be used internally.
+    :class:`SlidingWindowAudioSlicer` segments the audio signal on the doc-level into frames on the chunk-level with a
+    sliding window.
     """
 
-    def __init__(self, frame_length: int, hop_length: int, *args, **kwargs):
+    def __init__(self, frame_length: int = 2048, frame_overlap_length: int = 1536, *args, **kwargs):
         """
         :param frame_length: the number of samples in each frame
-        :param hop_length: number of samples to advance between frames
+        :param frame_overlap_length: the number of samples each frame overlaps its previous frame
         """
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self.frame_length = frame_length
-        self.hop_length = hop_length
+        self.hop_length = self.frame_length - frame_overlap_length
+        assert self.hop_length > 0, 'frame_overlap_size must be smaller than frame_size'
 
     def segment(self, signal):
         import librosa
@@ -33,22 +33,6 @@ class AudioSegmenter(BaseSegmenter):
         else:
             raise ValueError(f'audio signal must be 1D or 2D array: {signal}')
         return frames
-
-
-class SlidingWindowAudioSlicer(AudioSegmenter):
-    """
-    :class:`SlidingWindowAudioSlicer` segments the audio signal on the doc-level into frames on the chunk-level with a
-    sliding window.
-    """
-
-    def __init__(self, frame_size: int, frame_overlap_size: int, *args, **kwargs):
-        """
-        :param frame_size: the number of samples in each frame
-        :param frame_overlap_size: the number of samples each frame overlaps its previous frame
-        """
-        hop_size = frame_size - frame_overlap_size
-        assert hop_size > 0, 'frame_overlap_size must be smaller than frame_size'
-        super().__init__(frame_size, hop_size, *args, **kwargs)
 
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """

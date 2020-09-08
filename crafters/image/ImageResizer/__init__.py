@@ -7,7 +7,7 @@ from typing import Union, Tuple, Dict
 import numpy as np
 from jina.executors.crafters import BaseCrafter
 
-from .helper import _load_image, _move_channel_axis, _resize_short
+from helper import _load_image, _move_channel_axis, _resize_short
 
 
 class ImageResizer(BaseCrafter):
@@ -16,7 +16,7 @@ class ImageResizer(BaseCrafter):
     """
 
     def __init__(self,
-                 target_size: Union[Tuple[int, int], int],
+                 target_size: Union[Tuple[int, int], int] = 224,
                  how: str = 'BILINEAR',
                  channel_axis: int = -1,
                  *args, **kwargs):
