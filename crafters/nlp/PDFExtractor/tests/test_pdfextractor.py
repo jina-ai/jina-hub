@@ -13,7 +13,6 @@ def test_io_uri():
 def test_io_buffer():
     with open('cats_are_awesome.pdf', 'rb') as pdf:
         input_bytes = pdf.read()
-
     crafter = PDFTextExtractor()
     text = crafter.craft(uri=None, buffer=input_bytes)
     assert text == expected_text
