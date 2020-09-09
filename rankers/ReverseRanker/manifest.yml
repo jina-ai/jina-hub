@@ -1,0 +1,14 @@
+manifest_version: 1
+name: ReverseRanker
+kind: ranker
+description:
+  |
+  This ranker returns the inverse of all scores in order to be able to reverse the match order.
+author: maximilian.werk@jina.ai
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [ranker, reverse]
+type: pod
