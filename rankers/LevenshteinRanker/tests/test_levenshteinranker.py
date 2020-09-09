@@ -6,8 +6,6 @@ from .. import LevenshteinRanker
 
 
 def test_levenshteinranker():
-    """
-    """
     query_meta = {"text": "cool stuff"}
     query_meta_json = json.dumps(query_meta, sort_keys=True)
     old_match_scores = {1: 5, 2: 4}
