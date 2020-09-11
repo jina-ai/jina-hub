@@ -1,28 +1,24 @@
 name: CD
 
+#on:
+#  pull_request:
+#    branches:
+#      - master
+#    types: [ closed ]
+
+
 on:
   push:
-    branches:
-      - master
-
-#on:
-#  push:
-#    branches-ignore:
-#      - '**'  # temporally ignore all
+    branches-ignore:
+      - '**'  # temporally ignore all
 
 
 jobs:
-  update-doc:
-    if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
+  hub-build-push:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - uses: technote-space/toc-generator@v2
-        with:
-          MAX_HEADER_LEVEL: 2
-          FOLDING: false
-          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
-          COMMIT_NAME: Jina Dev Bot
-          COMMIT_EMAIL: dev-bot@jina.ai
-          TOC_TITLE: ''
-          TARGET_PATHS: 'README*.md,CHANGELOG.md,CONTRIBUTING.md'
-          COMMIT_MESSAGE: 'chore(docs): update TOC'
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Jina Hub Image Builder
+        uses: jina-ai/hub-builder@master
