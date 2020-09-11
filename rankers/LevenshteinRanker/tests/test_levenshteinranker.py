@@ -20,7 +20,7 @@ def test_levenshteinranker():
         copy.deepcopy(match_meta)
     )
 
-    assert (new_scores == np.array([(1, 0), (2, -3)], dtype=np.float64)).all()
+    assert np.testing.assert_array_equal(new_scores, [(1, 0), (2, -3)])
     # Guarantee no side-effects happen
     assert query_meta_json == json.dumps(query_meta, sort_keys=True)
     assert old_match_scores_json == json.dumps(old_match_scores, sort_keys=True)
