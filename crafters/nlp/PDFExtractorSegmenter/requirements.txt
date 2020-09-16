@@ -1,3 +1,4 @@
 jina
 PyPDF2
 PyMuPDF
+Pillow
