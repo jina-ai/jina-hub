@@ -51,7 +51,8 @@ class PDFExtractorSegmenter(BaseSegmenter):
         chunks.append(
             dict(text=text, weight=1.0))
 
-        #Close pdf_obj
+        #Close pdfs
         pdf_text.close()
+        pdf_img.close()
 
         return chunks
