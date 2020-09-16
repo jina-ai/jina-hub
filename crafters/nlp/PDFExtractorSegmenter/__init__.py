@@ -17,10 +17,8 @@ class PDFExtractorSegmenter(BaseSegmenter):
         import PyPDF2
 
         if uri:
-            print("URI")
             pdf_obj = open(uri, 'rb')
         elif buffer:
-            print("Buffer")
             pdf_obj = io.BytesIO(buffer)
         else:
             raise ValueError('No value found in "buffer" and "uri"')
@@ -49,7 +47,6 @@ class PDFExtractorSegmenter(BaseSegmenter):
         for i in range(count):
             page = pdf_reader.getPage(i)
             text += page.extractText()
-
 
         #Close pdf_obj
         pdf_obj.close()
