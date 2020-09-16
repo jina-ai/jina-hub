@@ -1,2 +1,3 @@
 jina
-
+PyPDF2
+PyMuPDF
