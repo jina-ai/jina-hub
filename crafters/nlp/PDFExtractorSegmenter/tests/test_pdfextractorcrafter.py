@@ -9,11 +9,13 @@ expected_text = "A cat poem\nI love cats, I love every kind of cat,\nI just wann
 def test_io_uri():
     crafter = PDFExtractorSegmenter()
     chunks = crafter.craft(uri='cats_are_awesome.pdf', buffer=None)
-    assert chunks[0]['text'] == expected_text   # Check test
 
     # Check image
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     img = Image.open(os.path.join(cur_dir, '../test_img.jpg'))
     blob = chunks[0]['blob']
-    assert img.width == blob[0].width
-    assert img.height == blob[0].height
+    assert img.width == blob.width
+    assert img.height == blob.height
+
+    # Check test
+    assert chunks[2]['text'] == expected_text

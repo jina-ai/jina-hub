@@ -15,6 +15,7 @@ class PDFExtractorSegmenter(BaseSegmenter):
     def craft(self, uri: str, buffer: bytes, *args, **kwargs) -> List[Dict]:
         import fitz
         import PyPDF2
+        chunks = []
 
         if uri:
             pdf_obj = open(uri, 'rb')
@@ -24,7 +25,6 @@ class PDFExtractorSegmenter(BaseSegmenter):
             raise ValueError('No value found in "buffer" and "uri"')
 
         #Extract images
-        imgs = []
         pdf_doc = fitz.open(uri)
         for i in range(len(pdf_doc)):
             for img in pdf_doc.getPageImageList(i):
@@ -32,11 +32,13 @@ class PDFExtractorSegmenter(BaseSegmenter):
                 pix = fitz.Pixmap(pdf_doc, xref)
                 if pix.n - pix.alpha < 4:   # if gray or RGB
                     pix.writePNG("p%s-%s.png" % (i, xref)) #Format is page, and image
-                    imgs.append(pix)
+                    chunks.append(
+                        dict(blob=pix,  weight=1.0))
                 else:                       # if CMYK:
                     pix1 = fitz.Pixmap(fitz.csRGB, pix) #Conver to RGB
                     pix1.writePNG("p%s-%s.png" % (i, xref))
-                    imgs.append(pix1)
+                    chunks.append(
+                        dict(blob=pix1, weight=1.0))
                     pix1 = None
                 pix = None
 
@@ -48,10 +50,12 @@ class PDFExtractorSegmenter(BaseSegmenter):
             page = pdf_reader.getPage(i)
             text += page.extractText()
 
+        chunks.append(
+            dict(text=text, weight=1.0))
+
         #Close pdf_obj
         pdf_obj.close()
 
-        chunks = []
-        chunks.append(
-            dict(blob=imgs, text=text, weight=1.0))
+
+
         return chunks
