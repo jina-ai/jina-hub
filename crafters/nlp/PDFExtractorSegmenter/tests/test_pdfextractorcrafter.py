@@ -19,3 +19,20 @@ def test_io_uri():
 
     # Check test
     assert chunks[2]['text'] == expected_text
+
+
+def test_io_buffer():
+    with open('cats_are_awesome.pdf', 'rb') as pdf:
+        input_bytes = pdf.read()
+    crafter = PDFExtractorSegmenter()
+    chunks = crafter.craft(uri=None, buffer=input_bytes)
+
+    # Check image
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    img = Image.open(os.path.join(cur_dir, '../test_img.jpg'))
+    blob = chunks[0]['blob']
+    assert img.width == blob.width
+    assert img.height == blob.height
+
+    # Check test
+    assert chunks[2]['text'] == expected_text

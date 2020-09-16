@@ -17,34 +17,32 @@ class PDFExtractorSegmenter(BaseSegmenter):
         import PyPDF2
         chunks = []
 
+        #The PDF needs to be open differently it it's for text or for images
         if uri:
-            pdf_obj = open(uri, 'rb')
+            pdf_img = fitz.open(uri)
+            pdf_text = open(uri, 'rb')
         elif buffer:
-            pdf_obj = io.BytesIO(buffer)
+            pdf_text = io.BytesIO(buffer)
+            pdf_img = fitz.open(stream=buffer, filetype="pdf")
         else:
             raise ValueError('No value found in "buffer" and "uri"')
 
         #Extract images
-        pdf_doc = fitz.open(uri)
-        for i in range(len(pdf_doc)):
-            for img in pdf_doc.getPageImageList(i):
+        for i in range(len(pdf_img)):
+            for img in pdf_img.getPageImageList(i):
                 xref = img[0]
-                pix = fitz.Pixmap(pdf_doc, xref)
+                pix = fitz.Pixmap(pdf_img, xref)
                 if pix.n - pix.alpha < 4:   # if gray or RGB
-                    pix.writePNG("p%s-%s.png" % (i, xref)) #Format is page, and image
                     chunks.append(
                         dict(blob=pix,  weight=1.0))
                 else:                       # if CMYK:
                     pix1 = fitz.Pixmap(fitz.csRGB, pix) #Conver to RGB
-                    pix1.writePNG("p%s-%s.png" % (i, xref))
                     chunks.append(
                         dict(blob=pix1, weight=1.0))
-                    pix1 = None
-                pix = None
 
         #Extract text
         text = ""
-        pdf_reader = PyPDF2.PdfFileReader(pdf_obj)
+        pdf_reader = PyPDF2.PdfFileReader(pdf_text)
         count = pdf_reader.numPages
         for i in range(count):
             page = pdf_reader.getPage(i)
@@ -54,8 +52,6 @@ class PDFExtractorSegmenter(BaseSegmenter):
             dict(text=text, weight=1.0))
 
         #Close pdf_obj
-        pdf_obj.close()
-
-
+        pdf_text.close()
 
         return chunks
