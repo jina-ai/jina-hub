@@ -15,9 +15,7 @@ class PDFExtractorSegmenter(BaseSegmenter):
     def craft(self, uri: str, buffer: bytes, *args, **kwargs) -> List[Dict]:
         import fitz
         import PyPDF2
-        chunks = []
 
-        #The PDF needs to be open differently it it's for text or for images
         if uri:
             pdf_img = fitz.open(uri)
             pdf_text = open(uri, 'rb')
@@ -27,32 +25,31 @@ class PDFExtractorSegmenter(BaseSegmenter):
         else:
             raise ValueError('No value found in "buffer" and "uri"')
 
-        #Extract images
-        for i in range(len(pdf_img)):
-            for img in pdf_img.getPageImageList(i):
-                xref = img[0]
-                pix = fitz.Pixmap(pdf_img, xref)
-                if pix.n - pix.alpha < 4:   # if gray or RGB
-                    chunks.append(
-                        dict(blob=pix,  weight=1.0))
-                else:                       # if CMYK:
-                    pix1 = fitz.Pixmap(fitz.csRGB, pix) #Conver to RGB
-                    chunks.append(
-                        dict(blob=pix1, weight=1.0))
+        chunks = []
+        with pdf_img:
+            #Extract images
+            for i in range(len(pdf_img)):
+                for img in pdf_img.getPageImageList(i):
+                    xref = img[0]
+                    pix = fitz.Pixmap(pdf_img, xref)
+                    if pix.n - pix.alpha < 4:   # if gray or RGB
+                        chunks.append(
+                            dict(blob=pix,  weight=1.0))
+                    else:                       # if CMYK:
+                        pix1 = fitz.Pixmap(fitz.csRGB, pix) #Conver to RGB
+                        chunks.append(
+                            dict(blob=pix1, weight=1.0))
 
         #Extract text
-        text = ""
-        pdf_reader = PyPDF2.PdfFileReader(pdf_text)
-        count = pdf_reader.numPages
-        for i in range(count):
-            page = pdf_reader.getPage(i)
-            text += page.extractText()
+        with pdf_text:
+            text = ""
+            pdf_reader = PyPDF2.PdfFileReader(pdf_text)
+            count = pdf_reader.numPages
+            for i in range(count):
+                page = pdf_reader.getPage(i)
+                text += page.extractText()
 
-        chunks.append(
-            dict(text=text, weight=1.0))
-
-        #Close pdfs
-        pdf_text.close()
-        pdf_img.close()
+            chunks.append(
+                dict(text=text, weight=1.0))
 
         return chunks
