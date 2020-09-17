@@ -5,7 +5,7 @@ from typing import Tuple
 
 import numpy as np
 from jina.executors.indexers.vector import BaseNumpyIndexer
-
+from jina.executors.decorators import batching
 
 class NmsLibIndexer(BaseNumpyIndexer):
     """nmslib powered vector indexer
@@ -32,7 +32,7 @@ class NmsLibIndexer(BaseNumpyIndexer):
         :param args:
         :param kwargs:
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, compress_level=0, **kwargs)
         self.method = method
         self.space = space
         self.print_progress = print_progress
@@ -41,9 +41,13 @@ class NmsLibIndexer(BaseNumpyIndexer):
     def build_advanced_index(self, vecs: 'np.ndarray'):
         import nmslib
         _index = nmslib.init(method=self.method, space=self.space)
-        _index.addDataPointBatch(vecs.astype(np.float32))
+        self.build_partial_index(vecs, _index)
         _index.createIndex({'post': 2}, print_progress=self.print_progress)
         return _index
+
+    @batching(batch_size=512)
+    def build_partial_index(self, vecs: 'np.ndarray', _index):
+        _index.addDataPointBatch(vecs.astype(np.float32))
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         # if keys.dtype != np.float32:

@@ -28,7 +28,7 @@ class AnnoyIndexer(BaseNumpyIndexer):
         :param args:
         :param kwargs:
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, compress_level=0, **kwargs)
         self.metric = metric
         self.n_trees = n_trees
         self.search_k = search_k
