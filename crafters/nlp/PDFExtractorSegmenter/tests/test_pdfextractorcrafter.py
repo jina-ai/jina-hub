@@ -1,6 +1,8 @@
 from .. import PDFExtractorSegmenter
 from PIL import Image
 import os
+import numpy as np
+
 
 expected_text = "A cat poem\nI love cats, I love every kind of cat,\nI just wanna hug all of them, but I can't," \
                 "\nI'm thinking about cats again\nI think about how cute they are\nAnd their whiskers and their " \
@@ -19,12 +21,10 @@ def test_io_uri_images_and_text():
     img2 = Image.open(os.path.join(cur_dir, '../test_img2.jpg'))
 
     blob1 = chunks[0]['blob']
-    assert img1.width == blob1.width
-    assert img1.height == blob1.height
+    assert (blob1.shape[1], blob1.shape[0]) == img1.size
 
     blob2 = chunks[1]['blob']
-    assert img2.width == blob2.width
-    assert img2.height == blob2.height
+    assert (blob2.shape[1], blob2.shape[0]) == img2.size
 
     # Check test
     assert chunks[2]['text'] == expected_text
@@ -52,12 +52,10 @@ def test_io_uri_img():
     img2 = Image.open(os.path.join(cur_dir, '../test_img2.jpg'))
 
     blob1 = chunks[0]['blob']
-    assert img1.width == blob1.width
-    assert img1.height == blob1.height
+    assert (blob1.shape[1], blob1.shape[0]) == img1.size
 
     blob2 = chunks[1]['blob']
-    assert img2.width == blob2.width
-    assert img2.height == blob2.height
+    assert (blob2.shape[1], blob2.shape[0]) == img2.size
 
 
 def test_io_buffer_images_and_text():
@@ -74,12 +72,10 @@ def test_io_buffer_images_and_text():
     img2 = Image.open(os.path.join(cur_dir, '../test_img2.jpg'))
 
     blob1 = chunks[0]['blob']
-    assert img1.width == blob1.width
-    assert img1.height == blob1.height
+    assert (blob1.shape[1], blob1.shape[0]) == img1.size
 
     blob2 = chunks[1]['blob']
-    assert img2.width == blob2.width
-    assert img2.height == blob2.height
+    assert (blob2.shape[1], blob2.shape[0]) == img2.size
 
     # Check test
     assert chunks[2]['text'] == expected_text
@@ -111,9 +107,7 @@ def test_io_buffer_img():
     img2 = Image.open(os.path.join(cur_dir, '../test_img2.jpg'))
 
     blob1 = chunks[0]['blob']
-    assert img1.width == blob1.width
-    assert img1.height == blob1.height
+    assert (blob1.shape[1], blob1.shape[0]) == img1.size
 
     blob2 = chunks[1]['blob']
-    assert img2.width == blob2.width
-    assert img2.height == blob2.height
+    assert (blob2.shape[1], blob2.shape[0]) == img2.size

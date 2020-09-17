@@ -1,7 +1,9 @@
 from typing import Dict, List
 
-from jina.executors.crafters import BaseSegmenter
 import io
+import numpy as np
+
+from jina.executors.crafters import BaseSegmenter
 
 
 class PDFExtractorSegmenter(BaseSegmenter):
@@ -27,20 +29,22 @@ class PDFExtractorSegmenter(BaseSegmenter):
 
         chunks = []
         with pdf_img:
-            #Extract images
+            # Extract images
             for i in range(len(pdf_img)):
                 for img in pdf_img.getPageImageList(i):
                     xref = img[0]
                     pix = fitz.Pixmap(pdf_img, xref)
-                    if pix.n - pix.alpha < 4:   # if gray or RGB
+                    if pix.n - pix.alpha < 4:  # if gray or RGB
+                        np_arr = pix2np(pix)
                         chunks.append(
-                            dict(blob=pix,  weight=1.0))
-                    else:                       # if CMYK:
-                        pix1 = fitz.Pixmap(fitz.csRGB, pix) #Conver to RGB
+                            dict(blob=np_arr, weight=1.0))
+                    else:  # if CMYK:
+                        pix1 = fitz.Pixmap(fitz.csRGB, pix)  # Conver to RGB
+                        np_arr1 = pix2np(pix1)
                         chunks.append(
-                            dict(blob=pix1, weight=1.0))
+                            dict(blob=np_arr1, weight=1.0))
 
-        #Extract text
+        # Extract text
         with pdf_text:
             text = ""
             pdf_reader = PyPDF2.PdfFileReader(pdf_text)
@@ -54,3 +58,9 @@ class PDFExtractorSegmenter(BaseSegmenter):
                     dict(text=text, weight=1.0))
 
         return chunks
+
+
+def pix2np(pix):
+    im = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n)
+    im = np.ascontiguousarray(im[..., [2, 1, 0]])  # rgb to bgr
+    return im
