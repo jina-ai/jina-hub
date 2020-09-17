@@ -36,9 +36,8 @@ class AnnoyIndexer(BaseNumpyIndexer):
     def build_advanced_index(self, vecs: 'np.ndarray'):
         from annoy import AnnoyIndex
         _index = AnnoyIndex(self.num_dim, self.metric)
-        vecs = vecs.astype(np.float32)
         for idx, v in enumerate(vecs):
-            _index.add_item(idx, v)
+            _index.add_item(idx, v.astype(np.float32))
         _index.build(self.n_trees)
         return _index
 
