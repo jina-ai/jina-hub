@@ -46,6 +46,6 @@ class AnnoyIndexer(BaseNumpyIndexer):
         all_dist = []
         for k in keys:
             ret, dist = self.query_handler.get_nns_by_vector(k, top_k, self.search_k, include_distances=True)
-            all_idx.append(self.int2ext_key[ret])
+            all_idx.append(self.int2ext_id[ret])
             all_dist.append(dist)
         return np.array(all_idx), np.array(all_dist)
