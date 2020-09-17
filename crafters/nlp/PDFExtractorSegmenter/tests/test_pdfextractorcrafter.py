@@ -6,10 +6,16 @@ expected_text = "A cat poem\nI love cats, I love every kind of cat,\nI just wann
                 "\nI'm thinking about cats again\nI think about how cute they are\nAnd their whiskers and their " \
                 "nose\n"
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+path1 = os.path.join(cur_dir, 'cats_are_awesome.pdf')
+path2 = os.path.join(cur_dir, 'cats_are_awesome_text.pdf')
+path3 = os.path.join(cur_dir, 'cats_are_awesome_img.pdf')
+print("*********************PATH 1 ", path1)
+
 
 def test_io_uri_images_and_text():
     crafter = PDFExtractorSegmenter()
-    chunks = crafter.craft(uri='cats_are_awesome.pdf', buffer=None)
+    chunks = crafter.craft(uri=path1, buffer=None)
 
     assert len(chunks) == 3
 
@@ -19,12 +25,11 @@ def test_io_uri_images_and_text():
     img2 = Image.open(os.path.join(cur_dir, '../test_img2.jpg'))
 
     blob1 = chunks[0]['blob']
-    assert img1.width == blob1.width
-    assert img1.height == blob1.height
+    assert (blob1.shape[1], blob1.shape[0]) == img1.size
+
 
     blob2 = chunks[1]['blob']
-    assert img2.width == blob2.width
-    assert img2.height == blob2.height
+    assert (blob2.shape[1], blob2.shape[0]) == img2.size
 
     # Check test
     assert chunks[2]['text'] == expected_text
@@ -32,7 +37,7 @@ def test_io_uri_images_and_text():
 
 def test_io_uri_text():
     crafter = PDFExtractorSegmenter()
-    chunks = crafter.craft(uri='cats_are_awesome_text.pdf', buffer=None)
+    chunks = crafter.craft(uri=path2, buffer=None)
 
     assert len(chunks) == 1
 
@@ -42,7 +47,7 @@ def test_io_uri_text():
 
 def test_io_uri_img():
     crafter = PDFExtractorSegmenter()
-    chunks = crafter.craft(uri='cats_are_awesome_img.pdf', buffer=None)
+    chunks = crafter.craft(uri=path3, buffer=None)
 
     assert len(chunks) == 2
 
@@ -52,16 +57,14 @@ def test_io_uri_img():
     img2 = Image.open(os.path.join(cur_dir, '../test_img2.jpg'))
 
     blob1 = chunks[0]['blob']
-    assert img1.width == blob1.width
-    assert img1.height == blob1.height
+    assert (blob1.shape[1], blob1.shape[0]) == img1.size
 
     blob2 = chunks[1]['blob']
-    assert img2.width == blob2.width
-    assert img2.height == blob2.height
+    assert (blob2.shape[1], blob2.shape[0]) == img2.size
 
 
 def test_io_buffer_images_and_text():
-    with open('cats_are_awesome.pdf', 'rb') as pdf:
+    with open(path1, 'rb') as pdf:
         input_bytes = pdf.read()
     crafter = PDFExtractorSegmenter()
     chunks = crafter.craft(uri=None, buffer=input_bytes)
@@ -74,19 +77,17 @@ def test_io_buffer_images_and_text():
     img2 = Image.open(os.path.join(cur_dir, '../test_img2.jpg'))
 
     blob1 = chunks[0]['blob']
-    assert img1.width == blob1.width
-    assert img1.height == blob1.height
+    assert (blob1.shape[1], blob1.shape[0]) == img1.size
 
     blob2 = chunks[1]['blob']
-    assert img2.width == blob2.width
-    assert img2.height == blob2.height
+    assert (blob2.shape[1], blob2.shape[0]) == img2.size
 
     # Check test
     assert chunks[2]['text'] == expected_text
 
 
 def test_io_buffer_text():
-    with open('cats_are_awesome_text.pdf', 'rb') as pdf:
+    with open(path2, 'rb') as pdf:
         input_bytes = pdf.read()
     crafter = PDFExtractorSegmenter()
     chunks = crafter.craft(uri=None, buffer=input_bytes)
@@ -98,7 +99,7 @@ def test_io_buffer_text():
 
 
 def test_io_buffer_img():
-    with open('cats_are_awesome_img.pdf', 'rb') as pdf:
+    with open(path3, 'rb') as pdf:
         input_bytes = pdf.read()
     crafter = PDFExtractorSegmenter()
     chunks = crafter.craft(uri=None, buffer=input_bytes)
@@ -111,9 +112,7 @@ def test_io_buffer_img():
     img2 = Image.open(os.path.join(cur_dir, '../test_img2.jpg'))
 
     blob1 = chunks[0]['blob']
-    assert img1.width == blob1.width
-    assert img1.height == blob1.height
+    assert (blob1.shape[1], blob1.shape[0]) == img1.size
 
     blob2 = chunks[1]['blob']
-    assert img2.width == blob2.width
-    assert img2.height == blob2.height
+    assert (blob2.shape[1], blob2.shape[0]) == img2.size
