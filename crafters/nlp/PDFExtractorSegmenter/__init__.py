@@ -49,7 +49,7 @@ class PDFExtractorSegmenter(BaseSegmenter):
                 page = pdf_reader.getPage(i)
                 text += page.extractText()
 
-            if text != "":
+            if text:
                 chunks.append(
                     dict(text=text, weight=1.0))
 
