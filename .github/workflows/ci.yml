@@ -21,13 +21,3 @@ jobs:
         uses: actions/checkout@v2
       - name: Jina Hub Image Builder
         uses: jina-ai/hub-builder@master
-        with:
-            is_ci: True
-            dockerhub_username: ${{ secrets.JINAHUB_DOCKER_USER }}
-            dockerhub_password: ${{ secrets.JINAHUB_DOCKER_PWD }}
-            dockerhub_registry: https://index.docker.io/v1/
-            mondodb_hostname: ${{ secrets.JINA_DB_HOSTNAME }}
-            mongodb_username: ${{ secrets.JINA_DB_USERNAME }}
-            mongodb_password: ${{ secrets.JINA_DB_PASSWORD }}
-            mongodb_database: ${{ secrets.JINA_DB_NAME }}
-            mongodb_collection: ${{ secrets.JINA_DB_COLLECTION }}
