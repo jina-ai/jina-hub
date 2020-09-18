@@ -61,5 +61,7 @@ class PDFExtractorSegmenter(BaseSegmenter):
 
 def pix2np(pix):
     im = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n)
-    im = np.ascontiguousarray(im[..., [2, 1, 0]])  # rgb to bgr
+    im = np.asarray(im)
+    im = np.array(im).astype('float32')
+    #im = np.ascontiguousarray(im[..., [2, 1, 0]])  # rgb to bgr
     return im
