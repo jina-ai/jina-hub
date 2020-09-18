@@ -16,7 +16,6 @@ def test_io_uri_images_and_text():
     crafter = PDFExtractorSegmenter()
     chunks = crafter.craft(uri=path_img_text, buffer=None)
 
-
     assert len(chunks) == 3
 
     # Check images

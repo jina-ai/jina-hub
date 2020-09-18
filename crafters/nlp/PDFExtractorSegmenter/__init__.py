@@ -5,7 +5,6 @@ import io
 import numpy as np
 
 
-
 class PDFExtractorSegmenter(BaseSegmenter):
     """
     :class:`PDFExtractorSegmenter` Extracts data (text and images) from PDF.
@@ -25,26 +24,29 @@ class PDFExtractorSegmenter(BaseSegmenter):
             pdf_text = io.BytesIO(buffer)
             pdf_img = fitz.open(stream=buffer, filetype="pdf")
         else:
-            raise ValueError('No value found in "buffer" and "uri"')
+            raise ValueError('No value found in "buffer" or "uri"')
 
         chunks = []
         with pdf_img:
-            #Extract images
+            # Extract images
             for i in range(len(pdf_img)):
                 for img in pdf_img.getPageImageList(i):
                     xref = img[0]
                     pix = fitz.Pixmap(pdf_img, xref)
                     np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
-                    if pix.n - pix.alpha < 4:   # if gray or RGB
+                    print(f' IMAGE')
+
+                    if pix.n - pix.alpha < 4:  # if gray or RGB
                         chunks.append(
-                            dict(blob=np_arr,  weight=1.0))
-                    else:                       # if CMYK:
-                        pix = fitz.Pixmap(fitz.csRGB, pix) #Convert to RGB
-                        np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
+                            dict(blob=np_arr, weight=1.0))
+                    else:  # if CMYK:
+                        pix = fitz.Pixmap(fitz.csRGB, pix)  # Convert to RGB
+                        np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype(
+                            'float32')
                         chunks.append(
                             dict(blob=np_arr, weight=1.0))
 
-        #Extract text
+        # Extract text
         with pdf_text:
             text = ""
             pdf_reader = PyPDF2.PdfFileReader(pdf_text)
