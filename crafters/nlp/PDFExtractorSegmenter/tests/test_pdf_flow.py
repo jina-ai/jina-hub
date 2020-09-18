@@ -25,7 +25,7 @@ def validate_img_fn(resp):
 
 def validate_mix_fn(resp):
     for d in resp.search.docs:
-        for chunk in range(len(d.chunks)):
+        for chunk in range(len(d.chunks)-1):
             img = Image.open(os.path.join(cur_dir, f'test_img_{chunk}.jpg'))
             blob = d.chunks[chunk].blob
             assert blob.shape[1], blob.shape[0] == img.size
