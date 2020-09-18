@@ -34,15 +34,15 @@ class PDFExtractorSegmenter(BaseSegmenter):
                 for img in pdf_img.getPageImageList(i):
                     xref = img[0]
                     pix = fitz.Pixmap(pdf_img, xref)
-                    np_arr = pix2np(pix)
+                    np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
                     if pix.n - pix.alpha < 4:   # if gray or RGB
                         chunks.append(
                             dict(blob=np_arr,  weight=1.0))
                     else:                       # if CMYK:
-                        pix1 = fitz.Pixmap(fitz.csRGB, pix) #Conver to RGB
-                        np_arr1 = pix2np(pix1)
+                        pix = fitz.Pixmap(fitz.csRGB, pix) #Convert to RGB
+                        np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
                         chunks.append(
-                            dict(blob=np_arr1, weight=1.0))
+                            dict(blob=np_arr, weight=1.0))
 
         #Extract text
         with pdf_text:
@@ -58,9 +58,3 @@ class PDFExtractorSegmenter(BaseSegmenter):
                     dict(text=text, weight=1.0))
 
         return chunks
-
-def pix2np(pix):
-    im = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n)
-    im = np.asarray(im)
-    im = np.array(im).astype('float32')
-    return im
