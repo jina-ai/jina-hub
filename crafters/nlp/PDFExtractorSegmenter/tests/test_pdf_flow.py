@@ -1,5 +1,4 @@
 from jina.proto import jina_pb2
-from jina.drivers.helper import array2pb
 from jina.flow import Flow
 import os
 
@@ -11,6 +10,7 @@ def validate_text_fn(resp):
 
     for d in resp.search.docs:
         assert expected_text == d.chunks[0].text
+
 
 def search_generator(path):
     d = jina_pb2.Document()
@@ -25,4 +25,4 @@ def test_pdf_flow():
     f = Flow().add(uses='PDFExtractorSegmenter')
 
     with f:
-        f.search(search_generator(path), output_fn=print)
+        f.search(input_fn=search_generator(path), output_fn=validate_text_fn)
