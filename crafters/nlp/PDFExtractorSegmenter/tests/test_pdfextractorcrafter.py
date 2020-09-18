@@ -16,17 +16,14 @@ def test_io_uri_images_and_text():
     crafter = PDFExtractorSegmenter()
     chunks = crafter.craft(uri=path_img_text, buffer=None)
 
+
     assert len(chunks) == 3
 
     # Check images
-    img1 = Image.open(os.path.join(cur_dir, 'test_img_0.jpg'))
-    img2 = Image.open(os.path.join(cur_dir, 'test_img_1.jpg'))
-
-    blob1 = chunks[0]['blob']
-    assert (blob1.shape[1], blob1.shape[0]) == img1.size
-
-    blob2 = chunks[1]['blob']
-    assert (blob2.shape[1], blob2.shape[0]) == img2.size
+    for idx, c in enumerate(chunks[:-1]):
+        img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
+        blob = chunks[idx]['blob']
+        assert blob.shape[1], blob.shape[0] == img.size
 
     # Check test
     assert chunks[2]['text'] == expected_text
@@ -52,8 +49,7 @@ def test_io_uri_img():
     for idx, c in enumerate(chunks):
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
-        assert blob.shape[1] == img.width
-        blob.shape == img.size
+        assert blob.shape[1], blob.shape[0] == img.size
 
 
 def test_io_buffer_images_and_text():
@@ -65,14 +61,10 @@ def test_io_buffer_images_and_text():
     assert len(chunks) == 3
 
     # Check images
-    img1 = Image.open(os.path.join(cur_dir, 'test_img_0.jpg'))
-    img2 = Image.open(os.path.join(cur_dir, 'test_img_1.jpg'))
-
-    blob1 = chunks[0]['blob']
-    assert (blob1.shape[1], blob1.shape[0]) == img1.size
-
-    blob2 = chunks[1]['blob']
-    assert (blob2.shape[1], blob2.shape[0]) == img2.size
+    for idx, c in enumerate(chunks[:-1]):
+        img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
+        blob = chunks[idx]['blob']
+        assert blob.shape[1], blob.shape[0] == img.size
 
     # Check test
     assert chunks[2]['text'] == expected_text
@@ -102,5 +94,4 @@ def test_io_buffer_img():
     for idx, c in enumerate(chunks):
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
-        assert blob.shape[1] == img.width
-        blob.shape == img.size
+        assert blob.shape[1], blob.shape[0] == img.size
