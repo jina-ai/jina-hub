@@ -12,97 +12,69 @@ path_text = os.path.join(cur_dir, 'cats_are_awesome_text.pdf')
 path_img = os.path.join(cur_dir, 'cats_are_awesome_img.pdf')
 
 
-def test_io_uri_images_and_text():
-    crafter = PDFExtractorSegmenter()
-    chunks = crafter.craft(uri=path_img_text, buffer=None)
+def test_images_and_text():
+    for i in range(2): #Test for URI and buffer
+        if i is 0: #Data coming from URI
+            crafter = PDFExtractorSegmenter()
+            chunks = crafter.craft(uri=path_img_text, buffer=None)
+        elif i is 1: #Data coming from Buffer
+            with open(path_img_text, 'rb') as pdf:
+                input_bytes = pdf.read()
+            crafter = PDFExtractorSegmenter()
+            chunks = crafter.craft(uri=None, buffer=input_bytes)
 
-    assert len(chunks) == 3
+        assert len(chunks) == 3
 
-    # Check images
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    img1 = Image.open(os.path.join(cur_dir, 'test_img_0.jpg'))
-    img2 = Image.open(os.path.join(cur_dir, 'test_img_1.jpg'))
+        # Check images
+        cur_dir = os.path.dirname(os.path.abspath(__file__))
+        img1 = Image.open(os.path.join(cur_dir, 'test_img_0.jpg'))
+        img2 = Image.open(os.path.join(cur_dir, 'test_img_1.jpg'))
 
-    blob1 = chunks[0]['blob']
-    assert (blob1.shape[1], blob1.shape[0]) == img1.size
+        blob1 = chunks[0]['blob']
+        assert (blob1.shape[1], blob1.shape[0]) == img1.size
 
-    blob2 = chunks[1]['blob']
-    assert (blob2.shape[1], blob2.shape[0]) == img2.size
+        blob2 = chunks[1]['blob']
+        assert (blob2.shape[1], blob2.shape[0]) == img2.size
 
-    # Check test
-    assert chunks[2]['text'] == expected_text
-
-
-def test_io_uri_text():
-    crafter = PDFExtractorSegmenter()
-    chunks = crafter.craft(uri=path_text, buffer=None)
-
-    assert len(chunks) == 1
-
-    # Check test
-    assert chunks[0]['text'] == expected_text
+        # Check test
+        assert chunks[2]['text'] == expected_text
 
 
-def test_io_uri_img():
-    crafter = PDFExtractorSegmenter()
-    chunks = crafter.craft(uri=path_img, buffer=None)
+def test_text():
+    for i in range(2): #Test for URI and buffer
+        if i is 0: #Data coming from URI
+            crafter = PDFExtractorSegmenter()
+            chunks = crafter.craft(uri=path_text, buffer=None)
+        elif i is 1: #Data coming from Buffer
+            with open(path_text, 'rb') as pdf:
+                input_bytes = pdf.read()
+            crafter = PDFExtractorSegmenter()
+            chunks = crafter.craft(uri=None, buffer=input_bytes)
 
-    assert len(chunks) == 2
+        assert len(chunks) == 1
 
-    # Check images
-    for idx, c in enumerate(chunks):
-        img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
-        blob = chunks[idx]['blob']
-        assert blob.shape[1] == img.width
-        blob.shape == img.size
-
-
-def test_io_buffer_images_and_text():
-    with open(path_img_text, 'rb') as pdf:
-        input_bytes = pdf.read()
-    crafter = PDFExtractorSegmenter()
-    chunks = crafter.craft(uri=None, buffer=input_bytes)
-
-    assert len(chunks) == 3
-
-    # Check images
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    img1 = Image.open(os.path.join(cur_dir, 'test_img_0.jpg'))
-    img2 = Image.open(os.path.join(cur_dir, 'test_img_1.jpg'))
-
-    blob1 = chunks[0]['blob']
-    assert (blob1.shape[1], blob1.shape[0]) == img1.size
-
-    blob2 = chunks[1]['blob']
-    assert (blob2.shape[1], blob2.shape[0]) == img2.size
-
-    # Check test
-    assert chunks[2]['text'] == expected_text
+        # Check test
+        assert chunks[0]['text'] == expected_text
 
 
-def test_io_buffer_text():
-    with open(path_text, 'rb') as pdf:
-        input_bytes = pdf.read()
-    crafter = PDFExtractorSegmenter()
-    chunks = crafter.craft(uri=None, buffer=input_bytes)
+def test_img():
+    for i in range(2): #Test for URI and buffer
+        if i is 0: #Data coming from URI
+            crafter = PDFExtractorSegmenter()
+            chunks = crafter.craft(uri=path_img, buffer=None)
+        elif i is 1: #Data coming from Buffer
+            with open(path_img, 'rb') as pdf:
+                input_bytes = pdf.read()
+            crafter = PDFExtractorSegmenter()
+            chunks = crafter.craft(uri=None, buffer=input_bytes)
 
-    assert len(chunks) == 1
+        assert len(chunks) == 2
 
-    # Check test
-    assert chunks[0]['text'] == expected_text
+        # Check images
+        for idx, c in enumerate(chunks):
+            img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
+            blob = chunks[idx]['blob']
+            assert blob.shape[1] == img.width
+            blob.shape == img.size
 
 
-def test_io_buffer_img():
-    with open(path_img, 'rb') as pdf:
-        input_bytes = pdf.read()
-    crafter = PDFExtractorSegmenter()
-    chunks = crafter.craft(uri=None, buffer=input_bytes)
-
-    assert len(chunks) == 2
-
-    # Check images
-    for idx, c in enumerate(chunks):
-        img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
-        blob = chunks[idx]['blob']
-        assert blob.shape[1] == img.width
-        blob.shape == img.size

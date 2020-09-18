@@ -14,7 +14,7 @@ def test_pdf_flow():
 
     f = Flow().add(uses='PDFExtractorSegmenter')
     with f:
-        f.index_files([path] )
+        f.index_files([path])
 
     with f:
         f.search([path], output_fn=print_res)
