@@ -3,7 +3,7 @@ from typing import Tuple, Dict, List, Union
 import numpy as np
 from jina.executors.crafters import BaseSegmenter
 
-from helper import _crop_image, _move_channel_axis, _load_image
+from .helper import _crop_image, _move_channel_axis, _load_image
 
 
 class FiveImageCropper(BaseSegmenter):

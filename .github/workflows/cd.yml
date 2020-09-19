@@ -31,4 +31,4 @@ jobs:
           mongodb_password: ${{ secrets.JINA_DB_PASSWORD }}
           mongodb_database: ${{ secrets.JINA_DB_NAME }}
           mongodb_collection: ${{ secrets.JINA_DB_COLLECTION }}
-          slack_webhook: ${{ secrets.JINA_SLACK_WEBHOOK }}
+          slack_webhook: ${{ secrets.JINAHUB_SLACK_WEBHOOK }}

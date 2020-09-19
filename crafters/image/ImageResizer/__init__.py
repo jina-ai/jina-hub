@@ -7,7 +7,7 @@ from typing import Union, Tuple, Dict
 import numpy as np
 from jina.executors.crafters import BaseCrafter
 
-from helper import _load_image, _move_channel_axis, _resize_short
+from .helper import _load_image, _move_channel_axis, _resize_short
 
 
 class ImageResizer(BaseCrafter):
