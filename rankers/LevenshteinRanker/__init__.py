@@ -1,7 +1,6 @@
-import numpy as np
 from typing import Dict
-from Levenshtein import distance
 
+import numpy as np
 from jina.executors.rankers import Match2DocRanker
 
 
@@ -15,8 +14,9 @@ class LevenshteinRanker(Match2DocRanker):
     required_keys = {"text"}
 
     def score(
-        self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
+            self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
     ) -> "np.ndarray":
+        from Levenshtein import distance
         new_scores = [
             (
                 match_id,
