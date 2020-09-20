@@ -1,7 +1,17 @@
 !ImageKerasEncoder
 with:
-  {}
+  model_name: MobileNetV2
+  pool_strategy: avg
+  channel_axis: -1
+requests:
+  on:
+    ControlRequest:
+      - !ControlReqDriver {}
+    [IndexRequest, SearchRequest]:
+      - !EncodeDriver
+        with:
+          granularity_range: [1, 1]
+          recur_on: ['chunks', ]
 metas:
   py_modules:
-    # - you can put more dependencies here
     - __init__.py
