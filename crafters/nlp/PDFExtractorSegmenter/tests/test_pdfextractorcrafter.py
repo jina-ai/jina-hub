@@ -1,4 +1,4 @@
-==from .. import PDFExtractorSegmenter
+from .. import PDFExtractorSegmenter
 from PIL import Image
 import os
 
