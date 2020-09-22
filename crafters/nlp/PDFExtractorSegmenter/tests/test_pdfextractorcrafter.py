@@ -1,3 +1,5 @@
+from pandas import np
+
 from .. import PDFExtractorSegmenter
 from PIL import Image
 import os
