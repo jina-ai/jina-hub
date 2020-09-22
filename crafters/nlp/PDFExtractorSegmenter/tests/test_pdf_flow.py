@@ -1,3 +1,5 @@
+from typing import io
+
 from jina.drivers.helper import array2pb
 from jina.proto import jina_pb2
 from jina.flow import Flow
@@ -26,7 +28,7 @@ def validate_img_fn(resp):
 
 def validate_mix_fn(resp):
     for d in resp.search.docs:
-        for chunk in range(len(d.chunks)-1):
+        for chunk in range(len(d.chunks) - 1):
             img = Image.open(os.path.join(cur_dir, f'test_img_{chunk}.jpg'))
             blob = d.chunks[chunk].blob
             assert blob.shape[1], blob.shape[0] == img.size
@@ -37,16 +39,28 @@ def validate_mix_fn(resp):
 def search_generator(path: str, buffer: bytes):
     d = jina_pb2.Document()
     if buffer:
-        d.blob.CopyFrom(array2pb(buffer))
+        d.buffer = buffer
     if path:
         d.uri = path
     yield d
 
 
 def test_pdf_flow():
-    path = os.path.join(cur_dir, 'cats_are_awesome_img.pdf')
+    path = os.path.join(cur_dir, 'cats_are_awesome_text.pdf')
 
-    f = Flow().add(uses='PDFExtractorSegmenter')
+    f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
 
     with f:
-        f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_img_fn)
+        f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_text_fn)
+
+
+def test_pdf_flow_buffer():
+    path = os.path.join(cur_dir, 'cats_are_awesome.pdf')
+    with open(path, 'rb') as pdf:
+        input_bytes = pdf.read()
+
+    f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
+
+    with f:
+        f.search(input_fn=search_generator(path=None, buffer=input_bytes), output_fn=validate_mix_fn)
+
