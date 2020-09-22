@@ -23,8 +23,12 @@ def test_io_uri_images_and_text():
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
         assert blob.shape[1], blob.shape[0] == img.size
+        if idx is 0:
+            assert blob.shape == (660, 1024, 3)
+        if idx is 1:
+            assert blob.shape == (626, 1191, 3)
 
-    # Check test
+    # Check text
     assert chunks[2]['text'] == expected_text
 
 
@@ -49,6 +53,10 @@ def test_io_uri_img():
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
         assert blob.shape[1], blob.shape[0] == img.size
+        if idx is 0:
+            assert blob.shape == (660, 1024, 3)
+        if idx is 1:
+            assert blob.shape == (626, 1191, 3)
 
 
 def test_io_buffer_images_and_text():
@@ -64,6 +72,10 @@ def test_io_buffer_images_and_text():
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
         assert blob.shape[1], blob.shape[0] == img.size
+        if idx is 0:
+            assert blob.shape == (660, 1024, 3)
+        if idx is 1:
+            assert blob.shape == (626, 1191, 3)
 
     # Check test
     assert chunks[2]['text'] == expected_text
@@ -94,3 +106,7 @@ def test_io_buffer_img():
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
         assert blob.shape[1], blob.shape[0] == img.size
+        if idx is 0:
+            assert blob.shape == (660, 1024, 3)
+        if idx is 1:
+            assert blob.shape == (626, 1191, 3)
