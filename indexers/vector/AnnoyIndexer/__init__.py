@@ -8,6 +8,7 @@ from jina.executors.indexers.vector import BaseNumpyIndexer
 
 
 class AnnoyIndexer(BaseNumpyIndexer):
+
     """Annoy powered vector indexer
 
     For more information about the Annoy supported parameters, please consult:
@@ -36,7 +37,7 @@ class AnnoyIndexer(BaseNumpyIndexer):
     def build_advanced_index(self, vecs: 'np.ndarray'):
         from annoy import AnnoyIndex
         _index = AnnoyIndex(self.num_dim, self.metric)
-        for idx, v in enumerate(vecs):
+        for idx, v in reversed(list(enumerate(vecs))):
             _index.add_item(idx, v.astype(np.float32))
         _index.build(self.n_trees)
         return _index
