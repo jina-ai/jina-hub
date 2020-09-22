@@ -1,3 +1,4 @@
+from jina.drivers.helper import array2pb
 from jina.proto import jina_pb2
 from jina.flow import Flow
 from PIL import Image
@@ -33,16 +34,19 @@ def validate_mix_fn(resp):
         assert expected_text == d.chunks[2].text
 
 
-def search_generator(path):
+def search_generator(path: str, buffer: bytes):
     d = jina_pb2.Document()
-    d.uri = path
+    if buffer:
+        d.blob.CopyFrom(array2pb(buffer))
+    if path:
+        d.uri = path
     yield d
 
 
 def test_pdf_flow():
-    path = os.path.join(cur_dir, 'cats_are_awesome_text.pdf')
+    path = os.path.join(cur_dir, 'cats_are_awesome_img.pdf')
 
     f = Flow().add(uses='PDFExtractorSegmenter')
 
     with f:
-        f.search(input_fn=search_generator(path), output_fn=validate_text_fn)
+        f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_img_fn)
