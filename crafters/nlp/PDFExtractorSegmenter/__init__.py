@@ -35,7 +35,6 @@ class PDFExtractorSegmenter(BaseSegmenter):
                     pix = fitz.Pixmap(pdf_img, xref)
                     np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
                     if pix.n - pix.alpha < 4:  # if gray or RGB
-                        #pix.writePNG("p%s-%s.png" % (i, xref))  # Format is page, and image
                         chunks.append(
                             dict(blob=np_arr, weight=1.0))
                     else:  # if CMYK:
