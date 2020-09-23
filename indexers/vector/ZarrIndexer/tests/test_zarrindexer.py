@@ -29,7 +29,6 @@ def rm_files(file_paths):
                 
 
 def test_zarr_indexer():
-    rm_files(['test.zarr'])
     with ZarrIndexer(index_filename='test.zarr') as indexer:
         indexer.add(vec_idx, vec)
         indexer.save()
