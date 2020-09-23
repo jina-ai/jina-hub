@@ -49,10 +49,8 @@ class ZarrIndexer(NumpyIndexer):
     def get_query_handler(self) -> Optional['zarr.core.Array']:
         if not (path.exists(self.index_abspath) or self.num_dim or self.dtype):
             return
-
-        if hasattr(self, 'write_handler') and 'default' in self.write_handler.array_keys():
-            return zarr.open(store=f'{self.index_abspath}/default', mode='r',
-                             shape=(self._size, self.num_dim), chunks=True)
+        return zarr.open(store=f'{self.index_abspath}/default', mode='r',
+                         shape=(self._size, self.num_dim), chunks=True)
     
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
         int_ids = [self.ext2int_id[j] for j in ids]
