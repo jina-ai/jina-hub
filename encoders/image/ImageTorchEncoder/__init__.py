@@ -17,8 +17,8 @@ class ImageTorchEncoder(BaseTorchEncoder):
 
     def __init__(
         self,
-        model_name: str = "mobilenet_v2",
-        pool_strategy: str = "mean",
+        model_name: str = 'mobilenet_v2',
+        pool_strategy: str = 'mean',
         channel_axis: int = 1,
         *args,
         **kwargs,
@@ -49,8 +49,8 @@ class ImageTorchEncoder(BaseTorchEncoder):
         # axis 0 is the batch
         self._default_channel_axis = 1
         self.model_name = model_name
-        if pool_strategy not in ("mean", "max", None):
-            raise NotImplementedError(f"unknown pool_strategy: {self.pool_strategy}")
+        if pool_strategy not in ('mean', 'max', None):
+            raise NotImplementedError(f'unknown pool_strategy: {self.pool_strategy}')
         self.pool_strategy = pool_strategy
 
     def post_init(self):
@@ -66,19 +66,19 @@ class ImageTorchEncoder(BaseTorchEncoder):
     def _get_features(self, data):
         return self.model(data)
 
-    def _get_pooling(self, feature_map: "np.ndarray") -> "np.ndarray":
+    def _get_pooling(self, feature_map: 'np.ndarray') -> 'np.ndarray':
         if feature_map.ndim == 2 or self.pool_strategy is None:
             return feature_map
         return self.pool_fn(feature_map, axis=(2, 3))
 
     @batching
     @as_ndarray
-    def encode(self, data: "np.ndarray", *args, **kwargs) -> "np.ndarray":
+    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
 
-        _input = torch.from_numpy(data.astype("float32"))
+        _input = torch.from_numpy(data.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()
         _feature = self._get_features(_input).detach()
