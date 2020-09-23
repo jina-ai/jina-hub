@@ -36,13 +36,13 @@ class PDFExtractorSegmenter(BaseSegmenter):
                     np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
                     if pix.n - pix.alpha < 4:  # if gray or RGB
                         chunks.append(
-                            dict(blob=np_arr, weight=1.0))
+                            dict(blob=np_arr, weight=1.0, mime_type="image/png"))
                     else:  # if CMYK:
                         pix = fitz.Pixmap(fitz.csRGB, pix)  # Convert to RGB
                         np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype(
                             'float32')
                         chunks.append(
-                            dict(blob=np_arr, weight=1.0))
+                            dict(blob=np_arr, weight=1.0, mime_type="image/png"))
 
         # Extract text
         with pdf_text:
@@ -52,9 +52,7 @@ class PDFExtractorSegmenter(BaseSegmenter):
             for i in range(count):
                 page = pdf_reader.getPage(i)
                 text += page.extractText()
-
             if text:
                 chunks.append(
-                    dict(text=text, weight=1.0))
-
+                    dict(text=text, weight=1.0, mime_type="text/plain"))
         return chunks

@@ -22,6 +22,7 @@ def test_io_uri_images_and_text():
     for idx, c in enumerate(chunks[:-1]):
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
+        assert chunks[idx]['mime_type'] == "image/png"
         assert blob.shape[1], blob.shape[0] == img.size
         if idx == 0:
             assert blob.shape == (660, 1024, 3)
@@ -30,6 +31,7 @@ def test_io_uri_images_and_text():
 
     # Check text
     assert chunks[2]['text'] == expected_text
+    assert chunks[2]['mime_type'] == "text/plain"
 
 
 def test_io_uri_text():
@@ -40,6 +42,7 @@ def test_io_uri_text():
 
     # Check test
     assert chunks[0]['text'] == expected_text
+    assert chunks[0]['mime_type'] == "text/plain"
 
 
 def test_io_uri_img():
@@ -52,6 +55,7 @@ def test_io_uri_img():
     for idx, c in enumerate(chunks):
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
+        assert chunks[idx]['mime_type'] == "image/png"
         assert blob.shape[1], blob.shape[0] == img.size
         if idx == 0:
             assert blob.shape == (660, 1024, 3)
@@ -71,6 +75,7 @@ def test_io_buffer_images_and_text():
     for idx, c in enumerate(chunks[:-1]):
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
+        assert chunks[idx]['mime_type'] == "image/png"
         assert blob.shape[1], blob.shape[0] == img.size
         if idx == 0:
             assert blob.shape == (660, 1024, 3)
@@ -79,6 +84,7 @@ def test_io_buffer_images_and_text():
 
     # Check test
     assert chunks[2]['text'] == expected_text
+    assert chunks[2]['mime_type'] == "text/plain"
 
 
 def test_io_buffer_text():
@@ -91,6 +97,7 @@ def test_io_buffer_text():
 
     # Check test
     assert chunks[0]['text'] == expected_text
+    assert chunks[0]['mime_type'] == "text/plain"
 
 
 def test_io_buffer_img():
@@ -105,6 +112,7 @@ def test_io_buffer_img():
     for idx, c in enumerate(chunks):
         img = Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg'))
         blob = chunks[idx]['blob']
+        assert chunks[idx]['mime_type'] == "image/png"
         assert blob.shape[1], blob.shape[0] == img.size
         if idx == 0:
             assert blob.shape == (660, 1024, 3)
