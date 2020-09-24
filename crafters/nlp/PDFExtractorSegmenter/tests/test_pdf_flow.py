@@ -45,22 +45,49 @@ def search_generator(path: str, buffer: bytes):
     yield d
 
 
-def test_pdf_flow():
+def test_pdf_flow_text():
     path = os.path.join(cur_dir, 'cats_are_awesome_text.pdf')
-
     f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
-
     with f:
         f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_text_fn)
 
 
-def test_pdf_flow_buffer():
+def test_pdf_flow_img():
+    path = os.path.join(cur_dir, 'cats_are_awesome_img.pdf')
+    f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
+    with f:
+        f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_img_fn)
+
+
+def test_pdf_flow_mix():
+    path = os.path.join(cur_dir, 'cats_are_awesome.pdf')
+    f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
+    with f:
+        f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_mix_fn)
+
+
+def test_pdf_flow_text_buffer():
+    path = os.path.join(cur_dir, 'cats_are_awesome_text.pdf')
+    with open(path, 'rb') as pdf:
+        input_bytes = pdf.read()
+    f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
+    with f:
+        f.search(input_fn=search_generator(path=None, buffer=input_bytes), output_fn=validate_text_fn)
+
+
+def test_pdf_flow_img_buffer():
+    path = os.path.join(cur_dir, 'cats_are_awesome_img.pdf')
+    with open(path, 'rb') as pdf:
+        input_bytes = pdf.read()
+    f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
+    with f:
+        f.search(input_fn=search_generator(path=None, buffer=input_bytes), output_fn=validate_img_fn)
+
+
+def test_pdf_flow_mix_buffer():
     path = os.path.join(cur_dir, 'cats_are_awesome.pdf')
     with open(path, 'rb') as pdf:
         input_bytes = pdf.read()
-
     f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
-
     with f:
         f.search(input_fn=search_generator(path=None, buffer=input_bytes), output_fn=validate_mix_fn)
-
