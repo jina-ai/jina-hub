@@ -22,7 +22,7 @@ class PDFExtractorSegmenter(BaseSegmenter):
             pdf_text = open(uri, 'rb')
         elif buffer:
             pdf_text = io.BytesIO(buffer)
-            pdf_img = fitz.open(stream=buffer, filetype="pdf")
+            pdf_img = fitz.open(stream=buffer, filetype='pdf')
         else:
             raise ValueError('No value found in "buffer" or "uri"')
 
@@ -36,13 +36,13 @@ class PDFExtractorSegmenter(BaseSegmenter):
                     np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
                     if pix.n - pix.alpha < 4:  # if gray or RGB
                         chunks.append(
-                            dict(blob=np_arr, weight=1.0, mime_type="image/png"))
+                            dict(blob=np_arr, weight=1.0, mime_type='image/png'))
                     else:  # if CMYK:
                         pix = fitz.Pixmap(fitz.csRGB, pix)  # Convert to RGB
                         np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype(
                             'float32')
                         chunks.append(
-                            dict(blob=np_arr, weight=1.0, mime_type="image/png"))
+                            dict(blob=np_arr, weight=1.0, mime_type='image/png'))
 
         # Extract text
         with pdf_text:
@@ -54,5 +54,5 @@ class PDFExtractorSegmenter(BaseSegmenter):
                 text += page.extractText()
             if text:
                 chunks.append(
-                    dict(text=text, weight=1.0, mime_type="text/plain"))
+                    dict(text=text, weight=1.0, mime_type='text/plain'))
         return chunks
