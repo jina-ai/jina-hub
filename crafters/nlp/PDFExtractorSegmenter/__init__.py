@@ -21,16 +21,16 @@ class PDFExtractorSegmenter(BaseSegmenter):
             pdf_img = fitz.open(uri)
             pdf_text = open(uri, 'rb')
         elif buffer:
-            pdf_text = io.BytesIO(buffer)
             pdf_img = fitz.open(stream=buffer, filetype='pdf')
+            pdf_text = io.BytesIO(buffer)
         else:
             raise ValueError('No value found in "buffer" or "uri"')
 
         chunks = []
+        # Extract images
         with pdf_img:
-            # Extract images
-            for i in range(len(pdf_img)):
-                for img in pdf_img.getPageImageList(i):
+            for page in range(len(pdf_img)):
+                for img in pdf_img.getPageImageList(page):
                     xref = img[0]
                     pix = fitz.Pixmap(pdf_img, xref)
                     np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
@@ -49,10 +49,11 @@ class PDFExtractorSegmenter(BaseSegmenter):
             text = ""
             pdf_reader = PyPDF2.PdfFileReader(pdf_text)
             count = pdf_reader.numPages
-            for i in range(count):
-                page = pdf_reader.getPage(i)
+            for page in range(count):
+                page = pdf_reader.getPage(page)
                 text += page.extractText()
             if text:
                 chunks.append(
                     dict(text=text, weight=1.0, mime_type='text/plain'))
+
         return chunks
