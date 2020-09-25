@@ -49,7 +49,7 @@ class NmsLibIndexer(BaseNumpyIndexer):
         _index.createIndex({'post': 2}, print_progress=self.print_progress)
         return _index
 
-    @batching()
+    @batching
     def build_partial_index(self, vecs: 'np.ndarray', _index):
         _index.addDataPointBatch(vecs.astype(np.float32))
 
