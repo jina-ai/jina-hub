@@ -129,7 +129,7 @@ def test_annoy_indexer_known_big():
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with AnnoyIndexer(index_filename='annoy.test.gz') as indexer:
+    with AnnoyIndexer(index_filename='annoy.test.gz', n_trees=100) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
