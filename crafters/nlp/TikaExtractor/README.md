@@ -2,7 +2,7 @@
 
 Based on Apache Tika, extracts text "from over a thousand different file types (such as PPT, XLS, and PDF)".
 
-It accepts and URI and it will return both text and metadata of the file detected by Apache Tika.
+It accepts file URI and it will return both text and metadata of that file detected by Apache Tika.
 
 Following environment configuration is supported:
 
