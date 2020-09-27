@@ -2,7 +2,7 @@
 
 Based on Apache Tika, extracts text "from over a thousand different file types (such as PPT, XLS, and PDF)".
 
-It accepts file URI and it will return both text and metadata of that file detected by Apache Tika.
+It accepts file URI and it will return text of that file detected by Apache Tika.
 
 Following environment configuration is supported:
 
@@ -12,6 +12,3 @@ TIKA_EXTRACT_INLINE_IMAGES (default: true)
 TIKA_OCR_LANGUAGE (default: eng)
 TIKA_TIMEOUT (default: 600)
 ```
-
-Return document has format:
-`{"text": "...", "metadata": "..."}`
