@@ -6,6 +6,9 @@ import numpy as np
 from jina.executors.indexers.vector import NumpyIndexer
 from jina.helper import cached_property
 
+if False:
+    import zarr
+
 
 class ZarrIndexer(NumpyIndexer):
     """Indexing based on Zarr arrays
@@ -17,7 +20,7 @@ class ZarrIndexer(NumpyIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def get_add_handler(self):
+    def get_add_handler(self) -> 'zarr.hierarchy.Group':
         """Open an existing zarr group file for adding new vectors
 
         :return: a zarr group file
@@ -25,7 +28,7 @@ class ZarrIndexer(NumpyIndexer):
         import zarr
         return zarr.open(store=self.index_abspath, mode='a')
 
-    def get_create_handler(self):
+    def get_create_handler(self) -> 'zarr.hierarchy.Group':
         """Create a zarr group file for adding new vectors
 
         :return: a zarr group file
@@ -47,7 +50,7 @@ class ZarrIndexer(NumpyIndexer):
     def query_handler(self):
         return self.get_query_handler()
     
-    def get_query_handler(self):
+    def get_query_handler(self) -> Optional['zarr.core.Array']:
         import zarr
         if not (path.exists(self.index_abspath) or self.num_dim or self.dtype):
             return
