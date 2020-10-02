@@ -52,7 +52,6 @@ def test_simple_ngt():
 
 def test_ngt_indexer():
     with NGTIndexer(index_filename='ngt.test.gz') as indexer:
-        print(f'vec_idx shape {vec_idx.shape}')
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
