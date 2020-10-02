@@ -8,7 +8,7 @@ from .. import NGTIndexer
 
 # fix the seed here
 np.random.seed(500)
-vec_idx = np.random.randint(0, high=100, size=[1, 10])
+vec_idx = np.random.randint(0, high=100, size=[10])
 vec = np.random.random([10, 10]).astype('float32')
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
 
@@ -52,6 +52,7 @@ def test_simple_ngt():
 
 def test_ngt_indexer():
     with NGTIndexer(index_filename='ngt.test.gz') as indexer:
+        print(f'vec_idx shape {vec_idx.shape}')
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
@@ -111,7 +112,7 @@ def test_ngt_indexer_known_big():
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with NGTIndexer(index_filename='ngt.test.gz') as indexer:
+    with NGTIndexer(index_filename='ngt.test.gz', num_threads=4) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
