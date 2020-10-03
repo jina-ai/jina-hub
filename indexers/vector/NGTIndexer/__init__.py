@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import os
 from typing import Tuple
 
 import numpy as np
@@ -30,9 +31,12 @@ class NGTIndexer(BaseNumpyIndexer):
 
         super().__init__(*args, **kwargs)
         self.metric = metric
-        self.index_path = 'index'
         self.num_threads = num_threads
         self.epsilon = epsilon
+
+    def post_init(self):
+        super().post_init()
+        self.index_path = os.path.join(self.workspace, 'index')
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         import ngtpy

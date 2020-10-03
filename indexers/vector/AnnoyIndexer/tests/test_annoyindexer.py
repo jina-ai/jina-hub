@@ -20,10 +20,8 @@ def test_annoy_wrap_indexer(tmpdir):
     os.environ['TEST_WORKSPACE'] = str(tmpdir)
     metas = get_default_metas()
     metas['workspace'] = os.environ['TEST_WORKSPACE']
-    with NumpyIndexer(index_filename=os.path.join(tmpdir, 'wrap-npidx.gz'),
-                      metas=metas) as indexer:
+    with NumpyIndexer(index_filename='wrap-npidx.gz', metas=metas) as indexer:
         indexer.name = 'wrap-npidx'
-        print(f' {indexer.workspace}')
         indexer.add(vec_idx, vec)
         indexer.save()
 
@@ -50,9 +48,7 @@ def test_annoy_indexer(tmpdir):
     os.environ['TEST_WORKSPACE'] = str(tmpdir)
     metas = get_default_metas()
     metas['workspace'] = os.environ['TEST_WORKSPACE']
-    with AnnoyIndexer(index_filename=os.path.join(tmpdir, 'annoy.test.gz'),
-                      metas=metas) as indexer:
-        print(f' {indexer.workspace}')
+    with AnnoyIndexer(index_filename='annoy.test.gz', metas=metas) as indexer:
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
@@ -70,9 +66,7 @@ def test_annoy_indexer_with_no_search_k(tmpdir):
     os.environ['TEST_WORKSPACE'] = str(tmpdir)
     metas = get_default_metas()
     metas['workspace'] = os.environ['TEST_WORKSPACE']
-    with AnnoyIndexer(index_filename=os.path.join(tmpdir, 'annoy.test.gz'), search_k=0,
-                      metas=metas) as indexer:
-        print(f' {indexer.workspace}')
+    with AnnoyIndexer(index_filename='annoy.test.gz', search_k=0, metas=metas) as indexer:
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
@@ -97,12 +91,10 @@ def test_annoy_indexer_known(tmpdir):
                         [100, 100, 100],
                         [1000, 1000, 1000]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with AnnoyIndexer(index_filename=os.path.join(tmpdir, 'annoy.test.gz'), metas=metas) as indexer:
-        print(f' {indexer.workspace}')
+    with AnnoyIndexer(index_filename='annoy.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
-        index_abspath = indexer.index_abspath
         save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
@@ -139,8 +131,7 @@ def test_annoy_indexer_known_big(tmpdir):
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with AnnoyIndexer(index_filename=os.path.join(tmpdir, 'annoy.test.gz'), n_trees=100, metas=metas) as indexer:
-        print(f' {indexer.workspace}')
+    with AnnoyIndexer(index_filename='annoy.test.gz', n_trees=100, metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
