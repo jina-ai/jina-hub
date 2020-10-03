@@ -11,11 +11,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get clean \
     && update-alternatives --set python /usr/bin/python3.7 \
     && curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
     && python get-pip.py --force-reinstall \
-    && rm get-pip.py
-
-# install jina
-RUN pip uninstall numpy -y
-RUN pip install jina
+    && rm get-pip.py \
+    && pip uninstall numpy -y
 
 # setup the workspace
 COPY . /workspace

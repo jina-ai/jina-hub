@@ -23,19 +23,26 @@ class TikaExtractor(BaseCrafter):
         self.start_tika()
 
     def start_tika(self):
-        from subprocess import Popen
+        import sys
+        import time
+        from subprocess import Popen, PIPE
+
+        # Start tika server in subprocess
         tika_version = os.getenv('TIKA_VERSION')
         self.tika_process = Popen(
             ['java', '-jar', f'/tika-server-{tika_version}.jar', '-h', '0.0.0.0'],
-            stdout=open('stdout.log', 'w'),
-            stderr=open('stderr.log', 'w'))
+            stdout=PIPE,
+            stderr=PIPE)
 
-        response = None
-        while not response:
+        # Retry until tika server is started
+        for _ in range(10):
             try:
-                response = requests.get(TIKA_URL)
+                time.sleep(1)
+                requests.get(TIKA_URL)
+                return
             except ConnectionError:
                 pass
+        sys.exit(0)
 
     def close(self):
         self.tika_process.kill()
@@ -72,4 +79,4 @@ class TikaExtractor(BaseCrafter):
             if result['status'] == 200:
                 text = result['content']
 
-        return text
+        return dict(text=text)
