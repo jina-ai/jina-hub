@@ -10,7 +10,15 @@ def test_resize():
     img_width = 20
     img_height = 17
     output_dim = 71
+    
+    # Test for int target_size
     crafter = ImageResizer(target_size=output_dim)
-    img_array = create_random_img_array(img_width, img_height)
+    img_array = create_random_img_array(img_height, img_width)
     crafted_doc = crafter.craft(img_array)
     assert min(crafted_doc['blob'].shape[:-1]) == output_dim
+
+    # Test for tuple/list target_size
+    crafter = ImageResizer(target_size=[img_height, img_width])
+    img_array = create_random_img_array(img_height, img_width)
+    crafted_doc = crafter.craft(img_array)
+    assert crafted_doc['blob'].shape[:-1] == (img_height, img_width)
