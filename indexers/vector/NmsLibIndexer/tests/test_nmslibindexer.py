@@ -54,9 +54,9 @@ def test_nmslib_wrap_indexer(metas):
 
 def test_nmslib_indexer_known(metas):
     vectors = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]], dtype=np.float32)
+                        [1, 1, -1],
+                        [1, -1, -1],
+                        [1, -1, 1]], dtype=np.float32)
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
     with NmsLibIndexer(index_filename='nmslib.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
@@ -64,14 +64,11 @@ def test_nmslib_indexer_known(metas):
         assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
 
-    queries = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]], dtype=np.float32)
+    queries = vectors
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NmsLibIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([[4, 7], [5, 4], [6, 5], [7, 4]]))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
         np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
@@ -85,11 +82,7 @@ def test_nmslib_indexer_known_big(metas):
     """
     vectors = np.random.uniform(low=5.0, high=10.0, size=(10000, 1024)).astype('float32')
 
-    queries = np.empty((10, 1024))
-    for idx in range(0, 10000, 1000):
-        array = idx * np.ones((1, 1024))
-        queries[int(idx / 1000)] = array
-        vectors[idx] = array
+    queries = vectors[:10, :]
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
@@ -102,8 +95,7 @@ def test_nmslib_indexer_known_big(metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NmsLibIndexer)
         idx, dist = indexer.query(queries, top_k=1)
-        np.testing.assert_equal(idx, np.array(
-            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]))
+        np.testing.assert_equal(idx, np.arange(10000, 10010).reshape(-1, 1))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
         np.testing.assert_equal(indexer.query_by_id([10000, 15000]), vectors[[0, 5000]])
