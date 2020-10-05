@@ -42,9 +42,10 @@ class TikaExtractor(BaseCrafter):
                 return
             except ConnectionError:
                 pass
-        sys.exit(0)
+        raise TimeoutError('Timeout when waiting for tika to start')
 
     def close(self):
+        super().close()
         self.tika_process.kill()
 
     def craft(self, uri: str, buffer: bytes, *args, **kwargs):
