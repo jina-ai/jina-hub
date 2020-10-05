@@ -41,12 +41,28 @@ def target_output_dim():
     return target_output_dim
 
 
-def test_encoding_results(test_data, target_output_dim):
+@pytest.fixture(scope="function")
+def get_encoder(test_data, target_output_dim):
+    from cvae import cvae
+    model_path = tempfile.NamedTemporaryFile().name
+    data_path = tempfile.mkdtemp()
+
+    for idx, features in enumerate(test_data):
+        np.save(os.path.join(data_path, str(idx)), features)
+
+    # Train the CVAE on the test data to build a model saved in `logdir`.
+    model = cvae.CompressionVAE(data_path,
+                                dim_latent=target_output_dim,
+                                logdir=model_path)
+    model.train()
+
+    return CompressionVaeEncoder(model_path=model_path, X=data_path, output_dim=target_output_dim)
+
+
+def test_encoding_results(get_encoder, test_data, target_output_dim):
     expected_batch_size = test_data.shape[0]
 
-    path = tempfile.NamedTemporaryFile().name
-
-    encoder = CompressionVaeEncoder(model_path=path, output_dim=target_output_dim)
+    encoder = get_encoder
     assert encoder is not None
 
     encoded_data = encoder.encode(test_data)
@@ -54,10 +70,8 @@ def test_encoding_results(test_data, target_output_dim):
     assert type(encoded_data) is np.ndarray
 
 
-def test_save_and_load(test_data, target_output_dim):
-    path = tempfile.NamedTemporaryFile().name
-
-    encoder = CompressionVaeEncoder(model_path=path, output_dim=target_output_dim)
+def test_save_and_load(get_encoder, test_data):
+    encoder = get_encoder
     assert encoder is not None
 
     encoded_data_control = encoder.encode(test_data)
@@ -69,3 +83,11 @@ def test_save_and_load(test_data, target_output_dim):
     encoded_data_test = encoder_loaded.encode(test_data)
     np.testing.assert_array_equal(encoded_data_test, encoded_data_control)
     rm_files([encoder.save_abspath])
+
+
+def test_save_and_load_config(get_encoder):
+    encoder = get_encoder
+    encoder.save_config()
+    assert os.path.exists(encoder.config_abspath)
+    encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
+    assert encoder_loaded.model_path == encoder.model_path
