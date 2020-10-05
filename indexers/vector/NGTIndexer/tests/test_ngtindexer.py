@@ -1,4 +1,5 @@
 import os
+import pytest
 
 import numpy as np
 from jina.executors.indexers import BaseIndexer
@@ -13,8 +14,16 @@ vec = np.random.random([10, 10]).astype('float32')
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
 
 
-def test_simple_ngt(tmpdir):
+@pytest.fixture(scope='function', autouse=True)
+def metas(tmpdir):
     os.environ['TEST_WORKSPACE'] = str(tmpdir)
+    metas = get_default_metas()
+    metas['workspace'] = os.environ['TEST_WORKSPACE']
+    yield metas
+    del os.environ['TEST_WORKSPACE']
+
+
+def test_simple_ngt(tmpdir):
     import ngtpy
     path = os.path.join(tmpdir, 'ngt-index')
     dimension, queries, top_k, batch_size, num_batch = 10, 3, 5, 8, 3
@@ -40,13 +49,9 @@ def test_simple_ngt(tmpdir):
 
     assert idx.shape == dist.shape
     assert idx.shape == (queries, top_k)
-    del os.environ['TEST_WORKSPACE']
 
 
-def test_ngt_indexer(tmpdir):
-    os.environ['TEST_WORKSPACE'] = str(tmpdir)
-    metas = get_default_metas()
-    metas['workspace'] = os.environ['TEST_WORKSPACE']
+def test_ngt_indexer(metas):
     with NGTIndexer(index_filename='ngt.test.gz', metas=metas) as indexer:
         indexer.add(vec_idx, vec)
         indexer.save()
@@ -58,13 +63,9 @@ def test_ngt_indexer(tmpdir):
         idx, dist = indexer.query(query, top_k=4)
         assert idx.shape == dist.shape
         assert idx.shape == (10, 4)
-    del os.environ['TEST_WORKSPACE']
 
 
-def test_ngt_indexer_known(tmpdir):
-    os.environ['TEST_WORKSPACE'] = str(tmpdir)
-    metas = get_default_metas()
-    metas['workspace'] = os.environ['TEST_WORKSPACE']
+def test_ngt_indexer_known(metas):
     vectors = np.array([[1, 1, 1],
                         [10, 10, 10],
                         [100, 100, 100],
@@ -87,18 +88,14 @@ def test_ngt_indexer_known(tmpdir):
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
         np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
-    del os.environ['TEST_WORKSPACE']
 
 
-def test_ngt_indexer_known_big(tmpdir):
+def test_ngt_indexer_known_big(metas):
     """Let's try to have some real test. We will have an index with 10k vectors of random values between 5 and 10.
      We will change tweak some specific vectors that we expect to be retrieved at query time. We will tweak vector
      at index [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000], this will also be the query vectors.
      Then the keys will be assigned shifted to test the proper usage of `int2ext_id` and `ext2int_id`
     """
-    os.environ['TEST_WORKSPACE'] = str(tmpdir)
-    metas = get_default_metas()
-    metas['workspace'] = os.environ['TEST_WORKSPACE']
     vectors = np.random.uniform(low=5.0, high=10.0, size=(10000, 1024)).astype('float32')
 
     queries = np.empty((10, 1024))
@@ -123,4 +120,3 @@ def test_ngt_indexer_known_big(tmpdir):
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
         np.testing.assert_equal(indexer.query_by_id([10000, 15000]), vectors[[0, 5000]])
-    del os.environ['TEST_WORKSPACE']
