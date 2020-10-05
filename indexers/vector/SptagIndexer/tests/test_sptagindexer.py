@@ -62,7 +62,7 @@ def test_sptag_indexer_known(metas):
                         [100, 100, 100],
                         [1000, 1000, 1000]], dtype=np.float32)
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with SptagIndexer(index_filename='sptag.test.gz', metas=metas) as indexer:
+    with SptagIndexer(dist_calc_method='L2', index_filename='sptag.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
@@ -97,7 +97,7 @@ def test_sptag_indexer_known_big(metas):
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with SptagIndexer(index_filename='sptag.test.gz', num_threads=4, metas=metas) as indexer:
+    with SptagIndexer(dist_calc_method='L2', index_filename='sptag.test.gz', num_threads=4, metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
