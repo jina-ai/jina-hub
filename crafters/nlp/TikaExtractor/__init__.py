@@ -15,8 +15,17 @@ class TikaExtractor(BaseCrafter):
     :class:`TikaExtractor` Extracts text from files.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self,
+                 tika_ocr_strategy: str = 'ocr_only',
+                 tika_extract_inline_images: str = 'true',
+                 tika_ocr_language: str = 'eng',
+                 tika_request_timeout: int = 600,
+                 *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.tika_ocr_strategy = tika_ocr_strategy
+        self.tika_extract_inline_images = tika_extract_inline_images
+        self.tika_ocr_language = tika_ocr_language
+        self.tika_request_timeout = tika_request_timeout
 
     def post_init(self):
         super().post_init()
@@ -51,12 +60,12 @@ class TikaExtractor(BaseCrafter):
     def craft(self, uri: str, buffer: bytes, *args, **kwargs):
         from tika import parser
         headers = {
-            'X-Tika-PDFOcrStrategy': os.getenv('TIKA_OCR_STRATEGY', 'ocr_only'),
-            'X-Tika-PDFextractInlineImages': os.getenv('TIKA_EXTRACT_INLINE_IMAGES', 'true'),
-            'X-Tika-OCRLanguage': os.getenv('TIKA_OCR_LANGUAGE', 'eng')
+            'X-Tika-PDFOcrStrategy': self.tika_ocr_strategy,
+            'X-Tika-PDFextractInlineImages': self.tika_extract_inline_images,
+            'X-Tika-OCRLanguage': self.tika_ocr_language
         }
         request_options = {
-            'timeout': int(os.getenv('TIKA_TIMEOUT', '600'))
+            'timeout': self.tika_request_timeout
         }
 
         text = ""
