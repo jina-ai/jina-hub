@@ -2,9 +2,10 @@ from .. import CompressionVaeEncoder
 
 import os
 import shutil
-import tempfile
 import numpy as np
 import pytest
+
+from cvae import cvae
 
 from jina.executors import BaseExecutor
 
@@ -42,10 +43,9 @@ def target_output_dim():
 
 
 @pytest.fixture(scope="function")
-def get_encoder(test_data, target_output_dim):
-    from cvae import cvae
-    model_path = tempfile.NamedTemporaryFile().name
-    data_path = tempfile.mkdtemp()
+def get_encoder(tmpdir, test_data, target_output_dim):
+    model_path = str(tmpdir.mkdir('model').join('model'))
+    data_path = str(tmpdir.mkdir('data'))
 
     for idx, features in enumerate(test_data):
         np.save(os.path.join(data_path, str(idx)), features)
