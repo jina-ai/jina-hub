@@ -31,8 +31,10 @@ class ImageResizer(BaseCrafter):
         super().__init__(*args, **kwargs)
         if isinstance(target_size, int):
             self.output_dim = target_size
+        elif isinstance(target_size, (tuple, list)):
+            self.output_dim = tuple(target_size)
         else:
-            raise ValueError(f'output_dim {target_size} should be an integer')
+            raise ValueError(f'output_dim {target_size} should be an integer or tuple/list of 2 integers')
         self.how = how
         self.channel_axis = channel_axis
 
