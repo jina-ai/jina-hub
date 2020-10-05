@@ -67,9 +67,9 @@ def test_ngt_indexer(metas):
 
 def test_ngt_indexer_known(metas):
     vectors = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]], dtype=np.float32)
+                        [1, 1, -1],
+                        [1, -1, -1],
+                        [1, -1, 1]], dtype=np.float32)
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
     with NGTIndexer(index_filename='ngt.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
@@ -78,9 +78,9 @@ def test_ngt_indexer_known(metas):
         save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]], dtype=np.float32)
+                        [1, 1, -1],
+                        [1, -1, -1],
+                        [1, -1, 1]], dtype=np.float32)
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NGTIndexer)
         idx, dist = indexer.query(queries, top_k=2)

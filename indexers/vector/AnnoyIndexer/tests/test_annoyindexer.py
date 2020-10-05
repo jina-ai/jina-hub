@@ -81,9 +81,9 @@ def test_annoy_indexer_with_no_search_k(metas):
 
 def test_annoy_indexer_known(metas):
     vectors = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]])
+                        [1, 1, -1],
+                        [1, -1, -1],
+                        [1, -1, 1]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
     with AnnoyIndexer(index_filename='annoy.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
@@ -92,9 +92,9 @@ def test_annoy_indexer_known(metas):
         save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]])
+                        [1, 1, -1],
+                        [1, -1, -1],
+                        [1, -1, 1]])
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, AnnoyIndexer)
         idx, dist = indexer.query(queries, top_k=2)

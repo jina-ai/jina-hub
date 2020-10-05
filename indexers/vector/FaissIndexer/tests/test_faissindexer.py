@@ -48,9 +48,9 @@ def test_faiss_indexer(metas):
 
 def test_faiss_indexer_known(metas):
     vectors = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]], dtype=np.float32)
+                        [1, 1, -1],
+                        [1, -1, -1],
+                        [1, -1, 1]], dtype=np.float32)
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
 
     train_filepath = os.path.join(os.environ['TEST_WORKSPACE'], 'train.tgz')
@@ -66,9 +66,9 @@ def test_faiss_indexer_known(metas):
         save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]], dtype=np.float32)
+                        [1, 1, -1],
+                        [1, -1, -1],
+                        [1, -1, 1]], dtype=np.float32)
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, FaissIndexer)
         idx, dist = indexer.query(queries, top_k=2)

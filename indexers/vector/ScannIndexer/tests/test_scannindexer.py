@@ -39,9 +39,9 @@ def test_scannindexer(metas):
 
 def test_scann_indexer_known(metas):
     vectors = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]], dtype=np.float32)
+                        [1, 1, -1],
+                        [1, -1, -1],
+                        [1, -1, 1]], dtype=np.float32)
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
     with ScannIndexer(index_filename='scann.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
@@ -50,9 +50,9 @@ def test_scann_indexer_known(metas):
         save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]], dtype=np.float32)
+                        [1, 1, -1],
+                        [1, -1, -1],
+                        [1, -1, 1]], dtype=np.float32)
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, ScannIndexer)
         idx, dist = indexer.query(queries, top_k=2)
