@@ -20,15 +20,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Jina Hub Login
+        run: |
+          mkdir -p ${ACCESS_DIRECTORY}
+          if [ ! -f ${ACCESS_FILE} ]; then touch ${ACCESS_FILE}; echo "access_token: ${GITHUB_TOKEN}" >> ${ACCESS_FILE}; fi
+        env:
+          ACCESS_DIRECTORY: ~/.jina
+          ACCESS_FILE: ~/.jina/access.yml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Jina Hub Image Builder
         uses: jina-ai/hub-builder@master
         with:
           push: true
           dockerhub_username: ${{ secrets.JINAHUB_DOCKER_USER }}
           dockerhub_password: ${{ secrets.JINAHUB_DOCKER_PWD }}
-          mongodb_hostname: ${{ secrets.JINA_DB_HOSTNAME }}
-          mongodb_username: ${{ secrets.JINA_DB_USERNAME }}
-          mongodb_password: ${{ secrets.JINA_DB_PASSWORD }}
-          mongodb_database: ${{ secrets.JINA_DB_NAME }}
-          mongodb_collection: ${{ secrets.JINA_DB_COLLECTION }}
           slack_webhook: ${{ secrets.JINAHUB_SLACK_WEBHOOK }}
