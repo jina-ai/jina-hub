@@ -10,4 +10,6 @@ RUN pip install -r requirements.txt
 # for testing the image
 RUN pip install pytest && pytest
 
+CMD redis-server
+
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
