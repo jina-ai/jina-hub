@@ -18,7 +18,8 @@ def rm_files(file_paths):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
-def run_test(indexer):
+def test_redis_db_indexer():
+    indexer = RedisDBIndexer()
     def create_document(doc_id, text, weight, length):
         d = jina_pb2.Document()
         d.id = doc_id
@@ -48,7 +49,3 @@ def run_test(indexer):
 
     rm_files([save_abspath, index_abspath])
 
-
-def test_add_query():
-    indexer = RedisDBIndexer()
-    run_test(indexer)

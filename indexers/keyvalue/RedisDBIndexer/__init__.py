@@ -17,11 +17,8 @@ class RedisDBIndexer(BinaryPbIndexer):
         """Get the database handler
 
         """
-        try:
-            import redis
-            return redis.Redis()
-        except:
-            self.logger.error('Error importing Redis')
+        import redis
+        return redis.Redis()
 
 
     def add(self, objs):
@@ -39,11 +36,8 @@ class RedisDBIndexer(BinaryPbIndexer):
         """Get the database handler
 
         """
-        try:
-            import redis
-            return redis.Redis()
-        except:
-            self.logger.error('Error importing Redis')
+        import redis
+        return redis.Redis()
 
     def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
         """Find the protobuf chunk/doc using id
