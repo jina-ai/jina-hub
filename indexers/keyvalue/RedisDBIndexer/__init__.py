@@ -2,12 +2,14 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import json
+from typing import Optional
 
-from jina.executors.indexers import BaseIndexer
+
+from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from google.protobuf.json_format import Parse
 from jina.proto import jina_pb2
 
-class RedisDBIndexer(BaseIndexer):
+class RedisDBIndexer(BinaryPbIndexer):
     """
     :class:`RedisDBIndexer` Use Redis as a key-value indexer.
     """
@@ -16,17 +18,35 @@ class RedisDBIndexer(BaseIndexer):
         """Get the database handler
 
         """
-        import redis
+        try:
+            import redis
+            return redis.Redis()
+        except:
+            self.logger.error('Error importing Redis')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # your customized __init__ below
-        raise NotImplementedError
 
-    def query(self, keys, *args, **kwargs):
-        raise NotImplementedError
+    def add(self, objs):
+        """Add a JSON-friendly object to the indexer
 
-    def add(self, keys, vectors, *args, **kwargs):
-        raise NotImplementedError
+        :param objs: objects can be serialized into JSON format
+        """
+        r = self.get_add_handler()
+        for k, obj in objs.items():
+            key = k.encode('utf8')
+            value = json.dumps(obj).encode('utf8')
+            r.set(key, value)
+            value = r.get(key)
+
+    def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
+        """Find the protobuf chunk/doc using id
+
+        :param key: ``id``
+        :return: protobuf chunk or protobuf document
+        """
+        v = self.query_handler.get(key.encode('utf8'))
+        value = None
+        if v is not None:
+            value = Parse(json.loads(v.decode('utf8')), jina_pb2.Document())
+        return value
 
     
