@@ -26,12 +26,11 @@ def test_redis_db_indexer(metas):
         d.length = length
         return d
 
-    #with indexer as idx:
     with RedisDBIndexer(metas=metas) as idx: 
         data = {
-            'd1': MessageToJson(create_document(1, 'cat', 0.1, 3)),
-            'd2': MessageToJson(create_document(2, 'dog', 0.2, 3)),
-            'd3': MessageToJson(create_document(3, 'bird', 0.3, 3)),
+            'd1': MessageToJson(create_document('1', 'cat', 0.1, 3)),
+            'd2': MessageToJson(create_document('2', 'dog', 0.2, 3)),
+            'd3': MessageToJson(create_document('3', 'bird', 0.3, 3)),
         }
         idx.add(data)
         idx.touch()
