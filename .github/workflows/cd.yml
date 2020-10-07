@@ -20,14 +20,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Jina Hub Login
-        run: |
-          mkdir -p ${ACCESS_DIRECTORY}
-          if [ ! -f ${ACCESS_FILE} ]; then touch ${ACCESS_FILE}; echo "access_token: ${GITHUB_TOKEN}" >> ${ACCESS_FILE}; fi
-        env:
-          ACCESS_DIRECTORY: ~/.jina
-          ACCESS_FILE: ~/.jina/access.yml
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Jina Hub Image Builder
         uses: jina-ai/hub-builder@master
         with:
