@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 import json
 from typing import Optional
 
-
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from google.protobuf.json_format import Parse
 from jina.proto import jina_pb2
@@ -35,6 +34,16 @@ class RedisDBIndexer(BinaryPbIndexer):
             key = k.encode('utf8')
             value = json.dumps(obj).encode('utf8')
             r.set(key, value)
+
+    def get_query_handler(self):
+        """Get the database handler
+
+        """
+        try:
+            import redis
+            return redis.Redis()
+        except:
+            self.logger.error('Error importing Redis')
 
     def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
         """Find the protobuf chunk/doc using id

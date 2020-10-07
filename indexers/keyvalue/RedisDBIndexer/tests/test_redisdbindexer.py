@@ -41,6 +41,11 @@ def run_test(indexer):
     assert os.path.exists(index_abspath)
     assert os.path.exists(save_abspath)
 
+    with BaseIndexer.load(save_abspath) as searcher:
+        doc = searcher.query('d2')
+        assert doc.id == 2
+        assert doc.length == 3
+
     rm_files([save_abspath, index_abspath])
 
 
