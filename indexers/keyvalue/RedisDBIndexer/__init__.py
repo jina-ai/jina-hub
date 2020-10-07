@@ -35,7 +35,6 @@ class RedisDBIndexer(BinaryPbIndexer):
             key = k.encode('utf8')
             value = json.dumps(obj).encode('utf8')
             r.set(key, value)
-            value = r.get(key)
 
     def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
         """Find the protobuf chunk/doc using id
