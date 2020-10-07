@@ -18,7 +18,7 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        return redis.Redis()
+        return redis.Redis(host='localhost', port=6379, db=0, password=None, socket_timeout=None)
 
 
     def add(self, objs):
@@ -37,7 +37,7 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        return redis.Redis()
+        return redis.Redis(host='localhost', port=6379, db=0, password=None, socket_timeout=None)
 
     def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
         """Find the protobuf chunk/doc using id

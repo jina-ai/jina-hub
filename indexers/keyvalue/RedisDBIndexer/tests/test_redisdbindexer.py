@@ -1,25 +1,23 @@
 import os
 import shutil
+import pytest
 
 import jina.proto.jina_pb2 as jina_pb2
 from google.protobuf.json_format import MessageToJson
 from jina.executors.indexers import BaseIndexer
+from jina.executors.metas import get_default_metas
 
 from .. import RedisDBIndexer
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
+@pytest.fixture(scope='function', autouse=True)
+def metas(tmpdir):
+    os.environ['TEST_WORKSPACE'] = str(tmpdir)	    
+    metas = get_default_metas()	    
+    metas['workspace'] = os.environ['TEST_WORKSPACE']
+    yield metas
+    del os.environ['TEST_WORKSPACE']
 
-def rm_files(file_paths):
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
-
-
-def test_redis_db_indexer():
-    indexer = RedisDBIndexer()
+def test_redis_db_indexer(metas):
     def create_document(doc_id, text, weight, length):
         d = jina_pb2.Document()
         d.id = doc_id
@@ -28,7 +26,8 @@ def test_redis_db_indexer():
         d.length = length
         return d
 
-    with indexer as idx:
+    #with indexer as idx:
+    with RedisDBIndexer(metas=metas) as idx: 
         data = {
             'd1': MessageToJson(create_document(1, 'cat', 0.1, 3)),
             'd2': MessageToJson(create_document(2, 'dog', 0.2, 3)),
@@ -47,5 +46,4 @@ def test_redis_db_indexer():
         assert doc.id == 2
         assert doc.length == 3
 
-    rm_files([save_abspath, index_abspath])
 
