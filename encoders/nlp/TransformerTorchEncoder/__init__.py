@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from dataclasses import dataclass
 import os
 from typing import Optional
 
@@ -30,21 +29,21 @@ def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: 
     return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
 
 
-@dataclass
-class Transformer:
-    pretrained_model_name_or_path: str = 'bert-base-uncased'
-    pooling_strategy: str = 'auto'
-    max_length: Optional[int] = None
-    truncation_strategy: str = 'longest_first'
-    model_save_path: Optional[str] = None
-
-
-class TransformerTorchEncoder(TorchDevice, BaseEncoder, Transformer):
+class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     """
     Internally, TransformerTorchEncoder wraps the tensorflow-version of transformers from huggingface.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        pretrained_model_name_or_path: str = 'bert-base-uncased',
+        pooling_strategy: str = 'auto',
+        max_length: Optional[int] = None,
+        truncation_strategy: str = 'longest_first',
+        model_save_path: Optional[str] = None,
+        *args,
+        **kwargs
+    ):
         """
         :param pretrained_model_name_or_path: Either:
             - a string with the `shortcut name` of a pre-trained model to load from cache or download, e.g.: ``bert-base-uncased``.
@@ -66,7 +65,13 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder, Transformer):
         ..warning::
             `model_save_path` should be relative to executor's workspace
         """
+
         super().__init__(*args, **kwargs)
+        self.pretrained_model_name_or_path = pretrained_model_name_or_path
+        self.pooling_strategy = pooling_strategy
+        self.max_length = max_length
+        self.truncation_strategy = truncation_strategy
+        self.model_save_path = model_save_path
 
     def __getstate__(self):
         if self.model_save_path:
