@@ -67,6 +67,7 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
 
     def close(self):
         self.exe.close()
+        super().close()
 
     def get_inputs_and_outputs_name(self, input_dict, output_dict):
         self.inputs_name = input_dict['image'].name
