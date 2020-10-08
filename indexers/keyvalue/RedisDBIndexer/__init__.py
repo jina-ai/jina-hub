@@ -18,7 +18,7 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        return redis.Redis(host='localhost', port=6379, db=0, password=None, socket_timeout=None)
+        return redis.Redis(host='127.0.0.1', port=27017, db=0, password=None, socket_timeout=None)
 
 
     def add(self, objs):
