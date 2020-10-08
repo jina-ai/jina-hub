@@ -17,7 +17,11 @@ RUN apt-get update && apt-get install --no-install-recommends -y curl bzip2 && \
 RUN conda update -n base conda && \
     conda install -y -c pytorch faiss-cpu && \
     conda install -c anaconda setuptools && \
-    conda install pip
+    conda install pip && \
+    # https://github.com/numpy/numpy/issues/12977#issuecomment-500232989
+    pip uninstall -y numpy && \
+    conda install -y numpy && \
+    pip install numpy
 
 RUN pip install -r requirements.txt
 RUN pip install pytest && pytest tests/ -v -s
