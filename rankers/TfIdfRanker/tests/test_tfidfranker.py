@@ -1,5 +1,7 @@
 import numpy as np
 
+from jina.executors.rankers import Chunk2DocRanker
+
 from .. import TfIdfRanker
 
 
@@ -22,19 +24,29 @@ def create_data():
         query_chunk_meta[query_chunk_id] = {'length': num_query_chunks}
         for c in matches:
             match_chunk_meta[c['id']] = {'length': c['length']}
-            match_idx.append([
+            match_idx.append((
                 c['parent_id'],
                 c['id'],
                 query_chunk_id,
                 c['score'],
-            ])
-    return np.array(match_idx), query_chunk_meta, match_chunk_meta
+            ))
+
+    match_idx_numpy = np.array(
+        match_idx,
+        dtype=[
+            (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
+            (Chunk2DocRanker.COL_MATCH_HASH, np.int64),
+            (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.int64),
+            (Chunk2DocRanker.COL_SCORE, np.float64)
+        ]
+    )
+    return match_idx_numpy, query_chunk_meta, match_chunk_meta
 
 
 def test_ranker():
     ranker = TfIdfRanker()
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
-    doc_idx = ranker.score(np.array(match_idx), query_chunk_meta, match_chunk_meta)
+    doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
     # check the matched docs are in descending order of the scores
     assert doc_idx[0][1] > doc_idx[1][1]
     assert doc_idx[0][0] == 1

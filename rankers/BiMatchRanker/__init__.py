@@ -25,12 +25,12 @@ class BiMatchRanker(Chunk2DocRanker):
         # group by col
         _groups = self._group_by(g, col)
         # take the best match from each group
-        _groups_best = np.stack([gg[gg[:, -1].argsort()][0] for gg in _groups])
+        _groups_best = np.stack([np.sort(gg, order=col)[0] for gg in _groups])
         # doc total length
-        _c = chunk_meta[_groups_best[0, col]]['length']
+        _c = chunk_meta[_groups_best[0][col]]['length']
         # hit chunks
         _h = _groups_best.shape[0]
         # hit distance
-        sum_d_hit = np.sum(_groups_best[:, -1])
+        sum_d_hit = np.sum(_groups_best[self.COL_SCORE])
         # all hit => 0, all_miss => 1
         return 1 - (sum_d_hit + self.D_MISS * (_c - _h)) / (self.D_MISS * _c)
