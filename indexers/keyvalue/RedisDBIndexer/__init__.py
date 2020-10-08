@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyrsight (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import json
@@ -7,6 +7,7 @@ from typing import Optional
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from google.protobuf.json_format import Parse
 from jina.proto import jina_pb2
+
 
 class RedisDBIndexer(BinaryPbIndexer):
     """
@@ -18,8 +19,13 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        return redis.Redis(host='127.0.0.1', port=27017, db=0, password=None, socket_timeout=None)
-
+        r = redis.Redis(host='0.0.0.0', port=27017, db=0, password=None, socket_timeout=None)
+        try:
+            r.ping()
+            print('Successfully connected to redis')
+            return r
+        except redis.exceptions.ConnectionError as r_con_error:
+            print('Redis connection error')
 
     def add(self, objs):
         """Add a JSON-friendly object to the indexer
@@ -37,7 +43,13 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        return redis.Redis(host='localhost', port=6379, db=0, password=None, socket_timeout=None)
+        r = redis.Redis(host='0.0.0.0', port=27017, db=0, password=None, socket_timeout=None)
+        try:
+            r.ping()
+            print('Successfully connected to redis')
+            return r
+        except redis.exceptions.ConnectionError as r_con_error:
+            print('Redis connection error')
 
     def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
         """Find the protobuf chunk/doc using id
@@ -50,5 +62,3 @@ class RedisDBIndexer(BinaryPbIndexer):
         if v is not None:
             value = Parse(json.loads(v.decode('utf8')), jina_pb2.Document())
         return value
-
-    
