@@ -37,7 +37,7 @@ def get_encoder(metadata, test_data):
                                 logdir=model_path)
     model.train()
 
-    return CompressionVaeEncoder(model_path=model_path, X=data_path, output_dim=target_output_dim, metas=metadata)
+    return CompressionVaeEncoder(model_path=model_path, metas=metadata)
 
 
 @pytest.fixture(scope="function")
