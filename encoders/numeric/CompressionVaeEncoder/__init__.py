@@ -58,7 +58,18 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         self.tb_logging = tb_logging
 
     def post_init(self):
-        super().post_init()
+        from cvae import cvae
+        self.model = cvae.CompressionVAE(X=self.X,
+                                         train_valid_split=self.train_valid_split,
+                                         dim_latent=self.output_dim,
+                                         iaf_flow_length=self.iaf_flow_length,
+                                         cells_encoder=self.cells_encoder,
+                                         initializer=self.initializer,
+                                         batch_size=self.batch_size,
+                                         batch_size_test=self.batch_size_test,
+                                         logdir=self.model_path,
+                                         feature_normalization=self.feature_normalization,
+                                         tb_logging=self.tb_logging)
         self.to_device()
 
     @batching
@@ -68,16 +79,4 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         :param data: a `B x T` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
         """
-        from cvae import cvae
-        model = cvae.CompressionVAE(X=self.X,
-                                    train_valid_split=self.train_valid_split,
-                                    dim_latent=self.output_dim,
-                                    iaf_flow_length=self.iaf_flow_length,
-                                    cells_encoder=self.cells_encoder,
-                                    initializer=self.initializer,
-                                    batch_size=self.batch_size,
-                                    batch_size_test=self.batch_size_test,
-                                    logdir=self.model_path,
-                                    feature_normalization=self.feature_normalization,
-                                    tb_logging=self.tb_logging)
-        return model.embed(data)
+        return self.model.embed(data)
