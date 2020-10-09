@@ -42,7 +42,7 @@ def test_redis_db_indexer(metas):
 
     with BaseIndexer.load(save_abspath) as searcher:
         doc = searcher.query('d2')
-        assert doc.id == 2
+        assert doc.id == '2'
         assert doc.length == 3
 
 
