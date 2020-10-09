@@ -56,10 +56,9 @@ class RedisDBIndexer(BinaryPbIndexer):
         r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=None)
         try:
             r.ping()
-            print('Successfully connected to redis')
             return r
         except redis.exceptions.ConnectionError as r_con_error:
-            print('Redis connection error: ', r_con_error)
+            self.logger.error('Redis connection error: ', r_con_error)
 
     def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
         """Find the protobuf chunk/doc using id
