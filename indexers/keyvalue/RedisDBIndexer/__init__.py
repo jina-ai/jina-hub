@@ -19,13 +19,13 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        r = redis.Redis(host='0.0.0.0', port=27017, db=0, password=None, socket_timeout=None)
+        r = redis.Redis(host='0.0.0.0', port=63079, db=0, password=None, socket_timeout=None)
         try:
             r.ping()
             print('Successfully connected to redis')
             return r
         except redis.exceptions.ConnectionError as r_con_error:
-            print('Redis connection error')
+            print('Redis connection error: ', r_con_error)
 
     def add(self, objs):
         """Add a JSON-friendly object to the indexer
@@ -43,13 +43,13 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        r = redis.Redis(host='0.0.0.0', port=27017, db=0, password=None, socket_timeout=None)
+        r = redis.Redis(host='0.0.0.0', port=63079, db=0, password=None, socket_timeout=None)
         try:
             r.ping()
             print('Successfully connected to redis')
             return r
         except redis.exceptions.ConnectionError as r_con_error:
-            print('Redis connection error')
+            print('Redis connection error: ', r_con_error)
 
     def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
         """Find the protobuf chunk/doc using id

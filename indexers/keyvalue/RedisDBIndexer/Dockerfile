@@ -1,18 +1,18 @@
-FROM redis:latest
-
-CMD redis-server --bind 127.0.0.1 --port 27017
-
-FROM jinaai/jina
+FROM jinaai/jina:latest
 
 # setup the workspace
 COPY . /workspace
+
 WORKDIR /workspace
 
 # install the third-party requirements
 RUN pip install -r requirements.txt
 
-# for testing the image
-RUN pip install pytest && pytest
+RUN apt-get update
 
+RUN apt-get -y install redis-server
+
+# for testing the image
+RUN redis-server --bind 0.0.0.0 --port 63079:63079 --daemonize yes && pip install pytest && pytest
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
