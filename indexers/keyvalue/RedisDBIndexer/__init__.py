@@ -14,12 +14,22 @@ class RedisDBIndexer(BinaryPbIndexer):
     :class:`RedisDBIndexer` Use Redis as a key-value indexer.
     """
 
+    def __init__(self,
+                 hostname: str = '0.0.0.0',
+                 port: int = 63079,
+                 db: int = 0,
+                 *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hostname = hostname
+        self.port = port
+        self.db = db
+
     def get_add_handler(self):
         """Get the database handler
 
         """
         import redis
-        r = redis.Redis(host='0.0.0.0', port=63079, db=0, password=None, socket_timeout=None)
+        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=None)
         try:
             r.ping()
             print('Successfully connected to redis')
@@ -43,7 +53,7 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        r = redis.Redis(host='0.0.0.0', port=63079, db=0, password=None, socket_timeout=None)
+        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=None)
         try:
             r.ping()
             print('Successfully connected to redis')
