@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, Union
+from typing import Tuple, Dict, Union, Iterable
 
 import numpy as np
 from jina.executors.crafters import BaseCrafter
@@ -11,11 +11,12 @@ class ImageNormalizer(BaseCrafter):
         it receives values of file names on the doc-level and returns image matrix on the chunk-level """
 
     def __init__(self,
-                 target_size: Union[Tuple[int, int], int] = 224,
+                 target_size: Union[Iterable[int], int] = 224,
                  img_mean: Tuple[float] = (0, 0, 0),
                  img_std: Tuple[float] = (1, 1, 1),
                  resize_dim: int = 256,
                  channel_axis: int = -1,
+                 scale_by: int = 255,
                  *args,
                  **kwargs):
         """
@@ -31,13 +32,20 @@ class ImageNormalizer(BaseCrafter):
         :param resize_dim: the size of images' height and width to resized to. The images are resized before cropping to
             the output size
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param scale_by: divides the pixels to bring values between 0-1
         """
         super().__init__(*args, **kwargs)
-        self.target_size = target_size
+        if isinstance(target_size, int):
+            self.target_size = target_size
+        elif isinstance(target_size, Iterable):
+            self.target_size = tuple(target_size)
+        else:
+            raise ValueError(f'target_size {target_size} should be an integer or tuple/list of 2 integers')
         self.resize_dim = resize_dim
         self.img_mean = np.array(img_mean).reshape((1, 1, 3))
         self.img_std = np.array(img_std).reshape((1, 1, 3))
         self.channel_axis = channel_axis
+        self.scale_by = scale_by
 
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
@@ -53,7 +61,7 @@ class ImageNormalizer(BaseCrafter):
     def _normalize(self, img):
         img = _resize_short(img, target_size=self.resize_dim)
         img, _, _ = _crop_image(img, target_size=self.target_size, how='center')
-        img = np.array(img).astype('float32') / 255
+        img = np.array(img).astype('float32')/self.scale_by
         img -= self.img_mean
         img /= self.img_std
         return img
