@@ -16,7 +16,6 @@ class ImageNormalizer(BaseCrafter):
                  img_std: Tuple[float] = (1, 1, 1),
                  resize_dim: int = 256,
                  channel_axis: int = -1,
-                 scale_by: int = 255,
                  *args,
                  **kwargs):
         """
@@ -32,7 +31,6 @@ class ImageNormalizer(BaseCrafter):
         :param resize_dim: the size of images' height and width to resized to. The images are resized before cropping to
             the output size
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param scale_by: divides the pixels to bring values between 0-1
         """
         super().__init__(*args, **kwargs)
         if isinstance(target_size, int):
@@ -45,7 +43,6 @@ class ImageNormalizer(BaseCrafter):
         self.img_mean = np.array(img_mean).reshape((1, 1, 3))
         self.img_std = np.array(img_std).reshape((1, 1, 3))
         self.channel_axis = channel_axis
-        self.scale_by = scale_by
 
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
@@ -61,7 +58,7 @@ class ImageNormalizer(BaseCrafter):
     def _normalize(self, img):
         img = _resize_short(img, target_size=self.resize_dim)
         img, _, _ = _crop_image(img, target_size=self.target_size, how='center')
-        img = np.array(img).astype('float32')/self.scale_by
+        img = np.array(img).astype('float32')/255
         img -= self.img_mean
         img /= self.img_std
         return img
