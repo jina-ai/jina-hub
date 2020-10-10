@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 
-from typing import Union, Tuple, Dict
+from typing import Union, Tuple, Dict, Iterable
 
 import numpy as np
 from jina.executors.crafters import BaseCrafter
