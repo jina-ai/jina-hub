@@ -62,12 +62,12 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
                 self.sess.run(init)
 
                 # Saver for loading checkpoints of the model.
-                saver = tf.train.Saver(var_list=tf.trainable_variables(), max_to_keep=2)
+                saver = tf.train.Saver(var_list=tf.trainable_variables())
                 cvae.load(saver, self.sess, self.model_path)
 
                 self.to_device()
 
-    @batching(batch_size=64)
+    @batching()
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
