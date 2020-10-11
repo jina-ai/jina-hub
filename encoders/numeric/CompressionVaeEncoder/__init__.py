@@ -66,6 +66,8 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
                 cvae.load(saver, self.sess, self.model_path)
 
                 self.to_device()
+            else:
+                raise FileNotFoundError(f'The {params_path} doesn\'t exist')
 
     @batching
     @as_ndarray
