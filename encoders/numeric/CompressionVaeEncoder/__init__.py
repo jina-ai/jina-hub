@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import os
 import numpy as np
 import json
 
@@ -31,37 +32,40 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         import cvae.lib.model_iaf as model
         import tensorflow as tf
 
+        params_path = os.path.join(self.model_path, 'params.json')
+
         config = tf.ConfigProto(log_device_placement=False)
         config.gpu_options.allow_growth = True
 
         with tf.Graph().as_default():
-            # Load parameter file.
-            with open(f'{self.model_path}/params.json', 'r') as f:
-                param = json.load(f)
+            if os.path.exists(params_path):
+                # Load parameter file.
+                with open(params_path, 'r') as f:
+                    param = json.load(f)
 
-            net = model.VAEModel(param,
-                                 None,
-                                 input_dim=param['dim_feature'],
-                                 keep_prob=tf.placeholder_with_default(input=tf.cast(1.0, dtype=tf.float32),
-                                                                       shape=(),
-                                                                       name="KeepProb"),
-                                 initializer='orthogonal')
-            # Placeholder for data features
-            self.data_feature_placeholder = tf.placeholder_with_default(
-                input=tf.zeros([64, param['dim_feature']], dtype=tf.float32),
-                shape=[None, param['dim_feature']])
+                net = model.VAEModel(param,
+                                     None,
+                                     input_dim=param['dim_feature'],
+                                     keep_prob=tf.placeholder_with_default(input=tf.cast(1.0, dtype=tf.float32),
+                                                                           shape=(),
+                                                                           name="KeepProb"),
+                                     initializer='orthogonal')
+                # Placeholder for data features
+                self.data_feature_placeholder = tf.placeholder_with_default(
+                    input=tf.zeros([64, param['dim_feature']], dtype=tf.float32),
+                    shape=[None, param['dim_feature']])
 
-            self.embeddings = net.embed(self.data_feature_placeholder)
+                self.embeddings = net.embed(self.data_feature_placeholder)
 
-            self.sess = tf.Session(config=config)
-            init = tf.global_variables_initializer()
-            self.sess.run(init)
+                self.sess = tf.Session(config=config)
+                init = tf.global_variables_initializer()
+                self.sess.run(init)
 
-            # Saver for loading checkpoints of the model.
-            saver = tf.train.Saver(var_list=tf.trainable_variables(), max_to_keep=2)
-            cvae.load(saver, self.sess, self.model_path)
+                # Saver for loading checkpoints of the model.
+                saver = tf.train.Saver(var_list=tf.trainable_variables(), max_to_keep=2)
+                cvae.load(saver, self.sess, self.model_path)
 
-            self.to_device()
+                self.to_device()
 
     @batching(batch_size=64)
     @as_ndarray
