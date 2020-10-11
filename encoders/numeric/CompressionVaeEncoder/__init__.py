@@ -82,4 +82,5 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
                              feed_dict={self.data_feature_placeholder: data})[0]
 
     def close(self) -> None:
+        super.close()
         self.sess.close()
