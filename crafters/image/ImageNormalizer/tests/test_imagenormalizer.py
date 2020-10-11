@@ -13,3 +13,10 @@ def test_transform_results():
     img_array = create_random_img_array(img_size, img_size)
     crafted_doc = crafter.craft(img_array)
     assert crafted_doc["blob"].shape == (224, 224, 3)
+
+    img_size = (217, 200)
+    target_size = (100, 224)
+    crafter = ImageNormalizer(target_size=target_size)
+    img_array = create_random_img_array(*img_size)
+    crafted_doc = crafter.craft(img_array)
+    assert crafted_doc["blob"].shape[:-1] == target_size

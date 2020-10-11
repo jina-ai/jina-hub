@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, Union
+from typing import Tuple, Dict, Union, Iterable
 
 import numpy as np
 from jina.executors.crafters import BaseCrafter
@@ -11,7 +11,7 @@ class ImageNormalizer(BaseCrafter):
         it receives values of file names on the doc-level and returns image matrix on the chunk-level """
 
     def __init__(self,
-                 target_size: Union[Tuple[int, int], int] = 224,
+                 target_size: Union[Iterable[int], int] = 224,
                  img_mean: Tuple[float] = (0, 0, 0),
                  img_std: Tuple[float] = (1, 1, 1),
                  resize_dim: int = 256,
@@ -33,7 +33,12 @@ class ImageNormalizer(BaseCrafter):
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
         super().__init__(*args, **kwargs)
-        self.target_size = target_size
+        if isinstance(target_size, int):
+            self.target_size = target_size
+        elif isinstance(target_size, Iterable):
+            self.target_size = tuple(target_size)
+        else:
+            raise ValueError(f'target_size {target_size} should be an integer or tuple/list of 2 integers')
         self.resize_dim = resize_dim
         self.img_mean = np.array(img_mean).reshape((1, 1, 3))
         self.img_std = np.array(img_std).reshape((1, 1, 3))
@@ -53,7 +58,7 @@ class ImageNormalizer(BaseCrafter):
     def _normalize(self, img):
         img = _resize_short(img, target_size=self.resize_dim)
         img, _, _ = _crop_image(img, target_size=self.target_size, how='center')
-        img = np.array(img).astype('float32') / 255
+        img = np.array(img).astype('float32')/255
         img -= self.img_mean
         img /= self.img_std
         return img

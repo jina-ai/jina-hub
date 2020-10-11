@@ -14,16 +14,18 @@ class LevenshteinRanker(Match2DocRanker):
     required_keys = {"text"}
 
     def score(
-            self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
+        self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
     ) -> "np.ndarray":
         from Levenshtein import distance
+
         new_scores = [
             (
                 match_id,
-                -distance(
-                    query_meta['text'], match_meta[match_id]['text']
-                ),
+                -distance(query_meta['text'], match_meta[match_id]['text']),
             )
             for match_id, old_score in old_match_scores.items()
         ]
-        return np.array(new_scores, dtype=np.float64)
+        return np.array(
+            new_scores,
+            dtype=[(self.COL_MATCH_HASH, np.int64), (self.COL_SCORE, np.float64)],
+        )

@@ -10,5 +10,4 @@ class MinRanker(Chunk2DocRanker):
     """
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        _doc_id = match_idx[0, self.col_doc_id]
-        return self.get_doc_id(match_idx), 1. / (1. + match_idx[:, self.col_score].min())
+        return self.get_doc_id(match_idx), 1. / (1. + match_idx[self.COL_SCORE].min())
