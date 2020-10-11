@@ -67,7 +67,7 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
 
                 self.to_device()
 
-    @batching()
+    @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
@@ -75,6 +75,6 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         :return: a `B x D` numpy ``ndarray``
         """
         import tensorflow as tf
-
-        return self.sess.run([self.embeddings],
-                             feed_dict={self.data_feature_placeholder: data})[0]
+        with self.sess as sess:
+            return sess.run([self.embeddings],
+                            feed_dict={self.data_feature_placeholder: data})[0]
