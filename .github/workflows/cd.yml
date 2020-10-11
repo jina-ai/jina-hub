@@ -26,9 +26,4 @@ jobs:
           push: true
           dockerhub_username: ${{ secrets.JINAHUB_DOCKER_USER }}
           dockerhub_password: ${{ secrets.JINAHUB_DOCKER_PWD }}
-          mongodb_hostname: ${{ secrets.JINA_DB_HOSTNAME }}
-          mongodb_username: ${{ secrets.JINA_DB_USERNAME }}
-          mongodb_password: ${{ secrets.JINA_DB_PASSWORD }}
-          mongodb_database: ${{ secrets.JINA_DB_NAME }}
-          mongodb_collection: ${{ secrets.JINA_DB_COLLECTION }}
           slack_webhook: ${{ secrets.JINAHUB_SLACK_WEBHOOK }}
