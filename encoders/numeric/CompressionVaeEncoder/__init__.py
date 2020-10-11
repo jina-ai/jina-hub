@@ -28,6 +28,7 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         self.model_path = model_path
 
     def post_init(self):
+        super().post_init()
         from cvae import cvae
         import cvae.lib.model_iaf as model
         import tensorflow as tf
