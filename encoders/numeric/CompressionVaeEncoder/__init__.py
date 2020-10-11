@@ -18,7 +18,7 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
     Full code and documentation can be found here: https://github.com/maxfrenzel/CompressionVAE..
     """
 
-    def __init__(self, model_path='temp',
+    def __init__(self, model_path: str,
                  *args, **kwargs):
         """
         :param model_path: specifies the path to the pretrained model
