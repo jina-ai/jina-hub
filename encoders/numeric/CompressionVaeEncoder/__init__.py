@@ -75,6 +75,9 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         :return: a `B x D` numpy ``ndarray``
         """
         import tensorflow as tf
-        with self.sess as sess:
-            return sess.run([self.embeddings],
-                            feed_dict={self.data_feature_placeholder: data})[0]
+
+        return self.sess.run([self.embeddings],
+                             feed_dict={self.data_feature_placeholder: data})[0]
+
+    def close(self) -> None:
+        self.sess.close()
