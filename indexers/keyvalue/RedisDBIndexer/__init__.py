@@ -41,12 +41,6 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         :param objs: objects can be serialized into JSON format
         """
-        # r = self.get_add_handler()
-        # for k, obj in objs.items():
-        #    key = k.encode('utf8')
-        #    value = json.dumps(obj).encode('utf8')
-        #    r.set(key, value)
-
         redis_docs = [{'_id': i, 'values': j} for i, j in zip(keys, values)]
 
         with self.get_add_handler() as redis_handler:
@@ -72,9 +66,15 @@ class RedisDBIndexer(BinaryPbIndexer):
         :return: protobuf chunk or protobuf document
         """
         result = []
+        res = dict()
+
         with self.get_add_handler() as redis_handler:
             for _key in redis_handler.scan_iter(match=key):
+                res = {
+                  "key": _key,
+                  "values": redis_handler.get(_key),
+                }
                 result.append(_key)
 
         if len(result) > 0:
-            return result
+            return res

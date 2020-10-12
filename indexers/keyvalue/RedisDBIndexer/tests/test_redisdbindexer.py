@@ -46,6 +46,7 @@ def test_redis_db_indexer(metas):
     query_index = random.randint(0, num_docs - 1)
     query_id = docs[query_index].id
     query_key = uid.id2hash(query_id)
+    query_text = docs[query_index].text
 
     with RedisDBIndexer(metas=metas) as idx:
         idx.add(keys=keys, values=values)
@@ -53,6 +54,7 @@ def test_redis_db_indexer(metas):
     with RedisDBIndexer(metas=metas) as redis_query:
         query_results = redis_query.query(key=query_key)
         assert query_results is not None
-
-        for result in query_results:
-            assert result == str(query_key).encode()
+        assert query_results['key'] == str(query_key).encode()
+        d = jina_pb2.Document()
+        d.ParseFromString(query_results['values'])
+        assert d.text == query_text
