@@ -1,48 +1,58 @@
 import os
-import shutil
+import random
 import pytest
+import numpy as np
 
-import jina.proto.jina_pb2 as jina_pb2
 from google.protobuf.json_format import MessageToJson
 from jina.executors.indexers import BaseIndexer
 from jina.executors.metas import get_default_metas
+from jina.drivers.helper import array2pb
+from jina.proto import jina_pb2, uid
+
 
 from .. import RedisDBIndexer
 
+
 @pytest.fixture(scope='function', autouse=True)
 def metas(tmpdir):
-    os.environ['TEST_WORKSPACE'] = str(tmpdir)	    
-    metas = get_default_metas()	    
+    os.environ['TEST_WORKSPACE'] = str(tmpdir)
+    metas = get_default_metas()
     metas['workspace'] = os.environ['TEST_WORKSPACE']
     yield metas
     del os.environ['TEST_WORKSPACE']
 
-def test_redis_db_indexer(metas):
-    def create_document(doc_id, text, weight, length):
+
+def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
+    c_id = 3 * num_docs  # avoid collision with docs
+    for j in range(num_docs):
         d = jina_pb2.Document()
-        d.id = doc_id
-        d.buffer = text.encode('utf8')
-        d.weight = weight
-        d.length = length
-        return d
-
-    with RedisDBIndexer(metas=metas) as idx: 
-        data = {
-            'd1': MessageToJson(create_document('1', 'cat', 0.1, 3)),
-            'd2': MessageToJson(create_document('2', 'dog', 0.2, 3)),
-            'd3': MessageToJson(create_document('3', 'bird', 0.3, 3)),
-        }
-        idx.add(data)
-        idx.touch()
-        idx.save()
-        save_abspath = idx.save_abspath
-        index_abspath = idx.index_abspath
-    assert os.path.exists(index_abspath)
-    assert os.path.exists(save_abspath)
-
-    with BaseIndexer.load(save_abspath) as searcher:
-        doc = searcher.query('d2')
-        assert doc.id == '2'
-        assert doc.length == 3
+        d.tags['id'] = j
+        d.text = b'hello world doc id %d' % j
+        d.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
+        d.id = uid.new_doc_id(d)
+        yield d
 
 
+def test_redis_db_indexer(metas):
+    keys = []
+    values = []
+
+    num_docs = 5
+    docs = list(random_docs(num_docs=num_docs,
+                            chunks_per_doc=3))
+    keys = [uid.id2hash(doc.id) for doc in docs]
+    values = [doc.SerializeToString() for doc in docs]
+
+    query_index = random.randint(0, num_docs - 1)
+    query_id = docs[query_index].id
+    query_key = uid.id2hash(query_id)
+
+    with RedisDBIndexer(metas=metas) as idx:
+        idx.add(keys=keys, values=values)
+
+    with RedisDBIndexer(metas=metas) as redis_query:
+        query_results = redis_query.query(key=query_key)
+        assert query_results is not None
+
+        for result in query_results:
+            assert result == str(query_key).encode()

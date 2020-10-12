@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import json
-from typing import Optional
+from typing import Optional, Iterator
 
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from google.protobuf.json_format import Parse
@@ -36,17 +36,22 @@ class RedisDBIndexer(BinaryPbIndexer):
         except redis.exceptions.ConnectionError as r_con_error:
             self.logger.error('Redis connection error: ', r_con_error)
 
-
-    def add(self, objs):
+    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         """Add a JSON-friendly object to the indexer
 
         :param objs: objects can be serialized into JSON format
         """
-        r = self.get_add_handler()
-        for k, obj in objs.items():
-            key = k.encode('utf8')
-            value = json.dumps(obj).encode('utf8')
-            r.set(key, value)
+        # r = self.get_add_handler()
+        # for k, obj in objs.items():
+        #    key = k.encode('utf8')
+        #    value = json.dumps(obj).encode('utf8')
+        #    r.set(key, value)
+
+        redis_docs = [{'_id': i, 'values': j} for i, j in zip(keys, values)]
+
+        with self.get_add_handler() as redis_handler:
+            for k in redis_docs:
+                redis_handler.set(k['_id'], k['values'])
 
     def get_query_handler(self):
         """Get the database handler
@@ -60,14 +65,16 @@ class RedisDBIndexer(BinaryPbIndexer):
         except redis.exceptions.ConnectionError as r_con_error:
             self.logger.error('Redis connection error: ', r_con_error)
 
-    def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
+    def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
         """Find the protobuf chunk/doc using id
 
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
-        v = self.query_handler.get(key.encode('utf8'))
-        value = None
-        if v is not None:
-            value = Parse(json.loads(v.decode('utf8')), jina_pb2.Document())
-        return value
+        result = []
+        with self.get_add_handler() as redis_handler:
+            for _key in redis_handler.scan_iter(match=key):
+                result.append(_key)
+
+        if len(result) > 0:
+            return result
