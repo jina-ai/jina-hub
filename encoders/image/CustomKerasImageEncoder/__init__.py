@@ -2,9 +2,12 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numpy as np
+import os
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTFEncoder
+from jina.excepts import PretrainedModelFileDoesNotExist
+
 
 class CustomKerasImageEncoder(BaseTFEncoder):
     """
@@ -14,7 +17,7 @@ class CustomKerasImageEncoder(BaseTFEncoder):
     https://www.tensorflow.org/api_docs/python/tf/keras/applications
     """
 
-    def __init__(self, model_path: str, layer_name: str, channel_axis: int = -1, *args, **kwargs):
+    def __init__(self, model_path: str = None, layer_name: str = None, channel_axis: int = -1, *args, **kwargs):
 
         """
         :param model_path: the path where the model is stored.
@@ -27,11 +30,14 @@ class CustomKerasImageEncoder(BaseTFEncoder):
 
     def post_init(self):
         self.to_device()
-        import tensorflow as tf
-        model = tf.keras.models.load_model(self.model_path)
-        model.trainable = False
-        self.model = tf.keras.Model(inputs=model.input,
-                                    outputs=model.get_layer(self.layer_name).output)
+        if self.model_path and os.path.exists(self.model_path):
+            import tensorflow as tf
+            model = tf.keras.models.load_model(self.model_path)
+            model.trainable = False
+            self.model = tf.keras.Model(inputs=model.input,
+                                        outputs=model.get_layer(self.layer_name).output)
+        else:
+            raise PretrainedModelFileDoesNotExist(f'model {self.model_path} does not exist')
 
     @batching
     @as_ndarray
