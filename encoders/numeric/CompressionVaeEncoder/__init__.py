@@ -8,6 +8,7 @@ import json
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders import BaseNumericEncoder
 from jina.executors.encoders.frameworks import BaseTFEncoder
+from jina.excepts import PretrainedModelFileDoesNotExist
 
 
 class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
@@ -18,7 +19,7 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
     Full code and documentation can be found here: https://github.com/maxfrenzel/CompressionVAE..
     """
 
-    def __init__(self, model_path: str,
+    def __init__(self, model_path: str = None,
                  *args, **kwargs):
         """
         :param model_path: specifies the path to the pretrained model
@@ -33,42 +34,45 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         import cvae.lib.model_iaf as model
         import tensorflow as tf
 
-        params_path = os.path.join(self.model_path, 'params.json')
+        if self.model_path and os.path.exists(self.model_path):
+            params_path = os.path.join(self.model_path, 'params.json')
 
-        config = tf.ConfigProto(log_device_placement=False)
-        config.gpu_options.allow_growth = True
+            config = tf.ConfigProto(log_device_placement=False)
+            config.gpu_options.allow_growth = True
 
-        with tf.Graph().as_default():
-            if os.path.exists(params_path):
-                # Load parameter file.
-                with open(params_path, 'r') as f:
-                    param = json.load(f)
+            with tf.Graph().as_default():
+                if os.path.exists(params_path):
+                    # Load parameter file.
+                    with open(params_path, 'r') as f:
+                        param = json.load(f)
 
-                net = model.VAEModel(param,
-                                     None,
-                                     input_dim=param['dim_feature'],
-                                     keep_prob=tf.placeholder_with_default(input=tf.cast(1.0, dtype=tf.float32),
-                                                                           shape=(),
-                                                                           name="KeepProb"),
-                                     initializer='orthogonal')
-                # Placeholder for data features
-                self.data_feature_placeholder = tf.placeholder_with_default(
-                    input=tf.zeros([64, param['dim_feature']], dtype=tf.float32),
-                    shape=[None, param['dim_feature']])
+                    net = model.VAEModel(param,
+                                         None,
+                                         input_dim=param['dim_feature'],
+                                         keep_prob=tf.placeholder_with_default(input=tf.cast(1.0, dtype=tf.float32),
+                                                                               shape=(),
+                                                                               name="KeepProb"),
+                                         initializer='orthogonal')
+                    # Placeholder for data features
+                    self.data_feature_placeholder = tf.placeholder_with_default(
+                        input=tf.zeros([64, param['dim_feature']], dtype=tf.float32),
+                        shape=[None, param['dim_feature']])
 
-                self.embeddings = net.embed(self.data_feature_placeholder)
+                    self.embeddings = net.embed(self.data_feature_placeholder)
 
-                self.sess = tf.Session(config=config)
-                init = tf.global_variables_initializer()
-                self.sess.run(init)
+                    self.sess = tf.Session(config=config)
+                    init = tf.global_variables_initializer()
+                    self.sess.run(init)
 
-                # Saver for loading checkpoints of the model.
-                saver = tf.train.Saver(var_list=tf.trainable_variables())
-                cvae.load(saver, self.sess, self.model_path)
+                    # Saver for loading checkpoints of the model.
+                    saver = tf.train.Saver(var_list=tf.trainable_variables())
+                    cvae.load(saver, self.sess, self.model_path)
 
-                self.to_device()
-            else:
-                raise FileNotFoundError(f'The {params_path} doesn\'t exist')
+                    self.to_device()
+                else:
+                    raise FileNotFoundError(f'The {params_path} doesn\'t exist')
+        else:
+            raise PretrainedModelFileDoesNotExist(f'model {self.model_path} does not exist')
 
     @batching
     @as_ndarray

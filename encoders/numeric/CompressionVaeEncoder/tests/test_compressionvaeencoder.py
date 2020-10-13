@@ -6,6 +6,7 @@ from cvae import cvae
 
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
+from jina.excepts import PretrainedModelFileDoesNotExist
 
 from .. import CompressionVaeEncoder
 
@@ -72,3 +73,8 @@ def test_save_and_load(metas, test_data):
     encoder_loaded = BaseExecutor.load(encoder.save_abspath)
     encoded_data_test = encoder_loaded.encode(test_data)
     np.testing.assert_array_equal(encoded_data_test, encoded_data_control)
+
+
+def test_raise_exception():
+    with pytest.raises(PretrainedModelFileDoesNotExist):
+        assert CompressionVaeEncoder()
