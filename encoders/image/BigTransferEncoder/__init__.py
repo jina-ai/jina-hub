@@ -2,9 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numpy as np
+import os
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTFEncoder
+from jina.excepts import PretrainedModelFileDoesNotExist
 
 
 class BigTransferEncoder(BaseTFEncoder):
@@ -48,12 +50,15 @@ class BigTransferEncoder(BaseTFEncoder):
 
     def post_init(self):
         super().post_init()
-        self.to_device()
-        import tensorflow as tf
-        self.logger.info(f'model_path: {self.model_path}')
-        _model = tf.saved_model.load(self.model_path)
-        self.model = _model.signatures['serving_default']
-        self._get_input = tf.convert_to_tensor
+        if self.model_path and os.path.exists(self.model_path):
+            self.to_device()
+            import tensorflow as tf
+            self.logger.info(f'model_path: {self.model_path}')
+            _model = tf.saved_model.load(self.model_path)
+            self.model = _model.signatures['serving_default']
+            self._get_input = tf.convert_to_tensor
+        else:
+            raise PretrainedModelFileDoesNotExist(f'model at {self.model_path} does not exist')
 
     @batching
     @as_ndarray
