@@ -25,6 +25,7 @@ def rm_files(file_paths):
 
 def test_simple_ngt():
     import ngtpy
+
     path = '/tmp/ngt-index'
     dimension, queries, top_k, batch_size, num_batch = 10, 3, 5, 8, 3
 
@@ -40,7 +41,10 @@ def test_simple_ngt():
         results = _index.search(key, size=top_k, epsilon=0.1)
         index_k = []
         distance_k = []
-        [(index_k.append(result[0]), distance_k.append(result[1])) for result in results]
+        [
+            (index_k.append(result[0]), distance_k.append(result[1]))
+            for result in results
+        ]
         idx.append(index_k)
         dist.append(distance_k)
 

@@ -10,7 +10,9 @@ class ChromaPitchEncoder(BaseAudioEncoder):
     `Batch x Concatenated Features` ndarray.
     """
 
-    def __init__(self, input_sample_rate: int = 22050, hop_length: int = 512, *args, **kwargs):
+    def __init__(
+        self, input_sample_rate: int = 22050, hop_length: int = 512, *args, **kwargs
+    ):
         """
         :class:`ChromaPitchEncoder` extracts from an audio signal a 12-dimensional feature vector, that refer to 12
         octaves, for each chroma frame.
@@ -34,8 +36,14 @@ class ChromaPitchEncoder(BaseAudioEncoder):
         vector times the number of the chroma frames
         """
         from librosa.feature import chroma_cqt
+
         embeds = []
         for chunk_data in data:
-            chromagrams = chroma_cqt(y=chunk_data, sr=self.input_sample_rate, n_chroma=12, hop_length=self.hop_length)
+            chromagrams = chroma_cqt(
+                y=chunk_data,
+                sr=self.input_sample_rate,
+                n_chroma=12,
+                hop_length=self.hop_length,
+            )
             embeds.append(chromagrams.flatten())
         return embeds

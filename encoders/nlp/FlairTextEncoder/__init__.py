@@ -11,11 +11,17 @@ class FlairTextEncoder(BaseTorchEncoder):
     Internally, :class:`FlairTextEncoder` wraps the DocumentPoolEmbeddings from Flair.
     """
 
-    def __init__(self,
-                 embeddings: Union[Tuple[str], List[str]] = ('word:glove', 'flair:news-forward', 'flair:news-backward'),
-                 pooling_strategy: str = 'mean',
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        embeddings: Union[Tuple[str], List[str]] = (
+            'word:glove',
+            'flair:news-forward',
+            'flair:news-backward',
+        ),
+        pooling_strategy: str = 'mean',
+        *args,
+        **kwargs,
+    ):
         """
 
         :param embeddings: the name of the embeddings. Supported models include
@@ -34,6 +40,7 @@ class FlairTextEncoder(BaseTorchEncoder):
 
     def post_init(self):
         import flair
+
         flair.device = self.device
         embeddings_list = []
         for e in self.embeddings:
@@ -42,15 +49,19 @@ class FlairTextEncoder(BaseTorchEncoder):
             try:
                 if model_name == 'flair':
                     from flair.embeddings import FlairEmbeddings
+
                     emb = FlairEmbeddings(model_id)
                 elif model_name == 'pooledflair':
                     from flair.embeddings import PooledFlairEmbeddings
+
                     emb = PooledFlairEmbeddings(model_id)
                 elif model_name == 'word':
                     from flair.embeddings import WordEmbeddings
+
                     emb = WordEmbeddings(model_id)
                 elif model_name == 'byte-pair':
                     from flair.embeddings import BytePairEmbeddings
+
                     emb = BytePairEmbeddings(model_id)
             except ValueError:
                 self.logger.error(f'embedding not found: {e}')
@@ -59,8 +70,13 @@ class FlairTextEncoder(BaseTorchEncoder):
                 embeddings_list.append(emb)
         if embeddings_list:
             from flair.embeddings import DocumentPoolEmbeddings
-            self.model = DocumentPoolEmbeddings(embeddings_list, pooling=self.pooling_strategy)
-            self.logger.info(f'flair encoder initialized with embeddings: {self.embeddings}')
+
+            self.model = DocumentPoolEmbeddings(
+                embeddings_list, pooling=self.pooling_strategy
+            )
+            self.logger.info(
+                f'flair encoder initialized with embeddings: {self.embeddings}'
+            )
         else:
             self.logger.error('flair encoder initialization failed.')
 
@@ -71,6 +87,7 @@ class FlairTextEncoder(BaseTorchEncoder):
         :return: an ndarray in size `B x D`
         """
         from flair.data import Sentence
+
         c_batch = [Sentence(row) for row in data]
         self.model.embed(c_batch)
         result = [self.tensor2array(c_text.embedding) for c_text in c_batch]

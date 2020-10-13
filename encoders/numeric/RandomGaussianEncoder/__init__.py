@@ -13,4 +13,7 @@ class RandomGaussianEncoder(TransformEncoder):
         super().post_init()
         if not self.model:
             from sklearn.random_projection import GaussianRandomProjection
-            self.model = GaussianRandomProjection(n_components=self.output_dim, random_state=self.random_state)
+
+            self.model = GaussianRandomProjection(
+                n_components=self.output_dim, random_state=self.random_state
+            )

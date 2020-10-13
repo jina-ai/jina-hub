@@ -10,12 +10,20 @@ from jina.executors.indexers import BaseVectorIndexer
 class MilvusIndexer(BaseVectorIndexer):
     """Milvus powered vector indexer
 
-        For more information about Milvus:
-            - https://github.com/milvus-io/milvus/
+    For more information about Milvus:
+        - https://github.com/milvus-io/milvus/
     """
-    def __init__(self, host: str = '0.0.0.0', port: int = 19530,
-                 collection_name: str = 'default', index_type: str = 'IVF,Flat',
-                 index_params=None, *args, **kwargs):
+
+    def __init__(
+        self,
+        host: str = '0.0.0.0',
+        port: int = 19530,
+        collection_name: str = 'default',
+        index_type: str = 'IVF,Flat',
+        index_params=None,
+        *args,
+        **kwargs
+    ):
         super().__init__(*args, **kwargs)
         if index_params is None:
             index_params = dict({'nlist': 10})
@@ -27,6 +35,7 @@ class MilvusIndexer(BaseVectorIndexer):
 
     def post_init(self):
         from milvusdbhandler import MilvusDBHandler
+
         super().post_init()
         self.milvus = MilvusDBHandler(self.host, self.port, self.collection_name)
 
@@ -49,6 +58,8 @@ class MilvusIndexer(BaseVectorIndexer):
         self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.insert(keys, vectors)
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(
+        self, keys: 'np.ndarray', top_k: int, *args, **kwargs
+    ) -> Tuple['np.ndarray', 'np.ndarray']:
         dist, ids = self.query_handler.search(keys, top_k, *args, **kwargs)
         return np.array(ids), np.array(dist)

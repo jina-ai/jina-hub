@@ -32,6 +32,7 @@ class TextPaddlehubEncoder(BasePaddleEncoder):
 
     def post_init(self):
         import paddlehub as hub
+
         self.model = hub.Module(name=self.model_name)
 
     @batching
@@ -44,7 +45,10 @@ class TextPaddlehubEncoder(BasePaddleEncoder):
         """
         results = []
         _raw_results = self.model.get_embedding(
-            texts=np.atleast_2d(data).reshape(-1, 1).tolist(), use_gpu=self.on_gpu, batch_size=data.shape[0])
+            texts=np.atleast_2d(data).reshape(-1, 1).tolist(),
+            use_gpu=self.on_gpu,
+            batch_size=data.shape[0],
+        )
         for emb in _raw_results:
             _pooled_feature, _seq_feature = emb
             results.append(_pooled_feature)

@@ -15,12 +15,16 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
         d = jina_pb2.Document()
         d.tags['id'] = j
         d.text = b'hello world doc id %d' % j
-        d.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
+        d.embedding.CopyFrom(
+            array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)]))
+        )
         d.id = uid.new_doc_id(d)
         for k in range(chunks_per_doc):
             c = d.chunks.add()
             c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
+            c.embedding.CopyFrom(
+                array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)]))
+            )
             c.tags['id'] = c_id
             c.tags['parent_id'] = j
             c_id += 1
@@ -32,13 +36,12 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
 def test_mongodbindexer():
     keys = []
     values = []
-    
+
     num_docs = 5
-    docs = list(random_docs(num_docs=num_docs, 
-                            chunks_per_doc=3))
+    docs = list(random_docs(num_docs=num_docs, chunks_per_doc=3))
     keys = [uid.id2hash(doc.id) for doc in docs]
     values = [doc.SerializeToString() for doc in docs]
-    
+
     query_index = random.randint(0, num_docs - 1)
     query_id = docs[query_index].id
     query_key = uid.id2hash(query_id)
@@ -46,15 +49,15 @@ def test_mongodbindexer():
 
     with MongoDBIndexer() as mongo_indexer:
         mongo_indexer.add(keys=keys, values=values)
-        
+
     with MongoDBIndexer() as mongo_query:
         query_results = mongo_query.query(key=query_key)
         assert query_results is not None
-        
+
         for result in query_results:
             assert result['_id'] == query_key
             d = jina_pb2.Document()
-            d.ParseFromString(result['values']) 
+            d.ParseFromString(result['values'])
             assert d.text == query_text
 
 

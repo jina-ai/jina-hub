@@ -51,12 +51,14 @@ def get_encoder(tmpdir, test_data, target_output_dim):
         np.save(os.path.join(data_path, str(idx)), features)
 
     # Train the CVAE on the test data to build a model saved in `logdir`.
-    model = cvae.CompressionVAE(data_path,
-                                dim_latent=target_output_dim,
-                                logdir=model_path)
+    model = cvae.CompressionVAE(
+        data_path, dim_latent=target_output_dim, logdir=model_path
+    )
     model.train()
 
-    return CompressionVaeEncoder(model_path=model_path, X=data_path, output_dim=target_output_dim)
+    return CompressionVaeEncoder(
+        model_path=model_path, X=data_path, output_dim=target_output_dim
+    )
 
 
 def test_encoding_results(get_encoder, test_data, target_output_dim):

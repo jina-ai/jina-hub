@@ -17,6 +17,7 @@ def create_test_image(output_fn, size_width=50, size_height=50):
 
 def create_random_img_array(img_height, img_width):
     import numpy as np
+
     return np.random.randint(0, 256, (img_height, img_width, 3))
 
 
@@ -26,6 +27,7 @@ class MockModel:
 
     def __call__(self, input_ids, *args, **kwargs):
         import torch
+
         bbox_1 = [10, 15, 30, 40]
         bbox_2 = [-1, -1, -1, -1]
         bbox_3 = [20, 10, 30, 40]
@@ -35,11 +37,13 @@ class MockModel:
         label_1 = 1
         label_2 = 2
         label_3 = 3
-        predictions = [{
-            'boxes': torch.Tensor([bbox_1, bbox_2, bbox_3]),
-            'scores': torch.Tensor([score_1, score_2, score_3]),
-            'labels': torch.Tensor([label_1, label_2, label_3])
-        }]
+        predictions = [
+            {
+                'boxes': torch.Tensor([bbox_1, bbox_2, bbox_3]),
+                'scores': torch.Tensor([score_1, score_2, score_3]),
+                'labels': torch.Tensor([label_1, label_2, label_3]),
+            }
+        ]
         return predictions
 
     def eval(self):
@@ -51,14 +55,17 @@ class MockModel:
 
 def test_encoding_mock_model_results():
     import torchvision.models.detection as detection_models
+
     img_array = create_random_img_array(128, 64)
     img_array = img_array / 255
-    with patch.object(detection_models, 'fasterrcnn_resnet50_fpn', return_value=MockModel()):
-        crafter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.9,
-                                                label_name_map={0: 'zero',
-                                                                1: 'one',
-                                                                2: 'two',
-                                                                3: 'three'})
+    with patch.object(
+        detection_models, 'fasterrcnn_resnet50_fpn', return_value=MockModel()
+    ):
+        crafter = TorchObjectDetectionSegmenter(
+            channel_axis=-1,
+            confidence_threshold=0.9,
+            label_name_map={0: 'zero', 1: 'one', 2: 'two', 3: 'three'},
+        )
         chunks = crafter.craft(img_array)
         assert len(chunks) == 2
         assert chunks[0]['blob'].shape == (25, 20, 3)
@@ -80,7 +87,7 @@ def test_encoding_fasterrcnn_results():
 
 def test_encoding_fasterrcnn_results_real_image():
     """
-    Credit for the image used in this test: 
+    Credit for the image used in this test:
     Photo by <a href="/photographer/createsima-47728">createsima</a> from <a href="https://freeimages.com/">FreeImages</a>
     https://www.freeimages.com/photo/cars-1407390
     TorchObjectDete@29513[I]:detected person with confidence 0.9911105632781982 at position (541, 992) and size (67, 24)
@@ -206,8 +213,9 @@ def test_encoding_fasterrcnn_results_real_image():
 def test_encoding_maskrcnn_results():
     img_array = create_random_img_array(128, 64)
     img_array = img_array / 255
-    crafter = TorchObjectDetectionSegmenter(model_name='maskrcnn_resnet50_fpn',
-                                            channel_axis=-1, confidence_threshold=0.98)
+    crafter = TorchObjectDetectionSegmenter(
+        model_name='maskrcnn_resnet50_fpn', channel_axis=-1, confidence_threshold=0.98
+    )
     chunks = crafter.craft(img_array)
     assert len(chunks) == 0
 
@@ -233,8 +241,9 @@ def test_encoding_maskrcnn_results_real_image():
     img = Image.open(path)
     img = img.convert('RGB')
     img_array = np.array(img).astype('float32') / 255
-    crafter = TorchObjectDetectionSegmenter(model_name='maskrcnn_resnet50_fpn',
-                                            channel_axis=-1, confidence_threshold=0.9)
+    crafter = TorchObjectDetectionSegmenter(
+        model_name='maskrcnn_resnet50_fpn', channel_axis=-1, confidence_threshold=0.9
+    )
     chunks = crafter.craft(img_array)
 
     assert len(chunks) == 10

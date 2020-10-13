@@ -22,8 +22,6 @@ def get_encoder():
     return BigTransferEncoder(model_path='pretrained', channel_axis=1, metas=metas)
 
 
-
-
 # def test_encoding_results():
 #     input_dim = 48
 #     output_dim = 2048

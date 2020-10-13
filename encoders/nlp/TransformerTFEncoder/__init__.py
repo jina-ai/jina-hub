@@ -8,12 +8,19 @@ import numpy as np
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.devices import TFDevice
 from jina.executors.encoders import BaseEncoder
-from jina.executors.encoders.helper import reduce_mean, reduce_max, reduce_min, reduce_cls
+from jina.executors.encoders.helper import (
+    reduce_mean,
+    reduce_max,
+    reduce_min,
+    reduce_cls,
+)
 from jina.helper import cached_property
 from jina.logging import default_logger
 
 
-def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: str) -> 'np.ndarray':
+def auto_reduce(
+    model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: str
+) -> 'np.ndarray':
     """
     Automatically creates a sentence embedding from its token embeddings.
         * For BERT-like models (BERT, RoBERTa, DistillBERT, Electra ...) uses embedding of first token
@@ -24,8 +31,10 @@ def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: 
         return reduce_cls(model_outputs, mask_2d)
     if 'xlnet' in model_name:
         return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
-    default_logger.warning('Using embedding of a last token as a sequence embedding. '
-                           'If that is not desirable, change `pooling_strategy`')
+    default_logger.warning(
+        'Using embedding of a last token as a sequence embedding. '
+        'If that is not desirable, change `pooling_strategy`'
+    )
     return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
 
 
@@ -42,7 +51,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         truncation_strategy: str = 'longest_first',
         model_save_path: Optional[str] = None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         :param pretrained_model_name_or_path: Either:
@@ -75,7 +84,9 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
     def __getstate__(self):
         if self.model_save_path:
             if not os.path.exists(self.model_abspath):
-                self.logger.info(f'create folder for saving transformer models: {self.model_abspath}')
+                self.logger.info(
+                    f'create folder for saving transformer models: {self.model_abspath}'
+                )
                 os.mkdir(self.model_abspath)
             self.model.save_pretrained(self.model_abspath)
             self.tokenizer.save_pretrained(self.model_abspath)
@@ -89,30 +100,35 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
 
     @property
     def model_abspath(self) -> str:
-        """Get the file path of the encoder model storage
-        """
+        """Get the file path of the encoder model storage"""
         return self.get_file_from_workspace(self.model_save_path)
 
     @cached_property
     def model(self):
         from transformers import TFAutoModelForPreTraining
-        model = TFAutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
+
+        model = TFAutoModelForPreTraining.from_pretrained(
+            self.pretrained_model_name_or_path
+        )
         self.to_device()
         return model
 
     @cached_property
     def no_gradients(self):
         import tensorflow as tf
+
         return tf.GradientTape
 
     @cached_property
     def tensor_func(self):
         import tensorflow as tf
+
         return tf.constant
 
     @cached_property
     def tokenizer(self):
         from transformers import AutoTokenizer
+
         tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
         return tokenizer
 
@@ -128,28 +144,34 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
                 self.tokenizer.pad_token = self.tokenizer.eos_token
                 if self.tokenizer.pad_token is None:
                     self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-            ids_info = self.tokenizer.batch_encode_plus(data,
-                                                        max_length=self.max_length,
-                                                        truncation=self.truncation_strategy,
-                                                        pad_to_max_length=True)
+            ids_info = self.tokenizer.batch_encode_plus(
+                data,
+                max_length=self.max_length,
+                truncation=self.truncation_strategy,
+                pad_to_max_length=True,
+            )
         except ValueError:
             self.model.resize_token_embeddings(len(self.tokenizer))
-            ids_info = self.tokenizer.batch_encode_plus(data,
-                                                        max_length=self.max_length,
-                                                        pad_to_max_length=True)
+            ids_info = self.tokenizer.batch_encode_plus(
+                data, max_length=self.max_length, pad_to_max_length=True
+            )
         token_ids_batch = self.array2tensor(ids_info['input_ids'])
         mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
         with self.no_gradients():
-            outputs = self.model(token_ids_batch,
-                                 attention_mask=mask_ids_batch,
-                                 output_hidden_states=True)
+            outputs = self.model(
+                token_ids_batch,
+                attention_mask=mask_ids_batch,
+                output_hidden_states=True,
+            )
 
             hidden_states = outputs[-1]
             output_embeddings = hidden_states[-1]
             _mask_ids_batch = self.tensor2array(mask_ids_batch)
             _seq_output = self.tensor2array(output_embeddings)
             if self.pooling_strategy == 'auto':
-                output = auto_reduce(_seq_output, _mask_ids_batch, self.model.base_model_prefix)
+                output = auto_reduce(
+                    _seq_output, _mask_ids_batch, self.model.base_model_prefix
+                )
             elif self.pooling_strategy == 'mean':
                 output = reduce_mean(_seq_output, _mask_ids_batch)
             elif self.pooling_strategy == 'max':
@@ -157,6 +179,8 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
             elif self.pooling_strategy == 'min':
                 output = reduce_min(_seq_output, _mask_ids_batch)
             else:
-                self.logger.error(f'pooling strategy not found: {self.pooling_strategy}')
+                self.logger.error(
+                    f'pooling strategy not found: {self.pooling_strategy}'
+                )
                 raise NotImplementedError
         return output

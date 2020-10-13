@@ -2,7 +2,6 @@ from .. import MFCCTimbreEncoder
 import numpy as np
 
 
-
 def test_mfcc_encoder():
     batch_size = 10
     n_frames = 5

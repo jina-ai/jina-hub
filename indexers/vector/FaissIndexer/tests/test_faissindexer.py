@@ -31,7 +31,11 @@ def test_faiss_indexer():
     with gzip.open(train_filepath, 'wb', compresslevel=1) as f:
         f.write(train_data.tobytes())
 
-    with FaissIndexer(index_filename='faiss.test.gz', index_key='IVF10,PQ2', train_filepath=train_filepath) as indexer:
+    with FaissIndexer(
+        index_filename='faiss.test.gz',
+        index_key='IVF10,PQ2',
+        train_filepath=train_filepath,
+    ) as indexer:
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)

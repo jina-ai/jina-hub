@@ -8,9 +8,11 @@ import os
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-expected_text = "A cat poem\nI love cats, I love every kind of cat,\nI just wanna hug all of them, but I can't," \
-                "\nI'm thinking about cats again\nI think about how cute they are\nAnd their whiskers and their " \
-                "nose\n"
+expected_text = (
+    "A cat poem\nI love cats, I love every kind of cat,\nI just wanna hug all of them, but I can't,"
+    "\nI'm thinking about cats again\nI think about how cute they are\nAnd their whiskers and their "
+    "nose\n"
+)
 
 
 def validate_text_fn(resp):
@@ -49,21 +51,28 @@ def test_pdf_flow_text():
     path = os.path.join(cur_dir, 'cats_are_awesome_text.pdf')
     f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
     with f:
-        f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_text_fn)
+        f.search(
+            input_fn=search_generator(path=path, buffer=None),
+            output_fn=validate_text_fn,
+        )
 
 
 def test_pdf_flow_img():
     path = os.path.join(cur_dir, 'cats_are_awesome_img.pdf')
     f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
     with f:
-        f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_img_fn)
+        f.search(
+            input_fn=search_generator(path=path, buffer=None), output_fn=validate_img_fn
+        )
 
 
 def test_pdf_flow_mix():
     path = os.path.join(cur_dir, 'cats_are_awesome.pdf')
     f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
     with f:
-        f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_mix_fn)
+        f.search(
+            input_fn=search_generator(path=path, buffer=None), output_fn=validate_mix_fn
+        )
 
 
 def test_pdf_flow_text_buffer():
@@ -72,7 +81,10 @@ def test_pdf_flow_text_buffer():
         input_bytes = pdf.read()
     f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
     with f:
-        f.search(input_fn=search_generator(path=None, buffer=input_bytes), output_fn=validate_text_fn)
+        f.search(
+            input_fn=search_generator(path=None, buffer=input_bytes),
+            output_fn=validate_text_fn,
+        )
 
 
 def test_pdf_flow_img_buffer():
@@ -81,7 +93,10 @@ def test_pdf_flow_img_buffer():
         input_bytes = pdf.read()
     f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
     with f:
-        f.search(input_fn=search_generator(path=None, buffer=input_bytes), output_fn=validate_img_fn)
+        f.search(
+            input_fn=search_generator(path=None, buffer=input_bytes),
+            output_fn=validate_img_fn,
+        )
 
 
 def test_pdf_flow_mix_buffer():
@@ -90,4 +105,7 @@ def test_pdf_flow_mix_buffer():
         input_bytes = pdf.read()
     f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
     with f:
-        f.search(input_fn=search_generator(path=None, buffer=input_bytes), output_fn=validate_mix_fn)
+        f.search(
+            input_fn=search_generator(path=None, buffer=input_bytes),
+            output_fn=validate_mix_fn,
+        )

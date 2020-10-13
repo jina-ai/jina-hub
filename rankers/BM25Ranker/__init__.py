@@ -28,7 +28,9 @@ class BM25Ranker(Chunk2DocRanker):
         self.k = k
         self.b = b
 
-    def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
+    def score(
+        self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
+    ) -> 'np.ndarray':
         """
 
         :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the batch size of the matched chunks for the
@@ -49,7 +51,9 @@ class BM25Ranker(Chunk2DocRanker):
         r = []
         _q_idf = self.get_idf(match_idx)
         for _g in _groups:
-            _doc_id, _doc_score = self._get_score(_g, query_chunk_meta, match_chunk_meta, _q_idf)
+            _doc_id, _doc_score = self._get_score(
+                _g, query_chunk_meta, match_chunk_meta, _q_idf
+            )
             r.append((_doc_id, _doc_score))
         return self.sort_doc_by_score(r)
 
@@ -80,7 +84,9 @@ class BM25Ranker(Chunk2DocRanker):
         """
         _m = match_idx[match_idx[self.COL_SCORE] >= self.threshold]
         _sorted_m = _m[_m[self.COL_DOC_CHUNK_HASH].argsort()]
-        q_id_list, q_tf_list = np.unique(_sorted_m[self.COL_DOC_CHUNK_HASH], return_counts=True)
+        q_id_list, q_tf_list = np.unique(
+            _sorted_m[self.COL_DOC_CHUNK_HASH], return_counts=True
+        )
         row_id = np.cumsum(q_tf_list) - 1
         c_id_list = _sorted_m[row_id][self.COL_MATCH_HASH]
         return q_tf_list, q_id_list, c_id_list
@@ -101,7 +107,10 @@ class BM25Ranker(Chunk2DocRanker):
         """
         _q_df, _q_id = self._get_df(match_idx)
         _total_df = np.sum(_q_df)
-        return {idx: np.log10((_total_df + 1.) / (df + 0.5)) ** 2 for idx, df in zip(_q_id, _q_df)}
+        return {
+            idx: np.log10((_total_df + 1.0) / (df + 0.5)) ** 2
+            for idx, df in zip(_q_id, _q_df)
+        }
 
     def get_tf(self, match_idx, match_chunk_meta):
         """Get the tf dictionary for query chunks that matched a given doc.
@@ -121,11 +130,20 @@ class BM25Ranker(Chunk2DocRanker):
         """
         _q_tf_list, _q_id_list, _c_id_list = self._get_tf(match_idx)
         _avg_n_doc = np.mean([c_meta['length'] for c_meta in match_chunk_meta.values()])
-        return {q_idx: (1 + self.k) * tf / (
-                self.k * (1 - self.b + self.b * match_chunk_meta[c_idx]['length'] / _avg_n_doc) + tf)
-                for c_idx, q_idx, tf in zip(_c_id_list, _q_id_list, _q_tf_list)}
+        return {
+            q_idx: (1 + self.k)
+            * tf
+            / (
+                self.k
+                * (1 - self.b + self.b * match_chunk_meta[c_idx]['length'] / _avg_n_doc)
+                + tf
+            )
+            for c_idx, q_idx, tf in zip(_c_id_list, _q_id_list, _q_tf_list)
+        }
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, idf, *args, **kwargs):
+    def _get_score(
+        self, match_idx, query_chunk_meta, match_chunk_meta, idf, *args, **kwargs
+    ):
         """Get the doc score based on the weighted sum of matching scores. The weights are calculated from the tf-idf of
              the query chunks.
 
@@ -138,9 +156,10 @@ class BM25Ranker(Chunk2DocRanker):
         """
         tf = self.get_tf(match_idx, match_chunk_meta)
         _weights = match_idx[self.COL_SCORE]
-        _q_tfidf = np.vectorize(tf.get)(match_idx[self.COL_DOC_CHUNK_HASH], 0) * \
-                   np.vectorize(idf.get)(match_idx[self.COL_DOC_CHUNK_HASH], 0)
+        _q_tfidf = np.vectorize(tf.get)(
+            match_idx[self.COL_DOC_CHUNK_HASH], 0
+        ) * np.vectorize(idf.get)(match_idx[self.COL_DOC_CHUNK_HASH], 0)
         _sum = np.sum(_q_tfidf)
         _doc_id = self.get_doc_id(match_idx)
-        _score = 0. if _sum == 0 else np.sum(_weights * _q_tfidf) * 1.0 / _sum
+        _score = 0.0 if _sum == 0 else np.sum(_weights * _q_tfidf) * 1.0 / _sum
         return _doc_id, _score

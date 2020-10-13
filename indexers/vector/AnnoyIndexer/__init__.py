@@ -17,7 +17,14 @@ class AnnoyIndexer(BaseNumpyIndexer):
         Annoy package dependency is only required at the query time.
     """
 
-    def __init__(self, metric: str = 'euclidean', n_trees: int = 10, search_k: int = -1, *args, **kwargs):
+    def __init__(
+        self,
+        metric: str = 'euclidean',
+        n_trees: int = 10,
+        search_k: int = -1,
+        *args,
+        **kwargs
+    ):
         """
         Initialize an AnnoyIndexer
 
@@ -35,17 +42,22 @@ class AnnoyIndexer(BaseNumpyIndexer):
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         from annoy import AnnoyIndex
+
         _index = AnnoyIndex(self.num_dim, self.metric)
         for idx, v in enumerate(vecs):
             _index.add_item(idx, v.astype(np.float32))
         _index.build(self.n_trees)
         return _index
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(
+        self, keys: 'np.ndarray', top_k: int, *args, **kwargs
+    ) -> Tuple['np.ndarray', 'np.ndarray']:
         all_idx = []
         all_dist = []
         for k in keys:
-            ret, dist = self.query_handler.get_nns_by_vector(k, top_k, self.search_k, include_distances=True)
+            ret, dist = self.query_handler.get_nns_by_vector(
+                k, top_k, self.search_k, include_distances=True
+            )
             all_idx.append(self.int2ext_id[ret])
             all_dist.append(dist)
         return np.array(all_idx), np.array(all_dist)

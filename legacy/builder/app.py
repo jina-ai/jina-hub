@@ -12,13 +12,27 @@ from pathlib import Path
 from ruamel.yaml import YAML
 
 yaml = YAML()
-allowed = {'name', 'description', 'author', 'url', 'documentation', 'version', 'vendor', 'license', 'avatar',
-           'platform', 'update', 'keywords'}
+allowed = {
+    'name',
+    'description',
+    'author',
+    'url',
+    'documentation',
+    'version',
+    'vendor',
+    'license',
+    'avatar',
+    'platform',
+    'update',
+    'keywords',
+}
 required = {'name', 'description'}
-sver_regex = r'^(=|>=|<=|=>|=<|>|<|!=|~|~>|\^)?(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)' \
-             r'\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)' \
-             r'(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+' \
-             r'(?:\.[0-9a-zA-Z-]+)*))?$'
+sver_regex = (
+    r'^(=|>=|<=|=>|=<|>|<|!=|~|~>|\^)?(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)'
+    r'\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)'
+    r'(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+'
+    r'(?:\.[0-9a-zA-Z-]+)*))?$'
+)
 name_regex = r'^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{2,20}$'
 cur_dir = pathlib.Path(__file__).parent.absolute()
 root_dir = pathlib.Path(__file__).parents[1].absolute()
@@ -28,18 +42,23 @@ label_prefix = 'ai.jina.hub.'
 docker_registry = 'jinaai/'
 
 # current date and time
-builder_files = list(Path(root_dir).glob('builder/app.py')) + \
-                list(Path(root_dir).glob('builder/*.yml'))
+builder_files = list(Path(root_dir).glob('builder/app.py')) + list(
+    Path(root_dir).glob('builder/*.yml')
+)
 
 build_hist_path = os.path.join(root_dir, 'status', 'build-history.json')
 readme_path = os.path.join(root_dir, 'status', 'README.md')
 hubbadge_path = os.path.join(root_dir, 'status', 'hub-stat.svg')
 
-hub_files = list(Path(root_dir).glob('hub/**/*.y*ml')) + \
-            list(Path(root_dir).glob('hub/**/*Dockerfile')) + \
-            list(Path(root_dir).glob('hub/**/*.py'))
+hub_files = (
+    list(Path(root_dir).glob('hub/**/*.y*ml'))
+    + list(Path(root_dir).glob('hub/**/*Dockerfile'))
+    + list(Path(root_dir).glob('hub/**/*.py'))
+)
 
-builder_revision = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip().decode()
+builder_revision = (
+    subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip().decode()
+)
 build_badge_regex = r'<!-- START_BUILD_BADGE -->(.*)<!-- END_BUILD_BADGE -->'
 build_badge_prefix = r'<!-- START_BUILD_BADGE --><!-- END_BUILD_BADGE -->'
 
@@ -55,9 +74,11 @@ def get_badge_md(img_name, status):
         success_tag = 'fail-critical'
     else:
         success_tag = 'pending-yellow'
-    return f'[![{img_name}](https://img.shields.io/badge/{safe_url_name(img_name)}-' \
-           f'{success_tag}?style=flat-square)]' \
-           f'(https://hub.docker.com/repository/docker/jinaai/{img_name})'
+    return (
+        f'[![{img_name}](https://img.shields.io/badge/{safe_url_name(img_name)}-'
+        f'{success_tag}?style=flat-square)]'
+        f'(https://hub.docker.com/repository/docker/jinaai/{img_name})'
+    )
 
 
 def get_now_timestamp():
@@ -66,8 +87,11 @@ def get_now_timestamp():
 
 
 def get_modified_time(p) -> int:
-    r = subprocess.check_output(
-        ['git', 'log', '-1', '--pretty=%at', str(p)]).strip().decode()
+    r = (
+        subprocess.check_output(['git', 'log', '-1', '--pretty=%at', str(p)])
+        .strip()
+        .decode()
+    )
     if r:
         return int(r)
     else:
@@ -83,11 +107,13 @@ def set_reason(args, reason):
 
 
 def clean_docker():
-    for k in ['df -h',
-              'docker stop $(docker ps -aq)',
-              'docker rm $(docker ps -aq)',
-              'docker rmi $(docker image ls -aq)',
-              'df -h']:
+    for k in [
+        'df -h',
+        'docker stop $(docker ps -aq)',
+        'docker rm $(docker ps -aq)',
+        'docker rmi $(docker image ls -aq)',
+        'df -h',
+    ]:
         try:
             subprocess.check_call(k, shell=True)
         except:
@@ -173,15 +199,21 @@ def build_multi_targets(args):
             args.target = p
             image_name = build_target(args)
             subprocess.check_call(['docker', 'pull', image_name])
-            tmp = subprocess.check_output(['docker', 'inspect', image_name]).strip().decode()
+            tmp = (
+                subprocess.check_output(['docker', 'inspect', image_name])
+                .strip()
+                .decode()
+            )
             tmp = json.loads(tmp)[0]
             if canonic_name not in image_map:
                 image_map[canonic_name] = []
-            image_map[canonic_name].append({
-                'Status': True,
-                'LastBuildTime': get_now_timestamp(),
-                'Inspect': tmp,
-            })
+            image_map[canonic_name].append(
+                {
+                    'Status': True,
+                    'LastBuildTime': get_now_timestamp(),
+                    'Inspect': tmp,
+                }
+            )
             status_map[canonic_name] = 'success'
         except Exception as ex:
             status_map[canonic_name] = 'fail'
@@ -196,10 +228,23 @@ def build_multi_targets(args):
             h2 = '<summary>Reason</summary>'
             h3 = '**Images**'
             reason = '\n\n'.join([v for v in args.reason])
-            tmp = re.sub(pattern=build_badge_regex,
-                         repl='\n\n'.join([build_badge_prefix, h1, h3, badge_str,
-                                           '<details>', h2, reason, '</details>']),
-                         string=tmp, flags=re.DOTALL)
+            tmp = re.sub(
+                pattern=build_badge_regex,
+                repl='\n\n'.join(
+                    [
+                        build_badge_prefix,
+                        h1,
+                        h3,
+                        badge_str,
+                        '<details>',
+                        h2,
+                        reason,
+                        '</details>',
+                    ]
+                ),
+                string=tmp,
+                flags=re.DOTALL,
+            )
 
         with open(readme_path, 'w') as fp:
             fp.write(tmp)
@@ -209,13 +254,16 @@ def build_multi_targets(args):
 
     # update json track
     with open(build_hist_path, 'w') as fp:
-        json.dump({
-            'LastBuildTime': last_build_time,
-            'LastBuildReason': args.reason,
-            'LastBuildStatus': status_map,
-            'BuilderRevision': builder_revision,
-            'Images': image_map,
-        }, fp)
+        json.dump(
+            {
+                'LastBuildTime': last_build_time,
+                'LastBuildReason': args.reason,
+                'LastBuildStatus': status_map,
+                'BuilderRevision': builder_revision,
+                'Images': image_map,
+            },
+            fp,
+        )
 
     update_hub_badge(len(image_map))
     print('delivery success')
@@ -228,12 +276,13 @@ def copy_src_to_context(target_path):
 def update_hub_badge(img_count):
     try:
         from urllib.request import Request, urlopen
+
         request_headers = {
             "Accept-Language": "en-US,en;q=0.5",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Referer": "http://thewebsite.com",
-            "Connection": "keep-alive"
+            "Connection": "keep-alive",
         }
         url = f'https://badgen.net/badge/Hub%20Images/{img_count}/cyan'
         request = Request(url, headers=request_headers)
@@ -258,7 +307,9 @@ def build_target(args):
         manifest_path = os.path.join(args.target, 'manifest.yml')
         for j in (dockerfile_path, manifest_path):
             if not os.path.exists(j):
-                raise FileNotFoundError(f'{j} does not exist and it is required for a valid hub image!')
+                raise FileNotFoundError(
+                    f'{j} does not exist and it is required for a valid hub image!'
+                )
     else:
         if args.error_on_empty:
             raise NotADirectoryError(f'{args.target} is not a valid directory')
@@ -276,7 +327,9 @@ def build_target(args):
     # check if all keys are allowed keys
     for k in _manifest.keys():
         if k not in allowed:
-            raise ValueError(f'{k} is not allowed as a key in manifest.yml, only one of the {allowed}')
+            raise ValueError(
+                f'{k} is not allowed as a key in manifest.yml, only one of the {allowed}'
+            )
 
     # check the required field in manifest
     for r in required:
@@ -317,7 +370,11 @@ def build_target(args):
             revised_dockerfile.append(l)
             if l.startswith('FROM'):
                 revised_dockerfile.append('LABEL ')
-                revised_dockerfile.append(' \\      \n'.join(f'{label_prefix}{k}="{v}"' for k, v in _manifest.items()))
+                revised_dockerfile.append(
+                    ' \\      \n'.join(
+                        f'{label_prefix}{k}="{v}"' for k, v in _manifest.items()
+                    )
+                )
     for k in revised_dockerfile:
         print(k)
 
@@ -327,10 +384,16 @@ def build_target(args):
     copy_src_to_context(args.target)
 
     dockerbuild_cmd = ['docker', 'buildx', 'build']
-    dockerbuild_args = ['--platform', ','.join(v for v in _manifest['platform']),
-                        '-t', f'{docker_registry}{image_canonical_name}:{_manifest["version"]}', '-t',
-                        f'{docker_registry}{image_canonical_name}:latest',
-                        '--file', dockerfile_path + '.tmp']
+    dockerbuild_args = [
+        '--platform',
+        ','.join(v for v in _manifest['platform']),
+        '-t',
+        f'{docker_registry}{image_canonical_name}:{_manifest["version"]}',
+        '-t',
+        f'{docker_registry}{image_canonical_name}:latest',
+        '--file',
+        dockerfile_path + '.tmp',
+    ]
     dockerbuild_action = '--push' if args.push else '--load'
     docker_cmd = dockerbuild_cmd + dockerbuild_args + [dockerbuild_action, args.target]
     subprocess.check_call(docker_cmd)
@@ -342,12 +405,21 @@ def build_target(args):
             with open(target_readme_path, 'w') as fp:
                 fp.write('#{name}\n\n#{description}\n'.format_map(_manifest))
 
-        docker_readme_cmd = ['docker', 'run', '-v', f'{args.target}:/workspace',
-                             '-e', f'DOCKERHUB_USERNAME={os.environ["DOCKERHUB_DEVBOT_USER"]}',
-                             '-e', f'DOCKERHUB_PASSWORD={os.environ["DOCKERHUB_DEVBOT_PWD"]}',
-                             '-e', f'DOCKERHUB_REPOSITORY={docker_registry}{image_canonical_name}',
-                             '-e', 'README_FILEPATH=/workspace/README.md',
-                             'peterevans/dockerhub-description:2.1']
+        docker_readme_cmd = [
+            'docker',
+            'run',
+            '-v',
+            f'{args.target}:/workspace',
+            '-e',
+            f'DOCKERHUB_USERNAME={os.environ["DOCKERHUB_DEVBOT_USER"]}',
+            '-e',
+            f'DOCKERHUB_PASSWORD={os.environ["DOCKERHUB_DEVBOT_PWD"]}',
+            '-e',
+            f'DOCKERHUB_REPOSITORY={docker_registry}{image_canonical_name}',
+            '-e',
+            'README_FILEPATH=/workspace/README.md',
+            'peterevans/dockerhub-description:2.1',
+        ]
         subprocess.check_call(docker_readme_cmd)
         print('upload readme success!')
 
@@ -365,24 +437,31 @@ def build_target(args):
 
 def test_docker_cli(img_name):
     print('testing image with docker run')
-    subprocess.check_call(['docker', 'run', '--rm', img_name, '--max-idle-time', '5', '--shutdown-idle'])
+    subprocess.check_call(
+        ['docker', 'run', '--rm', img_name, '--max-idle-time', '5', '--shutdown-idle']
+    )
 
 
 def test_jina_cli(img_name):
     print('testing image with jina cli')
-    subprocess.check_call(['jina', 'pod', '--image', img_name, '--max-idle-time', '5', '--shutdown-idle'])
+    subprocess.check_call(
+        ['jina', 'pod', '--image', img_name, '--max-idle-time', '5', '--shutdown-idle']
+    )
 
 
 def test_flow_api(img_name):
     print('testing image with jina flow API')
     from jina.flow import Flow
+
     with Flow().add(image=img_name, replicas=3).build():
         pass
 
 
 def check_image_name(s):
     if not re.match(image_tag_regex, s):
-        raise ValueError(f'{s} is not a valid image name for a Jina Hub image, it should match with {image_tag_regex}')
+        raise ValueError(
+            f'{s} is not a valid image name for a Jina Hub image, it should match with {image_tag_regex}'
+        )
 
 
 def check_platform(s):
@@ -391,7 +470,9 @@ def check_platform(s):
 
     for ss in s:
         if ss not in platforms:
-            raise ValueError(f'platform {ss} is not supported, should be one of {platforms}')
+            raise ValueError(
+                f'platform {ss} is not supported, should be one of {platforms}'
+            )
 
 
 def check_license(s):
@@ -403,7 +484,11 @@ def check_license(s):
 
 
 def add_revision_source(d):
-    d['revision'] = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip().decode()
+    d['revision'] = (
+        subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
+        .strip()
+        .decode()
+    )
     d['source'] = 'https://github.com/jina-ai/jina-hub/commit/' + d['revision']
 
 
@@ -414,24 +499,38 @@ def check_name(s):
 
 def check_version(s):
     if not re.match(sver_regex, s):
-        raise ValueError(f'{s} is not a valid semantic version number, see http://semver.org/')
+        raise ValueError(
+            f'{s} is not a valid semantic version number, see http://semver.org/'
+        )
 
 
 def get_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--target', type=str,
-                        help='the directory path of target Pod image, where manifest.yml and Dockerfile located')
+    parser.add_argument(
+        '--target',
+        type=str,
+        help='the directory path of target Pod image, where manifest.yml and Dockerfile located',
+    )
     gp1 = parser.add_mutually_exclusive_group()
-    gp1.add_argument('--push', action='store_true', default=False,
-                     help='push to the registry')
-    gp1.add_argument('--test', action='store_true', default=False,
-                     help='test the pod image')
-    parser.add_argument('--error-on-empty', action='store_true', default=False,
-                        help='stop and raise error when the target is empty, otherwise just gracefully exit')
-    parser.add_argument('--reason', type=str, nargs='*',
-                        help='the reason of the build')
-    parser.add_argument('--check-only', action='store_true', default=False,
-                        help='check if the there is anything to update')
+    gp1.add_argument(
+        '--push', action='store_true', default=False, help='push to the registry'
+    )
+    gp1.add_argument(
+        '--test', action='store_true', default=False, help='test the pod image'
+    )
+    parser.add_argument(
+        '--error-on-empty',
+        action='store_true',
+        default=False,
+        help='stop and raise error when the target is empty, otherwise just gracefully exit',
+    )
+    parser.add_argument('--reason', type=str, nargs='*', help='the reason of the build')
+    parser.add_argument(
+        '--check-only',
+        action='store_true',
+        default=False,
+        help='check if the there is anything to update',
+    )
     return parser
 
 

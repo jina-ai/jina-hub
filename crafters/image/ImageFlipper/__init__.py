@@ -1,4 +1,3 @@
-
 from typing import Dict
 
 import numpy as np
@@ -12,11 +11,7 @@ class ImageFlipper(BaseCrafter):
     :class:`ImageFlipper` flips the image horizontally or vertically. Flip image in the left/right or up/down direction respectively.
     """
 
-    def __init__(self,
-                 vertical: bool = False,
-                 channel_axis: int = -1,
-                 *args,
-                 **kwargs):
+    def __init__(self, vertical: bool = False, channel_axis: int = -1, *args, **kwargs):
         """
 
         :param vertical: desired rotation type. ``True`` indicates the image should be flipped vertically.
@@ -37,4 +32,4 @@ class ImageFlipper(BaseCrafter):
         img = np.array(raw_img).astype('float32')
         img = np.flipud(img) if self.vertical else np.fliplr(img)
         img = _move_channel_axis(img, -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img)
+        return dict(offset=0, weight=1.0, blob=img)

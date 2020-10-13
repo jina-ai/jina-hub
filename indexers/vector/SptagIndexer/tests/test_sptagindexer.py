@@ -59,7 +59,9 @@ def test_sptag_wrap_indexer():
         index_abspath = indexer.index_abspath
         save_abspath = indexer.save_abspath
 
-    with BaseIndexer.load_config(os.path.join(cur_dir, 'yaml/sptag-wrap.yml')) as indexer:
+    with BaseIndexer.load_config(
+        os.path.join(cur_dir, 'yaml/sptag-wrap.yml')
+    ) as indexer:
         assert isinstance(indexer, SptagIndexer)
         idx, dist = indexer.query(query, top_k=top_k)
         global retr_idx

@@ -96,6 +96,7 @@ def test_save_and_load_config(*args, **kwargs):
     assert encoder_loaded.channel_axis == encoder.channel_axis
     rm_files([encoder.save_abspath, encoder.config_abspath])
 
+
 @mock.patch('torchvision.models.video', return_value=MockModels())
 @mock.patch.object(VideoTorchEncoder, '_get_features', return_value=MockFeature())
 def test_pool_fn(*args, **kwargs):
@@ -104,6 +105,10 @@ def test_pool_fn(*args, **kwargs):
     encoded_data = encoder.pool_fn(test_data, axis=(2, 3))
     assert encoded_data.ndim == test_data.ndim - 2
 
-@pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
+
+@pytest.mark.skipif(
+    'JINA_TEST_PRETRAINED' not in os.environ,
+    reason='skip the pretrained test if not set',
+)
 def test_video_torch_encode_with_pretrained_model():
     _test_encoding_results()

@@ -15,11 +15,13 @@ class CenterImageCropper(BaseCrafter):
         in the :py:mode:`PIL.Image`.
     """
 
-    def __init__(self,
-                 target_size: Union[Tuple[int, int], int] = 224,
-                 channel_axis: int = -1,
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        target_size: Union[Tuple[int, int], int] = 224,
+        channel_axis: int = -1,
+        *args,
+        **kwargs
+    ):
         """
 
         :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
@@ -39,4 +41,6 @@ class CenterImageCropper(BaseCrafter):
         raw_img = _load_image(blob, self.channel_axis)
         _img, top, left = _crop_image(raw_img, self.target_size, how='center')
         img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img.astype('float32'), location=(top, left))
+        return dict(
+            offset=0, weight=1.0, blob=img.astype('float32'), location=(top, left)
+        )

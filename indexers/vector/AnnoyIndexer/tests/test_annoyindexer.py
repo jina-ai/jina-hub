@@ -33,7 +33,9 @@ def test_annoy_wrap_indexer():
         save_abspath = indexer.save_abspath
         index_abspath = indexer.index_abspath
 
-    with BaseIndexer.load_config(os.path.join(cur_dir, 'yaml/annoy-wrap.yml')) as indexer:
+    with BaseIndexer.load_config(
+        os.path.join(cur_dir, 'yaml/annoy-wrap.yml')
+    ) as indexer:
         assert isinstance(indexer, AnnoyIndexer)
         idx, dist = indexer.query(query, top_k=4)
         global retr_idx
@@ -48,11 +50,14 @@ def test_annoy_wrap_indexer():
 
 def test_simple_annoy():
     from annoy import AnnoyIndex
+
     _index = AnnoyIndex(5, 'angular')
     for j in range(3):
         _index.add_item(j, np.random.random((5,)))
     _index.build(4)
-    idx1, _ = _index.get_nns_by_vector(np.random.random((5,)), 3, include_distances=True)
+    idx1, _ = _index.get_nns_by_vector(
+        np.random.random((5,)), 3, include_distances=True
+    )
     assert len(idx1) == 3
 
 

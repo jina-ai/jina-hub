@@ -16,11 +16,14 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
     https://pytorch.org/docs/stable/torchvision/models.html
     """
 
-    def __init__(self,
-                 model_name: str = 'r3d_18',
-                 channel_axis: int = 1,
-                 pool_strategy: str = 'mean',
-                 *args, **kwargs):
+    def __init__(
+        self,
+        model_name: str = 'r3d_18',
+        channel_axis: int = 1,
+        pool_strategy: str = 'mean',
+        *args,
+        **kwargs,
+    ):
         """
         :param model_name: the name of the model. Supported models include ``r3d_18``, ``mc3_18``, ``r2plus1d_18``
         :param pool_strategy: the pooling strategy
@@ -40,6 +43,7 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
     def post_init(self):
         super().post_init()
         import torchvision.models.video as models
+
         if self.pool_strategy is not None:
             self.pool_fn = getattr(np, self.pool_strategy)
         self.model = getattr(models, self.model_name)(pretrained=True).eval()
@@ -66,6 +70,7 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
+
         _input = torch.from_numpy(data.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()

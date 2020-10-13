@@ -12,12 +12,14 @@ class RandomImageCropper(BaseSegmenter):
         in the :py:mode:`PIL.Image`.
     """
 
-    def __init__(self,
-                 target_size: Union[Tuple[int], int] = 224,
-                 num_patches: int = 1,
-                 channel_axis: int = -1,
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        target_size: Union[Tuple[int], int] = 224,
+        num_patches: int = 1,
+        channel_axis: int = -1,
+        *args,
+        **kwargs
+    ):
         """
 
         :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
@@ -41,5 +43,11 @@ class RandomImageCropper(BaseSegmenter):
             _img, top, left = _crop_image(raw_img, self.target_size, how='random')
             img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
             result.append(
-                dict(offset=0, weight=1., blob=np.asarray(img).astype('float32'), location=(top, left)))
+                dict(
+                    offset=0,
+                    weight=1.0,
+                    blob=np.asarray(img).astype('float32'),
+                    location=(top, left),
+                )
+            )
         return result

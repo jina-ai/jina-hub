@@ -13,11 +13,14 @@ class SlidingWindowSegmenter(BaseSegmenter):
         The substrings that are shorter than the ``min_substring_len`` will be discarded.
     """
 
-    def __init__(self,
-                 window_size: int = 300,
-                 step_size: int = 150,
-                 min_substring_len: int = 1,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        window_size: int = 300,
+        step_size: int = 150,
+        min_substring_len: int = 1,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.window_size = window_size
         self.step_size = step_size
@@ -25,14 +28,19 @@ class SlidingWindowSegmenter(BaseSegmenter):
         if self.min_substring_len > self.window_size:
             self.logger.warning(
                 'the min_substring_len (={}) should be smaller to the window_size (={})'.format(
-                    self.min_substring_len, self.window_size))
+                    self.min_substring_len, self.window_size
+                )
+            )
         if self.window_size <= 0:
             self.logger.warning(
-                f'the window_size (={self.window_size}) should be larger than zero')
+                f'the window_size (={self.window_size}) should be larger than zero'
+            )
         if self.step_size > self.window_size:
             self.logger.warning(
                 'the step_size (={}) should not be larger than the window_size (={})'.format(
-                    self.window_size, self.step_size))
+                    self.window_size, self.step_size
+                )
+            )
 
     def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         """
@@ -43,8 +51,7 @@ class SlidingWindowSegmenter(BaseSegmenter):
 
         def sliding_window(iterable, size, step):
             i = iter(text)
-            d = deque(islice(i, size),
-                      maxlen=size)
+            d = deque(islice(i, size), maxlen=size)
             if not d:
                 # empty text
                 return results
@@ -54,16 +61,14 @@ class SlidingWindowSegmenter(BaseSegmenter):
                     d.append(next(i))
                 except StopIteration:
                     return
-                d.extend(next(i, None)
-                         for _ in range(step - 1))
+                d.extend(next(i, None) for _ in range(step - 1))
 
-        chunks = [''.join(filter(None, list(chunk))) for chunk in
-                  sliding_window(text, self.window_size, self.step_size)]
+        chunks = [
+            ''.join(filter(None, list(chunk)))
+            for chunk in sliding_window(text, self.window_size, self.step_size)
+        ]
         results = []
         for idx, s in enumerate(chunks):
             if self.min_substring_len <= len(s):
-                results.append(dict(
-                    text=s,
-                    offset=idx,
-                    weight=1.0))
+                results.append(dict(text=s, offset=idx, weight=1.0))
         return results

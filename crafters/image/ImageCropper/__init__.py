@@ -15,7 +15,16 @@ class ImageCropper(BaseCrafter):
         the :py:mode:`PIL.Image`.
     """
 
-    def __init__(self, top: int = 0, left: int = 0, height: int = 224, width: int = 224, channel_axis: int = -1, *args, **kwargs):
+    def __init__(
+        self,
+        top: int = 0,
+        left: int = 0,
+        height: int = 224,
+        width: int = 224,
+        channel_axis: int = -1,
+        *args,
+        **kwargs
+    ):
         """
 
         :param top: the vertical coordinate of the top left corner of the crop box.
@@ -39,7 +48,10 @@ class ImageCropper(BaseCrafter):
         :returns: a chunk dict with the cropped image
         """
         raw_img = _load_image(blob, self.channel_axis)
-        _img, top, left = _crop_image(raw_img, target_size=(self.height, self.width), top=self.top, left=self.left)
+        _img, top, left = _crop_image(
+            raw_img, target_size=(self.height, self.width), top=self.top, left=self.left
+        )
         img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img.astype('float32'), location=(top, left))
-
+        return dict(
+            offset=0, weight=1.0, blob=img.astype('float32'), location=(top, left)
+        )

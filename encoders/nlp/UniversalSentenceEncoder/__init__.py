@@ -15,10 +15,11 @@ class UniversalSentenceEncoder(BaseTFEncoder):
     """
 
     def __init__(
-            self,
-            model_url: str = 'https://tfhub.dev/google/universal-sentence-encoder/4',
-            *args,
-            **kwargs):
+        self,
+        model_url: str = 'https://tfhub.dev/google/universal-sentence-encoder/4',
+        *args,
+        **kwargs
+    ):
         """
         :param model_url: the url of the model (TensorFlow Hub). For supported models see
                           family overview: https://tfhub.dev/google/collections/universal-sentence-encoder/1)
@@ -31,6 +32,7 @@ class UniversalSentenceEncoder(BaseTFEncoder):
     def post_init(self):
         self.to_device()
         import tensorflow_hub as hub
+
         self.model = hub.load(self.model_url)
 
     @batching

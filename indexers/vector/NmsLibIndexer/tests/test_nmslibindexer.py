@@ -55,7 +55,9 @@ def test_nmslib_wrap_indexer():
         index_abspath = indexer.index_abspath
         save_abspath = indexer.save_abspath
 
-    with BaseIndexer.load_config(os.path.join(cur_dir, 'yaml/nmslib-wrap.yml')) as indexer:
+    with BaseIndexer.load_config(
+        os.path.join(cur_dir, 'yaml/nmslib-wrap.yml')
+    ) as indexer:
         assert isinstance(indexer, NmsLibIndexer)
         idx, dist = indexer.query(query, top_k=4)
         global retr_idx

@@ -16,8 +16,9 @@ def rm_files(file_paths):
 
 
 def test_milvus_indexer_save_and_load():
-    with MilvusIndexer('localhost', 19530,
-                       'collection', 'IVF', {'key': 'value'}) as indexer:
+    with MilvusIndexer(
+        'localhost', 19530, 'collection', 'IVF', {'key': 'value'}
+    ) as indexer:
         indexer.touch()
         indexer.save()
         assert os.path.exists(indexer.save_abspath)

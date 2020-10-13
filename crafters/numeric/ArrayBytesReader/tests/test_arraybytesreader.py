@@ -14,6 +14,7 @@ def test_bytes_reader():
     assert crafted_doc['blob'].shape[0] == size
     np.testing.assert_array_equal(crafted_doc['blob'], sample_array)
 
+
 def test_bytes_reader_int_type():
     size = 8
     sample_array = np.random.rand(size).astype('int')
@@ -24,6 +25,7 @@ def test_bytes_reader_int_type():
 
     assert crafted_doc['blob'].shape[0] == size
     np.testing.assert_array_equal(crafted_doc['blob'], sample_array)
+
 
 def test_bytes_reader_wrong_type():
     size = 8

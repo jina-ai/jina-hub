@@ -16,6 +16,7 @@ class TfIdfRanker(Chunk2DocRanker):
         as the naive ``document-frequency``. Please refer to the functions for the details of calculating ``tf`` and
         ``idf``.
     """
+
     required_keys = {'length', 'id'}
 
     def __init__(self, threshold=0.1, *args, **kwargs):
@@ -27,7 +28,9 @@ class TfIdfRanker(Chunk2DocRanker):
         super().__init__(*args, **kwargs)
         self.threshold = threshold
 
-    def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
+    def score(
+        self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
+    ) -> 'np.ndarray':
         """
 
         :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the batch size of the matched chunks for the
@@ -48,7 +51,9 @@ class TfIdfRanker(Chunk2DocRanker):
         r = []
         _q_idf = self.get_idf(match_idx)
         for _g in _groups:
-            _doc_id, _doc_score = self._get_score(_g, query_chunk_meta, match_chunk_meta, _q_idf)
+            _doc_id, _doc_score = self._get_score(
+                _g, query_chunk_meta, match_chunk_meta, _q_idf
+            )
             r.append((_doc_id, _doc_score))
         return self.sort_doc_by_score(r)
 
@@ -86,8 +91,10 @@ class TfIdfRanker(Chunk2DocRanker):
                   matched doc. ``n_doc`` denotes the total number of chunks in the matched doc.
         """
         q_tf_list, q_id_list, c_id_list = self._get_tf(match_idx)
-        return {q_idx: n / match_chunk_meta[doc_idx]['length']
-                for doc_idx, q_idx, n in zip(c_id_list, q_id_list, q_tf_list)}
+        return {
+            q_idx: n / match_chunk_meta[doc_idx]['length']
+            for doc_idx, q_idx, n in zip(c_id_list, q_id_list, q_tf_list)
+        }
 
     def _get_df(self, match_idx):
         """Get the naive document frequency
@@ -116,12 +123,16 @@ class TfIdfRanker(Chunk2DocRanker):
         """
         _m = match_idx[match_idx[self.COL_SCORE] >= self.threshold]
         _sorted_m = _m[_m[self.COL_DOC_CHUNK_HASH].argsort()]
-        q_id_list, q_tf_list = np.unique(_sorted_m[self.COL_DOC_CHUNK_HASH], return_counts=True)
+        q_id_list, q_tf_list = np.unique(
+            _sorted_m[self.COL_DOC_CHUNK_HASH], return_counts=True
+        )
         row_id = np.cumsum(q_tf_list) - 1
         c_id_list = _sorted_m[row_id][self.COL_MATCH_HASH]
         return q_tf_list, q_id_list, c_id_list
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, idf, *args, **kwargs):
+    def _get_score(
+        self, match_idx, query_chunk_meta, match_chunk_meta, idf, *args, **kwargs
+    ):
         """Get the doc score based on the weighted sum of matching scores. The weights are calculated from the tf-idf of
              the query chunks.
 
@@ -134,9 +145,10 @@ class TfIdfRanker(Chunk2DocRanker):
         """
         tf = self.get_tf(match_idx, match_chunk_meta)
         _weights = match_idx[self.COL_SCORE]
-        _q_tfidf = np.vectorize(tf.get)(match_idx[self.COL_DOC_CHUNK_HASH], 0) * \
-                   np.vectorize(idf.get)(match_idx[self.COL_DOC_CHUNK_HASH], 0)
+        _q_tfidf = np.vectorize(tf.get)(
+            match_idx[self.COL_DOC_CHUNK_HASH], 0
+        ) * np.vectorize(idf.get)(match_idx[self.COL_DOC_CHUNK_HASH], 0)
         _sum = np.sum(_q_tfidf)
         _doc_id = self.get_doc_id(match_idx)
-        _score = 0. if _sum == 0 else np.sum(_weights * _q_tfidf) * 1.0 / _sum
+        _score = 0.0 if _sum == 0 else np.sum(_weights * _q_tfidf) * 1.0 / _sum
         return _doc_id, _score

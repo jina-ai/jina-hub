@@ -11,13 +11,15 @@ class SlidingWindowImageCropper(BaseSegmenter):
     :class:`SlidingWindowImageCropper` crops the image with a sliding window.
     """
 
-    def __init__(self,
-                 target_size: Union[Tuple[int], int] = 16,
-                 strides: Tuple[int, int] = (2, 2),
-                 padding: bool = False,
-                 channel_axis: int = -1,
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        target_size: Union[Tuple[int], int] = 16,
+        strides: Tuple[int, int] = (2, 2),
+        padding: bool = False,
+        channel_axis: int = -1,
+        *args,
+        **kwargs,
+    ):
         """
 
         :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
@@ -41,10 +43,9 @@ class SlidingWindowImageCropper(BaseSegmenter):
         h, w, c = img.shape
         ext_h = self.target_size - h % self.stride_h
         ext_w = self.target_size - w % self.stride_w
-        return np.pad(img,
-                      ((0, ext_h), (0, ext_w), (0, 0)),
-                      mode='constant',
-                      constant_values=0)
+        return np.pad(
+            img, ((0, ext_h), (0, ext_w), (0, 0)), mode='constant', constant_values=0
+        )
 
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
@@ -68,24 +69,32 @@ class SlidingWindowImageCropper(BaseSegmenter):
                 1 + int((w - self.target_size) / self.stride_w),
                 self.target_size,
                 self.target_size,
-                c
+                c,
             ),
             strides=(
                 row_step * self.stride_h,
                 col_step * self.stride_w,
                 row_step,
                 col_step,
-                1), writeable=False)
+                1,
+            ),
+            writeable=False,
+        )
 
         bbox_locations = [
             (h * self.stride_h, w * self.stride_w)
             for h in range(expanded_img.shape[0])
-            for w in range(expanded_img.shape[1])]
+            for w in range(expanded_img.shape[1])
+        ]
 
         expanded_img = expanded_img.reshape((-1, self.target_size, self.target_size, c))
 
         results = []
         for location, _blob in zip(bbox_locations, expanded_img):
             blob = _move_channel_axis(_blob, -1, self.channel_axis)
-            results.append(dict(offset=0, weight=1.0, blob=blob.astype('float32'), location=location))
+            results.append(
+                dict(
+                    offset=0, weight=1.0, blob=blob.astype('float32'), location=location
+                )
+            )
         return results

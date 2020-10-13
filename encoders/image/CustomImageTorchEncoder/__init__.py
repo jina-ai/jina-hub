@@ -15,10 +15,15 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
     https://pytorch.org/docs/stable/torchvision/models.html
     """
 
-    def __init__(self, model_path: str, layer_name: str,
-                 pool_strategy: str = 'mean',
-                 channel_axis: int = 1,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        model_path: str,
+        layer_name: str,
+        pool_strategy: str = 'mean',
+        channel_axis: int = 1,
+        *args,
+        **kwargs
+    ):
         """
         :param model_path: the path where the model is stored.
         :layer: Name of the layer from where to extract the feature map.
@@ -34,6 +39,7 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
     def post_init(self):
         super().post_init()
         import torch
+
         if self.pool_strategy is not None:
             self.pool_fn = getattr(np, self.pool_strategy)
         self.model = torch.load(self.model_path)
@@ -64,6 +70,7 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
+
         _input = torch.from_numpy(data.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()

@@ -37,7 +37,12 @@ class ImageOnnxEncoder(BaseOnnxEncoder):
         results = []
         for idx in range(data.shape[0]):
             img = np.expand_dims(data[idx, :, :, :], axis=0).astype('float32')
-            data_encoded, *_ = self.model.run([self.outputs_name, ], {self.inputs_name: img})
+            data_encoded, *_ = self.model.run(
+                [
+                    self.outputs_name,
+                ],
+                {self.inputs_name: img},
+            )
             results.append(data_encoded)
         feature_map = np.concatenate(results, axis=0)
         if feature_map.ndim == 2 or self.pool_strategy is None:

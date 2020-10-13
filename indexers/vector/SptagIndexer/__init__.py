@@ -18,9 +18,14 @@ class SptagIndexer(BaseNumpyIndexer):
         sptag package dependency is only required at the query time.
     """
 
-    def __init__(self, dist_calc_method: str = 'Cosine', method: str = 'BKT',
-                 num_threads: int = 1,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        dist_calc_method: str = 'Cosine',
+        method: str = 'BKT',
+        num_threads: int = 1,
+        *args,
+        **kwargs
+    ):
         """
         Initialize an SptagIndexer
 
@@ -47,7 +52,9 @@ class SptagIndexer(BaseNumpyIndexer):
         if _index.Build(vecs.astype('float32'), vecs.shape[0]):
             return _index
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(
+        self, keys: 'np.ndarray', top_k: int, *args, **kwargs
+    ) -> Tuple['np.ndarray', 'np.ndarray']:
         idx = np.ones((keys.shape[0], top_k)) * (-1)
         dist = np.ones((keys.shape[0], top_k)) * (-1)
         for r_id, k in enumerate(keys):

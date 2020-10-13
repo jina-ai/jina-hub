@@ -15,7 +15,9 @@ class JiebaSegmenter(BaseSegmenter):
         """
         super().__init__(*args, **kwargs)
         if mode not in ('accurate', 'all', 'search'):
-            raise ValueError('you must choose one of modes to cut the text: accurate, all, search.')
+            raise ValueError(
+                'you must choose one of modes to cut the text: accurate, all, search.'
+            )
         self.mode = mode
 
     def craft(self, text: str, *args, **kwargs) -> List[Dict]:
@@ -25,6 +27,7 @@ class JiebaSegmenter(BaseSegmenter):
         :return: a list of chunk dicts
         """
         import jieba
+
         if self.mode == 'search':
             words = jieba.cut_for_search(text)
         elif self.mode == 'all':
@@ -34,7 +37,6 @@ class JiebaSegmenter(BaseSegmenter):
 
         chunks = []
         for idx, word in enumerate(words):
-            chunks.append(
-                dict(text=word, offset=idx, weight=1.0))
+            chunks.append(dict(text=word, offset=idx, weight=1.0))
 
         return chunks

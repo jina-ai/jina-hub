@@ -13,7 +13,9 @@ class DeepSegmenter(BaseSegmenter):
     Details: https://github.com/notAI-tech/deepsegment
     """
 
-    def __init__(self, lang_code: str = 'en', checkpoint_name: str = None, *args, **kwargs):
+    def __init__(
+        self, lang_code: str = 'en', checkpoint_name: str = None, *args, **kwargs
+    ):
         """
 
         :param lang_code: en - english (Trained on data from various sources); fr - french (Only Tatoeba data); it - italian (Only Tatoeba data)
@@ -26,7 +28,10 @@ class DeepSegmenter(BaseSegmenter):
 
     def post_init(self):
         from deepsegment import DeepSegment
-        self._segmenter = DeepSegment(self.lang_code, checkpoint_name=self.checkpoint_name)
+
+        self._segmenter = DeepSegment(
+            self.lang_code, checkpoint_name=self.checkpoint_name
+        )
 
     def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         """
@@ -38,8 +43,5 @@ class DeepSegmenter(BaseSegmenter):
 
         results = []
         for idx, s in enumerate(self._segmenter.segment_long(text)):
-            results.append(dict(
-                text=s,
-                offset=idx,
-                weight=1.0))
+            results.append(dict(text=s, offset=idx, weight=1.0))
         return results

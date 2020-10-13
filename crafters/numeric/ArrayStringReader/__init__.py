@@ -34,9 +34,11 @@ class ArrayStringReader(BaseCrafter):
         except TypeError:
             self.logger.error(
                 f'Data type {self.as_type} is not understood. '
-                f'Please refer to the list of data types from Numpy.')
+                f'Please refer to the list of data types from Numpy.'
+            )
         except ValueError:
             self.logger.error(
-                f'Data type mismatch. Cannot convert input to {self.as_type}.')
+                f'Data type mismatch. Cannot convert input to {self.as_type}.'
+            )
 
-        return dict(weight=1., blob=_array)
+        return dict(weight=1.0, blob=_array)

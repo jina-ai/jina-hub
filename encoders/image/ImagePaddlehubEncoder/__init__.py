@@ -15,12 +15,14 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
     https://github.com/PaddlePaddle/PaddleHub
     """
 
-    def __init__(self,
-                 model_name: str = None,
-                 pool_strategy: str = None,
-                 channel_axis: int = -3,
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        model_name: str = None,
+        pool_strategy: str = None,
+        channel_axis: int = -3,
+        *args,
+        **kwargs,
+    ):
         """
 
         :param model_name: the name of the model. Supported models include
@@ -60,6 +62,7 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
     def post_init(self):
         super().post_init()
         import paddlehub as hub
+
         module = hub.Module(name=self.model_name)
         inputs, outputs, self.model = module.context(trainable=False)
         self.get_inputs_and_outputs_name(inputs, outputs)
@@ -90,7 +93,7 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
             program=self.model,
             fetch_list=[self.outputs_name],
             feed={self.inputs_name: data.astype('float32')},
-            return_numpy=True
+            return_numpy=True,
         )
         if feature_map.ndim == 2 or self.pool_strategy is None:
             return feature_map

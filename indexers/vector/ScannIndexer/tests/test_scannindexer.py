@@ -15,6 +15,7 @@ vec = np.array(np.random.random([10, 10]), dtype=np.float32)
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
+
 def rm_files(file_paths):
     for file_path in file_paths:
         if os.path.exists(file_path):
@@ -22,6 +23,7 @@ def rm_files(file_paths):
                 os.remove(file_path)
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
+
 
 def test_scannindexer():
     train_filepath = os.path.join(cur_dir, 'train.tgz')

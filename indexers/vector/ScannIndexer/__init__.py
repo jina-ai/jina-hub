@@ -17,17 +17,20 @@ class ScannIndexer(BaseNumpyIndexer):
         Scann package dependency is only required at the query time.
     """
 
-    def __init__(self,
-                 num_leaves: int = 2000,
-                 num_leaves_to_search: int = 100,
-                 training_iterations: int = 10,
-                 distance_measure: str = "dot_product",
-                 training_sample_size: int = 250000,
-                 scoring: str = "score_ah",
-                 anisotropic_quantization_threshold: float = 0.2,
-                 dimensions_per_block: int = 2,
-                 reordering_num_neighbors: int = 100,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        num_leaves: int = 2000,
+        num_leaves_to_search: int = 100,
+        training_iterations: int = 10,
+        distance_measure: str = "dot_product",
+        training_sample_size: int = 250000,
+        scoring: str = "score_ah",
+        anisotropic_quantization_threshold: float = 0.2,
+        dimensions_per_block: int = 2,
+        reordering_num_neighbors: int = 100,
+        *args,
+        **kwargs
+    ):
         """
         Initialize an ScannIndexer
 
@@ -77,14 +80,24 @@ class ScannIndexer(BaseNumpyIndexer):
         Then the top-k from this new measurement will be selected.
         """
         import scann
-        index = scann.ScannBuilder(vecs, self.training_iterations, self.distance_measure). \
-            score_ah(self.dimensions_per_block, self.anisotropic_quantization_threshold). \
-            reorder(self.reordering_num_neighbors).create_pybind()
+
+        index = (
+            scann.ScannBuilder(vecs, self.training_iterations, self.distance_measure)
+            .score_ah(
+                self.dimensions_per_block, self.anisotropic_quantization_threshold
+            )
+            .reorder(self.reordering_num_neighbors)
+            .create_pybind()
+        )
         return index
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(
+        self, keys: 'np.ndarray', top_k: int, *args, **kwargs
+    ) -> Tuple['np.ndarray', 'np.ndarray']:
         if self.reordering_num_neighbors < top_k:
-            self.logger.warning('The number of reordering_num_neighbors should be the same or higher than top_k')
+            self.logger.warning(
+                'The number of reordering_num_neighbors should be the same or higher than top_k'
+            )
 
         neighbors, dist = self.query_handler.search_batched(keys, top_k)
         return neighbors, dist

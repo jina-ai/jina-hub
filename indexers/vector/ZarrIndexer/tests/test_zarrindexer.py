@@ -26,7 +26,7 @@ def rm_files(file_paths):
                 os.remove(file_path)
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
-                
+
 
 def test_zarr_indexer():
     with ZarrIndexer(index_filename='test.zarr') as indexer:
@@ -49,13 +49,10 @@ def test_zarr_indexer():
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
     rm_files([index_abspath, save_abspath])
-    
+
 
 def test_zarr_indexer_known():
-    vectors = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]])
+    vectors = np.array([[1, 1, 1], [10, 10, 10], [100, 100, 100], [1000, 1000, 1000]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
     with ZarrIndexer(index_filename='test.zarr') as indexer:
         indexer.add(keys, vectors)
@@ -64,10 +61,7 @@ def test_zarr_indexer_known():
         index_abspath = indexer.index_abspath
         save_abspath = indexer.save_abspath
 
-    queries = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]])
+    queries = np.array([[1, 1, 1], [10, 10, 10], [100, 100, 100], [1000, 1000, 1000]])
     with ZarrIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(queries, top_k=2)

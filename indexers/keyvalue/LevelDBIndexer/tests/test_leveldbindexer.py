@@ -57,5 +57,6 @@ def test_add_query():
 
 def test_load_yaml():
     from jina.executors import BaseExecutor
+
     indexer = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-leveldb.yml'))
     run_test(indexer)

@@ -29,6 +29,7 @@ class ImageReader(BaseCrafter):
 
         """
         from PIL import Image
+
         if buffer:
             raw_img = Image.open(io.BytesIO(buffer))
         elif uri:
@@ -39,4 +40,4 @@ class ImageReader(BaseCrafter):
         img = np.array(raw_img).astype('float32')
         if self.channel_axis != -1:
             img = np.moveaxis(img, -1, self.channel_axis)
-        return dict(weight=1., blob=img)
+        return dict(weight=1.0, blob=img)

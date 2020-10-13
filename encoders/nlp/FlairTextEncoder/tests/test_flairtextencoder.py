@@ -54,7 +54,9 @@ def _test_encoding_results(*args, **kwargs):
 
 @mock.patch('flair.device', return_value='')
 @mock.patch('flair.embeddings.WordEmbeddings', return_value=MockEmbedding())
-@mock.patch('flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding())
+@mock.patch(
+    'flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding()
+)
 @mock.patch('flair.data.Sentence', return_value=MockSentence())
 def test_encoding_results_local(*args, **kwargs):
     _test_encoding_results(*args, **kwargs)
@@ -62,7 +64,9 @@ def test_encoding_results_local(*args, **kwargs):
 
 @mock.patch('flair.device', return_value='')
 @mock.patch('flair.embeddings.WordEmbeddings', return_value=MockEmbedding())
-@mock.patch('flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding())
+@mock.patch(
+    'flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding()
+)
 @mock.patch('flair.data.Sentence', return_value=MockSentence())
 def test_save_and_load(*args, **kwargs):
     encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean')
@@ -77,10 +81,14 @@ def test_save_and_load(*args, **kwargs):
 @mock.patch('flair.device', return_value='')
 @mock.patch('flair.embeddings.WordEmbeddings', return_value=MockEmbedding())
 @mock.patch('flair.embeddings.FlairEmbeddings', return_value=MockEmbedding())
-@mock.patch('flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding())
+@mock.patch(
+    'flair.embeddings.DocumentPoolEmbeddings', return_value=MockDocumentEmbedding()
+)
 @mock.patch('flair.data.Sentence', return_value=MockSentence())
 def test_save_and_load_config(*args, **kwargs):
-    encoder = FlairTextEncoder(embeddings=('flair:news-forward',), pooling_strategy='mean')
+    encoder = FlairTextEncoder(
+        embeddings=('flair:news-forward',), pooling_strategy='mean'
+    )
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
@@ -88,6 +96,9 @@ def test_save_and_load_config(*args, **kwargs):
     rm_files([encoder.config_abspath, encoder.save_abspath])
 
 
-@pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
+@pytest.mark.skipif(
+    'JINA_TEST_PRETRAINED' not in os.environ,
+    reason='skip the pretrained test if not set',
+)
 def test_encoding_results(*args, **kwargs):
     _test_encoding_results(*args, **kwargs)

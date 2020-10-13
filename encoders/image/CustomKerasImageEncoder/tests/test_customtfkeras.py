@@ -18,11 +18,14 @@ def rm_files(file_paths):
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
+
 class TestNet:
     def __init__(self):
         self.model = None
         self.input_shape = (224, 224, 3)
-        self.conv = Conv2D(32, (3, 3), padding='same', name='conv1', input_shape=self.input_shape)
+        self.conv = Conv2D(
+            32, (3, 3), padding='same', name='conv1', input_shape=self.input_shape
+        )
         self.activation_relu = Activation('relu')
         self.flatten = Flatten()
         self.dense = Dense(10, name='dense')
@@ -37,6 +40,7 @@ class TestNet:
         self.model.add(self.activation_softmax)
         return self.model
 
+
 def get_encoder():
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
@@ -44,7 +48,10 @@ def get_encoder():
     path = tempfile.NamedTemporaryFile().name
     model = TestNet().create_model()
     model.save(path)
-    return CustomKerasImageEncoder(channel_axis=1, model_path=path, layer_name='dense', metas=metas)
+    return CustomKerasImageEncoder(
+        channel_axis=1, model_path=path, layer_name='dense', metas=metas
+    )
+
 
 def test_encoding_results():
     target_output_dim = 10
@@ -53,6 +60,7 @@ def test_encoding_results():
     test_data = np.random.rand(2, 3, input_dim, input_dim)
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
+
 
 def test_save_and_load():
     input_dim = 224
@@ -66,6 +74,7 @@ def test_save_and_load():
     encoded_data_test = encoder_loaded.encode(test_data)
     assert encoder_loaded.channel_axis == encoder.channel_axis
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
+
 
 def test_save_and_load_config():
     encoder = get_encoder()

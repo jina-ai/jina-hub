@@ -10,8 +10,15 @@ class MFCCTimbreEncoder(BaseAudioEncoder):
     `Batch x Concatenated Features` ndarray.
     """
 
-    def __init__(self, input_sample_rate: int = 22050, n_mfcc: int = 20, n_fft_length: int = 2048,
-                 hop_length: int = 512, *args, **kwargs):
+    def __init__(
+        self,
+        input_sample_rate: int = 22050,
+        n_mfcc: int = 20,
+        n_fft_length: int = 2048,
+        hop_length: int = 512,
+        *args,
+        **kwargs
+    ):
         """
         :class:`MFCCTimbreEncoder` extracts from an audio signal a `n_mfcc`-dimensional feature vector for each MFCC
         frame.
@@ -39,10 +46,16 @@ class MFCCTimbreEncoder(BaseAudioEncoder):
         feature vector times the number of the MFCC frames
         """
         from librosa.feature import mfcc
+
         embeds = []
         for chunk_data in data:
-            mfccs = mfcc(y=chunk_data, sr=self.input_sample_rate, n_mfcc=self.n_mfcc, n_fft=self.n_fft_length,
-                         hop_length=self.hop_length)
+            mfccs = mfcc(
+                y=chunk_data,
+                sr=self.input_sample_rate,
+                n_mfcc=self.n_mfcc,
+                n_fft=self.n_fft_length,
+                hop_length=self.hop_length,
+            )
             embeds.append(mfccs.flatten())
         return embeds
 
@@ -54,7 +67,9 @@ class ChromaPitchEncoder(BaseAudioEncoder):
     `Batch x Concatenated Features` ndarray.
     """
 
-    def __init__(self, input_sample_rate: int = 22050, hop_length: int = 512, *args, **kwargs):
+    def __init__(
+        self, input_sample_rate: int = 22050, hop_length: int = 512, *args, **kwargs
+    ):
         """
         :class:`ChromaPitchEncoder` extracts from an audio signal a 12-dimensional feature vector, that refer to 12
         octaves, for each chroma frame.
@@ -78,8 +93,14 @@ class ChromaPitchEncoder(BaseAudioEncoder):
         vector times the number of the chroma frames
         """
         from librosa.feature import chroma_cqt
+
         embeds = []
         for chunk_data in data:
-            chromagrams = chroma_cqt(y=chunk_data, sr=self.input_sample_rate, n_chroma=12, hop_length=self.hop_length)
+            chromagrams = chroma_cqt(
+                y=chunk_data,
+                sr=self.input_sample_rate,
+                n_chroma=12,
+                hop_length=self.hop_length,
+            )
             embeds.append(chromagrams.flatten())
         return embeds

@@ -3,6 +3,7 @@ import numpy as np
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTorchEncoder
 
+
 class FarmTextEncoder(BaseTorchEncoder):
     """
     FARM-based text encoder: (Framework for Adapting Representation Models)
@@ -11,11 +12,15 @@ class FarmTextEncoder(BaseTorchEncoder):
     It encodes an array of string in size `B` into an ndarray in size `B x D`
     """
 
-    def __init__(self, pretrained_model_name_or_path: str = 'deepset/bert-base-cased-squad2',
-                 num_processes: int = 0, extraction_strategy: str = 'cls_token',
-                 extraction_layer: int = -1,
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        pretrained_model_name_or_path: str = 'deepset/bert-base-cased-squad2',
+        num_processes: int = 0,
+        extraction_strategy: str = 'cls_token',
+        extraction_layer: int = -1,
+        *args,
+        **kwargs
+    ):
         """
 
         :param model_name_or_path:  Local directory or public name of the model to load.
@@ -36,12 +41,18 @@ class FarmTextEncoder(BaseTorchEncoder):
 
     def post_init(self):
         from farm.infer import Inferencer
-        self.model = Inferencer.load(model_name_or_path=self.pretrained_model_name_or_path, task_type='embeddings',
-                                     num_processes=self.num_processes)
+
+        self.model = Inferencer.load(
+            model_name_or_path=self.pretrained_model_name_or_path,
+            task_type='embeddings',
+            num_processes=self.num_processes,
+        )
 
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         basic_texts = [{'text': s} for s in data]
-        embeds = np.stack([k['vec'] for k in self.model.extract_vectors(dicts=basic_texts)])
+        embeds = np.stack(
+            [k['vec'] for k in self.model.extract_vectors(dicts=basic_texts)]
+        )
         return embeds

@@ -13,26 +13,110 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
     the images according tothe detected bounding boxes of the objects with a confidence higher than a threshold.
         TODO: Allow changing the backbone
     """
+
     COCO_INSTANCE_CATEGORY_NAMES = [
-        '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
-        'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'N/A', 'stop sign',
-        'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
-        'elephant', 'bear', 'zebra', 'giraffe', 'N/A', 'backpack', 'umbrella', 'N/A', 'N/A',
-        'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
-        'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
-        'bottle', 'N/A', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
-        'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
-        'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'N/A', 'dining table',
-        'N/A', 'N/A', 'toilet', 'N/A', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone',
-        'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'N/A', 'book',
-        'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
+        '__background__',
+        'person',
+        'bicycle',
+        'car',
+        'motorcycle',
+        'airplane',
+        'bus',
+        'train',
+        'truck',
+        'boat',
+        'traffic light',
+        'fire hydrant',
+        'N/A',
+        'stop sign',
+        'parking meter',
+        'bench',
+        'bird',
+        'cat',
+        'dog',
+        'horse',
+        'sheep',
+        'cow',
+        'elephant',
+        'bear',
+        'zebra',
+        'giraffe',
+        'N/A',
+        'backpack',
+        'umbrella',
+        'N/A',
+        'N/A',
+        'handbag',
+        'tie',
+        'suitcase',
+        'frisbee',
+        'skis',
+        'snowboard',
+        'sports ball',
+        'kite',
+        'baseball bat',
+        'baseball glove',
+        'skateboard',
+        'surfboard',
+        'tennis racket',
+        'bottle',
+        'N/A',
+        'wine glass',
+        'cup',
+        'fork',
+        'knife',
+        'spoon',
+        'bowl',
+        'banana',
+        'apple',
+        'sandwich',
+        'orange',
+        'broccoli',
+        'carrot',
+        'hot dog',
+        'pizza',
+        'donut',
+        'cake',
+        'chair',
+        'couch',
+        'potted plant',
+        'bed',
+        'N/A',
+        'dining table',
+        'N/A',
+        'N/A',
+        'toilet',
+        'N/A',
+        'tv',
+        'laptop',
+        'mouse',
+        'remote',
+        'keyboard',
+        'cell phone',
+        'microwave',
+        'oven',
+        'toaster',
+        'sink',
+        'refrigerator',
+        'N/A',
+        'book',
+        'clock',
+        'vase',
+        'scissors',
+        'teddy bear',
+        'hair drier',
+        'toothbrush',
     ]
 
-    def __init__(self, model_name: str = None,
-                 channel_axis: int = 0,
-                 confidence_threshold: float = 0.0,
-                 label_name_map: Dict[int, str] = None,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        model_name: str = None,
+        channel_axis: int = 0,
+        confidence_threshold: float = 0.0,
+        label_name_map: Dict[int, str] = None,
+        *args,
+        **kwargs,
+    ):
         """
         :param model_name: the name of the model. Supported models include
         ``fasterrcnn_resnet50_fpn``,
@@ -52,13 +136,18 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         self.confidence_threshold = confidence_threshold
         self.label_name_map = label_name_map
         if self.label_name_map is None:
-            self.label_name_map = TorchObjectDetectionSegmenter.COCO_INSTANCE_CATEGORY_NAMES
+            self.label_name_map = (
+                TorchObjectDetectionSegmenter.COCO_INSTANCE_CATEGORY_NAMES
+            )
 
     def post_init(self):
         super().post_init()
         self._device = None
         import torchvision.models.detection as detection_models
-        model = getattr(detection_models, self.model_name)(pretrained=True, pretrained_backbone=True)
+
+        model = getattr(detection_models, self.model_name)(
+            pretrained=True, pretrained_backbone=True
+        )
         self.model = model.eval()
         self.to_device(self.model)
 
@@ -70,6 +159,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         :return:
         """
         import torch
+
         _input = torch.from_numpy(img.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()
@@ -91,7 +181,9 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         :return: a list of chunk dicts with the cropped images
         """
         raw_img = np.copy(blob)
-        raw_img = _move_channel_axis(raw_img, self.channel_axis, self._default_channel_axis)
+        raw_img = _move_channel_axis(
+            raw_img, self.channel_axis, self._default_channel_axis
+        )
         bboxes, scores, labels = self._predict(raw_img)
         img = _load_image(raw_img * 255, self._default_channel_axis)
         result = []
@@ -103,12 +195,23 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
                 # target size must be (h, w)
                 target_size = (int(y1) - int(y0), int(x1) - int(x0))
                 # at this point, raw_img has the channel axis at the default tensor one
-                _img, top, left = _crop_image(img, target_size=target_size, top=top, left=left, how='precise')
-                _img = _move_channel_axis(np.asarray(_img).astype('float32'), -1, self.channel_axis)
+                _img, top, left = _crop_image(
+                    img, target_size=target_size, top=top, left=left, how='precise'
+                )
+                _img = _move_channel_axis(
+                    np.asarray(_img).astype('float32'), -1, self.channel_axis
+                )
                 label_name = self.label_name_map[label]
                 self.logger.debug(
-                    f'detected {label_name} with confidence {score} at position {(top, left)} and size {target_size}')
+                    f'detected {label_name} with confidence {score} at position {(top, left)} and size {target_size}'
+                )
                 result.append(
-                    dict(offset=0, weight=1., blob=_img,
-                         location=(top, left), meta_info=label_name.encode()))
+                    dict(
+                        offset=0,
+                        weight=1.0,
+                        blob=_img,
+                        location=(top, left),
+                        meta_info=label_name.encode(),
+                    )
+                )
         return result

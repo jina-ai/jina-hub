@@ -41,6 +41,7 @@ def create_collection(collection_name):
 
 def docker_run():
     import docker
+
     conf_tmp = os.path.join(host_milvus_tmp, 'conf')
     os.makedirs(host_milvus_tmp, exist_ok=True)
     os.makedirs(conf_tmp, exist_ok=True)
@@ -49,16 +50,33 @@ def docker_run():
     client.images.pull(img_name)
 
     bind_volumes = {
-        os.path.join(host_milvus_tmp, 'db'): {'bind': '/var/lib/milvusdb/db', 'mode': 'rw'},
-        os.path.join(host_milvus_tmp, 'conf'): {'bind': '/var/lib/milvusdb/conf', 'mode': 'rw'},
-        os.path.join(host_milvus_tmp, 'logs'): {'bind': '/var/lib/milvusdb/logs', 'mode': 'rw'},
-        os.path.join(host_milvus_tmp, 'wal'): {'bind': '/var/lib/milvusdb/wal', 'mode': 'rw'}
+        os.path.join(host_milvus_tmp, 'db'): {
+            'bind': '/var/lib/milvusdb/db',
+            'mode': 'rw',
+        },
+        os.path.join(host_milvus_tmp, 'conf'): {
+            'bind': '/var/lib/milvusdb/conf',
+            'mode': 'rw',
+        },
+        os.path.join(host_milvus_tmp, 'logs'): {
+            'bind': '/var/lib/milvusdb/logs',
+            'mode': 'rw',
+        },
+        os.path.join(host_milvus_tmp, 'wal'): {
+            'bind': '/var/lib/milvusdb/wal',
+            'mode': 'rw',
+        },
     }
 
-    container = client.containers.run(img_name, name='milvus_test_image',
-                                      volumes=bind_volumes, detach=True, auto_remove=True,
-                                      ports={f'{port}/tcp': f'{port}', '19121/tcp': '19121'},
-                                      network_mode='host')
+    container = client.containers.run(
+        img_name,
+        name='milvus_test_image',
+        volumes=bind_volumes,
+        detach=True,
+        auto_remove=True,
+        ports={f'{port}/tcp': f'{port}', '19121/tcp': '19121'},
+        network_mode='host',
+    )
     client.close()
     return container
 
@@ -84,10 +102,7 @@ def test_milvusdbhandler_simple():
     collection_name = 'simple_milvus'
     create_collection(collection_name)
 
-    vectors = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]])
+    vectors = np.array([[1, 1, 1], [10, 10, 10], [100, 100, 100], [1000, 1000, 1000]])
     keys = np.array([0, 1, 2, 3]).reshape(-1, 1)
     with MilvusDBHandler(host, port, collection_name) as db:
         db.insert(keys, vectors)
@@ -105,10 +120,7 @@ def test_milvusdbhandler_build():
     collection_name = 'build_milvus'
     create_collection(collection_name)
 
-    vectors = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]])
+    vectors = np.array([[1, 1, 1], [10, 10, 10], [100, 100, 100], [1000, 1000, 1000]])
     keys = np.array([0, 1, 2, 3]).reshape(-1, 1)
     with MilvusDBHandler(host, port, collection_name) as db:
         db.insert(keys, vectors)
@@ -128,14 +140,15 @@ def test_milvus_indexer():
     collection_name = 'milvus_indexer'
     create_collection(collection_name)
 
-    vectors = np.array([[1, 1, 1],
-                        [10, 10, 10],
-                        [100, 100, 100],
-                        [1000, 1000, 1000]])
+    vectors = np.array([[1, 1, 1], [10, 10, 10], [100, 100, 100], [1000, 1000, 1000]])
     keys = np.array([0, 1, 2, 3]).reshape(-1, 1)
-    with MilvusIndexer(host=host, port=port,
-                       collection_name=collection_name, index_type='IVF,Flat',
-                       index_params={'nlist': 2}) as indexer:
+    with MilvusIndexer(
+        host=host,
+        port=port,
+        collection_name=collection_name,
+        index_type='IVF,Flat',
+        index_params={'nlist': 2},
+    ) as indexer:
         indexer.add(keys, vectors)
         idx, dist = indexer.query(vectors, 2, search_params={'nprobe': 2})
         dist = np.array(dist)

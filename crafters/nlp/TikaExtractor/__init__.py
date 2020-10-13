@@ -15,12 +15,15 @@ class TikaExtractor(BaseCrafter):
     :class:`TikaExtractor` Extracts text from files.
     """
 
-    def __init__(self,
-                 tika_ocr_strategy: str = 'ocr_only',
-                 tika_extract_inline_images: str = 'true',
-                 tika_ocr_language: str = 'eng',
-                 tika_request_timeout: int = 600,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        tika_ocr_strategy: str = 'ocr_only',
+        tika_extract_inline_images: str = 'true',
+        tika_ocr_language: str = 'eng',
+        tika_request_timeout: int = 600,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.tika_ocr_strategy = tika_ocr_strategy
         self.tika_extract_inline_images = tika_extract_inline_images
@@ -41,7 +44,8 @@ class TikaExtractor(BaseCrafter):
         self.tika_process = Popen(
             ['java', '-jar', f'/tika-server-{tika_version}.jar', '-h', '0.0.0.0'],
             stdout=PIPE,
-            stderr=PIPE)
+            stderr=PIPE,
+        )
 
         # Retry until tika server is started
         for _ in range(10):
@@ -59,29 +63,32 @@ class TikaExtractor(BaseCrafter):
 
     def craft(self, uri: str, buffer: bytes, *args, **kwargs):
         from tika import parser
+
         headers = {
             'X-Tika-PDFOcrStrategy': self.tika_ocr_strategy,
             'X-Tika-PDFextractInlineImages': self.tika_extract_inline_images,
-            'X-Tika-OCRLanguage': self.tika_ocr_language
+            'X-Tika-OCRLanguage': self.tika_ocr_language,
         }
-        request_options = {
-            'timeout': self.tika_request_timeout
-        }
+        request_options = {'timeout': self.tika_request_timeout}
 
         text = ""
         if buffer:
-            result = parser.from_buffer(string=buffer,
-                                        serverEndpoint=TIKA_URL,
-                                        xmlContent=False,
-                                        headers=headers,
-                                        requestOptions=request_options)
+            result = parser.from_buffer(
+                string=buffer,
+                serverEndpoint=TIKA_URL,
+                xmlContent=False,
+                headers=headers,
+                requestOptions=request_options,
+            )
         elif uri:
-            result = parser.from_file(filename=uri,
-                                      serverEndpoint=TIKA_URL,
-                                      service='all',
-                                      xmlContent=False,
-                                      headers=headers,
-                                      requestOptions=request_options)
+            result = parser.from_file(
+                filename=uri,
+                serverEndpoint=TIKA_URL,
+                service='all',
+                xmlContent=False,
+                headers=headers,
+                requestOptions=request_options,
+            )
         else:
             raise ValueError('No value found in "buffer" and "uri"')
 

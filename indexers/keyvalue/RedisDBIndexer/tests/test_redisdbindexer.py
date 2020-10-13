@@ -28,15 +28,16 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
         d = jina_pb2.Document()
         d.tags['id'] = j
         d.text = b'hello world doc id %d' % j
-        d.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
+        d.embedding.CopyFrom(
+            array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)]))
+        )
         d.id = uid.new_doc_id(d)
         yield d
 
 
 def test_redis_db_indexer(metas):
     num_docs = 5
-    docs = list(random_docs(num_docs=num_docs,
-                            chunks_per_doc=3))
+    docs = list(random_docs(num_docs=num_docs, chunks_per_doc=3))
     keys = [uid.id2hash(doc.id) for doc in docs]
     values = [doc.SerializeToString() for doc in docs]
 

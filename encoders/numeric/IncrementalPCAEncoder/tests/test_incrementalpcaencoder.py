@@ -41,8 +41,7 @@ def save_and_load(encoder, requires_train_after_load):
         # some models are not deterministic when training, so even with same training data, we cannot ensure
         # same encoding results
         encoded_data_test = encoder_loaded.encode(test_data)
-        np.testing.assert_array_equal(
-            encoded_data_test, encoded_data_control)
+        np.testing.assert_array_equal(encoded_data_test, encoded_data_control)
 
 
 def save_and_load_config(encoder, requires_train_after_load, train_data):
@@ -74,6 +73,7 @@ def test_random_pca_encoder_load():
     train_data = np.random.rand(2000, input_dim)
 
     from sklearn.decomposition import IncrementalPCA
+
     model = IncrementalPCA(n_components=target_output_dim)
     filename = 'incremental_pca_model.model'
     pickle.dump(model.fit(train_data), open(filename, 'wb'))

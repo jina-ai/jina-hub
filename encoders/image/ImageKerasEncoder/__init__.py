@@ -15,8 +15,15 @@ class ImageKerasEncoder(BaseTFEncoder):
     https://keras.io/applications/
     """
 
-    def __init__(self, model_name: str = None, img_shape: int = 96,
-                 pool_strategy: str = 'avg', channel_axis: int = 1, *args, **kwargs):
+    def __init__(
+        self,
+        model_name: str = None,
+        img_shape: int = 96,
+        pool_strategy: str = 'avg',
+        channel_axis: int = 1,
+        *args,
+        **kwargs
+    ):
         """
         :param model_name: the name of the model. Supported models include
             ``DenseNet121``, ``DenseNet169``, ``DenseNet201``,
@@ -45,11 +52,13 @@ class ImageKerasEncoder(BaseTFEncoder):
         super().post_init()
         self.to_device()
         import tensorflow as tf
+
         model = getattr(tf.keras.applications, self.model_name)(
             input_shape=(self.img_shape, self.img_shape, 3),
             include_top=False,
             pooling=self.pool_strategy,
-            weights='imagenet')
+            weights='imagenet',
+        )
         model.trainable = False
         self.model = model
 

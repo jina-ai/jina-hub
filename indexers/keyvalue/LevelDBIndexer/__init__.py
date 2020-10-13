@@ -15,17 +15,15 @@ class LevelDBIndexer(BinaryPbIndexer):
     """
 
     def get_add_handler(self):
-        """Get the database handler
-
-        """
+        """Get the database handler"""
         import plyvel
+
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
     def get_create_handler(self):
-        """Get the database handler
-
-        """
+        """Get the database handler"""
         import plyvel
+
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
     def add(self, objs):
@@ -40,10 +38,9 @@ class LevelDBIndexer(BinaryPbIndexer):
                 h.put(key, value)
 
     def get_query_handler(self):
-        """Get the database handler
-
-        """
+        """Get the database handler"""
         import plyvel
+
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
     def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:

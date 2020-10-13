@@ -17,7 +17,9 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
     ndarray into a `Batch x Concatenated Features` ndarray.
     """
 
-    def __init__(self, model_path: str, input_sample_rate: int = 22050, *args, **kwargs):
+    def __init__(
+        self, model_path: str, input_sample_rate: int = 22050, *args, **kwargs
+    ):
         """
         Wav2vec model produces a representation for each time step at a rate of 100 Hz.
 
@@ -33,6 +35,7 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
         super().post_init()
         import torch
         from fairseq.models.wav2vec import Wav2VecModel
+
         cp = torch.load(self.model_path, map_location=torch.device('cpu'))
         self.model = Wav2VecModel.build_model(cp['args'], task=None)
         self.model.load_state_dict(cp['model'])
@@ -53,6 +56,7 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
         """
         assert data.shape[1] >= 465, 'the signal must have at least 465 samples'
         from librosa import resample
+
         embeds = []
         with self.session():
             for chunk_data in data:
@@ -77,4 +81,5 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
 
     def get_session(self):
         from torch import no_grad
+
         return no_grad

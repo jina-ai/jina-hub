@@ -30,6 +30,7 @@ class AudioReader(BaseCrafter):
         :return: a Document dict with the decoded audio signal
         """
         import librosa
+
         signal, orig_sr = librosa.load(uri, sr=self.sample_rate, mono=False)
 
-        return dict(weight=1., blob=signal)
+        return dict(weight=1.0, blob=signal)

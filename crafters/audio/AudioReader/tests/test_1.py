@@ -3,6 +3,7 @@ from .. import AudioReader
 
 def test_1():
     import librosa
+
     audio_file_path = librosa.util.example_audio_file()
 
     crafter = AudioReader()

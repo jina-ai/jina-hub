@@ -6,6 +6,7 @@ from .. import CenterImageCropper
 
 def create_random_img_array(img_height, img_width):
     import numpy as np
+
     return np.random.randint(0, 256, (img_height, img_width, 3))
 
 

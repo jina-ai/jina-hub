@@ -50,6 +50,7 @@ class BigTransferEncoder(BaseTFEncoder):
         super().post_init()
         self.to_device()
         import tensorflow as tf
+
         self.logger.info(f'model_path: {self.model_path}')
         _model = tf.saved_model.load(self.model_path)
         self.model = _model.signatures['serving_default']

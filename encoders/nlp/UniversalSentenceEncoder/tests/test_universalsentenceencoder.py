@@ -8,6 +8,7 @@ from .. import UniversalSentenceEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
+
 def get_metas():
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
@@ -34,6 +35,7 @@ class MockModule:
 target_output_dim = 512
 test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
 
+
 def _test_encoding_results():
     metas = get_metas()
     encoder = UniversalSentenceEncoder(metas=metas)
@@ -41,7 +43,10 @@ def _test_encoding_results():
     assert encoded_data.shape == (2, target_output_dim)
 
 
-@pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
+@pytest.mark.skipif(
+    'JINA_TEST_PRETRAINED' not in os.environ,
+    reason='skip the pretrained test if not set',
+)
 def test_encoding_result():
     _test_encoding_results()
 

@@ -16,6 +16,7 @@ class AudioNormalizer(BaseCrafter):
         :return: a Document dict with the normalized audio signal
         """
         import librosa
+
         signal_norm = librosa.util.normalize(blob)
 
-        return dict(offset=0, weight=1., blob=signal_norm)
+        return dict(offset=0, weight=1.0, blob=signal_norm)

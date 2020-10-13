@@ -15,12 +15,15 @@ class VideoPaddleEncoder(BasePaddleEncoder):
     https://github.com/PaddlePaddle/PaddleHub
     """
 
-    def __init__(self,
-                 model_name: str = 'tsn_kinetics400',
-                 output_feature: str = '@HUB_tsn_kinetics400@reduce_mean_0.tmp_0',
-                 pool_strategy: str = None,
-                 channel_axis: int = 2,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        model_name: str = 'tsn_kinetics400',
+        output_feature: str = '@HUB_tsn_kinetics400@reduce_mean_0.tmp_0',
+        pool_strategy: str = None,
+        channel_axis: int = 2,
+        *args,
+        **kwargs,
+    ):
         """
 
         :param model_name: the name of the model. Supported models include ``tsn_kinetics400``, ``stnet_kinetics400``,
@@ -47,6 +50,7 @@ class VideoPaddleEncoder(BasePaddleEncoder):
 
     def post_init(self):
         import paddlehub as hub
+
         module = hub.Module(name=self.model_name)
         inputs, outputs, self.model = module.context(trainable=False)
         self.inputs_name = inputs[0].name
@@ -70,7 +74,7 @@ class VideoPaddleEncoder(BasePaddleEncoder):
             program=self.model,
             fetch_list=[self.outputs_name],
             feed={self.inputs_name: data.astype('float32')},
-            return_numpy=True
+            return_numpy=True,
         )
         if feature_map.ndim == 2 or self.pool_strategy is None:
             return feature_map

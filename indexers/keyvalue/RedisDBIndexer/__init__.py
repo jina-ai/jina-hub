@@ -14,22 +14,21 @@ class RedisDBIndexer(BinaryPbIndexer):
     :class:`RedisDBIndexer` Use Redis as a key-value indexer.
     """
 
-    def __init__(self,
-                 hostname: str = '0.0.0.0',
-                 port: int = 63079,
-                 db: int = 0,
-                 *args, **kwargs):
+    def __init__(
+        self, hostname: str = '0.0.0.0', port: int = 63079, db: int = 0, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.hostname = hostname
         self.port = port
         self.db = db
 
     def get_add_handler(self):
-        """Get the database handler
-
-        """
+        """Get the database handler"""
         import redis
-        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
+
+        r = redis.Redis(
+            host=self.hostname, port=self.port, db=self.db, socket_timeout=10
+        )
         try:
             r.ping()
             return r
@@ -48,11 +47,12 @@ class RedisDBIndexer(BinaryPbIndexer):
                 redis_handler.set(k['_id'], k['values'])
 
     def get_query_handler(self):
-        """Get the database handler
-
-        """
+        """Get the database handler"""
         import redis
-        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
+
+        r = redis.Redis(
+            host=self.hostname, port=self.port, db=self.db, socket_timeout=10
+        )
         try:
             r.ping()
             return r
@@ -69,8 +69,8 @@ class RedisDBIndexer(BinaryPbIndexer):
         with self.get_add_handler() as redis_handler:
             for _key in redis_handler.scan_iter(match=key):
                 res = {
-                  "key": _key,
-                  "values": redis_handler.get(_key),
+                    "key": _key,
+                    "values": redis_handler.get(_key),
                 }
                 result.append(res)
 

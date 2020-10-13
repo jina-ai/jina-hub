@@ -7,6 +7,7 @@ import shutil
 tmp_files = []
 os.environ['TEST_WORKDIR'] = os.getcwd()
 
+
 def teardown():
     print('tear down...')
     for k in tmp_files:
@@ -16,8 +17,10 @@ def teardown():
             elif os.path.isdir(k):
                 shutil.rmtree(k, ignore_errors=False, onerror=None)
 
+
 def add_tmpfile(*path):
     tmp_files.extend(path)
+
 
 def test_encoding_results():
     encoder = OneHotTextEncoder(workspace=os.environ['TEST_WORKDIR'])
@@ -43,7 +46,11 @@ def test_save_and_load():
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
     assert encoder_loaded.dim == encoder.dim
     add_tmpfile(
-        encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath)
+        encoder.config_abspath,
+        encoder.save_abspath,
+        encoder_loaded.config_abspath,
+        encoder_loaded.save_abspath,
+    )
 
 
 def test_save_and_load_config():

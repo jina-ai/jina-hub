@@ -3,6 +3,7 @@ from .. import SlidingWindowImageCropper
 
 def create_random_img_array(img_height, img_width):
     import numpy as np
+
     return np.random.randint(0, 256, (img_height, img_width, 3))
 
 
@@ -11,7 +12,9 @@ def test_sliding_windows_no_padding():
     img_array = create_random_img_array(img_size, img_size)
     output_dim = 4
     strides = (6, 6)
-    crafter = SlidingWindowImageCropper(target_size=output_dim, strides=strides, padding=False)
+    crafter = SlidingWindowImageCropper(
+        target_size=output_dim, strides=strides, padding=False
+    )
     chunks = crafter.craft(img_array)
     assert len(chunks) == 4
     assert chunks[0]['location'] == (0, 0)
@@ -25,7 +28,9 @@ def test_sliding_windows_with_padding():
     img_array = create_random_img_array(img_size, img_size)
     output_dim = 4
     strides = (6, 6)
-    crafter = SlidingWindowImageCropper(target_size=output_dim, strides=strides, padding=True)
+    crafter = SlidingWindowImageCropper(
+        target_size=output_dim, strides=strides, padding=True
+    )
     chunks = crafter.craft(img_array)
     assert len(chunks) == 9
     assert chunks[0]['location'] == (0, 0)
@@ -45,7 +50,9 @@ def test_sliding_windows_without_padding_rectangular_ugly_shapes():
     img_array = create_random_img_array(img_height=height, img_width=width)
     output_dim = 4
     strides = (4, 4)
-    crafter = SlidingWindowImageCropper(target_size=output_dim, strides=strides, padding=False)
+    crafter = SlidingWindowImageCropper(
+        target_size=output_dim, strides=strides, padding=False
+    )
     chunks = crafter.craft(img_array)
     assert len(chunks) == 8
     assert chunks[0]['location'] == (0, 0)

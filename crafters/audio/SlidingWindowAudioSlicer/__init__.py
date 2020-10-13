@@ -10,7 +10,13 @@ class SlidingWindowAudioSlicer(BaseSegmenter):
     sliding window.
     """
 
-    def __init__(self, frame_length: int = 2048, frame_overlap_length: int = 1536, *args, **kwargs):
+    def __init__(
+        self,
+        frame_length: int = 2048,
+        frame_overlap_length: int = 1536,
+        *args,
+        **kwargs,
+    ):
         """
         :param frame_length: the number of samples in each frame
         :param frame_overlap_length: the number of samples each frame overlaps its previous frame
@@ -22,13 +28,31 @@ class SlidingWindowAudioSlicer(BaseSegmenter):
 
     def segment(self, signal):
         import librosa
+
         if signal.ndim == 1:  # mono
-            frames = librosa.util.frame(signal, frame_length=self.frame_length, hop_length=self.hop_length, axis=0)
+            frames = librosa.util.frame(
+                signal,
+                frame_length=self.frame_length,
+                hop_length=self.hop_length,
+                axis=0,
+            )
         elif signal.ndim == 2:  # stereo
             left_frames = librosa.util.frame(
-                signal[0,], frame_length=self.frame_length, hop_length=self.hop_length, axis=0)
+                signal[
+                    0,
+                ],
+                frame_length=self.frame_length,
+                hop_length=self.hop_length,
+                axis=0,
+            )
             right_frames = librosa.util.frame(
-                signal[1,], frame_length=self.frame_length, hop_length=self.hop_length, axis=0)
+                signal[
+                    1,
+                ],
+                frame_length=self.frame_length,
+                hop_length=self.hop_length,
+                axis=0,
+            )
             frames = np.concatenate((left_frames, right_frames), axis=0)
         else:
             raise ValueError(f'audio signal must be 1D or 2D array: {signal}')
@@ -44,5 +68,7 @@ class SlidingWindowAudioSlicer(BaseSegmenter):
         """
         frames = self.segment(blob)
 
-        return [dict(offset=idx, weight=1.0, blob=frame, length=frames.shape[0])
-                for idx, frame in enumerate(frames)]
+        return [
+            dict(offset=idx, weight=1.0, blob=frame, length=frames.shape[0])
+            for idx, frame in enumerate(frames)
+        ]

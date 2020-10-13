@@ -12,6 +12,7 @@ from jina.executors.encoders.numeric import TransformEncoder
 input_dim = 28
 target_output_dim = 2
 
+
 def rm_files(file_paths):
     for file_path in file_paths:
         if os.path.exists(file_path):
@@ -19,6 +20,7 @@ def rm_files(file_paths):
                 os.remove(file_path)
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
+
 
 def encoding_results(encoder):
     assert encoder is not None
@@ -41,8 +43,7 @@ def save_and_load(encoder, requires_train_after_load):
         # some models are not deterministic when training, so even with same training data, we cannot ensure
         # same encoding results
         encoded_data_test = encoder_loaded.encode(test_data)
-        np.testing.assert_array_equal(
-            encoded_data_test, encoded_data_control)
+        np.testing.assert_array_equal(encoded_data_test, encoded_data_control)
 
 
 def save_and_load_config(encoder, requires_train_after_load, train_data):
@@ -53,7 +54,7 @@ def save_and_load_config(encoder, requires_train_after_load, train_data):
 
     if requires_train_after_load:
         encoder_loaded.train(train_data)
-        
+
     encoded_data_test = encoder_loaded.encode(test_data)
     assert encoded_data_test.shape == (10, target_output_dim)
 
@@ -72,6 +73,7 @@ def test_random_sparse_encoder_load():
     train_data = np.random.rand(2000, input_dim)
 
     from sklearn.random_projection import SparseRandomProjection
+
     model = SparseRandomProjection(n_components=target_output_dim)
     filename = 'random_sparse_model.model'
     pickle.dump(model.fit(train_data), open(filename, 'wb'))

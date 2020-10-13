@@ -64,7 +64,7 @@ encoders_parameters = [
         "pooling_strategy": 'max',
         "pretrained_model_name_or_path": 'xlnet-base-cased',
         "model_save_path": 'xlnet-base-cased-max',
-    }
+    },
 ]
 
 
@@ -108,6 +108,9 @@ def test_save_and_load_config(encoder):
 @pytest.mark.parametrize('encoder', encoders_parameters[5:6], indirect=['encoder'])
 def test_parameter_override(encoder):
     encoder_preset = encoders_parameters[5]
-    assert encoder.pretrained_model_name_or_path == encoder_preset['pretrained_model_name_or_path']
+    assert (
+        encoder.pretrained_model_name_or_path
+        == encoder_preset['pretrained_model_name_or_path']
+    )
     assert encoder.pooling_strategy == encoder_preset['pooling_strategy']
     assert encoder.model_save_path == encoder_preset['model_save_path']

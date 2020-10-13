@@ -14,9 +14,7 @@ class TSNEEncoder(BaseNumericEncoder):
     TSNE does not inherit Transform encoder because it can't have a transform without fit.
     """
 
-    def __init__(self, output_dim: int = 64,
-                 random_state: int = 2020,
-                 *args, **kwargs):
+    def __init__(self, output_dim: int = 64, random_state: int = 2020, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.output_dim = output_dim
         self.random_state = random_state
@@ -24,6 +22,7 @@ class TSNEEncoder(BaseNumericEncoder):
     def post_init(self):
         super().post_init()
         from sklearn.manifold import TSNE
+
         self.model = TSNE(n_components=self.output_dim, random_state=self.random_state)
 
     @batching

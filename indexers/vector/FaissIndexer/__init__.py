@@ -22,8 +22,15 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         Faiss package dependency is only required at the query time.
     """
 
-    def __init__(self, index_key: str, train_filepath: str = None,
-                 distance: str = 'l2', nprobe: int = 1, *args, **kwargs):
+    def __init__(
+        self,
+        index_key: str,
+        train_filepath: str = None,
+        distance: str = 'l2',
+        nprobe: int = 1,
+        *args,
+        **kwargs
+    ):
         """
         Initialize an Faiss Indexer
 
@@ -60,13 +67,18 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """
         import faiss
+
         metric = faiss.METRIC_L2
         if self.distance == 'inner_product':
             metric = faiss.METRIC_INNER_PRODUCT
         if self.distance not in {'inner_product', 'l2'}:
-            self.logger.warning('Invalid distance metric for Faiss index construction. Defaulting to l2 distance')
+            self.logger.warning(
+                'Invalid distance metric for Faiss index construction. Defaulting to l2 distance'
+            )
 
-        index = self.to_device(index=faiss.index_factory(self.num_dim, self.index_key, metric))
+        index = self.to_device(
+            index=faiss.index_factory(self.num_dim, self.index_key, metric)
+        )
         if not self.is_trained:
             train_data = self._load_training_data(self.train_filepath)
             if train_data is None:
@@ -81,7 +93,9 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
     def build_partial_index(self, vecs: 'np.ndarray', index):
         index.add(vecs.astype(np.float32))
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(
+        self, keys: 'np.ndarray', top_k: int, *args, **kwargs
+    ) -> Tuple['np.ndarray', 'np.ndarray']:
         dist, ids = self.query_handler.search(keys, top_k)
         return self.int2ext_id[ids], dist
 
@@ -90,8 +104,11 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         if not self.num_dim:
             self.num_dim = _num_dim
         if self.num_dim != _num_dim:
-            raise ValueError('training data should have the same number of features as the index, {} != {}'.format(
-                self.num_dim, _num_dim))
+            raise ValueError(
+                'training data should have the same number of features as the index, {} != {}'.format(
+                    self.num_dim, _num_dim
+                )
+            )
         index.train(data)
 
     def _load_training_data(self, train_filepath: str) -> 'np.ndarray':
@@ -106,8 +123,14 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         try:
             result = np.load(train_filepath)
             if isinstance(result, np.lib.npyio.NpzFile):
-                self.logger.warning('.npz format is not supported. Please save the array in .npy format.')
+                self.logger.warning(
+                    '.npz format is not supported. Please save the array in .npy format.'
+                )
                 result = None
         except Exception as e:
-            self.logger.error('loading training data failed, filepath={}, {}'.format(train_filepath, e))
+            self.logger.error(
+                'loading training data failed, filepath={}, {}'.format(
+                    train_filepath, e
+                )
+            )
         return result

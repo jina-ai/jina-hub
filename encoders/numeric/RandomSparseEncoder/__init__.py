@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from jina.executors.encoders.numeric import TransformEncoder
 
+
 class RandomSparseEncoder(TransformEncoder):
     """
     :class:`RandomSparseEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
@@ -13,4 +14,7 @@ class RandomSparseEncoder(TransformEncoder):
         super().post_init()
         if not self.model:
             from sklearn.random_projection import SparseRandomProjection
-            self.model = SparseRandomProjection(n_components=self.output_dim, random_state=self.random_state)
+
+            self.model = SparseRandomProjection(
+                n_components=self.output_dim, random_state=self.random_state
+            )

@@ -12,12 +12,15 @@ class Sentencizer(BaseSegmenter):
         The sentences that are shorter than the ``min_sent_len`` or longer than the ``max_sent_len`` after stripping will be discarded.
     """
 
-    def __init__(self,
-                 min_sent_len: int = 1,
-                 max_sent_len: int = 512,
-                 punct_chars: str = None,
-                 uniform_weight: bool = True,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        min_sent_len: int = 1,
+        max_sent_len: int = 512,
+        punct_chars: str = None,
+        uniform_weight: bool = True,
+        *args,
+        **kwargs
+    ):
         """
 
         :param min_sent_len: the minimal number of characters (including white spaces) of the sentence, by default 1.
@@ -30,12 +33,40 @@ class Sentencizer(BaseSegmenter):
         self.punct_chars = punct_chars
         self.uniform_weight = uniform_weight
         if not punct_chars:
-            self.punct_chars = ['!', '.', '?', '։', '؟', '۔', '܀', '܁', '܂', '‼', '‽', '⁇', '⁈', '⁉', '⸮', '﹖', '﹗',
-                                '！', '．', '？', '｡', '。', '\n']
+            self.punct_chars = [
+                '!',
+                '.',
+                '?',
+                '։',
+                '؟',
+                '۔',
+                '܀',
+                '܁',
+                '܂',
+                '‼',
+                '‽',
+                '⁇',
+                '⁈',
+                '⁉',
+                '⸮',
+                '﹖',
+                '﹗',
+                '！',
+                '．',
+                '？',
+                '｡',
+                '。',
+                '\n',
+            ]
         if self.min_sent_len > self.max_sent_len:
-            self.logger.warning('the min_sent_len (={}) should be smaller or equal to the max_sent_len (={})'.format(
-                self.min_sent_len, self.max_sent_len))
-        self._slit_pat = re.compile('\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(self.punct_chars))))
+            self.logger.warning(
+                'the min_sent_len (={}) should be smaller or equal to the max_sent_len (={})'.format(
+                    self.min_sent_len, self.max_sent_len
+                )
+            )
+        self._slit_pat = re.compile(
+            '\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(self.punct_chars)))
+        )
 
     def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         """
@@ -46,19 +77,22 @@ class Sentencizer(BaseSegmenter):
         """
 
         results = []
-        ret = [(m.group(0), m.start(), m.end()) for m in
-               re.finditer(self._slit_pat, text)]
+        ret = [
+            (m.group(0), m.start(), m.end()) for m in re.finditer(self._slit_pat, text)
+        ]
         if not ret:
             ret = [(text, 0, len(text))]
         for ci, (r, s, e) in enumerate(ret):
             f = ''.join(filter(lambda x: x in string.printable, r))
             f = re.sub('\n+', ' ', f).strip()
-            f = f[:self.max_sent_len]
+            f = f[: self.max_sent_len]
             if len(f) > self.min_sent_len:
-                results.append(dict(
-                    text=f,
-                    offset=ci,
-                    weight=1.0 if self.uniform_weight else len(f) / len(text),
-                    location=[s, e]
-                ))
+                results.append(
+                    dict(
+                        text=f,
+                        offset=ci,
+                        weight=1.0 if self.uniform_weight else len(f) / len(text),
+                        location=[s, e],
+                    )
+                )
         return results

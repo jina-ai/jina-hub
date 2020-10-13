@@ -15,11 +15,14 @@ class ImageResizer(BaseCrafter):
     :class:`ImageResizer` resize the image to the given size.
     """
 
-    def __init__(self,
-                 target_size: Union[Iterable[int], int] = 224,
-                 how: str = 'BILINEAR',
-                 channel_axis: int = -1,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        target_size: Union[Iterable[int], int] = 224,
+        how: str = 'BILINEAR',
+        channel_axis: int = -1,
+        *args,
+        **kwargs,
+    ):
         """
 
         :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
@@ -34,7 +37,9 @@ class ImageResizer(BaseCrafter):
         elif isinstance(target_size, Iterable):
             self.output_dim = tuple(target_size)
         else:
-            raise ValueError(f'output_dim {target_size} should be an integer or tuple/list of 2 integers')
+            raise ValueError(
+                f'output_dim {target_size} should be an integer or tuple/list of 2 integers'
+            )
         self.how = how
         self.channel_axis = channel_axis
 
@@ -48,4 +53,4 @@ class ImageResizer(BaseCrafter):
         raw_img = _load_image(blob, self.channel_axis)
         _img = _resize_short(raw_img, self.output_dim, self.how)
         img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img.astype('float32'))
+        return dict(offset=0, weight=1.0, blob=img.astype('float32'))
