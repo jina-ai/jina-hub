@@ -58,4 +58,4 @@ class NGTIndexer(BaseNumpyIndexer):
                 idx.append(index_k)
                 dist.append(distance_k)
 
-        return self.int2ext_key[np.array(idx)], np.array(dist)
+        return self.int2ext_id[np.array(idx)], np.array(dist)

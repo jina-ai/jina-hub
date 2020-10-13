@@ -14,7 +14,7 @@ class TSNEEncoder(BaseNumericEncoder):
     TSNE does not inherit Transform encoder because it can't have a transform without fit.
     """
 
-    def __init__(self, output_dim: int,
+    def __init__(self, output_dim: int = 64,
                  random_state: int = 2020,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)

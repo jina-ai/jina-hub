@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict, List, Union
 
 import numpy as np
 from jina.executors.crafters import BaseSegmenter
@@ -12,8 +12,8 @@ class SlidingWindowImageCropper(BaseSegmenter):
     """
 
     def __init__(self,
-                 target_size: int,
-                 strides: Tuple[int, int],
+                 target_size: Union[Tuple[int], int] = 16,
+                 strides: Tuple[int, int] = (2, 2),
                  padding: bool = False,
                  channel_axis: int = -1,
                  *args,

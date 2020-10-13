@@ -6,9 +6,13 @@ from typing import Tuple
 import numpy as np
 from jina.executors.devices import FaissDevice
 from jina.executors.indexers.vector import BaseNumpyIndexer
+from jina.executors.decorators import batching
 
 
 class FaissIndexer(FaissDevice, BaseNumpyIndexer):
+
+    batch_size = 512
+
     """Faiss powered vector indexer
 
     For more information about the Faiss supported parameters and installation problems, please consult:
@@ -47,7 +51,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
             np.save(train_filepath, train_data)
             indexer = FaissIndexer('PCA64,FLAT', train_filepath)
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, compress_level=0, **kwargs)
         self.index_key = index_key
         self.train_filepath = train_filepath
         self.distance = distance
@@ -63,20 +67,23 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
             self.logger.warning('Invalid distance metric for Faiss index construction. Defaulting to l2 distance')
 
         index = self.to_device(index=faiss.index_factory(self.num_dim, self.index_key, metric))
-
         if not self.is_trained:
             train_data = self._load_training_data(self.train_filepath)
             if train_data is None:
                 self.logger.warning('loading training data failed.')
                 return None
             self.train(index, train_data)
-        index.add(vecs.astype('float32'))
+        self.build_partial_index(vecs, index)
         index.nprobe = self.nprobe
         return index
 
+    @batching
+    def build_partial_index(self, vecs: 'np.ndarray', index):
+        index.add(vecs.astype(np.float32))
+
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         dist, ids = self.query_handler.search(keys, top_k)
-        return self.int2ext_key[ids], dist
+        return self.int2ext_id[ids], dist
 
     def train(self, index, data: 'np.ndarray', *args, **kwargs) -> None:
         _num_samples, _num_dim = data.shape

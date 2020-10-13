@@ -34,13 +34,16 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     Internally, TransformerTorchEncoder wraps the tensorflow-version of transformers from huggingface.
     """
 
-    def __init__(self,
-                 pretrained_model_name_or_path: str = 'bert-base-uncased',
-                 pooling_strategy: str = 'auto',
-                 max_length: Optional[int] = None,
-                 truncation_strategy: str = 'longest_first',
-                 model_save_path: Optional[str] = None,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        pretrained_model_name_or_path: str = 'bert-base-uncased',
+        pooling_strategy: str = 'auto',
+        max_length: Optional[int] = None,
+        truncation_strategy: str = 'longest_first',
+        model_save_path: Optional[str] = None,
+        *args,
+        **kwargs
+    ):
         """
         :param pretrained_model_name_or_path: Either:
             - a string with the `shortcut name` of a pre-trained model to load from cache or download, e.g.: ``bert-base-uncased``.
@@ -62,12 +65,13 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         ..warning::
             `model_save_path` should be relative to executor's workspace
         """
+
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.pooling_strategy = pooling_strategy
         self.max_length = max_length
-        self.model_save_path = model_save_path
         self.truncation_strategy = truncation_strategy
+        self.model_save_path = model_save_path
 
     def __getstate__(self):
         if self.model_save_path:

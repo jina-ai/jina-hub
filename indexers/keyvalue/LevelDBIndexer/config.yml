@@ -1,6 +1,6 @@
 !LevelDBIndexer
 with:
-  {}
+  index_filename: null
 metas:
   py_modules:
     # - you can put more dependencies here

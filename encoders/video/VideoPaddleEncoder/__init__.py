@@ -54,6 +54,7 @@ class VideoPaddleEncoder(BasePaddleEncoder):
 
     def close(self):
         self.exe.close()
+        super().close()
 
     @batching
     @as_ndarray
