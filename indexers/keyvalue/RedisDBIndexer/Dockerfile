@@ -6,9 +6,7 @@ COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-RUN pip install -r requirements.txt
-
-RUN apt-get update
+RUN pip install -r requirements.txt && apt-get update
 
 RUN apt-get -y install redis-server
 
