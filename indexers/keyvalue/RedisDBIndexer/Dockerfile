@@ -6,9 +6,9 @@ COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-RUN pip install -r requirements.txt && apt-get update
+RUN pip install -r requirements.txt
 
-RUN apt-get -y install redis-server
+RUN apt-get update && apt-get -y install redis-server
 
 # for testing the image
 RUN redis-server --bind 0.0.0.0 --port 63079:63079 --daemonize yes && pip install pytest && pytest
