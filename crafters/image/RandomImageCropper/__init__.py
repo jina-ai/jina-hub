@@ -13,7 +13,7 @@ class RandomImageCropper(BaseSegmenter):
     """
 
     def __init__(self,
-                 target_size: Union[Tuple[int], int],
+                 target_size: Union[Tuple[int], int] = 224,
                  num_patches: int = 1,
                  channel_axis: int = -1,
                  *args,

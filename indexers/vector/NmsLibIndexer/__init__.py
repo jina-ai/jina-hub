@@ -5,9 +5,13 @@ from typing import Tuple
 
 import numpy as np
 from jina.executors.indexers.vector import BaseNumpyIndexer
+from jina.executors.decorators import batching
 
 
 class NmsLibIndexer(BaseNumpyIndexer):
+
+    batch_size = 512
+
     """nmslib powered vector indexer
 
     For documentation and explanation of each parameter, please refer to
@@ -32,7 +36,7 @@ class NmsLibIndexer(BaseNumpyIndexer):
         :param args:
         :param kwargs:
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, compress_level=0, **kwargs)
         self.method = method
         self.space = space
         self.print_progress = print_progress
@@ -41,13 +45,15 @@ class NmsLibIndexer(BaseNumpyIndexer):
     def build_advanced_index(self, vecs: 'np.ndarray'):
         import nmslib
         _index = nmslib.init(method=self.method, space=self.space)
-        _index.addDataPointBatch(vecs.astype(np.float32))
+        self.build_partial_index(vecs, _index)
         _index.createIndex({'post': 2}, print_progress=self.print_progress)
         return _index
 
+    @batching
+    def build_partial_index(self, vecs: 'np.ndarray', _index):
+        _index.addDataPointBatch(vecs.astype(np.float32))
+
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        # if keys.dtype != np.float32:
-        #     raise ValueError('vectors should be ndarray of float32')
         ret = self.query_handler.knnQueryBatch(keys, k=top_k, num_threads=self.num_threads)
         idx, dist = zip(*ret)
-        return self.int2ext_key[np.array(idx)], np.array(dist)
+        return self.int2ext_id[np.array(idx)], np.array(dist)

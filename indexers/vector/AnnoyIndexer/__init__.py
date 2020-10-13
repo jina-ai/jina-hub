@@ -28,7 +28,7 @@ class AnnoyIndexer(BaseNumpyIndexer):
         :param args:
         :param kwargs:
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, compress_level=0, **kwargs)
         self.metric = metric
         self.n_trees = n_trees
         self.search_k = search_k
@@ -36,9 +36,8 @@ class AnnoyIndexer(BaseNumpyIndexer):
     def build_advanced_index(self, vecs: 'np.ndarray'):
         from annoy import AnnoyIndex
         _index = AnnoyIndex(self.num_dim, self.metric)
-        vecs = vecs.astype(np.float32)
         for idx, v in enumerate(vecs):
-            _index.add_item(idx, v)
+            _index.add_item(idx, v.astype(np.float32))
         _index.build(self.n_trees)
         return _index
 
@@ -47,6 +46,6 @@ class AnnoyIndexer(BaseNumpyIndexer):
         all_dist = []
         for k in keys:
             ret, dist = self.query_handler.get_nns_by_vector(k, top_k, self.search_k, include_distances=True)
-            all_idx.append(self.int2ext_key[ret])
+            all_idx.append(self.int2ext_id[ret])
             all_dist.append(dist)
         return np.array(all_idx), np.array(all_dist)

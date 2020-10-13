@@ -4,19 +4,16 @@ import numpy as np
 from jina.executors.crafters import BaseSegmenter
 
 
-class AudioSegmenter(BaseSegmenter):
+class AudioSlicer(BaseSegmenter):
     """
-    :class:`AudioSegmenter` provides the functions for segmenting audio signal.
-    .. warning::
-        :class:'AudioSegmenter' is intended to be used internally.
+    :class:`AudioSlicer` segments the audio signal on the doc-level into frames on the chunk-level.
     """
 
-    def __init__(self, frame_length: int, hop_length: int, *args, **kwargs):
+    def __init__(self, frame_length: int = 2048, hop_length: int = 512, *args, **kwargs):
         """
-        :param frame_length: the number of samples in each frame
-        :param hop_length: number of samples to advance between frames
+        :param frame_size: the number of samples in each frame
         """
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self.frame_length = frame_length
         self.hop_length = hop_length
 
@@ -33,18 +30,6 @@ class AudioSegmenter(BaseSegmenter):
         else:
             raise ValueError(f'audio signal must be 1D or 2D array: {signal}')
         return frames
-
-
-class AudioSlicer(AudioSegmenter):
-    """
-    :class:`AudioSlicer` segments the audio signal on the doc-level into frames on the chunk-level.
-    """
-
-    def __init__(self, frame_size: int, *args, **kwargs):
-        """
-        :param frame_size: the number of samples in each frame
-        """
-        super().__init__(frame_size, frame_size, *args, **kwargs)
 
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """

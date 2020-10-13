@@ -5,11 +5,11 @@ import json
 from typing import Optional
 
 from google.protobuf.json_format import Parse
-from jina.executors.indexers.keyvalue import BasePbIndexer
+from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.proto import jina_pb2
 
 
-class LevelDBIndexer(BasePbIndexer):
+class LevelDBIndexer(BinaryPbIndexer):
     """
     :class:`LevelDBIndexer` use `LevelDB` to save and query protobuf document.
     """
@@ -55,5 +55,5 @@ class LevelDBIndexer(BasePbIndexer):
         v = self.query_handler.get(key.encode('utf8'))
         value = None
         if v is not None:
-            value = Parse(json.loads(v.decode('utf8')), self._parser())
+            value = Parse(json.loads(v.decode('utf8')), jina_pb2.Document())
         return value
