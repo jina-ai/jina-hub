@@ -1,4 +1,4 @@
-import tempfile
+import pytest
 import os
 
 import numpy as np
@@ -6,17 +6,10 @@ import numpy as np
 from .. import CustomKerasImageEncoder
 from jina.executors.metas import get_default_metas
 from jina.executors import BaseExecutor
+from jina.excepts import PretrainedModelFileDoesNotExist
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, Activation, Flatten, Dense
 
-
-def rm_files(file_paths):
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 class TestNet:
     def __init__(self):
@@ -37,27 +30,31 @@ class TestNet:
         self.model.add(self.activation_softmax)
         return self.model
 
-def get_encoder():
+
+def get_encoder(model_path_tmp_dir):
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
-    path = tempfile.NamedTemporaryFile().name
+        metas['workspace'] = model_path_tmp_dir
+    path = os.path.join(model_path_tmp_dir, 'model.pth')
     model = TestNet().create_model()
     model.save(path)
     return CustomKerasImageEncoder(channel_axis=1, model_path=path, layer_name='dense', metas=metas)
 
-def test_encoding_results():
+
+def test_encoding_results(tmpdir):
     target_output_dim = 10
     input_dim = 224
-    encoder = get_encoder()
-    test_data = np.random.rand(2, 3, input_dim, input_dim)
+    encoder = get_encoder(str(tmpdir))
+    test_data = np.random.rand(2, 3, input_dim, input_dim).astype('float32')
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
 
-def test_save_and_load():
+
+def test_save_and_load(tmpdir):
     input_dim = 224
-    encoder = get_encoder()
-    test_data = np.random.rand(2, 3, input_dim, input_dim)
+    encoder = get_encoder(str(tmpdir))
+    test_data = np.random.rand(2, 3, input_dim, input_dim).astype('float32')
     encoded_data_control = encoder.encode(test_data)
     encoder.touch()
     encoder.save()
@@ -67,9 +64,7 @@ def test_save_and_load():
     assert encoder_loaded.channel_axis == encoder.channel_axis
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
 
-def test_save_and_load_config():
-    encoder = get_encoder()
-    encoder.save_config()
-    assert os.path.exists(encoder.config_abspath)
-    encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-    assert encoder_loaded.channel_axis == encoder.channel_axis
+
+def test_raise_exception():
+    with pytest.raises(PretrainedModelFileDoesNotExist):
+        CustomKerasImageEncoder()

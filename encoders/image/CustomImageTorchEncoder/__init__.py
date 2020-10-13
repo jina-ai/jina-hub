@@ -1,10 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import os
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTorchEncoder
+from jina.excepts import PretrainedModelFileDoesNotExist
 
 
 class CustomImageTorchEncoder(BaseTorchEncoder):
@@ -15,7 +17,8 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
     https://pytorch.org/docs/stable/torchvision/models.html
     """
 
-    def __init__(self, model_path: str, layer_name: str,
+    def __init__(self, model_path: str = None,
+                 layer_name: str = None,
                  pool_strategy: str = 'mean',
                  channel_axis: int = 1,
                  *args, **kwargs):
@@ -34,12 +37,15 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
     def post_init(self):
         super().post_init()
         import torch
-        if self.pool_strategy is not None:
-            self.pool_fn = getattr(np, self.pool_strategy)
-        self.model = torch.load(self.model_path)
-        self.model.eval()
-        self.to_device(self.model)
-        self.layer = getattr(self.model, self.layer_name)
+        if self.model_path and os.path.exists(self.model_path):
+            if self.pool_strategy is not None:
+                self.pool_fn = getattr(np, self.pool_strategy)
+            self.model = torch.load(self.model_path)
+            self.model.eval()
+            self.to_device(self.model)
+            self.layer = getattr(self.model, self.layer_name)
+        else:
+            raise PretrainedModelFileDoesNotExist(f'model {self.model_path} does not exist')
 
     def _get_features(self, data):
         feature_map = None

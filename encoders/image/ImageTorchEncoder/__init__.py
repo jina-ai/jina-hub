@@ -15,10 +15,14 @@ class ImageTorchEncoder(BaseTorchEncoder):
     https://pytorch.org/docs/stable/torchvision/models.html
     """
 
-    def __init__(self, model_name: str = None,
-                 pool_strategy: str = 'mean',
-                 channel_axis: int = 1,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        model_name: str = 'mobilenet_v2',
+        pool_strategy: str = 'mean',
+        channel_axis: int = 1,
+        *args,
+        **kwargs,
+    ):
         """
 
         :param model_name: the name of the model. Supported models include
@@ -44,7 +48,7 @@ class ImageTorchEncoder(BaseTorchEncoder):
         self.channel_axis = channel_axis
         # axis 0 is the batch
         self._default_channel_axis = 1
-        self.model_name = 'mobilenet_v2' or model_name
+        self.model_name = model_name
         if pool_strategy not in ('mean', 'max', None):
             raise NotImplementedError(f'unknown pool_strategy: {self.pool_strategy}')
         self.pool_strategy = pool_strategy
@@ -52,6 +56,7 @@ class ImageTorchEncoder(BaseTorchEncoder):
     def post_init(self):
         super().post_init()
         import torchvision.models as models
+
         if self.pool_strategy is not None:
             self.pool_fn = getattr(np, self.pool_strategy)
         model = getattr(models, self.model_name)(pretrained=True)
@@ -72,6 +77,7 @@ class ImageTorchEncoder(BaseTorchEncoder):
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
+
         _input = torch.from_numpy(data.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()

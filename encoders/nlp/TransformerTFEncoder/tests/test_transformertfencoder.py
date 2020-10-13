@@ -1,62 +1,79 @@
 import os
-import shutil
 import numpy as np
 import pytest
+import random
+import string
 from .. import TransformerTFEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
 
-def rm_files(tmp_files):
-    for k in tmp_files:
-        if os.path.exists(k):
-            if os.path.isfile(k):
-                os.remove(k)
-            elif os.path.isdir(k):
-                shutil.rmtree(k, ignore_errors=False, onerror=None)
+@pytest.fixture(scope='function')
+def random_workspace_name():
+    """Generate a random workspace name with digits and letters."""
+    rand = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    return f'JINA_TEST_WORKSPACE_{rand}'
 
 
-os.environ['TEST_WORKDIR'] = os.getcwd()
+@pytest.fixture(scope='function')
+def test_metas(tmpdir, random_workspace_name):
+    os.environ[random_workspace_name] = str(tmpdir)
+    metas = get_default_metas()
+    metas['workspace'] = os.environ[random_workspace_name]
+    if 'JINA_TEST_GPU' in os.environ:
+        metas['on_gpu'] = True
+    yield metas
+    del os.environ[random_workspace_name]
 
-metas = get_default_metas()
-if 'JINA_TEST_GPU' in os.environ:
-    metas['on_gpu'] = True
 
-encoders = [
-    TransformerTFEncoder(
-        pretrained_model_name_or_path='bert-base-uncased',
-        metas=metas),
-    TransformerTFEncoder(
-        pooling_strategy='mean',
-        pretrained_model_name_or_path='bert-base-uncased',
-        metas=metas),
-    TransformerTFEncoder(
-        pooling_strategy='min',
-        pretrained_model_name_or_path='bert-base-uncased',
-        metas=metas),
-    TransformerTFEncoder(
-        pooling_strategy='max',
-        pretrained_model_name_or_path='bert-base-uncased',
-        metas=metas),
-    TransformerTFEncoder(
-        pretrained_model_name_or_path='xlnet-base-cased',
-        metas=metas),
-    TransformerTFEncoder(
-        pooling_strategy='mean',
-        pretrained_model_name_or_path='xlnet-base-cased',
-        metas=metas),
-    TransformerTFEncoder(
-        pooling_strategy='min',
-        pretrained_model_name_or_path='xlnet-base-cased',
-        metas=metas),
-    TransformerTFEncoder(
-        pooling_strategy='max',
-        pretrained_model_name_or_path='xlnet-base-cased',
-        metas=metas),
+encoders_parameters = [
+    {
+        "pretrained_model_name_or_path": 'bert-base-uncased',
+        "model_save_path": 'bert-base-uncased',
+    },
+    {
+        "pooling_strategy": 'mean',
+        "pretrained_model_name_or_path": 'bert-base-uncased',
+        "model_save_path": 'bert-base-uncased-mean',
+    },
+    {
+        "pooling_strategy": 'min',
+        "pretrained_model_name_or_path": 'bert-base-uncased',
+        "model_save_path": 'bert-base-uncased-min',
+    },
+    {
+        "pooling_strategy": 'max',
+        "pretrained_model_name_or_path": 'bert-base-uncased',
+        "model_save_path": 'bert-base-uncased-max',
+    },
+    {
+        "pretrained_model_name_or_path": 'xlnet-base-cased',
+        "model_save_path": 'xlnet-base-cased',
+    },
+    {
+        "pooling_strategy": 'mean',
+        "pretrained_model_name_or_path": 'xlnet-base-cased',
+        "model_save_path": 'xlnet-base-cased-mean',
+    },
+    {
+        "pooling_strategy": 'min',
+        "pretrained_model_name_or_path": 'xlnet-base-cased',
+        "model_save_path": 'xlnet-base-cased-min',
+    },
+    {
+        "pooling_strategy": 'max',
+        "pretrained_model_name_or_path": 'xlnet-base-cased',
+        "model_save_path": 'xlnet-base-cased-max',
+    }
 ]
 
 
-@pytest.mark.parametrize('encoder', encoders)
+@pytest.fixture
+def encoder(request, test_metas):
+    return TransformerTFEncoder(metas=test_metas, **request.param)
+
+
+@pytest.mark.parametrize('encoder', encoders_parameters[:4], indirect=['encoder'])
 def test_encoding_results(encoder):
     target_output_dim = 768
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
@@ -65,7 +82,7 @@ def test_encoding_results(encoder):
     assert not np.allclose(encoded_data[0], encoded_data[1])
 
 
-@pytest.mark.parametrize('encoder', encoders)
+@pytest.mark.parametrize('encoder', encoders_parameters[:4], indirect=['encoder'])
 def test_save_and_load(encoder):
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
@@ -79,13 +96,19 @@ def test_save_and_load(encoder):
     encoded_data_test = encoder_loaded.encode(test_data)
     assert encoder_loaded.max_length == encoder.max_length
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
-    rm_files([encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath])
 
 
-@pytest.mark.parametrize('encoder', encoders)
+@pytest.mark.parametrize('encoder', encoders_parameters, indirect=['encoder'])
 def test_save_and_load_config(encoder):
     encoder.save_config()
     assert os.path.exists(encoder.config_abspath)
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
     assert encoder_loaded.max_length == encoder.max_length
-    rm_files([encoder_loaded.config_abspath, encoder_loaded.save_abspath])
+
+
+@pytest.mark.parametrize('encoder', encoders_parameters[5:6], indirect=['encoder'])
+def test_parameter_override(encoder):
+    encoder_preset = encoders_parameters[5]
+    assert encoder.pretrained_model_name_or_path == encoder_preset['pretrained_model_name_or_path']
+    assert encoder.pooling_strategy == encoder_preset['pooling_strategy']
+    assert encoder.model_save_path == encoder_preset['model_save_path']

@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict, List, Union
 
 import numpy as np
 from jina.executors.crafters import BaseSegmenter
@@ -12,7 +12,7 @@ class FiveImageCropper(BaseSegmenter):
     """
 
     def __init__(self,
-                 target_size: int,
+                 target_size: Union[Tuple[int, int], int] = 224,
                  channel_axis: int = -1,
                  *args,
                  **kwargs):

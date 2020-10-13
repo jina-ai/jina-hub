@@ -13,10 +13,12 @@ class MilvusIndexer(BaseVectorIndexer):
         For more information about Milvus:
             - https://github.com/milvus-io/milvus/
     """
-    def __init__(self, host: str, port: int,
-                 collection_name: str, index_type: str,
-                 index_params: dict, *args, **kwargs):
+    def __init__(self, host: str = '0.0.0.0', port: int = 19530,
+                 collection_name: str = 'default', index_type: str = 'IVF,Flat',
+                 index_params=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if index_params is None:
+            index_params = dict({'nlist': 10})
         self.host = host
         self.port = port
         self.collection_name = collection_name
@@ -24,7 +26,7 @@ class MilvusIndexer(BaseVectorIndexer):
         self.index_params = index_params
 
     def post_init(self):
-        from .MilvusDBHandler import MilvusDBHandler
+        from milvusdbhandler import MilvusDBHandler
         super().post_init()
         self.milvus = MilvusDBHandler(self.host, self.port, self.collection_name)
 
