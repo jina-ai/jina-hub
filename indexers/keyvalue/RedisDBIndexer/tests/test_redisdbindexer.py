@@ -50,9 +50,9 @@ def test_redis_db_indexer(metas):
 
     with RedisDBIndexer(metas=metas) as redis_query:
         query_results = redis_query.query(key=query_key)
-        for query in query_results:
-            assert query is not None
-            assert query['key'] == str(query_key).encode()
+        for result in query_results:
+            assert result is not None
+            assert result['key'] == str(query_key).encode()
             d = jina_pb2.Document()
-            d.ParseFromString(query['values'])
+            d.ParseFromString(result['values'])
             assert d.text == query_text
