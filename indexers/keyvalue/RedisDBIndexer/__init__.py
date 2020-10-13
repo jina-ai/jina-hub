@@ -74,5 +74,4 @@ class RedisDBIndexer(BinaryPbIndexer):
                 }
                 result.append(res)
 
-        if len(result) > 0:
-            return result
+        return result
