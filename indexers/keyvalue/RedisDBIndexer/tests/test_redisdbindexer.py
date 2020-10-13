@@ -34,9 +34,6 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
 
 
 def test_redis_db_indexer(metas):
-    keys = []
-    values = []
-
     num_docs = 5
     docs = list(random_docs(num_docs=num_docs,
                             chunks_per_doc=3))
