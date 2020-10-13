@@ -29,7 +29,7 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=None)
+        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10000)
         try:
             r.ping()
             return r
