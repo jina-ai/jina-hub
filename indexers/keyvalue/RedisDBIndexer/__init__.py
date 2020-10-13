@@ -29,7 +29,7 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=None)
+        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
         try:
             r.ping()
             return r
@@ -52,7 +52,7 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         """
         import redis
-        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=None)
+        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
         try:
             r.ping()
             return r
@@ -61,12 +61,10 @@ class RedisDBIndexer(BinaryPbIndexer):
 
     def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
         """Find the protobuf chunk/doc using id
-
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
         result = []
-        res = dict()
 
         with self.get_add_handler() as redis_handler:
             for _key in redis_handler.scan_iter(match=key):
@@ -74,7 +72,7 @@ class RedisDBIndexer(BinaryPbIndexer):
                   "key": _key,
                   "values": redis_handler.get(_key),
                 }
-                result.append(_key)
+                result.append(res)
 
         if len(result) > 0:
-            return res
+            return result
