@@ -37,7 +37,7 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         params_path = os.path.join(self.model_path, 'params.json') if self.model_path and os.path.exists(
             self.model_path) else None
 
-        if self.params_path and os.path.exists(params_path):
+        if params_path and os.path.exists(params_path):
 
             config = tf.ConfigProto(log_device_placement=False)
             config.gpu_options.allow_growth = True
