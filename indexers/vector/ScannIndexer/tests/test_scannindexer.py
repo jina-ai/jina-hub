@@ -43,7 +43,7 @@ def test_scann_indexer_known(metas):
                         [100, 100, 100],
                         [1000, 1000, 1000]], dtype=np.float32)
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with ScannIndexer(distance_measure='distance_measure', index_filename='scann.test.gz', metas=metas) as indexer:
+    with ScannIndexer(distance_measure='squared_l2', index_filename='scann.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
@@ -78,7 +78,7 @@ def test_scann_indexer_known_big(metas):
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with ScannIndexer(distance_measure='distance_measure', index_filename='scann.test.gz', metas=metas) as indexer:
+    with ScannIndexer(distance_measure='squared_l2', index_filename='scann.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
