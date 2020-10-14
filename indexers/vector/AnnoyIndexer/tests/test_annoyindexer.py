@@ -119,8 +119,7 @@ def test_annoy_indexer_known_big(metas):
         vectors[idx] = array
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
-
-    with AnnoyIndexer(index_filename='annoy.test.gz', n_trees=100, metas=metas) as indexer:
+    with AnnoyIndexer(index_filename='annoy.test.gz', n_trees=5000, metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
@@ -129,6 +128,7 @@ def test_annoy_indexer_known_big(metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, AnnoyIndexer)
         idx, dist = indexer.query(queries, top_k=1)
+        print(f' idx {idx}')
         np.testing.assert_equal(idx, np.array(
             [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]))
         assert idx.shape == dist.shape
