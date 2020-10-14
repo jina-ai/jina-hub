@@ -4,7 +4,6 @@ FROM jinaai/jina
 COPY . /workspace
 WORKDIR /workspace
 
-RUN python3 -m pip install --upgrade pip
 # install the third-party requirements
 RUN pip install -r requirements.txt
 
