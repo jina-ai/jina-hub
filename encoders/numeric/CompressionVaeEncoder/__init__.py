@@ -34,45 +34,45 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         import cvae.lib.model_iaf as model
         import tensorflow as tf
 
-        if self.model_path and os.path.exists(self.model_path):
-            params_path = os.path.join(self.model_path, 'params.json')
+        params_path = os.path.join(self.model_path, 'params.json') if self.model_path and os.path.exists(
+            self.model_path) else None
+
+        if self.params_path and os.path.exists(params_path):
 
             config = tf.ConfigProto(log_device_placement=False)
             config.gpu_options.allow_growth = True
 
             with tf.Graph().as_default():
-                if os.path.exists(params_path):
-                    # Load parameter file.
-                    with open(params_path, 'r') as f:
-                        param = json.load(f)
 
-                    net = model.VAEModel(param,
-                                         None,
-                                         input_dim=param['dim_feature'],
-                                         keep_prob=tf.placeholder_with_default(input=tf.cast(1.0, dtype=tf.float32),
-                                                                               shape=(),
-                                                                               name="KeepProb"),
-                                         initializer='orthogonal')
-                    # Placeholder for data features
-                    self.data_feature_placeholder = tf.placeholder_with_default(
-                        input=tf.zeros([64, param['dim_feature']], dtype=tf.float32),
-                        shape=[None, param['dim_feature']])
+                # Load parameter file.
+                with open(params_path, 'r') as f:
+                    param = json.load(f)
 
-                    self.embeddings = net.embed(self.data_feature_placeholder)
+                net = model.VAEModel(param,
+                                     None,
+                                     input_dim=param['dim_feature'],
+                                     keep_prob=tf.placeholder_with_default(input=tf.cast(1.0, dtype=tf.float32),
+                                                                           shape=(),
+                                                                           name="KeepProb"),
+                                     initializer='orthogonal')
+                # Placeholder for data features
+                self.data_feature_placeholder = tf.placeholder_with_default(
+                    input=tf.zeros([64, param['dim_feature']], dtype=tf.float32),
+                    shape=[None, param['dim_feature']])
 
-                    self.sess = tf.Session(config=config)
-                    init = tf.global_variables_initializer()
-                    self.sess.run(init)
+                self.embeddings = net.embed(self.data_feature_placeholder)
 
-                    # Saver for loading checkpoints of the model.
-                    saver = tf.train.Saver(var_list=tf.trainable_variables())
-                    cvae.load(saver, self.sess, self.model_path)
+                self.sess = tf.Session(config=config)
+                init = tf.global_variables_initializer()
+                self.sess.run(init)
 
-                    self.to_device()
-                else:
-                    raise FileNotFoundError(f'The {params_path} doesn\'t exist')
+                # Saver for loading checkpoints of the model.
+                saver = tf.train.Saver(var_list=tf.trainable_variables())
+                cvae.load(saver, self.sess, self.model_path)
+
+                self.to_device()
         else:
-            raise PretrainedModelFileDoesNotExist(f'model {self.model_path} does not exist')
+            raise PretrainedModelFileDoesNotExist()
 
     @batching
     @as_ndarray
