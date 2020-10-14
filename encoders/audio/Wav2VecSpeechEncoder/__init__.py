@@ -1,11 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import os
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders import BaseAudioEncoder
 from jina.executors.encoders.frameworks import BaseTorchEncoder
+from jina.excepts import PretrainedModelFileDoesNotExist
 from jina.helper import cached_property
 
 
@@ -17,7 +19,7 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
     ndarray into a `Batch x Concatenated Features` ndarray.
     """
 
-    def __init__(self, model_path: str, input_sample_rate: int = 22050, *args, **kwargs):
+    def __init__(self, model_path: str = None, input_sample_rate: int = 22050, *args, **kwargs):
         """
         Wav2vec model produces a representation for each time step at a rate of 100 Hz.
 
@@ -31,14 +33,17 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
 
     def post_init(self):
         super().post_init()
-        import torch
-        from fairseq.models.wav2vec import Wav2VecModel
-        cp = torch.load(self.model_path, map_location=torch.device('cpu'))
-        self.model = Wav2VecModel.build_model(cp['args'], task=None)
-        self.model.load_state_dict(cp['model'])
-        self.model.eval()
-        self.to_device(self.model)
-        self._tensor_func = torch.tensor
+        if self.model_path and os.path.exists(self.model_path):
+            import torch
+            from fairseq.models.wav2vec import Wav2VecModel
+            cp = torch.load(self.model_path, map_location=torch.device('cpu'))
+            self.model = Wav2VecModel.build_model(cp['args'], task=None)
+            self.model.load_state_dict(cp['model'])
+            self.model.eval()
+            self.to_device(self.model)
+            self._tensor_func = torch.tensor
+        else:
+            raise PretrainedModelFileDoesNotExist(f'model at {self.model_path} does not exist')
 
     @batching
     @as_ndarray
