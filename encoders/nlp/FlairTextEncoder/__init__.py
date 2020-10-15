@@ -11,7 +11,7 @@ class FlairTextEncoder(BaseTorchEncoder):
     """
 
     def __init__(self,
-                 embeddings: Union[Tuple[str], List[str]] = ('word:glove', 'flair:news-forward', 'flair:news-backward'),
+                 embeddings: Union[Tuple[str], List[str]] = ('word:glove', ),
                  pooling_strategy: str = 'mean',
                  *args,
                  **kwargs):
@@ -22,6 +22,7 @@ class FlairTextEncoder(BaseTorchEncoder):
         - ``flair:[ID]``: the contextual embedding model, the ``[ID]`` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
         - ``pooledflair:[ID]``: the pooled version of the contextual embedding model, the ``[ID]`` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
         - ``byte-pair:[ID]``: the subword-level embedding model, the ``[ID]`` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/BYTE_PAIR_EMBEDDINGS.md
+        - ``Example``: ('word:glove', 'flair:news-forward', 'flair:news-backward'),
         :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
             strategies include ``mean``, ``min``, ``max``.
         """
