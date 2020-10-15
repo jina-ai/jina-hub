@@ -23,7 +23,9 @@ class NmsLibIndexer(BaseNumpyIndexer):
         Nmslib package dependency is only required at the query time.
     """
 
-    def __init__(self, space: str = 'cosinesimil', method: str = 'hnsw', print_progress: bool = False,
+    def __init__(self, space: str = 'cosinesimil',
+                 method: str = 'hnsw',
+                 print_progress: bool = False,
                  num_threads: int = 1,
                  *args, **kwargs):
         """
@@ -45,13 +47,14 @@ class NmsLibIndexer(BaseNumpyIndexer):
     def build_advanced_index(self, vecs: 'np.ndarray'):
         import nmslib
         _index = nmslib.init(method=self.method, space=self.space)
-        self.build_partial_index(vecs, _index)
-        _index.createIndex({'post': 2}, print_progress=self.print_progress)
+        self.build_partial_index(vecs, slice(0, len(vecs)), _index)
+        params = {'post': 2} if self.method not in ['brute_force', 'simple_invindx'] else None
+        _index.createIndex(index_params=params, print_progress=self.print_progress)
         return _index
 
-    @batching
-    def build_partial_index(self, vecs: 'np.ndarray', _index):
-        _index.addDataPointBatch(vecs.astype(np.float32))
+    @batching(ordinal_idx_arg=2)
+    def build_partial_index(self, vecs: 'np.ndarray', ord_idx: 'slice', _index):
+        _index.addDataPointBatch(vecs.astype(np.float32), range(ord_idx.start, ord_idx.stop))
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         ret = self.query_handler.knnQueryBatch(keys, k=top_k, num_threads=self.num_threads)

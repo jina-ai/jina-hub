@@ -4,6 +4,7 @@ with:
     !NumpyIndexer
     metas:
       name: wrap-npidx
+      workspace: $TEST_WORKSPACE
     with:
       backend: numpy
       compress_level: 1
