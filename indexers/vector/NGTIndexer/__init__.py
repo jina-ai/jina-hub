@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import os
 from typing import Tuple
 
 import numpy as np
@@ -30,29 +31,25 @@ class NGTIndexer(BaseNumpyIndexer):
 
         super().__init__(*args, **kwargs)
         self.metric = metric
-        self.index_path = 'index'
         self.num_threads = num_threads
         self.epsilon = epsilon
 
+    def post_init(self):
+        super().post_init()
+        self.index_path = os.path.join(self.workspace, 'index')
+
     def build_advanced_index(self, vecs: 'np.ndarray'):
         import ngtpy
-        if vecs is not None:
-            ngtpy.create(path=self.index_path, dimension=self.num_dim, distance_type=self.metric)
-            _index = ngtpy.Index(self.index_path)
-            _index.batch_insert(vecs, num_threads=self.num_threads)
-            return _index
-        else:
-            return None
+        ngtpy.create(path=self.index_path, dimension=self.num_dim, distance_type=self.metric)
+        _index = ngtpy.Index(self.index_path)
+        _index.batch_insert(vecs, num_threads=1)
+        return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        if keys.dtype != np.float32:
-            raise ValueError('vectors should be ndarray of float32')
-
-        index = self.query_handler
         dist = []
         idx = []
         for key in keys:
-            results = index.search(key, size=top_k, epsilon=self.epsilon)
+            results = self.query_handler.search(key, size=top_k, epsilon=self.epsilon)
             if results:
                 index_k, distance_k = zip(*results)
                 idx.append(index_k)
