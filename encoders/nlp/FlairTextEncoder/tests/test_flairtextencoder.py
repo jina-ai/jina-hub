@@ -46,7 +46,7 @@ class MockSentence:
 
 
 def _test_encoding_results(*args, **kwargs):
-    encoder = FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean')
+    encoder = FlairTextEncoder(pooling_strategy='mean')
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (2, target_output_dim)
     rm_files([encoder.config_abspath, encoder.save_abspath])
@@ -88,6 +88,6 @@ def test_save_and_load_config(*args, **kwargs):
     rm_files([encoder.config_abspath, encoder.save_abspath])
 
 
-@pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
 def test_encoding_results(*args, **kwargs):
     _test_encoding_results(*args, **kwargs)
+
