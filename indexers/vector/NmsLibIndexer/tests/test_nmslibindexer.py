@@ -94,7 +94,7 @@ def test_nmslib_indexer_known_big(metas):
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with NmsLibIndexer(space='l2', method='brute_force', index_filename='nmslib.test.gz', num_threads=4, metas=metas) as indexer:
+    with NmsLibIndexer(space='l2', index_params=None, method='brute_force', index_filename='nmslib.test.gz', num_threads=4, metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
