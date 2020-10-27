@@ -3,7 +3,6 @@ from typing import Sequence, Any
 
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 
-
 class NDCGEvaluator(BaseRankingEvaluator):
     """
     :class:`NDCGEvaluator` evaluates normalized discounted cumulative gain for information retrieval.
@@ -20,15 +19,12 @@ class NDCGEvaluator(BaseRankingEvaluator):
         :return the evaluation metric value for the request document.
         """
         actual_at_k = actual[:self.eval_at]
-        desired_at_k = actual[:self.eval_at]
+        desired_at_k = desired[:self.eval_at]
         if len(actual) < 2:
             raise ValueError(f'Expecting gains with minimal length of 2, {len(actual)} received.')
         dcg = self._compute_dcg(gains=actual_at_k)
         idcg = self._compute_idcg(gains=desired_at_k)
-        if idcg == 0.0:
-            return 0.0
-        else:
-            return dcg/idcg
+        return 0.0 if idcg == 0.0 else dcg/idcg
 
     def _compute_dcg(self, gains):
         """Compute discounted cumulative gain."""

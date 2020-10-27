@@ -8,15 +8,18 @@ def evaluator():
 
 @pytest.fixture(scope='function')
 def desired():
-    return [.8, .4, .1]
+    return [.8, .4, .1, 0]
 
-@pytest.mark.parametrize('actual, expected',[
-    ([.4, .1, .8], 0.795)
-    ([.0, .1, .4], 0.279)
-    ([.4, .1, .0], 0.396)
-])
+@pytest.mark.parametrize('actual, expected',
+    [
+        ([.4, .1, .8], 0.795),
+        ([.0, .1, .4], 0.279),
+        ([.4, .1, .0], 0.396),
+    ]
+)
 def test_encode_success(evaluator, actual, desired, expected):
-    assert evaluator.evaluate(actual=actual, desired=desired) == pytest.approx(expected)
+    assert evaluator.evaluate(actual=actual, desired=desired) == pytest.approx(expected, 0.1)
 
 def test_encode_fail(evaluator, desired):
-    assert pytest.raises(ValueError, evaluator.evaluate(actual=[0.8], desired=desired))
+    with pytest.raises(ValueError):
+        evaluator.evaluate(actual=[0.8], desired=desired)
