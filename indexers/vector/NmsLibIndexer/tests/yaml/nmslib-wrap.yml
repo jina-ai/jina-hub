@@ -11,3 +11,5 @@ with:
       index_filename: wrap-npidx
       metric: euclidean
   space: l2
+  index_params:
+    post: 4
