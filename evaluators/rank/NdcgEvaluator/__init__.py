@@ -4,10 +4,10 @@ from typing import Sequence, Any
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 
 
-def _compute_dcg(gains, use_traditional_formula):
+def _compute_dcg(gains, power_relevance):
     """Compute discounted cumulative gain."""
     ret = 0.0
-    if use_traditional_formula:
+    if not power_relevance:
         for score, position in zip(gains[1:], range(2, len(gains) + 1)):
             ret += score / log(position, 2)
         return gains[0] + ret
@@ -16,10 +16,10 @@ def _compute_dcg(gains, use_traditional_formula):
     return ret
 
 
-def _compute_idcg(gains, use_traditional_formula):
+def _compute_idcg(gains, power_relevance):
     """Compute ideal discounted cumulative gain."""
     sorted_gains = sorted(gains, reverse=True)
-    return _compute_dcg(sorted_gains, use_traditional_formula)
+    return _compute_dcg(sorted_gains, power_relevance)
 
 class NDCGEvaluator(BaseRankingEvaluator):
     """
@@ -34,7 +34,7 @@ class NDCGEvaluator(BaseRankingEvaluator):
             self,
             actual: Sequence[Any],
             desired: Sequence[Any],
-            use_traditional_formula=False,
+            power_relevance=True,
             *args, **kwargs
     ) -> float:
         """"
@@ -49,7 +49,7 @@ class NDCGEvaluator(BaseRankingEvaluator):
         desired_at_k = desired[:self.eval_at]
         if len(actual) < 2:
             raise ValueError(f'Expecting gains with minimal length of 2, {len(actual)} received.')
-        dcg  = _compute_dcg(gains=actual_at_k, use_traditional_formula=use_traditional_formula)
-        idcg = _compute_idcg(gains=desired_at_k, use_traditional_formula=use_traditional_formula)
+        dcg  = _compute_dcg(gains=actual_at_k, power_relevance=power_relevance)
+        idcg = _compute_idcg(gains=desired_at_k, power_relevance=power_relevance)
         return 0.0 if idcg == 0.0 else dcg/idcg
 
