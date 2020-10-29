@@ -17,7 +17,7 @@ class BleuEvaluator(BaseEvaluator):
     
     
     def get_nltk_bleu_score(self, hypothesis, reference):
-        return bleu.sentence_bleu([reference], hypothesis)
+        return bleu.sentence_bleu(reference, hypothesis)
 
 
     def evaluate(self,
@@ -32,11 +32,6 @@ class BleuEvaluator(BaseEvaluator):
         :return the evaluation metric value for the request document.
         """
 
-        # Default BLEU uses n=4, if the sentence is less than this, 
-        # set n-values accordingly
-        # ex: if references.size = 2 set weights = (0.5, 0.5)
-        #if len(reference) < 4:
-            #    weights = len(reference)
         BLEUScore = self.get_nltk_bleu_score(hypothesis, reference)
 
         return BLEUScore
