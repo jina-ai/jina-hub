@@ -3,6 +3,24 @@ from typing import Sequence, Any
 
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 
+
+def _compute_dcg(gains, use_traditional_formula):
+    """Compute discounted cumulative gain."""
+    ret = 0.0
+    if use_traditional_formula:
+        for score, position in zip(gains[1:], range(2, len(gains) + 1)):
+            ret += score / log(position, 2)
+        return gains[0] + ret
+    for score, position in zip(gains, range(1, len(gains) + 1)):
+        ret += (pow(2, score) - 1) / log(position + 1, 2)
+    return ret
+
+
+def _compute_idcg(gains, use_traditional_formula):
+    """Compute ideal discounted cumulative gain."""
+    sorted_gains = sorted(gains, reverse=True)
+    return _compute_dcg(sorted_gains, use_traditional_formula)
+
 class NDCGEvaluator(BaseRankingEvaluator):
     """
     :class:`NDCGEvaluator` evaluates normalized discounted cumulative gain for information retrieval.
@@ -31,22 +49,7 @@ class NDCGEvaluator(BaseRankingEvaluator):
         desired_at_k = desired[:self.eval_at]
         if len(actual) < 2:
             raise ValueError(f'Expecting gains with minimal length of 2, {len(actual)} received.')
-        dcg  = self._compute_dcg(gains=actual_at_k, use_traditional_formula=use_traditional_formula)
-        idcg = self._compute_idcg(gains=desired_at_k, use_traditional_formula=use_traditional_formula)
+        dcg  = _compute_dcg(gains=actual_at_k, use_traditional_formula=use_traditional_formula)
+        idcg = _compute_idcg(gains=desired_at_k, use_traditional_formula=use_traditional_formula)
         return 0.0 if idcg == 0.0 else dcg/idcg
 
-    def _compute_dcg(self, gains, use_traditional_formula):
-        """Compute discounted cumulative gain."""
-        ret = 0.0
-        if use_traditional_formula:
-            for score, position in zip(gains[1:], range(2, len(gains) + 1)):
-                ret += score/log(position, 2)
-            return gains[0] + ret
-        for score, position in zip(gains, range(1, len(gains) + 1)):
-            ret += (pow(2, score) - 1)/log(position + 1, 2)
-        return ret
-
-    def _compute_idcg(self, gains, use_traditional_formula):
-        """Compute ideal discounted cumulative gain."""
-        sorted_gains = sorted(gains, reverse=True)
-        return self._compute_dcg(sorted_gains, use_traditional_formula)

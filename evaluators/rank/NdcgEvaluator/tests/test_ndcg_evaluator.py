@@ -6,10 +6,6 @@ from .. import NDCGEvaluator
 def evaluator():
     return NDCGEvaluator(eval_at=3)
 
-@pytest.fixture(scope='function')
-def desired():
-    return [.8, .4, .1, 0]
-
 @pytest.mark.parametrize('actual, use_traditional_formula, expected',
     [
         ([.4, .1, .8], True, 0.795),
@@ -24,9 +20,9 @@ def desired():
         ([.8, .4, .1], False, 1.0),
     ]
 )
-def test_encode(evaluator, actual, desired, use_traditional_formula, expected):
-    assert evaluator.evaluate(actual=actual, desired=desired, use_traditional_formula=use_traditional_formula) == pytest.approx(expected, 0.1)
+def test_encode(evaluator, actual, use_traditional_formula, expected):
+    assert evaluator.evaluate(actual=actual, desired=[.8, .4, .1, 0], use_traditional_formula=use_traditional_formula) == pytest.approx(expected, 0.1)
 
-def test_encode_fail(evaluator, desired):
+def test_encode_fail(evaluator):
     with pytest.raises(ValueError):
-        evaluator.evaluate(actual=[0.8], desired=desired)
+        evaluator.evaluate(actual=[0.8], desired=[.8, .4, .1, 0])
