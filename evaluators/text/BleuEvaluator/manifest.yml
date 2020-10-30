@@ -1,8 +1,8 @@
 manifest_version: 1
 name: BleuEvaluator
 kind: evaluator
-description: Bilingual Evaluation Understudy Score. Evaluates the generated sentence against a reference sentence. 
-A perfect match will score 1.0 and a perfect unmatch will score 0.0
+type: pod
+description: Bilingual Evaluation Understudy Score. Evaluates the generated sentence against a desired sentence.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
@@ -10,4 +10,3 @@ documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.1
 license: apache-2.0
 keywords: [bleu, evaluator, text]
-type: pod

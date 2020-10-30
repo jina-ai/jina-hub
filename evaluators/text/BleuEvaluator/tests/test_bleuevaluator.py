@@ -3,11 +3,9 @@ import pytest
 
 
 def test_bleu_evaluator():
-    reference = [ ['All', 'cats', 'are', 'beautiful'], ['All', 'cats', 'are', 'cute'] ]
-    hypothesis = ['All', 'cats', 'are', 'beautiful']
-    BLUE_score = BleuEvaluator().evaluate(hypothesis, reference, True)
-    assert BLUE_score == 1.0
-
+    desired = 'All cats are so super beautiful'
+    actual = 'All cats are so super beautiful'
+    assert BleuEvaluator().evaluate(desired, actual) == 1.0
 
 
 
