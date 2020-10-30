@@ -16,23 +16,23 @@ class BleuEvaluator(BaseEvaluator):
 
 
     def evaluate(self,
+            actual,
             desired,
-            actual, 
             *args,
             **kwargs) -> float:
         """"
-        :param desired: the expected score given by user as groundtruth.
-        :param actual: the scores predicted by the search system.
+        :param desired: the expected text given by user as groundtruth.
+        :param actual: the text predicted by the search system.
         :return the evaluation metric value for the request document.
 
         NLTK expectes an array of strings, 
         so the incoming string needs to be tokenized first.
-        They will be stored in a desired_list
+        They will be stored in a desired_list and actual_list accordingly
         """
         
-        # tokenize
-        desired_list = desired.split()
-        actual_list = actual.split()
+        # set everything to undercase and tokenize
+        desired_list = desired.lower().split()
+        actual_list = actual.lower().split()
         
         return self.get_nltk_bleu_score([desired_list], actual_list)
     
