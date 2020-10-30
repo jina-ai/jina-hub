@@ -1,5 +1,3 @@
-import nltk.translate.bleu_score as bleu
-
 from jina.executors.evaluators import BaseEvaluator
 
 class BleuEvaluator(BaseEvaluator):
@@ -10,8 +8,9 @@ class BleuEvaluator(BaseEvaluator):
     A perfect match will score 1.0 and a perfect unmatch will score 0.0
     """
     
-    
     def get_nltk_bleu_score(self, desired, actual):
+        import nltk.translate.bleu_score as bleu    
+
         return bleu.sentence_bleu(desired, actual)
 
 

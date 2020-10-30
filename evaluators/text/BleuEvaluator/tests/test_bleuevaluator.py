@@ -22,4 +22,9 @@ def test_bleu_evaluator_caps():
     actual = 'ALL CATS ARE SO SUPER BEAUTIFUL'
     assert BleuEvaluator().evaluate(actual, desired) == 1.0
 
+def test_bleu_evaluator_fail():
+    desired = 'All cats are so super beautiful'
+    actual = 'Some dogs are also cute memes'
+    with pytest.raises(Exception):
+        assert BleuEvaluator().evaluate(actual, desired) == 1.0
 
