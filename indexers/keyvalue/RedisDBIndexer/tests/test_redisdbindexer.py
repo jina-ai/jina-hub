@@ -1,15 +1,12 @@
 import os
 import random
-import pytest
+
 import numpy as np
+import pytest
 
-from google.protobuf.json_format import MessageToJson
-from jina.executors.indexers import BaseIndexer
 from jina.executors.metas import get_default_metas
-from jina.drivers.helper import array2pb
 from jina.proto import jina_pb2, uid
-
-
+from jina.proto.ndarray.generic import GenericNdArray
 from .. import RedisDBIndexer
 
 
@@ -28,7 +25,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
         d = jina_pb2.Document()
         d.tags['id'] = j
         d.text = b'hello world doc id %d' % j
-        d.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
+        GenericNdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
         d.id = uid.new_doc_id(d)
         yield d
 

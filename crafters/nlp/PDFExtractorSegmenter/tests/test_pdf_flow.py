@@ -1,10 +1,9 @@
-from typing import io
-
-from jina.drivers.helper import array2pb
-from jina.proto import jina_pb2
-from jina.flow import Flow
-from PIL import Image
 import os
+
+from PIL import Image
+
+from jina.flow import Flow
+from jina.proto import jina_pb2
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
