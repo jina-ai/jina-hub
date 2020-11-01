@@ -10,19 +10,19 @@ class RougeEvaluator(BaseTextEvaluator):
         stat: can be r for recall, p for precision and f for f1
         """
         super().__init__(*args, **kwargs)
-        self.metric_ = metric
-        self.stat = stat
+        self._metric = metric.lower()
+        self.stat = stat.lower()
 
     def post_init(self):
         super().post_init()
         from rouge import Rouge
-        self.rouge = Rouge(metrics=[self.metric_], stats=[self.stat])
+        self.rouge = Rouge(metrics=[self._metric], stats=[self.stat])
 
     @property
     def metric(self):
-        return f'{self.metric_.upper()}'
+        return f'{self._metric.upper()}'
 
     def evaluate(self, actual: str, desired: str) -> float:
         if (not len(actual)) or (not len(desired)):
             return 0.0
-        return float(self.rouge.get_scores(actual, desired)[0][self.metric_][self.stat])
+        return float(self.rouge.get_scores(actual, desired)[0][self._metric][self.stat])
