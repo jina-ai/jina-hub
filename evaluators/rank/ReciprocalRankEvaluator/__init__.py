@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Union
 
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 
@@ -14,7 +14,7 @@ class ReciprocalRankEvaluator(BaseRankingEvaluator):
     def metric(self):
         return f'ReciprocalRank@{self.eval_at}'
 
-    def evaluate(self, actual: Sequence[int], desired: Sequence[int], *args, **kwargs) -> float:
+    def evaluate(self, actual: Sequence[Union[str,int]], desired: Sequence[Union[str,int]], *args, **kwargs) -> float:
         """
         Args:
             actual (Sequence[int]): should be a sequence of document IDs
