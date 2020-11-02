@@ -6,7 +6,7 @@ class f1ScoreEvaluator(BaseRankingEvaluator):
     :class:`f1ScoreEvaluator` Gives the f1 score of a result given the groundtruth..
     """
 
-    def __init__(self, eval_at=0 ,*args, **kwargs):
+    def __init__(self, eval_at=1 ,*args, **kwargs):
         super().__init__(eval_at, *args, **kwargs)
 
     @property
