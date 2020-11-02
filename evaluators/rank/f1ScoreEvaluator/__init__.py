@@ -36,5 +36,8 @@ class f1ScoreEvaluator(BaseRankingEvaluator):
         else:
             precision = 0
 
+        if precision + recall == 0:
+            return 0
+
         return 2*(precision*recall)/(precision+recall)
         
