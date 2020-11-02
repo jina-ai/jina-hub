@@ -1,4 +1,5 @@
 from jina.executors.evaluators.rank import BaseRankingEvaluator
+from typing import Sequence,Any
 
 class f1ScoreEvaluator(BaseRankingEvaluator):
     """
