@@ -14,10 +14,18 @@ class ReciprocalRankEvaluator(BaseRankingEvaluator):
     def metric(self):
         return f'ReciprocalRank@{self.eval_at}'
 
-    def evaluate(self, actual: Sequence[str], desired: Sequence[str], *args, **kwargs) -> float:
+    def evaluate(self, actual: Sequence[int], desired: Sequence[int], *args, **kwargs) -> float:
+        """
+        Args:
+            actual (Sequence[int]): should be a sequence of document IDs
+            desired (Sequence[int]): should be a sequence of document IDs
+
+        Returns:
+            float: Returns reciprocal rank score
+        """
         if len(actual)==0 or len(desired)==0:
             return 0.0
         try:
-            return float(1/(actual[:self.eval_at].index(desired[0])+1))
+            return 1.0/(actual[:self.eval_at].index(desired[0])+1)
         except:
             return 0.0
