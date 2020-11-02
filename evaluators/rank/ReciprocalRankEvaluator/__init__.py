@@ -7,8 +7,8 @@ class ReciprocalRankEvaluator(BaseRankingEvaluator):
     :class:`ReciprocalRankEvaluator` Gives score as per reciprocal rank metric.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, eval_at=3, *args, **kwargs):
+        super().__init__(eval_at, *args, **kwargs)
 
     @property
     def metric(self):
@@ -16,12 +16,9 @@ class ReciprocalRankEvaluator(BaseRankingEvaluator):
 
     def evaluate(self, actual: Sequence[Union[str,int]], desired: Sequence[Union[str,int]], *args, **kwargs) -> float:
         """
-        Args:
-            actual (Sequence[int]): should be a sequence of document IDs
-            desired (Sequence[int]): should be a sequence of document IDs
-
-        Returns:
-            float: Returns reciprocal rank score
+        :param actual: should be a sequence of document IDs
+        :param desired: should be a sequence of document IDs
+        :return gives reciprocal rank score
         """
         if len(actual)==0 or len(desired)==0:
             return 0.0
