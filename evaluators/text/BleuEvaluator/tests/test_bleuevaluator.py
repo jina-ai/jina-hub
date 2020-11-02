@@ -2,28 +2,22 @@ from .. import BleuEvaluator
 import pytest
 
 
-def test_bleu_evaluator():
-    desired = 'All cats are so super beautiful'
-    actual = 'All cats are so super beautiful'
-    assert BleuEvaluator().evaluate(actual, desired) == 1.0
+@pytest.mark.parametrize('actual, desired, score',
+    [
+        ('All cats are so super beautiful', 'All cats are so super beautiful', 1.0),
+        ('All cats are so super beautiful', '', 0.0),
+        ('', 'All cats are so super beautiful', 0.0),
+        ('All cats are so super beautiful', 'ALL CATS ARE SO SUPER BEAUTIFUL', 1.0), 
+        ('All cats are so super beautiful', 'Some dogs are also cute memes', 0.7351508268457205),
+        ('All cats are so super beautiful', 'Why is there an unicorn here', 0.0)
+    ])
 
-def test_bleu_evaluator_actual_emtpy():
-    desired = 'All cats are so super beautiful'
-    actual = ''
-    assert BleuEvaluator().evaluate(actual, desired) == 0.0
 
-def test_bleu_evaluator_desired_emtpy():
-    desired = ''
-    actual = 'All cats are so super beautiful'
-    assert BleuEvaluator().evaluate(actual, desired) == 0.0
+def test_bleu_evaluator(actual, desired, score):
+    evaluator = BleuEvaluator()
+    assert evaluator.evaluate(actual, desired) == score
 
-def test_bleu_evaluator_caps():
-    desired = 'All cats are so super beautiful'
-    actual = 'ALL CATS ARE SO SUPER BEAUTIFUL'
-    assert BleuEvaluator().evaluate(actual, desired) == 1.0
 
-def test_bleu_evaluator_fail():
-    desired = 'All cats are so super beautiful'
-    actual = 'Some dogs are also cute memes'
-    assert BleuEvaluator().evaluate(actual, desired) == 0.7351508268457205
+
+
 

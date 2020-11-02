@@ -1,6 +1,6 @@
-from jina.executors.evaluators import BaseEvaluator
+from jina.executors.evaluators.text import BaseTextEvaluator
 
-class BleuEvaluator(BaseEvaluator):
+class BleuEvaluator(BaseTextEvaluator):
     """
     :class:`BleuEvaluator`Bilingual Evaluation Understudy Score. 
     Evaluates the generated sentence (actual) against a desired sentence. 
