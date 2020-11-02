@@ -11,7 +11,7 @@ class f1ScoreEvaluator(BaseRankingEvaluator):
 
     @property
     def metric(self):
-        return f'f1Score'@{self.eval}
+        return f'f1Score@{self.eval_at}'
 
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
