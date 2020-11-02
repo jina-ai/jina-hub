@@ -10,8 +10,9 @@ class BleuEvaluator(BaseEvaluator):
     
     def get_nltk_bleu_score(self, desired, actual):
         import nltk.translate.bleu_score as bleu    
+        from nltk.translate.bleu_score import SmoothingFunction
 
-        return bleu.sentence_bleu(desired, actual)
+        return bleu.sentence_bleu(desired, actual, smoothing_function=SmoothingFunction().method4)
 
 
     def evaluate(self,
