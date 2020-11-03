@@ -28,28 +28,29 @@ class BleuEvaluator(BaseTextEvaluator):
             for i in range(len(text) - n_order):
                 ngram = tuple(text[i:i+n_order])
                 counter[ngram] += 1
-        
+
         return counter
 
     @staticmethod
-    def get_nltk_bleu_score(desired, actual, overlap):
+    def get_nltk_bleu_score(desired, actual, overlaps):
         import nltk.translate.bleu_score as bleu    
         from nltk.translate.bleu_score import SmoothingFunction
 
         #Check the n-gram and reset the weights accordingly
         # https://machinelearningmastery.com/calculate-bleu-score-for-text-python/
-        overlaps = sum(overlap.values())
+        print('overlap ', overlaps)
         if overlaps == 1:
             return bleu.sentence_bleu(desired, actual, weights = (1, 0, 0, 0), smoothing_function=SmoothingFunction().method4)
-        if overlaps == 2:
+            #return score
+        elif overlaps == 2:
             return bleu.sentence_bleu(desired, actual, weights = (0, 1, 0, 0), smoothing_function=SmoothingFunction().method4)
-        if overlaps == 3:
+        elif overlaps == 3:
             return bleu.sentence_bleu(desired, actual, weights = (0, 0, 1, 0), smoothing_function=SmoothingFunction().method4)
-        if overlaps == 4:
+        elif overlaps == 4:
             return bleu.sentence_bleu(desired, actual, weights = (0, 0, 0, 1), smoothing_function=SmoothingFunction().method4)
         else:
             return bleu.sentence_bleu(desired, actual) #otherwise use standard weights (0.25, 0.25, 0.25, 0.25) and no Smoothin function
-
+  
 
     def evaluate(self,
             actual,
@@ -75,7 +76,8 @@ class BleuEvaluator(BaseTextEvaluator):
         actual_ngram = self.count_ngram(actual_list, self.max_order+1)
 
         #get overlaps betwen the two
-        overlaps = desired_ngram & actual_ngram
+        overlap = desired_ngram & actual_ngram
+        overlaps = sum(overlap.values())
         
         return self.get_nltk_bleu_score([desired_list], actual_list, overlaps)
     
