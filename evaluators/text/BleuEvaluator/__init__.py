@@ -8,7 +8,13 @@ class BleuEvaluator(BaseTextEvaluator):
     A perfect match will score 1.0 and a perfect unmatch will score 0.0
     """
 
-    def count_ngram(self, text, max_ngram):
+    def __init__(self, max_order: int=4, smooth: bool=False, *args, **kwargs):
+        self.max_order = max_order
+        self.smoot = smooth
+        super().__init__(*args, **kwargs)
+
+    @staticmethod
+    def count_ngram(text, max_ngram):
         """Gets all n_grams from a given text
             - text: the text to be analyzed
             - max_ngram: max n_gram from the text
@@ -25,12 +31,13 @@ class BleuEvaluator(BaseTextEvaluator):
         
         return counter
 
-    
-    def get_nltk_bleu_score(self, desired, actual, overlap):
+    @staticmethod
+    def get_nltk_bleu_score(desired, actual, overlap):
         import nltk.translate.bleu_score as bleu    
         from nltk.translate.bleu_score import SmoothingFunction
 
         #Check the n-gram and reset the weights accordingly
+        # https://machinelearningmastery.com/calculate-bleu-score-for-text-python/
         overlaps = sum(overlap.values())
         if overlaps == 1:
             return bleu.sentence_bleu(desired, actual, weights = (1, 0, 0, 0), smoothing_function=SmoothingFunction().method4)
@@ -47,8 +54,6 @@ class BleuEvaluator(BaseTextEvaluator):
     def evaluate(self,
             actual,
             desired,
-            max_order=4,
-            smooth=False,
             *args,
             **kwargs) -> float:
         """"
@@ -66,8 +71,8 @@ class BleuEvaluator(BaseTextEvaluator):
         actual_list = actual.lower().split()
 
         #get the n_gram for each sentence
-        desired_ngram = self.count_ngram(desired_list, max_order+1)
-        actual_ngram = self.count_ngram(actual_list, max_order+1)
+        desired_ngram = self.count_ngram(desired_list, self.max_order+1)
+        actual_ngram = self.count_ngram(actual_list, self.max_order+1)
 
         #get overlaps betwen the two
         overlaps = desired_ngram & actual_ngram
