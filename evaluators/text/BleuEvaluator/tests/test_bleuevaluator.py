@@ -8,7 +8,7 @@ import pytest
         ('All cats are so super beautiful', '', 0.0),
         ('', 'All cats are so super beautiful', 0.0),
         ('All cats are so super beautiful', 'ALL CATS ARE SO SUPER BEAUTIFUL', 1.0), 
-        ('All cats are so super beautiful', 'Some dogs are also cute memes', 0.7),
+        ('All cats are so super beautiful', 'Some dogs are also cute memes', 0.16),
         ('All cats are so super beautiful', 'Why is there an unicorn here', 0.0)
     ])
 
