@@ -5,7 +5,7 @@ class BleuEvaluator(BaseTextEvaluator):
     :class:`BleuEvaluator`Bilingual Evaluation Understudy Score. 
     Evaluates the generated sentence (actual) against a desired sentence. 
     It will use the Bleu on NLTK package.
-    A perfect match will score 1.0 and a perfect unmatch will score 0.0
+    A perfect match will score 1.0 and a complete mismatch will score 0.0
     """
 
     def __init__(self, max_order: int=4, smooth: bool=False, *args, **kwargs):
