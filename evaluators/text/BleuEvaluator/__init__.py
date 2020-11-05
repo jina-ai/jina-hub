@@ -36,7 +36,7 @@ class BleuEvaluator(BaseTextEvaluator):
         elif n_gram == 3:
             return bleu.sentence_bleu(desired_list, actual_list, weights = (0.33, 0.33, 0.33, 0), smoothing_function=SmoothingFunction().method3)
         else:
-            return bleu.sentence_bleu(desired_list, actual_list, smoothing_function=SmoothingFunction().method1) #if the ngram is at least 4, use the standard 
+            return bleu.sentence_bleu(desired_list, actual_list) #if the ngram is at least 4, use the standard 
         
 
     def evaluate(self,
