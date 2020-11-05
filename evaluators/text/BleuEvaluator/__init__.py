@@ -18,7 +18,7 @@ class BleuEvaluator(BaseTextEvaluator):
 
 
     @staticmethod
-    def get_score(desired_list, actual_list, n_gram):
+    def get_score(actual_list, desired_list, n_gram):
         '''
         Cumulative score is the calculation of individual n-grams
         from 1 to n-order, and then weights them with the geometric mean
@@ -30,13 +30,13 @@ class BleuEvaluator(BaseTextEvaluator):
         from nltk.translate.bleu_score import SmoothingFunction
 
         if n_gram == 1:
-            return bleu.sentence_bleu(desired_list, actual_list, weights = (1.0, 0, 0, 0), smoothing_function=SmoothingFunction().method4)
+            return bleu.sentence_bleu(desired_list, actual_list, weights = (1.0, 0, 0, 0), smoothing_function=SmoothingFunction().method1)
         elif n_gram == 2:
-            return bleu.sentence_bleu(desired_list, actual_list, weights = (0.5, 0.5, 0, 0), smoothing_function=SmoothingFunction().method4)
+            return bleu.sentence_bleu(desired_list, actual_list, weights = (0.5, 0.5, 0, 0), smoothing_function=SmoothingFunction().method2)
         elif n_gram == 3:
-            return bleu.sentence_bleu(desired_list, actual_list, weights = (0.33, 0.33, 0.33, 0), smoothing_function=SmoothingFunction().method4)
+            return bleu.sentence_bleu(desired_list, actual_list, weights = (0.33, 0.33, 0.33, 0), smoothing_function=SmoothingFunction().method3)
         else:
-            return bleu.sentence_bleu(desired_list, actual_list) #if the ngram is at least 4, use the standard 
+            return bleu.sentence_bleu(desired_list, actual_list, smoothing_function=SmoothingFunction().method1) #if the ngram is at least 4, use the standard 
         
 
     def evaluate(self,
@@ -57,5 +57,6 @@ class BleuEvaluator(BaseTextEvaluator):
         # set everything to undercase and tokenize
         desired_list = desired.lower().split()
         actual_list = actual.lower().split()
-        return self.get_score([desired_list], actual_list, len([desired_list]))
+
+        return self.get_score(actual_list, [desired_list], len(actual_list))
 
