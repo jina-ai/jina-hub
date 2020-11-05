@@ -1,5 +1,8 @@
 from jina.executors.evaluators.text import BaseTextEvaluator
 
+from typing import List
+
+
 class BleuEvaluator(BaseTextEvaluator):
     """
     :class:`BleuEvaluator`Bilingual Evaluation Understudy Score. 
@@ -18,12 +21,14 @@ class BleuEvaluator(BaseTextEvaluator):
 
 
     @staticmethod
-    def get_score(actual_list, desired_list, n_gram):
+    def get_score(actual_list: List[str], desired_list: List[List[str]], n_gram):
         '''
+        - desired_list: A List of a List of all possible sentences ex: [['cats are cute'], ['dogs are cute']]
+        - actual_list: A list of the sentences to be scored ex: ['cats are cute']
+        - n_gram: is the gram size ex: ['cats are cute'] -> n_gram = 3
         Cumulative score is the calculation of individual n-grams
         from 1 to n-order, and then weights them with the geometric mean
-        - desired_list, actual_list: are the sentences to be scored
-        It will check the biggest n-gram possible, if the n-gram is smaller than 4, 
+        It will check the n-gram size, if the n-gram is smaller than 4, 
         which is the standard for NLTK, it is neccesary to reset the weights
         '''
         import nltk.translate.bleu_score as bleu    
