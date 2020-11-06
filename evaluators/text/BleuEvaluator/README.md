@@ -4,13 +4,7 @@ Bilingual Evaluation Understudy Score. Evaluates the generated sentence against 
 A perfect match will score 1.0 and a complete mismatch will score 0.0
 
 BLEU works well with n-grams of at least 4, if less than that, it's neccessary to use a smoothing function and reset the weights.
-If this is not done, it can be the case that we get results smaller than zero which shouldn't happen, as well as returning the error
-
-```
-ZeroDivisionError: Fraction(0, 0)
-```
-
-To avoid this we use accumulative-error to check the n-grams and set the weights accordingly.
+We use accumulative-error to check the n-grams and set the weights accordingly.
 
 To read more about this please check this websites:
 https://machinelearningmastery.com/calculate-bleu-score-for-text-python/
