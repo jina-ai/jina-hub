@@ -3,8 +3,6 @@ __license__ = "Apache-2.0"
 
 import os
 
-import requests
-from requests.exceptions import ConnectionError
 from jina.executors.crafters import BaseCrafter
 
 TIKA_URL = 'http://0.0.0.0:9998'
@@ -32,7 +30,8 @@ class TikaExtractor(BaseCrafter):
         self.start_tika()
 
     def start_tika(self):
-        import sys
+        import requests
+        from requests.exceptions import ConnectionError
         import time
         from subprocess import Popen, PIPE
 
