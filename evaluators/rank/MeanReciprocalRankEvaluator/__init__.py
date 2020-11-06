@@ -1,5 +1,7 @@
 from typing import Sequence, Union
 
+import numpy as np
+
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 
 
@@ -29,7 +31,6 @@ class MeanReciprocalRankEvaluator(BaseRankingEvaluator):
         :param desired: should be a sequence of sequence of document IDs
         :return gives mean reciprocal rank score
         """
-        import numpy as np
         if len(actual)==0 or len(desired)==0:
             return 0.0
         return float(np.mean([self._evaluate(actual_i, desired_i) for actual_i, desired_i in zip(actual, desired)]))
