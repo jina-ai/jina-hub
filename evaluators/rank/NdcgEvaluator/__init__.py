@@ -53,10 +53,10 @@ class NDCGEvaluator(BaseRankingEvaluator):
             raise ValueError('One or multiple score is less than 0.')
         actual_at_k = actual[:self.eval_at]
         desired_at_k = desired[:self.eval_at]
-        if len(actual_at_k) < 2:
-            raise ValueError(f'Expecting gains at k with minimal length of 2, {len(actual_at_k)} received.')
+        if not actual_at_k:
+            raise ValueError(f'Expecting gains at k with minimal length of 1, {len(actual_at_k)} received.')
         if not desired_at_k:
-            raise ValueError(f'Expecting desired at k with minimal length of 2, {len(desired_at_k)} received.')
+            raise ValueError(f'Expecting desired at k with minimal length of 1, {len(desired_at_k)} received.')
         dcg  = _compute_dcg(gains=actual_at_k, power_relevance=self._power_relevance)
         idcg = _compute_idcg(gains=desired_at_k, power_relevance=self._power_relevance)
         return 0.0 if idcg == 0.0 else dcg/idcg
