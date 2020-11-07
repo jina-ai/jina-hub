@@ -25,6 +25,13 @@ class NDCGEvaluator(BaseRankingEvaluator):
     """
     :class:`NDCGEvaluator` evaluates normalized discounted cumulative gain for information retrieval.
     """
+    def __init__(self, eval_at, power_relevance=True):
+        """
+        :param power_relevance: The power relevance places stronger emphasis on retrieving relevant documents.
+            For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
+        """
+        super().__init__(eval_at=eval_at)
+        self._power_relevance = power_relevance
 
     @property
     def metric(self):
@@ -34,15 +41,11 @@ class NDCGEvaluator(BaseRankingEvaluator):
             self,
             actual: Sequence[Any],
             desired: Sequence[Any],
-            power_relevance=True,
             *args, **kwargs
     ) -> float:
         """"
         :param actual: the scores predicted by the search system.
         :param desired: the expected score given by user as groundtruth.
-        :param use_traditional_formula: if use traditional formula.
-            The new formula places stronger emphasis on retrieving relevant documents.
-            For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
         :return the evaluation metric value for the request document.
         """
         # Information gain must be greater or equal to 0.
@@ -57,7 +60,7 @@ class NDCGEvaluator(BaseRankingEvaluator):
             raise ValueError(f'Expecting gains at k with minimal length of 2, {len(actual_at_k)} received.')
         if not desired_at_k:
             raise ValueError(f'Expecting desired at k with minimal length of 2, {len(desired_at_k)} received.')
-        dcg  = _compute_dcg(gains=actual_at_k, power_relevance=power_relevance)
-        idcg = _compute_idcg(gains=desired_at_k, power_relevance=power_relevance)
+        dcg  = _compute_dcg(gains=actual_at_k, power_relevance=self._power_relevance)
+        idcg = _compute_idcg(gains=desired_at_k, power_relevance=self._power_relevance)
         return 0.0 if idcg == 0.0 else dcg/idcg
 
