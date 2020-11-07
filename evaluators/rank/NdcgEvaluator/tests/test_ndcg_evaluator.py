@@ -34,7 +34,6 @@ def test_encode(actual, evaluator, expected):
     ([.4, .1, .8], []), # desired is empty
     ([.4, .1, -1], []), # actual has negative value
     ([], [.8, .4, .1, -1]), # desired has negative value
-    ([], [.8, 1, .1, 0]), # desired is not ordered
 ])
 def test_encode_fail(evaluator, actual, desired):
     with pytest.raises(ValueError):

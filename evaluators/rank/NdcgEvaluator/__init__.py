@@ -45,15 +45,12 @@ class NDCGEvaluator(BaseRankingEvaluator):
     ) -> float:
         """"
         :param actual: the scores predicted by the search system.
-        :param desired: the expected score given by user as groundtruth.
+        :param desired: the expected score given by user as groundtruth, please ensure the value is in desc order.
         :return the evaluation metric value for the request document.
         """
         # Information gain must be greater or equal to 0.
         if any(item < 0 for item in actual) or any(item < 0 for item in desired):
             raise ValueError('One or multiple score is less than 0.')
-        # Desired must in desc order.
-        if desired != sorted(desired, reverse=True):
-            raise ValueError('Information gain of desired must in a desc order.')
         actual_at_k = actual[:self.eval_at]
         desired_at_k = desired[:self.eval_at]
         if len(actual_at_k) < 2:
