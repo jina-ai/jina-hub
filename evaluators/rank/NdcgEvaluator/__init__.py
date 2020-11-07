@@ -1,5 +1,5 @@
 from math import log
-from typing import Sequence, Any
+from typing import Sequence, Union
 
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 
@@ -39,8 +39,8 @@ class NDCGEvaluator(BaseRankingEvaluator):
 
     def evaluate(
             self,
-            actual: Sequence[Any],
-            desired: Sequence[Any],
+            actual: Sequence[Union[int, float]],
+            desired: Sequence[Union[int, float]],
             *args, **kwargs
     ) -> float:
         """"
