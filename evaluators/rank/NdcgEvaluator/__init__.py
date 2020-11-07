@@ -45,10 +45,18 @@ class NDCGEvaluator(BaseRankingEvaluator):
             For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
         :return the evaluation metric value for the request document.
         """
+        # Information gain must be greater or equal to 0.
+        if any(item < 0 for item in actual) or any(item < 0 for item in desired):
+            raise ValueError('One or multiple score is less than 0.')
+        # Desired must in desc order.
+        if desired != sorted(desired, reverse=True):
+            raise ValueError('Information gain of desired must in a desc order.')
         actual_at_k = actual[:self.eval_at]
         desired_at_k = desired[:self.eval_at]
-        if len(actual) < 2:
-            raise ValueError(f'Expecting gains with minimal length of 2, {len(actual)} received.')
+        if len(actual_at_k) < 2:
+            raise ValueError(f'Expecting gains at k with minimal length of 2, {len(actual_at_k)} received.')
+        if not desired_at_k:
+            raise ValueError(f'Expecting desired at k with minimal length of 2, {len(desired_at_k)} received.')
         dcg  = _compute_dcg(gains=actual_at_k, power_relevance=power_relevance)
         idcg = _compute_idcg(gains=desired_at_k, power_relevance=power_relevance)
         return 0.0 if idcg == 0.0 else dcg/idcg
