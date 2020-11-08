@@ -18,8 +18,7 @@ import pytest
 )
 def test_average_precision_evaluator(matches_ids, desired_ids, expected):
 
-    # TODO eval_at keyword argument has no meaning for AP
-    evaluator = AveragePrecisionEvaluator(eval_at=-1)
+    evaluator = AveragePrecisionEvaluator()
     output = evaluator.evaluate(actual=matches_ids, desired=desired_ids)
     np.testing.assert_array_almost_equal(output, expected)
 
@@ -28,8 +27,7 @@ def test_precision_evaluator_no_groundtruth():
     matches_ids = [0, 1, 2, 3, 4]
     desired_ids = []
 
-    # TODO eval_at keyword argument has no meaning for AP
-    evaluator = AveragePrecisionEvaluator(eval_at=-1)
+    evaluator = AveragePrecisionEvaluator()
     assert evaluator.evaluate(actual=matches_ids, desired=desired_ids) == 0.0
 
 
@@ -37,6 +35,5 @@ def test_precision_evaluator_no_actuals():
     matches_ids = []
     desired_ids = [1, 2]
 
-    # TODO eval_at keyword argument has no meaning for AP
-    evaluator = AveragePrecisionEvaluator(eval_at=-1)
+    evaluator = AveragePrecisionEvaluator()
     assert evaluator.evaluate(actual=matches_ids, desired=desired_ids) == 0.0

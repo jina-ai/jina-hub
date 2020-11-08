@@ -7,8 +7,8 @@ class AveragePrecisionEvaluator(BaseRankingEvaluator):
     """A :class:`AveragePrecisionEvaluator` evaluates the Average Precision of the search.
        https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Average_precision
     """
-    def __init__(self, eval_at=-1, *args, **kwargs):
-        super().__init__(eval_at, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(-1, *args, **kwargs)
 
     @property
     def metric(self):
