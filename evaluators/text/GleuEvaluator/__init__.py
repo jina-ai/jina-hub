@@ -5,9 +5,7 @@ from jina.executors.evaluators.text import BaseTextEvaluator
 
 class GleuEvaluator(BaseTextEvaluator):
     """
-    :class:`GleuEvaluator`Gleu is a variant of Bleu. 
-    Evaluates the generated sentence against a desired sentence using n-gram overlap.
-
+    :class:`GleuEvaluator` Evaluate GLEU score between acutal and ground truth.
     It will use the Gleu on NLTK package.
     A perfect match will score 1.0 and a complete mismatch will score 0.0
     """
@@ -28,9 +26,7 @@ class GleuEvaluator(BaseTextEvaluator):
         if n_gram <= 4:
             return gleu.sentence_gleu(desired_list, actual_list, max_len=n_gram)
         else:
-            return gleu.sentence_gleu(
-                desired_list, actual_list
-            )  # if the ngram is at least 5, use the standard
+            return gleu.sentence_gleu(desired_list, actual_list)  # if the ngram is at least 5, use the standard
 
     def evaluate(self, actual, desired, *args, **kwargs) -> float:
         """"
@@ -38,7 +34,7 @@ class GleuEvaluator(BaseTextEvaluator):
         :param actual: the text predicted by the search system.
         :return the evaluation metric value for the request document.
 
-        NLTK expectes an array of strings, 
+        NLTK expectes an array of strings,
         so the incoming string needs to be tokenized first.
         They will be stored in a desired_list and actual_list accordingly
         """
@@ -48,4 +44,3 @@ class GleuEvaluator(BaseTextEvaluator):
         actual_list = actual.lower().split()
 
         return self.get_score(actual_list, [desired_list], len(actual_list))
-
