@@ -154,7 +154,7 @@ def test_invalid_aggregate_function():
         SimpleAggregateRanker(aggregate_function='invalid_name', is_reversed_score=True)
 
 
-def test_negative_values_invalid():
+def test_doc_score_of_zero_invalid():
     ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=True)
     with pytest.raises(ValueError):
         ranker.score(*chunk_scores(factor=0))
