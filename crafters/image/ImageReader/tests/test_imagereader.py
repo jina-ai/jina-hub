@@ -20,9 +20,9 @@ def create_test_image(filename, size_width, size_height):
         image.save(f, 'jpeg')
 
 
-def test_io_uri():
+def test_io_uri(tmpdir):
     crafter = ImageReader()
-    filename = os.path.join(crafter.current_workspace, 'test.jpeg')
+    filename = os.path.join(tmpdir, 'test.jpeg')
     img_h = 20
     img_w = 30
     create_test_image(filename, size_width=img_w, size_height=img_h)
