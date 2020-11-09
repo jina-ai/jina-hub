@@ -22,13 +22,14 @@ class SimpleAggregateRanker(Chunk2DocRanker):
         if aggregate_function in self.AGGREGATE_FUNCTIONS:
             self.np_aggregate_function = getattr(np, aggregate_function)
         else:
-            raise ValueError(f'The aggregate function "{aggregate_function}" is not one of the values: "{self.AGGREGATE_FUNCTIONS}".')
+            raise ValueError(f'The aggregate function "{aggregate_function}" is not in "{self.AGGREGATE_FUNCTIONS}".')
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         scores = match_idx[self.COL_SCORE]
         aggregated_score = self.np_aggregate_function(scores)
         if self.is_reversed_score:
-            if aggregated_score == 0:
-                raise ValueError(f'Setting "is_reversed_score" to True does not allow to have chunk scores being 0.')
+            if aggregated_score == -1:
+                raise ValueError(f'Setting "is_reversed_score" to True does not allow to have an aggregated document '
+                                 f'score of -1.')
             aggregated_score = 1. / (1. + aggregated_score)
         return self.get_doc_id(match_idx), aggregated_score

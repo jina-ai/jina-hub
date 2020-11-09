@@ -54,7 +54,7 @@ def assert_document_order(doc_idx):
         assert doc_idx[i][1] > doc_idx[i + 1][1]
 
 
-@pytest.mark.parametrize('chunk_scores,aggregate_function,is_reversed_score,doc_ids,doc_scores', [
+@pytest.mark.parametrize('chunk_scores, aggregate_function, is_reversed_score, doc_ids,doc_scores', [
     (
             chunk_scores(),
             'max',
@@ -154,10 +154,10 @@ def test_invalid_aggregate_function():
         SimpleAggregateRanker(aggregate_function='invalid_name', is_reversed_score=True)
 
 
-def test_doc_score_of_zero_invalid():
+def test_doc_score_of_minus_one_invalid():
     ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=True)
     with pytest.raises(ValueError):
-        ranker.score(*chunk_scores(factor=0))
+        ranker.score(*chunk_scores(factor=-10))
 
 
 @pytest.mark.parametrize("factor", [1, -1])
