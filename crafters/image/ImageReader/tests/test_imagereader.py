@@ -80,7 +80,7 @@ def test_blob_incorrect_dtype():
 
 
 def test_blob_color_dim_first():
-    crafter = ImageReader(color_channel_axis=0)
+    crafter = ImageReader(channel_axis=0)
     img_h = 20
     img_w = 30
     numpy_image = np.random.randint(0, 255, size=(img_h, img_w, 3), dtype=np.uint8)

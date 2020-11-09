@@ -11,12 +11,12 @@ class ImageReader(BaseCrafter):
     shape (h,w,depth).
     """
 
-    def __init__(self, color_channel_axis: int = -1, *args, **kwargs):
+    def __init__(self, channel_axis: int = -1, *args, **kwargs):
         """
-        :param color_channel_axis: the axis id of the color channel -1 indicates the color channel info at the last axis
+        :param channel_axis: the axis id of the color channel -1 indicates the color channel info at the last axis
         """
         super().__init__(*args, **kwargs)
-        self.channel_axis = color_channel_axis
+        self.channel_axis = channel_axis
 
     def craft(self, buffer: bytes, uri: str, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
