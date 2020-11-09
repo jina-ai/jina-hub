@@ -1,4 +1,7 @@
 from jina.executors.rankers import Chunk2DocRanker
+import warnings
+
+warnings.warn("MaxRanker is deprecated. Please use SimpleAggregateRanker instead", DeprecationWarning, stacklevel=2)
 
 
 class MaxRanker(Chunk2DocRanker):

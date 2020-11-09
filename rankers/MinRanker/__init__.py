@@ -1,4 +1,7 @@
 from jina.executors.rankers import Chunk2DocRanker
+import warnings
+
+warnings.warn("MinRanker is deprecated. Please use SimpleAggregateRanker instead", DeprecationWarning, stacklevel=2)
 
 
 class MinRanker(Chunk2DocRanker):
