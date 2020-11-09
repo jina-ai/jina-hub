@@ -9,7 +9,7 @@ class SimpleAggregateRanker(Chunk2DocRanker):
 
     AGGREGATE_FUNCTIONS = ['min', 'max', 'mean', 'median', 'sum', 'prod']
 
-    def __init__(self, aggregate_function: str, is_reversed_score, *args, **kwargs):
+    def __init__(self, aggregate_function: str, is_reversed_score: bool, *args, **kwargs):
         """
         :param: aggregate_function: defines the used aggregate function and can be one of:
         [min, max, mean, median, sum, prod]
