@@ -1,7 +1,7 @@
 import numpy as np
 
 from jina.executors.rankers import Chunk2DocRanker
-
+import pytest
 from .. import AggregateRanker
 
 
@@ -267,3 +267,8 @@ def test_prod_ranker_reversed_score():
     assert doc_idx[2][1] == 1 / (1 + 0.1)
 
     assert len(doc_idx) == 3
+
+
+def test_invalid_ranker():
+    with pytest.raises(ValueError):
+        AggregateRanker(aggregate_function='invalid_name', is_reversed_score=True)

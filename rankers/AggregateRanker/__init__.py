@@ -19,14 +19,14 @@ class AggregateRanker(Chunk2DocRanker):
         """
         super().__init__(*args, **kwargs)
         self.is_reversed_score = is_reversed_score
-        self.aggregate_function = aggregate_function
+        if aggregate_function in self.AGGREGATE_FUNCTIONS:
+            self.np_aggregate_function = getattr(np, aggregate_function)
+        else:
+            raise ValueError(f'The aggregate function "{aggregate_function}" is not one of the values: "{self.AGGREGATE_FUNCTIONS}".')
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         scores = match_idx[self.COL_SCORE]
-        if self.aggregate_function in self.AGGREGATE_FUNCTIONS:
-            aggregated_score = getattr(np, self.aggregate_function)(scores)
-        else:
-            raise ValueError(f'The aggregate function "{self.aggregate_function}" is not defined.')
+        aggregated_score = self.np_aggregate_function(scores)
         if self.is_reversed_score:
             aggregated_score = 1. / (1. + aggregated_score)
         return self.get_doc_id(match_idx), aggregated_score
