@@ -1,0 +1,12 @@
+manifest_version: 1
+name: L3NormEvaluator
+kind: evaluator
+type: pod
+description: evaluates L3 Norm.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [L3, Minkowski, evaluator, embedding, information retrieval evaluation]
