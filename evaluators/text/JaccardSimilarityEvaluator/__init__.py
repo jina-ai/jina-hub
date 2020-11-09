@@ -12,9 +12,9 @@ class JaccardSimilarityEvaluator(BaseTextEvaluator):
         return 'JaccardSimilarity'
 
     def evaluate(self, actual: str, desired: str):
-        a = set(actual.lower().split())
-        b = set(desired.lower().split())
-        c = a.intersection(b)
-        total = len(a) + len(b) - len(c)
-        return float(len(c)) / total if total != 0.0 else 0.0
+        acutal_words = set(actual.lower().split())
+        desired_words = set(desired.lower().split())
+        intersection = acutal_words.intersection(desired_words)
+        union_length = len(acutal_words) + len(desired_words) - len(intersection)
+        return float(len(intersection)) / union_length if union_length != 0.0 else 0.0
     
