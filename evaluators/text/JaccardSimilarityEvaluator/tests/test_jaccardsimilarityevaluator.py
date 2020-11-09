@@ -11,7 +11,9 @@ from .. import JaccardSimilarityEvaluator
         ('hello      ', 'hello world', 0.5),
         ('gdkkm      ', 'hello      ', 0.0),
         ('hey yup man', 'whats up man', 0.2),
-        ('', '', 0.0),
+        ('hello', '', 0.0),
+        ('', 'hello', 0.0),
+        ('', '', 0.0)
     ]
 )
 def test_jaccardsimilarityevaluator(actual, desired, distance):
