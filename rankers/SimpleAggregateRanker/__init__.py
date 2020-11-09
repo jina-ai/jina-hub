@@ -1,9 +1,9 @@
 from jina.executors.rankers import Chunk2DocRanker
 import numpy as np
 
-class AggregateRanker(Chunk2DocRanker):
+class SimpleAggregateRanker(Chunk2DocRanker):
     """
-    :class:`AggregateRanker` calculates the score of the matched doc from the matched chunks. For each matched doc, the
+    :class:`SimpleAggregateRanker` calculates the score of the matched doc from the matched chunks. For each matched doc, the
     score is aggregated from all the matched chunks belonging to that doc.
     """
 

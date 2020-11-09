@@ -2,7 +2,7 @@ import numpy as np
 
 from jina.executors.rankers import Chunk2DocRanker
 import pytest
-from .. import AggregateRanker
+from .. import SimpleAggregateRanker
 
 
 def create_data():
@@ -55,7 +55,7 @@ def assert_document_order(doc_idx):
 
 
 def test_max_ranker():
-    ranker = AggregateRanker(aggregate_function='max', is_reversed_score=False)
+    ranker = SimpleAggregateRanker(aggregate_function='max', is_reversed_score=False)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -73,7 +73,7 @@ def test_max_ranker():
 
 
 def test_max_ranker_reversed_score():
-    ranker = AggregateRanker(aggregate_function='max', is_reversed_score=True)
+    ranker = SimpleAggregateRanker(aggregate_function='max', is_reversed_score=True)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -90,7 +90,7 @@ def test_max_ranker_reversed_score():
 
 
 def test_min_ranker():
-    ranker = AggregateRanker(aggregate_function='min', is_reversed_score=False)
+    ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=False)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -108,7 +108,7 @@ def test_min_ranker():
 
 
 def test_min_ranker_reversed_score():
-    ranker = AggregateRanker(aggregate_function='min', is_reversed_score=True)
+    ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=True)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -126,7 +126,7 @@ def test_min_ranker_reversed_score():
 
 
 def test_mean_ranker():
-    ranker = AggregateRanker(aggregate_function='mean', is_reversed_score=False)
+    ranker = SimpleAggregateRanker(aggregate_function='mean', is_reversed_score=False)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -144,7 +144,7 @@ def test_mean_ranker():
 
 
 def test_mean_ranker_reversed_score():
-    ranker = AggregateRanker(aggregate_function='mean', is_reversed_score=True)
+    ranker = SimpleAggregateRanker(aggregate_function='mean', is_reversed_score=True)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -162,7 +162,7 @@ def test_mean_ranker_reversed_score():
 
 
 def test_median_ranker():
-    ranker = AggregateRanker(aggregate_function='median', is_reversed_score=False)
+    ranker = SimpleAggregateRanker(aggregate_function='median', is_reversed_score=False)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -180,7 +180,7 @@ def test_median_ranker():
 
 
 def test_median_ranker_reversed_score():
-    ranker = AggregateRanker(aggregate_function='median', is_reversed_score=True)
+    ranker = SimpleAggregateRanker(aggregate_function='median', is_reversed_score=True)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -198,7 +198,7 @@ def test_median_ranker_reversed_score():
 
 
 def test_sum_ranker():
-    ranker = AggregateRanker(aggregate_function='sum', is_reversed_score=False)
+    ranker = SimpleAggregateRanker(aggregate_function='sum', is_reversed_score=False)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -216,7 +216,7 @@ def test_sum_ranker():
 
 
 def test_sum_ranker_reversed_score():
-    ranker = AggregateRanker(aggregate_function='sum', is_reversed_score=True)
+    ranker = SimpleAggregateRanker(aggregate_function='sum', is_reversed_score=True)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -234,7 +234,7 @@ def test_sum_ranker_reversed_score():
 
 
 def test_prod_ranker():
-    ranker = AggregateRanker(aggregate_function='prod', is_reversed_score=False)
+    ranker = SimpleAggregateRanker(aggregate_function='prod', is_reversed_score=False)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -252,7 +252,7 @@ def test_prod_ranker():
 
 
 def test_prod_ranker_reversed_score():
-    ranker = AggregateRanker(aggregate_function='prod', is_reversed_score=True)
+    ranker = SimpleAggregateRanker(aggregate_function='prod', is_reversed_score=True)
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
 
@@ -271,4 +271,4 @@ def test_prod_ranker_reversed_score():
 
 def test_invalid_ranker():
     with pytest.raises(ValueError):
-        AggregateRanker(aggregate_function='invalid_name', is_reversed_score=True)
+        SimpleAggregateRanker(aggregate_function='invalid_name', is_reversed_score=True)
