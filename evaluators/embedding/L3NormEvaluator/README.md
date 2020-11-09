@@ -1,3 +1,3 @@
-# L1NormEvaluator
+# L3NormEvaluator
 
-`L1NormEvaluator` evaluates the distance between actual and desired embeddings computing the L1 Norm between them.
+`L3NormEvaluator` evaluates the distance between actual and desired embeddings computing the Minkowski distance ( p=3 ) between them.
