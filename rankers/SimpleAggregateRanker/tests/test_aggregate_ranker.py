@@ -5,7 +5,7 @@ import pytest
 from .. import SimpleAggregateRanker
 
 
-def chunk_scores(is_positive_score=True):
+def chunk_scores(factor=1):
     query_chunk2match_chunk = {
         100: [
             {'parent_id': 1, 'id': 10, 'score': 0.4, 'length': 200},
@@ -30,12 +30,11 @@ def chunk_scores(is_positive_score=True):
         query_chunk_meta[query_chunk_id] = {'length': num_query_chunks}
         for c in matches:
             match_chunk_meta[c['id']] = {'length': c['length']}
-            sign = 1 if is_positive_score else -1
             match_idx.append((
                 c['parent_id'],
                 c['id'],
                 query_chunk_id,
-                c['score'] * sign,
+                c['score'] * factor,
             ))
 
     match_idx_numpy = np.array(
@@ -55,7 +54,7 @@ def assert_document_order(doc_idx):
         assert doc_idx[i][1] > doc_idx[i + 1][1]
 
 
-@pytest.mark.parametrize("chunk_scores,aggregate_function,is_reversed_score,doc_ids,doc_scores", [
+@pytest.mark.parametrize('chunk_scores,aggregate_function,is_reversed_score,doc_ids,doc_scores', [
     (
             chunk_scores(),
             'max',
@@ -158,9 +157,10 @@ def test_invalid_aggregate_function():
 def test_negative_values_invalid():
     ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=True)
     with pytest.raises(ValueError):
-        ranker.score(*chunk_scores(is_positive_score=False))
+        ranker.score(*chunk_scores(factor=0))
 
 
-def test_negative_values_allowed():
+@pytest.mark.parametrize("factor", [1, -1])
+def test_negative_values_allowed(factor):
     ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=False)
-    ranker.score(*chunk_scores(is_positive_score=False))
+    ranker.score(*chunk_scores(factor=factor))

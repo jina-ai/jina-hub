@@ -28,8 +28,7 @@ class SimpleAggregateRanker(Chunk2DocRanker):
         scores = match_idx[self.COL_SCORE]
         aggregated_score = self.np_aggregate_function(scores)
         if self.is_reversed_score:
-            if aggregated_score < 0:
-                raise ValueError(f'Setting is_reversed_score to "{self.is_reversed_score}" does not allow negative '
-                                 f'chunk scores (aggregated_score is {aggregated_score}).')
+            if aggregated_score == 0:
+                raise ValueError(f'Setting "is_reversed_score" to True does not allow to have chunk scores being 0.')
             aggregated_score = 1. / (1. + aggregated_score)
         return self.get_doc_id(match_idx), aggregated_score
