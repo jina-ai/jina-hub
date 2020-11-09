@@ -3,8 +3,8 @@ import numpy as np
 
 class SimpleAggregateRanker(Chunk2DocRanker):
     """
-    :class:`SimpleAggregateRanker` calculates the score of the matched doc from the matched chunks. For each matched doc, the
-    score is aggregated from all the matched chunks belonging to that doc.
+    :class:`SimpleAggregateRanker` aggregates the score of the matched doc from the matched chunks.
+    For each matched doc, the score is aggregated from all the matched chunks belonging to that doc.
     """
 
     AGGREGATE_FUNCTIONS = ['min', 'max', 'mean', 'median', 'sum', 'prod']
