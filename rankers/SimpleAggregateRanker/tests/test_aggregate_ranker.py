@@ -4,7 +4,7 @@ from jina.executors.rankers import Chunk2DocRanker
 import pytest
 from .. import SimpleAggregateRanker
 
-@pytest.fixture
+
 def chunk_scores():
     query_chunk2match_chunk = {
         100: [
@@ -54,207 +54,100 @@ def assert_document_order(doc_idx):
         assert doc_idx[i][1] > doc_idx[i + 1][1]
 
 
-def test_max_ranker(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='max', is_reversed_score=False)
+@pytest.mark.parametrize("chunk_scores,aggregate_function,is_reversed_score,doc_ids,doc_scores", [
+    (
+            chunk_scores(),
+            'max',
+            False,
+            [1, 2, 3],
+            [0.5, 0.25, 0.1]
+    ),
+    (
+            chunk_scores(),
+            'max',
+            True,
+            [3, 2, 1],
+            [1 / (1 + 0.1), 1 / (1 + 0.25), 1 / (1 + 0.5)]
+    ),
+    (
+            chunk_scores(),
+            'min',
+            False,
+            [1, 2, 3],
+            [0.2, 0.15, 0.1]
+    ),
+    (
+            chunk_scores(),
+            'min', True,
+            [3, 2, 1],
+            [1 / (1 + 0.1), 1 / (1 + 0.15), 1 / (1 + 0.2)]
+    ),
+    (
+            chunk_scores(),
+            'mean',
+            False,
+            [1, 2, 3],
+            [1.1 / 3, 0.2, 0.1]
+    ),
+    (
+            chunk_scores(),
+            'mean',
+            True,
+            [3, 2, 1],
+            [1 / (1 + 0.1), 1 / (1 + 0.2), 1 / (1 + 1.1 / 3)]
+    ),
+    (
+            chunk_scores(),
+            'median',
+            False,
+            [1, 2, 3],
+            [0.4, 0.2, 0.1]
+    ),
+    (
+            chunk_scores(),
+            'median',
+            True,
+            [3, 2, 1],
+            [1 / (1 + 0.1), 1 / (1 + 0.2), 1 / (1 + 0.4)]
+    ),
+    (
+            chunk_scores(),
+            'sum',
+            False,
+            [1, 2, 3],
+            [1.1, 0.8, 0.1]
+    ),
+    (
+            chunk_scores(),
+            'sum',
+            True,
+            [3, 2, 1],
+            [1 / (1 + 0.1), 1 / (1 + 0.8), 1 / (1 + 1.1)]
+    ),
+    (
+            chunk_scores(),
+            'prod',
+            False,
+            [3, 1, 2],
+            [0.1, 0.2 * 0.4 * 0.5, 0.25 * 0.25 * 0.15 * 0.15]
+    ),
+    (
+            chunk_scores(),
+            'prod',
+            True,
+            [2, 1, 3],
+            [1 / (1 + 0.25 * 0.25 * 0.15 * 0.15), 1 / (1 + 0.2 * 0.4 * 0.5), 1 / (1 + 0.1)]
+    ),
+])
+def test_eval(chunk_scores, aggregate_function, is_reversed_score, doc_ids, doc_scores):
+    ranker = SimpleAggregateRanker(aggregate_function=aggregate_function, is_reversed_score=is_reversed_score)
     doc_idx = ranker.score(*chunk_scores)
-
     assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 1
-    assert doc_idx[0][1] == 0.5
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 0.25
-
-    assert doc_idx[2][0] == 3
-    assert doc_idx[2][1] == 0.1
-
-    assert len(doc_idx) == 3
-
-
-def test_max_ranker_reversed_score(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='max', is_reversed_score=True)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert doc_idx[0][0] == 3
-    assert doc_idx[0][1] == 1 / (1 + 0.1)
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 1 / (1 + 0.25)
-
-    assert doc_idx[2][0] == 1
-    assert doc_idx[2][1] == 1 / (1 + 0.5)
-
-    assert len(doc_idx) == 3
-
-
-def test_min_ranker(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=False)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 1
-    assert doc_idx[0][1] == 0.2
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 0.15
-
-    assert doc_idx[2][0] == 3
-    assert doc_idx[2][1] == 0.1
-
-    assert len(doc_idx) == 3
-
-
-def test_min_ranker_reversed_score(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=True)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 3
-    assert doc_idx[0][1] == 1 / (1 + 0.1)
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 1 / (1 + 0.15)
-
-    assert doc_idx[2][0] == 1
-    assert doc_idx[2][1] == 1 / (1 + 0.2)
-
-    assert len(doc_idx) == 3
-
-
-def test_mean_ranker(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='mean', is_reversed_score=False)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 1
-    assert doc_idx[0][1] == 1.1 / 3
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 0.2
-
-    assert doc_idx[2][0] == 3
-    assert doc_idx[2][1] == 0.1
-
-    assert len(doc_idx) == 3
-
-
-def test_mean_ranker_reversed_score(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='mean', is_reversed_score=True)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 3
-    assert doc_idx[0][1] == 1 / (1 + 0.1)
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 1 / (1 + 0.2)
-
-    assert doc_idx[2][0] == 1
-    assert doc_idx[2][1] == 1 / (1 + 1.1 / 3)
-
-    assert len(doc_idx) == 3
-
-
-def test_median_ranker(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='median', is_reversed_score=False)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 1
-    assert doc_idx[0][1] == 0.4
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 0.2
-
-    assert doc_idx[2][0] == 3
-    assert doc_idx[2][1] == 0.1
-
-    assert len(doc_idx) == 3
-
-
-def test_median_ranker_reversed_score(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='median', is_reversed_score=True)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 3
-    assert doc_idx[0][1] == 1 / (1 + 0.1)
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 1 / (1 + 0.2)
-
-    assert doc_idx[2][0] == 1
-    assert doc_idx[2][1] == 1 / (1 + 0.4)
-
-    assert len(doc_idx) == 3
-
-
-def test_sum_ranker(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='sum', is_reversed_score=False)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 1
-    assert doc_idx[0][1] == 1.1
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 0.8
-
-    assert doc_idx[2][0] == 3
-    assert doc_idx[2][1] == 0.1
-
-    assert len(doc_idx) == 3
-
-
-def test_sum_ranker_reversed_score(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='sum', is_reversed_score=True)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 3
-    assert doc_idx[0][1] == 1 / (1 + 0.1)
-
-    assert doc_idx[1][0] == 2
-    assert doc_idx[1][1] == 1 / (1 + 0.8)
-
-    assert doc_idx[2][0] == 1
-    assert doc_idx[2][1] == 1 / (1 + 1.1)
-
-    assert len(doc_idx) == 3
-
-
-def test_prod_ranker(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='prod', is_reversed_score=False)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 3
-    assert doc_idx[0][1] == 0.1
-
-    assert doc_idx[1][0] == 1
-    assert doc_idx[1][1] == 0.2 * 0.4 * 0.5
-
-    assert doc_idx[2][0] == 2
-    assert doc_idx[2][1] == 0.25 * 0.25 * 0.15 * 0.15
-
-    assert len(doc_idx) == 3
-
-
-def test_prod_ranker_reversed_score(chunk_scores):
-    ranker = SimpleAggregateRanker(aggregate_function='prod', is_reversed_score=True)
-    doc_idx = ranker.score(*chunk_scores)
-
-    assert_document_order(doc_idx)
-    assert doc_idx[0][0] == 2
-    assert doc_idx[0][1] == 1 / (1 + 0.25 * 0.25 * 0.15 * 0.15)
-
-    assert doc_idx[1][0] == 1
-    assert doc_idx[1][1] == 1 / (1 + 0.2 * 0.4 * 0.5)
-
-    assert doc_idx[2][0] == 3
-    assert doc_idx[2][1] == 1 / (1 + 0.1)
-
-    assert len(doc_idx) == 3
+    for i, (id, score) in enumerate(zip(doc_ids, doc_scores)):
+        assert doc_idx[i][0] == id
+        assert doc_idx[i][1] == score
+
+    assert len(doc_idx) == len(doc_ids) == len(doc_scores)
 
 
 def test_invalid_ranker():
