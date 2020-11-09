@@ -16,5 +16,5 @@ class JaccardSimilarityEvaluator(BaseTextEvaluator):
         desired_words = set(desired.lower().split())
         intersection = acutal_words.intersection(desired_words)
         union_length = len(acutal_words) + len(desired_words) - len(intersection)
-        return float(len(intersection)) / union_length if union_length != 0.0 else 0.0
+        return len(intersection) / union_length if union_length != 0.0 else 0.0
     
