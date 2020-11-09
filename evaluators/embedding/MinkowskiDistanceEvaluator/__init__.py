@@ -24,11 +24,11 @@ class MinkowskiDistanceEvaluator(BaseEmbeddingEvaluator):
         actual = expand_vector(actual)
         desired = expand_vector(desired)
         order = kwargs["order"]
-        return _minkowski_Distance(actual, desired, order)
+        return _minkowski_distance(actual, desired, order)
 
 
-def _minkowski_Distance(actual, desired, order):
+def _minkowski_distance(actual, desired, order):
     if order <= 0:
         raise ValueError("Order must be positive.")
-    minkowskiDistExp = np.sum(np.power(np.abs(actual - desired), order))
-    return minkowskiDistExp ** (1/order)
+    minkowski_dist_exp = np.sum(np.power(np.abs(actual - desired), order))
+    return minkowski_dist_exp ** (1/order)
