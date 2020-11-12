@@ -1,9 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import sys
-sys.path.append(".")
-
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
