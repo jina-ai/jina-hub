@@ -6,6 +6,8 @@ import pickle
 from jina.executors.encoders.frameworks import BaseTorchEncoder
 from jina.executors.decorators import as_ndarray, batching
 
+from .model import VSE
+from .vocab import Vocabulary
 
 class CustomUnpickler(pickle.Unpickler):
 
@@ -34,7 +36,6 @@ class VSETextEncoder(BaseTorchEncoder):
         self.vocab_path = vocab_path
 
     def post_init(self):
-        from .model import VSE
         import nltk
         import torch
         nltk.download('punkt')
