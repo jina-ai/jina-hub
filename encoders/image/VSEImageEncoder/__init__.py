@@ -6,6 +6,7 @@ import numpy as np
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTorchEncoder
 
+from .model import VSE
 
 class VSEImageEncoder(BaseTorchEncoder):
     """
@@ -30,7 +31,6 @@ class VSEImageEncoder(BaseTorchEncoder):
 
     def post_init(self):
         import torch
-        from model import VSE
 
         if self.pool_strategy is not None:
             self.pool_fn = getattr(np, self.pool_strategy)
