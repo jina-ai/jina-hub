@@ -13,7 +13,7 @@ class HammingDistanceEvaluator(BaseTextEvaluator):
 
     def evaluate(self, actual: str, desired: str):
         if len(actual) != len(desired):
-            raise ValueError("Undefined for sequences of unequal length.")
+            raise ValueError('Undefined for sequences of unequal length.')
         dist_counter = 0
         for n in range(len(actual)):
             if actual[n] != desired[n]:
