@@ -10,6 +10,9 @@ from .. import HammingDistanceEvaluator
         ('eello', 'hello', 1.0),
         ('he!@#', 'hello', 3.0),
         ('gdkkm', 'hello', 5.0),
+        ('g s m', ' s j ', 5.0),
+        ('^@*&$', ':<>?)', 5.0),
+        ('@,.&$', '}|.?)', 4.0),
         ('', '', 0.0)
     ]
 )
