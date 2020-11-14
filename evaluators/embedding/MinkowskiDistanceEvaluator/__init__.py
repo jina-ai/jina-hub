@@ -29,6 +29,6 @@ class MinkowskiDistanceEvaluator(BaseEmbeddingEvaluator):
 
 def _minkowski_distance(actual, desired, order):
     if order <= 0:
-        raise ValueError("Order must be positive.")
+        raise ValueError('Order must be positive.')
     minkowski_dist_exp = np.sum(np.power(np.abs(actual - desired), order))
     return minkowski_dist_exp ** (1/order)
