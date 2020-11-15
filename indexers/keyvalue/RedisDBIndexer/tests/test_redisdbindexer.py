@@ -5,7 +5,8 @@ import numpy as np
 import pytest
 
 from jina.executors.metas import get_default_metas
-from jina.proto import jina_pb2, uid
+from jina.proto import jina_pb2
+from jina.types.document import uid
 from jina.proto.ndarray.generic import GenericNdArray
 from .. import RedisDBIndexer
 

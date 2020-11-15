@@ -2,7 +2,8 @@ import random
 
 import numpy as np
 
-from jina.proto import jina_pb2, uid
+from jina.proto import jina_pb2
+from jina.types.document import uid
 from jina.proto.ndarray.generic import GenericNdArray
 from .. import MongoDBIndexer
 
