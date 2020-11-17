@@ -2,12 +2,14 @@ manifest_version: 1
 name: SimpleAggregateRanker
 kind: ranker
 type: pod
-description: :class:`SimpleAggregateRanker` aggregates the score of the matched doc from the matched chunks.
-  For each matched doc, the score is aggregated from all the matched chunks belonging to that doc.
+description: :class:`SimpleAggregateRanker` aggregates the score of the matched doc
+  from the matched chunks. For each matched doc, the score is aggregated from all
+  the matched chunks belonging to that doc.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.6
+version: 0.0.7
 license: apache-2.0
 keywords: [ranker, aggregation]
+jina-version: 0.7.8
