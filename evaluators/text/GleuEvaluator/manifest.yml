@@ -2,11 +2,13 @@ manifest_version: 1
 name: GleuEvaluator
 kind: evaluator
 type: pod
-description: Gleu is a variant of Bleu. Evaluates the generated sentence against a desired sentence using n-gram overlap.
+description: Gleu is a variant of Bleu. Evaluates the generated sentence against a
+  desired sentence using n-gram overlap.
 author: Deepam Patel (deepam8155@gmail.com)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.1
+version: 0.0.2
 license: apache-2.0
 keywords: [gleu, evaluator, text, google bleu]
+jina-version: 0.7.8
