@@ -1,14 +1,14 @@
 manifest_version: 1
 name: LevenshteinRanker
 kind: ranker
-description:
-  |
+description: |
   Computes the Levenshtein distance between a query and its matches.
 author: maximilian.werk@jina.ai
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.3
+version: 0.0.4
 license: apache-2.0
 keywords: [text matching, levenshtein, scorer]
 type: pod
+jina_version: 0.7.11
