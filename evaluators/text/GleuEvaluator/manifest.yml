@@ -8,7 +8,8 @@ author: Deepam Patel (deepam8155@gmail.com)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.2
+version: 0.0.3
 license: apache-2.0
 keywords: [gleu, evaluator, text, google bleu]
 jina_version: 0.7.11
+jina-version: 0.7.8
