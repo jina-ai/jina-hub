@@ -14,3 +14,4 @@ manifest_version: 1
 type: pod
 kind: crafter
 jina_version: 0.7.11
+timestamp: 1606136399.5833857
