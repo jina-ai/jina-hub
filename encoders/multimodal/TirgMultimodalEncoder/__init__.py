@@ -13,6 +13,8 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 from jina.executors.decorators import batching_multi_input, as_ndarray
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 
+from .img_text_composition_models import TIRG
+
 
 class TirgMultiModalEncoder(TorchDevice, BaseMultiModalEncoder):
 
@@ -34,7 +36,6 @@ class TirgMultiModalEncoder(TorchDevice, BaseMultiModalEncoder):
 
     def post_init(self):
         super().post_init()
-        from .img_text_composition_models import TIRG
         import torch
         if self.model_path and os.path.exists(self.model_path):
             with open(self.texts_path, 'rb') as fp:
