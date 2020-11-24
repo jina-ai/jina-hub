@@ -22,8 +22,6 @@ import numpy as np
 import torch
 import torchvision
 import torch.nn.functional as F
-# from jina.hub.encoders.image.TirgEncoder import text_model
-# from jina.hub.encoders.image.TirgEncoder import torch_functions
 import text_model, torch_functions
 
 
