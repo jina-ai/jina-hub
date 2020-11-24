@@ -33,9 +33,8 @@ class TirgMultiModalEncoder(TorchDevice, BaseMultiModalEncoder):
         self._default_channel_axis = 1
 
     def post_init(self):
-        from img_text_composition_models import TIRG
-        
         super().post_init()
+        from img_text_composition_models import TIRG
         import torch
         if self.model_path and os.path.exists(self.model_path):
             with open(self.texts_path, 'rb') as fp:
