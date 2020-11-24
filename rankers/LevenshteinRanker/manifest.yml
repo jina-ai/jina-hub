@@ -12,3 +12,4 @@ license: apache-2.0
 keywords: [text matching, levenshtein, scorer]
 type: pod
 jina_version: 0.7.11
+timestamp: 1606237002.5232534
