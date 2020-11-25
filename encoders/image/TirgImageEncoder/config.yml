@@ -3,7 +3,7 @@ with:
   {}
 metas:
   py_modules:
-    - __init__.py
     - torch_functions.py
     - text_model.py
     - img_text_composition_models.py
+    - __init__.py
