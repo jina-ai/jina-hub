@@ -40,4 +40,4 @@ def test_image_embeddings(transformer):
     imgs = torch.stack(imgs).float()
     embeddings = encoder.encode(imgs.numpy())
     expected = np.load(os.path.join(cur_dir, 'expected.npy'))
-    np.testing.assert_almost_equal(embeddings, expected)
+    np.testing.assert_almost_equal(embeddings, expected, decimal=3)
