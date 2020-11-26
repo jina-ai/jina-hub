@@ -20,4 +20,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Jina Hub Image Builder
-        uses: jina-ai/hub-builder@master
+        uses: jina-ai/action-hub-builder@master
+        with:
+          push: true
+          dockerhub_username: ${{ secrets.JINAHUB_DOCKER_USER }}
+          dockerhub_password: ${{ secrets.JINAHUB_DOCKER_PWD }}
+          slack_webhook: ${{ secrets.JINAHUB_SLACK_WEBHOOK }}
+
