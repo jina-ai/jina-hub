@@ -10,4 +10,3 @@ documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.7
 license: apache-2.0
 keywords: [ANN, indexer, ngt, vector]
-jina_version: 0.7.11
