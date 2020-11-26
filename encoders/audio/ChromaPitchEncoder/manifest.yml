@@ -11,4 +11,3 @@ version: 0.0.6
 license: apache-2.0
 keywords: [encoder, audio, chromagrams]
 type: pod
-jina_version: 0.7.11

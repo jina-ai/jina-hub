@@ -10,4 +10,3 @@ documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.2
 license: apache-2.0
 keywords: [Infinite, evaluator, embedding, information retrieval evaluation]
-jina_version: 0.7.11
