@@ -1,0 +1,18 @@
+name: Update hub
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight
+
+jobs:
+  update-jina-hub:
+    runs-on: ubuntu-latest
+    timeout-minutes: 600
+    steps:
+      - name: Jina Hub Updater
+        uses: jina-ai/action-hub-updater@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          TAG_IN_ISSUES: '@jina-ai/engineering'
+          MODULES_REPO: 'jina-ai/jina-hub'
