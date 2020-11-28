@@ -10,6 +10,9 @@ class MinkowskiDistanceEvaluator(BaseEmbeddingEvaluator):
 
         D(x, y) = ( sum_i |x_i - y_i|^p )^(1/p)
     """
+    def __init__(self, order=1, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
+        self.order = order
 
     @property
     def metric(self):
@@ -23,8 +26,7 @@ class MinkowskiDistanceEvaluator(BaseEmbeddingEvaluator):
         """
         actual = expand_vector(actual)
         desired = expand_vector(desired)
-        order = kwargs["order"]
-        return _minkowski_distance(actual, desired, order)
+        return _minkowski_distance(actual, desired, self.order)
 
 
 def _minkowski_distance(actual, desired, order):

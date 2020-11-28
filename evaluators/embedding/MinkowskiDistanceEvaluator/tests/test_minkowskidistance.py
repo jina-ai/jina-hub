@@ -20,8 +20,8 @@ from .. import MinkowskiDistanceEvaluator
 )
 
 def test_minkowski_distance_order_three(doc_embedding, gt_embedding, expected, order):
-    evaluator = MinkowskiDistanceEvaluator()
-    assert evaluator.evaluate(actual=doc_embedding, desired=gt_embedding, order=order) == pytest.approx(expected)
+    evaluator = MinkowskiDistanceEvaluator(order)
+    assert evaluator.evaluate(actual=doc_embedding, desired=gt_embedding) == pytest.approx(expected)
     assert evaluator._running_stats._n == 1
 
 
@@ -40,8 +40,8 @@ def test_minkowski_distance_order_three(doc_embedding, gt_embedding, expected, o
 
 
 def test_minkowski_distance_order_one_and_half(doc_embedding, gt_embedding, expected, order):
-    evaluator = MinkowskiDistanceEvaluator()
-    assert evaluator.evaluate(actual=doc_embedding, desired=gt_embedding, order=order) == pytest.approx(expected)
+    evaluator = MinkowskiDistanceEvaluator(order)
+    assert evaluator.evaluate(actual=doc_embedding, desired=gt_embedding) == pytest.approx(expected)
     assert evaluator._running_stats._n == 1
 
 
@@ -53,6 +53,6 @@ def test_minkowski_distance_order_one_and_half(doc_embedding, gt_embedding, expe
 )
 
 def test_minkowski_distance_order_negative(doc_embedding, gt_embedding, expected, order):
-    evaluator = MinkowskiDistanceEvaluator()
+    evaluator = MinkowskiDistanceEvaluator(order)
     with pytest.raises(ValueError):
-        evaluator.evaluate(actual=doc_embedding, desired=gt_embedding, order=order)
+        evaluator.evaluate(actual=doc_embedding, desired=gt_embedding)
