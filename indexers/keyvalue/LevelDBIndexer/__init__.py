@@ -5,8 +5,8 @@ import json
 from typing import Optional
 
 from google.protobuf.json_format import Parse
+from jina import Document
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
-from jina.proto import jina_pb2
 
 
 class LevelDBIndexer(BinaryPbIndexer):
@@ -46,7 +46,7 @@ class LevelDBIndexer(BinaryPbIndexer):
         import plyvel
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
-    def query(self, key: str, *args, **kwargs) -> Optional['jina_pb2.Document']:
+    def query(self, key: str, *args, **kwargs) -> Optional['Document']:
         """Find the protobuf chunk/doc using id
 
         :param key: ``id``
@@ -55,5 +55,5 @@ class LevelDBIndexer(BinaryPbIndexer):
         v = self.query_handler.get(key.encode('utf8'))
         value = None
         if v is not None:
-            value = Parse(json.loads(v.decode('utf8')), jina_pb2.Document())
+            value = Parse(json.loads(v.decode('utf8')), Document())
         return value

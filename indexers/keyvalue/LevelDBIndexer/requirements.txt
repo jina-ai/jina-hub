@@ -1,2 +1,2 @@
-plyvel
-jina
+plyvel==1.3.0
+jina==0.8.2

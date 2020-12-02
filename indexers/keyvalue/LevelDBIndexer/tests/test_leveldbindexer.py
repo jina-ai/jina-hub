@@ -1,7 +1,7 @@
 import os
 import shutil
 
-import jina.proto.jina_pb2 as jina_pb2
+from jina import Document
 from google.protobuf.json_format import MessageToJson
 from jina.executors.indexers import BaseIndexer
 
@@ -21,7 +21,7 @@ def rm_files(file_paths):
 
 def run_test(indexer):
     def create_document(doc_id, text, weight, length):
-        d = jina_pb2.Document()
+        d = Document()
         d.id = doc_id
         d.buffer = text.encode('utf8')
         d.weight = weight
@@ -44,7 +44,7 @@ def run_test(indexer):
 
     with BaseIndexer.load(save_abspath) as searcher:
         doc = searcher.query('d2')
-        assert doc.id == 2
+        assert doc.id == '0200000000000000'
         assert doc.length == 3
 
     rm_files([save_abspath, index_abspath])
