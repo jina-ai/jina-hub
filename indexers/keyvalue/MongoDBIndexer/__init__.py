@@ -1,9 +1,7 @@
 from typing import Optional, Iterator
 
-from jina.proto import jina_pb2
-from jina.logging.logger import JinaLogger
-from jina.helper import cached_property
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
+from jina.helper import cached_property
 
 
 class MongoDBIndexer(BinaryPbIndexer):
@@ -46,13 +44,15 @@ class MongoDBIndexer(BinaryPbIndexer):
     def get_query_handler(self):
         return self.handler
     
-    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        mongo_docs = [{'_id': i, 'values': j} for i, j in zip(keys, values)]
-        
+    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs) -> None:
+        total_inserted_ids = []
         with self.write_handler as mongo_handler:
-            inserted_ids = mongo_handler.insert(documents=mongo_docs)
+            for i, j in zip(keys, values):
+                doc = {'_id': i, 'values': j}
+                inserted_ids = mongo_handler.insert(documents=[doc])
+                total_inserted_ids.extend(inserted_ids)
         
-        if inserted_ids and len(inserted_ids) != len(keys):
+        if total_inserted_ids and len(total_inserted_ids) != len(list(keys)):
             self.logger.error(f'Mismatch in mongo insert')
     
     @cached_property
@@ -61,7 +61,16 @@ class MongoDBIndexer(BinaryPbIndexer):
 
     def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
         with self.query_handler as mongo_handler:
-            result = mongo_handler.find({'_id': key})
+            result = mongo_handler.find(key)
         
         if result:
             return result
+
+    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs) -> None:
+        """NOTE: this completely replaces the document with the key"""
+        with self.query_handler as mongo_handler:
+            mongo_handler.update(keys, values)
+
+    def delete(self, keys: Iterator[int], *args, **kwargs) -> None:
+        with self.query_handler as mongo_handler:
+            mongo_handler.delete(keys)
