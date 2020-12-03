@@ -19,22 +19,24 @@ def rm_files(file_paths):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
-def run_test(indexer):
-    def create_document(doc_id, text, weight, length):
-        d = Document()
-        d.id = doc_id
-        d.buffer = text.encode('utf8')
-        d.weight = weight
-        d.length = length
-        return d
+def create_document(doc_id, text, weight, length):
+    d = Document()
+    d._document.id = doc_id
+    d.buffer = text.encode('utf8')
+    d.weight = weight
+    d.length = length
+    return d
 
+
+def run_test(indexer):
     with indexer as idx:
-        data = {
-            'd1': MessageToJson(create_document(1, 'cat', 0.1, 3)),
-            'd2': MessageToJson(create_document(2, 'dog', 0.2, 3)),
-            'd3': MessageToJson(create_document(3, 'bird', 0.3, 3)),
-        }
-        idx.add(data)
+        keys = iter([1, 2, 3])
+        values = iter([
+            MessageToJson(create_document('1', 'cat', 0.1, 3)),
+            MessageToJson(create_document('2', 'dog', 0.2, 3)),
+            MessageToJson(create_document('3', 'bird', 0.3, 3)),
+        ])
+        idx.add(keys, values)
         idx.touch()
         idx.save()
         save_abspath = idx.save_abspath
@@ -43,8 +45,8 @@ def run_test(indexer):
     assert os.path.exists(save_abspath)
 
     with BaseIndexer.load(save_abspath) as searcher:
-        doc = searcher.query('d2')
-        assert doc.id == '0200000000000000'
+        doc = searcher.query(2)
+        assert doc.buffer == b'dog'
         assert doc.length == 3
 
     rm_files([save_abspath, index_abspath])
@@ -59,3 +61,34 @@ def test_load_yaml():
     from jina.executors import BaseExecutor
     indexer = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-leveldb.yml'))
     run_test(indexer)
+
+
+def test_delete_query():
+    indexer = LevelDBIndexer(level='doc', index_filename='leveldb.db')
+
+    with indexer as idx:
+        keys = iter([1, 2, 3])
+        values = iter([
+            MessageToJson(create_document('1', 'cat', 0.1, 3)),
+            MessageToJson(create_document('2', 'dog', 0.2, 3)),
+            MessageToJson(create_document('3', 'bird', 0.3, 3)),
+        ])
+        idx.add(keys, values)
+        idx.delete(iter([2]))
+        idx.touch()
+        idx.save()
+        save_abspath = idx.save_abspath
+        index_abspath = idx.index_abspath
+    assert os.path.exists(index_abspath)
+    assert os.path.exists(save_abspath)
+
+    with BaseIndexer.load(save_abspath) as searcher:
+        doc = searcher.query(1)
+        assert doc.buffer == b'cat'
+        assert doc.length == 3
+        doc = searcher.query(2)
+        assert doc is None
+        doc = searcher.query(3)
+        assert doc.buffer == b'bird'
+        assert doc.length == 3
+
