@@ -1,0 +1,24 @@
+Name: Upload pod
+on:
+  repository_dispatch:
+  types: pod-upload
+jobs:
+  build:
+    name: Dockerize pod and upload with repo dispatch
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Cloning user repo'
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - env:	
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          repository: ${{ clone_repo_url }}
+          path: jinaai-jina
+      - name: Jina Hub Image Builder and Push to docker hub
+        uses: jina-ai/hub-builder@master        
+        with:
+          push: true
+          dockerhub_username: ${{ secrets.JINAHUB_DOCKER_USER }}
+          dockerhub_password: ${{ secrets.JINAHUB_DOCKER_PWD }}
+          slack_webhook: ${{ secrets.JINAHUB_SLACK_WEBHOOK }}
