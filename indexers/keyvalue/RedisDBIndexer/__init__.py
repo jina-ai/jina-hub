@@ -69,9 +69,16 @@ class RedisDBIndexer(BinaryPbIndexer):
         with self.get_add_handler() as redis_handler:
             for _key in redis_handler.scan_iter(match=key):
                 res = {
-                  "key": _key,
-                  "values": redis_handler.get(_key),
+                    "key": _key,
+                    "values": redis_handler.get(_key),
                 }
                 result.append(res)
 
         return result
+
+    def update(self, keys: Iterator[int], values: Iterator[bytes]):
+        raise NotImplemented()
+
+    def delete(self, keys: Iterator[int]):
+        raise NotImplemented()
+     
