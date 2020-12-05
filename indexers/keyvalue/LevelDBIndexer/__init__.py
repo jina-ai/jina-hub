@@ -36,9 +36,9 @@ class LevelDBIndexer(BinaryPbIndexer):
         """
         with self.write_handler.write_batch() as h:
             for k, v in zip(keys, values):
-                key = bytes(k)
-                value = json.dumps(v).encode('utf8')
-                h.put(key, value)
+                # v = json.dumps(v).encode('utf8')
+                k = bytes(k)
+                h.put(k, v)
 
     def get_query_handler(self):
         """Get the database handler
@@ -53,17 +53,19 @@ class LevelDBIndexer(BinaryPbIndexer):
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
-        v = self.query_handler.get(bytes(key))
+        # key = key.encode('utf8')
+        key = bytes(key)
+        v = self.query_handler.get(key)
         value = None
         if v is not None:
-            value = Parse(json.loads(v.decode('utf8')), Document())
+            value = Parse(v.decode('utf8'), Document())
         return value
 
-    # TODO remove this method once https://github.com/jina-ai/jina/pull/1380 is merged
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+
+    def update(self, keys: Iterator[int], values: Iterator[bytes]):
         missed = []
         for key in keys:
-            if self.query_handler.header.get(key) is None:
+            if self.query_handler.get(bytes(key)) is None:
                 missed.append(key)
         if missed:
             # FIXME get indexer name
@@ -76,7 +78,7 @@ class LevelDBIndexer(BinaryPbIndexer):
         self.add(keys, values)
         return
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterator[int]):
         with self.write_handler.write_batch() as h:
             for k in keys:
                 key = bytes(k)
