@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import json
 from typing import Optional, Iterator, Any
 
 from google.protobuf.json_format import Parse
@@ -27,7 +26,6 @@ class LevelDBIndexer(BinaryPbIndexer):
         """
         import plyvel
         return plyvel.DB(self.index_abspath, create_if_missing=True)
-
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         """Add a JSON-friendly object to the indexer
@@ -56,7 +54,6 @@ class LevelDBIndexer(BinaryPbIndexer):
         if v is not None:
             value = Parse(v.decode('utf8'), Document())
         return value
-
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         missed = []

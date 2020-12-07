@@ -1,23 +1,13 @@
 import os
-import shutil
 
 import pytest
-from jina import Document
 from google.protobuf.json_format import MessageToJson
+from jina import Document
 from jina.executors.indexers import BaseIndexer
 
 from .. import LevelDBIndexer
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def rm_files(file_paths):
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
 def create_document(doc_id, text, weight, length):
@@ -96,118 +86,117 @@ def validate_results(save_abspath, results, negative_results):
             validate_negative_results(negative_results, searcher)
 
 
-def run_crud_test_for_scenario(indexer, actions, results, no_results):
-    exception = None
-    try:
-        with indexer:
-            indexer.touch()
-            indexer.save()
-        save_abspath = indexer.save_abspath
-        index_abspath = indexer.index_abspath
-        assert os.path.exists(index_abspath)
-        assert os.path.exists(save_abspath)
-        apply_actions(save_abspath, index_abspath, actions)
-        validate_results(save_abspath, results, no_results)
-    except Exception as e:
-        exception = e
-    finally:
-        rm_files([save_abspath, index_abspath])
-        if exception is not None:
-            raise exception
+def run_crud_test_for_scenario(indexer, actions, results, no_results, tmpdir):
+    indexer.workspace = tmpdir
+    with indexer:
+        indexer.touch()
+        indexer.save()
+    save_abspath = indexer.save_abspath
+    index_abspath = indexer.index_abspath
+    assert os.path.exists(index_abspath)
+    assert os.path.exists(save_abspath)
+    apply_actions(save_abspath, index_abspath, actions)
+    validate_results(save_abspath, results, no_results)
 
 
-def run_crud_test(actions, results, no_results):
+def run_crud_test(actions, results, no_results, tmpdir):
     # test construction from code
-    indexer = LevelDBIndexer(level='doc', index_filename='leveldb.db')
-    run_crud_test_for_scenario(indexer, actions, results, no_results)
+    indexer = LevelDBIndexer(level='doc', index_filename=os.path.join(tmpdir, 'leveldb.db'))
+    run_crud_test_for_scenario(indexer, actions, results, no_results, tmpdir)
 
     # test construction from yaml
     from jina.executors import BaseExecutor
     indexer = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-leveldb.yml'))
-    run_crud_test_for_scenario(indexer, actions, results, no_results)
+    run_crud_test_for_scenario(indexer, actions, results, no_results, tmpdir)
 
 
-def run_crud_test_exception_aware(actions, results, no_results, exception, mocker):
-
+def run_crud_test_exception_aware(actions, results, no_results, exception, mocker, tmpdir):
     # action is defined as (method, key, document_id)
     if exception is not None:
         with pytest.raises(exception):
-            run_crud_test(actions, results, no_results)
+            run_crud_test(actions, results, no_results, tmpdir)
     else:
         global validate_positive_results, validate_negative_results
         validate_positive_results = mocker.Mock(wraps=validate_positive_results)
         validate_negative_results = mocker.Mock(wraps=validate_negative_results)
-        run_crud_test(actions, results, no_results)
+        run_crud_test(actions, results, no_results, tmpdir)
         validate_positive_results.assert_called()
         validate_negative_results.assert_called()
 
 
-def test_basic_add(mocker):
+def test_basic_add(mocker, tmpdir):
     run_crud_test_exception_aware(
         [('add', {0: 0, 1: 1}), ('add', {3: 3})],
         {0: 0, 1: 1, 3: 3},
         [2],
         None,
-        mocker
+        mocker,
+        tmpdir
     )
 
 
-def test_add_existing_key(mocker):
+def test_add_existing_key(mocker, tmpdir):
     run_crud_test_exception_aware(
         [('add', {0: 0, 1: 1}), ('add', {0: 3})],
         {0: 3, 1: 1},
         [2],
         None,
-        mocker
+        mocker,
+        tmpdir
     )
 
 
-def test_update_existing_key(mocker):
+def test_update_existing_key(mocker, tmpdir):
     run_crud_test_exception_aware(
         [('add', {1: 1, 2: 2}), ('update', {1: 4})],
         {1: 4, 2: 2},
         [0, 3],
         None,
-        mocker
+        mocker,
+        tmpdir
     )
 
 
-def test_update_non_existing_key(mocker):
+def test_update_non_existing_key(mocker, tmpdir):
     run_crud_test_exception_aware(
         [('update', {1: 4})],
         {},
         [0, 3],
         KeyError,
-        mocker
+        mocker,
+        tmpdir
     )
 
 
-def test_update_existing_and_non_existing_key(mocker):
+def test_update_existing_and_non_existing_key(mocker, tmpdir):
     run_crud_test_exception_aware(
         [('add', {1: 1, 2: 2}), ('update', {1: 4, 3: 4})],
         {},
         [0, 3],
         KeyError,
-        mocker
+        mocker,
+        tmpdir
     )
 
 
-def test_same_value(mocker):
+def test_same_value(mocker, tmpdir):
     run_crud_test_exception_aware(
         [('add', {1: 1, 2: 2}), ('update', {1: 2})],
         {1: 2, 2: 2},
         [0, 3],
         None,
-        mocker
+        mocker,
+        tmpdir
     )
 
 
-def test_chain(mocker):
+def test_chain(mocker, tmpdir):
     run_crud_test_exception_aware(
         [('add', {0: 0, 1: 1}), ('delete', {1: 1}), ('add', {3: 3, 9: 4, 2: 4}), ('delete', {0: 0, 2: 4}),
          ('update', {3: 0})],
         {9: 4, 3: 0},
         [0, 1, 4],
         None,
-        mocker
+        mocker,
+        tmpdir
     )
