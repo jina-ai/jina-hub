@@ -89,7 +89,6 @@ class RedisDBIndexer(BinaryPbIndexer):
         self.handler_mutex = False
         self.delete(keys)
         self.add(keys, values)
-        return
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
         """deletes the keys in redis
