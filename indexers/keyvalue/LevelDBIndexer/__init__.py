@@ -36,9 +36,7 @@ class LevelDBIndexer(BinaryPbIndexer):
         """
         with self.write_handler.write_batch() as h:
             for k, v in zip(keys, values):
-                # v = json.dumps(v).encode('utf8')
-                k = bytes(k)
-                h.put(k, v)
+                h.put(bytes(k), v)
 
     def get_query_handler(self):
         """Get the database handler
@@ -47,13 +45,12 @@ class LevelDBIndexer(BinaryPbIndexer):
         import plyvel
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
-    def query(self, key: Any) -> Optional[Any]:
+    def query(self, key: Any, *args, **kwargs) -> Optional[Any]:
         """Find the protobuf chunk/doc using id
 
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
-        # key = key.encode('utf8')
         key = bytes(key)
         v = self.query_handler.get(key)
         value = None
@@ -62,13 +59,12 @@ class LevelDBIndexer(BinaryPbIndexer):
         return value
 
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes]):
+    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         missed = []
         for key in keys:
             if self.query_handler.get(bytes(key)) is None:
                 missed.append(key)
         if missed:
-            # FIXME get indexer name
             raise KeyError(f'Key(s) {missed} were not found in {self.save_abspath}')
 
         # hack
@@ -78,8 +74,7 @@ class LevelDBIndexer(BinaryPbIndexer):
         self.add(keys, values)
         return
 
-    def delete(self, keys: Iterator[int]):
+    def delete(self, keys: Iterator[int], *args, **kwargs):
         with self.write_handler.write_batch() as h:
             for k in keys:
-                key = bytes(k)
-                h.delete(key)
+                h.delete(bytes(k))
