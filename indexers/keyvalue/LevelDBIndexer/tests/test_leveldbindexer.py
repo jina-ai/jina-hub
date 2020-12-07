@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 from google.protobuf.json_format import MessageToJson
@@ -7,7 +8,7 @@ from jina.executors.indexers import BaseIndexer
 
 from .. import LevelDBIndexer
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
+cur_dir = Path(__file__).parent.absolute()
 
 
 def create_document(doc_id, text, weight, length):
@@ -93,20 +94,20 @@ def run_crud_test_for_scenario(indexer, actions, results, no_results, tmpdir):
         indexer.save()
     save_abspath = indexer.save_abspath
     index_abspath = indexer.index_abspath
-    assert os.path.exists(index_abspath)
-    assert os.path.exists(save_abspath)
+    assert Path(index_abspath).exists()
+    assert Path(save_abspath).exists()
     apply_actions(save_abspath, index_abspath, actions)
     validate_results(save_abspath, results, no_results)
 
 
 def run_crud_test(actions, results, no_results, tmpdir):
     # test construction from code
-    indexer = LevelDBIndexer(level='doc', index_filename=os.path.join(tmpdir, 'leveldb.db'))
+    indexer = LevelDBIndexer(level='doc', index_filename=Path(tmpdir) /'leveldb.db')
     run_crud_test_for_scenario(indexer, actions, results, no_results, tmpdir)
 
     # test construction from yaml
     from jina.executors import BaseExecutor
-    indexer = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-leveldb.yml'))
+    indexer = BaseExecutor.load_config(str(cur_dir / 'yaml/test-leveldb.yml'))
     run_crud_test_for_scenario(indexer, actions, results, no_results, tmpdir)
 
 
