@@ -51,8 +51,7 @@ class LevelDBIndexer(BinaryPbIndexer):
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
-        key = bytes(key)
-        v = self.query_handler.get(key)
+        v = self.query_handler.get(bytes(key))
         value = None
         if v is not None:
             value = Parse(v.decode('utf8'), Document())

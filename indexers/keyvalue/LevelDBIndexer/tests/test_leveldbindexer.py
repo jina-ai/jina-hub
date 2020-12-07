@@ -127,74 +127,87 @@ def run_crud_test(actions, results, no_results):
     run_crud_test_for_scenario(indexer, actions, results, no_results)
 
 
-def run_crud_test_exception_aware(actions, results, no_results, exception):
+def run_crud_test_exception_aware(actions, results, no_results, exception, mocker):
+
     # action is defined as (method, key, document_id)
     if exception is not None:
         with pytest.raises(exception):
             run_crud_test(actions, results, no_results)
     else:
+        global validate_positive_results, validate_negative_results
+        validate_positive_results = mocker.Mock(wraps=validate_positive_results)
+        validate_negative_results = mocker.Mock(wraps=validate_negative_results)
         run_crud_test(actions, results, no_results)
+        validate_positive_results.assert_called()
+        validate_negative_results.assert_called()
 
 
-def test_basic_add():
+def test_basic_add(mocker):
     run_crud_test_exception_aware(
         [('add', {0: 0, 1: 1}), ('add', {3: 3})],
         {0: 0, 1: 1, 3: 3},
         [2],
-        None
+        None,
+        mocker
     )
 
 
-def test_add_existing_key():
+def test_add_existing_key(mocker):
     run_crud_test_exception_aware(
         [('add', {0: 0, 1: 1}), ('add', {0: 3})],
         {0: 3, 1: 1},
         [2],
-        None
+        None,
+        mocker
     )
 
 
-def test_update_existing_key():
+def test_update_existing_key(mocker):
     run_crud_test_exception_aware(
         [('add', {1: 1, 2: 2}), ('update', {1: 4})],
         {1: 4, 2: 2},
         [0, 3],
-        None
+        None,
+        mocker
     )
 
 
-def test_update_non_existing_key():
+def test_update_non_existing_key(mocker):
     run_crud_test_exception_aware(
         [('update', {1: 4})],
         {},
         [0, 3],
-        KeyError
+        KeyError,
+        mocker
     )
 
 
-def test_update_existing_and_non_existing_key():
+def test_update_existing_and_non_existing_key(mocker):
     run_crud_test_exception_aware(
         [('add', {1: 1, 2: 2}), ('update', {1: 4, 3: 4})],
         {},
         [0, 3],
-        KeyError
+        KeyError,
+        mocker
     )
 
 
-def test_same_value():
+def test_same_value(mocker):
     run_crud_test_exception_aware(
         [('add', {1: 1, 2: 2}), ('update', {1: 2})],
-        {},
+        {1: 2, 2: 2},
         [0, 3],
-        None
+        None,
+        mocker
     )
 
 
-def test_chain():
+def test_chain(mocker):
     run_crud_test_exception_aware(
         [('add', {0: 0, 1: 1}), ('delete', {1: 1}), ('add', {3: 3, 9: 4, 2: 4}), ('delete', {0: 0, 2: 4}),
          ('update', {3: 0})],
         {9: 4, 3: 0},
         [0, 1, 4],
-        None
+        None,
+        mocker
     )
