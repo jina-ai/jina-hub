@@ -1,12 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import json
-from typing import Optional, Iterator
+from typing import Optional, Iterator, Any
 
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
-from google.protobuf.json_format import Parse
-from jina.proto import jina_pb2
 
 
 class RedisDBIndexer(BinaryPbIndexer):
@@ -39,7 +36,8 @@ class RedisDBIndexer(BinaryPbIndexer):
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         """Add a JSON-friendly object to the indexer
 
-        :param objs: objects can be serialized into JSON format
+        :param keys: keys to be added
+        :param values: values to be added
         """
         redis_docs = [{'_id': i, 'values': j} for i, j in zip(keys, values)]
 
@@ -59,7 +57,7 @@ class RedisDBIndexer(BinaryPbIndexer):
         except redis.exceptions.ConnectionError as r_con_error:
             self.logger.error('Redis connection error: ', r_con_error)
 
-    def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
+    def query(self, key: int, *args, **kwargs) -> Optional[Any]:
         """Find the protobuf chunk/doc using id
         :param key: ``id``
         :return: protobuf chunk or protobuf document
@@ -76,9 +74,26 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         return result
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes]):
-        raise NotImplemented()
+    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        """updates the keys if they exist
+        """
+        missed = []
+        for key in keys:
+            if len(self.query(key)) == 0:
+                missed.append(key)
+        if missed:
+            raise KeyError(f'Key(s) {missed} were not found in redis')
 
-    def delete(self, keys: Iterator[int]):
-        raise NotImplemented()
-     
+        # hack
+        self.query_handler.close()
+        self.handler_mutex = False
+        self.delete(keys)
+        self.add(keys, values)
+        return
+
+    def delete(self, keys: Iterator[int], *args, **kwargs):
+        """deletes the keys in redis
+        """
+        with self.write_handler as h:
+            for k in keys:
+                h.delete(k)
