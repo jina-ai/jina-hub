@@ -57,7 +57,6 @@ def apply_actions(save_abspath, index_abspath, actions):
     for action in actions:
         idx = BaseIndexer.load(save_abspath)
         apply_action(idx, action)
-
     return save_abspath, index_abspath
 
 
@@ -76,52 +75,46 @@ def validate_negative_results(keys, searcher):
         assert result_doc is None
 
 
-def validate_results(save_abspath, results, negative_results):
+def validate_results(save_abspath, results, negative_results, _validate_positive_results, _validate_negative_results):
     with BaseIndexer.load(save_abspath) as searcher:
         if results:
             keys, ids = zip(*[[k, v] for k, v in results.items()])
             _, documents, _ = get_documents(ids)
-            validate_positive_results(keys, documents, searcher)
+            _validate_positive_results(keys, documents, searcher)
         if negative_results:
-            validate_negative_results(negative_results, searcher)
+            _validate_negative_results(negative_results, searcher)
 
 
-def run_crud_test_for_scenario(indexer, actions, results, no_results, tmpdir):
-    indexer.workspace = tmpdir
-    with indexer:
-        indexer.touch()
-        indexer.save()
-    save_abspath = indexer.save_abspath
-    index_abspath = indexer.index_abspath
-    assert Path(index_abspath).exists()
-    assert Path(save_abspath).exists()
-    apply_actions(save_abspath, index_abspath, actions)
-    validate_results(save_abspath, results, no_results)
-
-
-def run_crud_test(actions, results, no_results, tmpdir):
+def get_indexers(tmpdir):
     # test construction from code
-    indexer = LevelDBIndexer(level='doc', index_filename=Path(tmpdir) /'leveldb.db')
-    run_crud_test_for_scenario(indexer, actions, results, no_results, tmpdir)
-
+    indexer_1 = LevelDBIndexer(level='doc', index_filename=Path(tmpdir) / 'leveldb.db')
     # test construction from yaml
     from jina.executors import BaseExecutor
-    indexer = BaseExecutor.load_config(str(cur_dir / 'yaml/test-leveldb.yml'))
-    run_crud_test_for_scenario(indexer, actions, results, no_results, tmpdir)
+    indexer_2 = BaseExecutor.load_config(str(cur_dir / 'yaml/test-leveldb.yml'))
+    return indexer_1, indexer_2
 
 
 def run_crud_test_exception_aware(actions, results, no_results, exception, mocker, tmpdir):
     # action is defined as (method, key, document_id)
-    if exception is not None:
-        with pytest.raises(exception):
-            run_crud_test(actions, results, no_results, tmpdir)
-    else:
-        global validate_positive_results, validate_negative_results
-        validate_positive_results = mocker.Mock(wraps=validate_positive_results)
-        validate_negative_results = mocker.Mock(wraps=validate_negative_results)
-        run_crud_test(actions, results, no_results, tmpdir)
-        validate_positive_results.assert_called()
-        validate_negative_results.assert_called()
+    for indexer in get_indexers(tmpdir):
+        indexer.workspace = tmpdir
+        with indexer:
+            indexer.touch()
+            indexer.save()
+        save_abspath = indexer.save_abspath
+        index_abspath = indexer.index_abspath
+        assert Path(index_abspath).exists()
+        assert Path(save_abspath).exists()
+        if exception is not None:
+            with pytest.raises(exception):
+                apply_actions(save_abspath, index_abspath, actions)
+        else:
+            apply_actions(save_abspath, index_abspath, actions)
+            _validate_positive_results = mocker.Mock(wraps=validate_positive_results)
+            _validate_negative_results = mocker.Mock(wraps=validate_negative_results)
+            validate_results(save_abspath, results, no_results, _validate_positive_results, _validate_negative_results)
+            _validate_positive_results.assert_called()
+            _validate_negative_results.assert_called()
 
 
 def test_basic_add(mocker, tmpdir):
