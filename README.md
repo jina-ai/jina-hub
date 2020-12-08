@@ -70,7 +70,7 @@ git add .
 git commit -m "feat: add new executor"
 git push
 ```
-4. Add [hub-builder Github Action](https://github.com/jina-ai/hub-builder) to your Github workflow
+4. Add the [Hub Updater](https://github.com/jina-ai/action-hub-updater) and [Hub Builder](https://github.com/jina-ai/action-hub-builder) Github Actions to the Github workflow of your hub-type repo.
 5. Make a Pull Request on `feat-new-executor -> master`
 
 
