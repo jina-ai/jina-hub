@@ -1,8 +1,10 @@
 from pathlib import Path
 
 import pytest
+import redis
 from google.protobuf.json_format import MessageToJson, Parse
 from jina import Document
+from jina.executors import BaseExecutor
 from jina.executors.indexers import BaseIndexer
 
 from .. import RedisDBIndexer
@@ -89,7 +91,6 @@ def get_indexers():
     # test construction from code
     indexer_1 = RedisDBIndexer(level='doc', db=0)
     # test construction from yaml
-    from jina.executors import BaseExecutor
     indexer_2 = BaseExecutor.load_config(str(cur_dir / 'yaml/test-redis.yml'))
     return indexer_1, indexer_2
 
@@ -97,7 +98,6 @@ def get_indexers():
 def run_crud_test_exception_aware(actions, results, no_results, exception, mocker, tmpdir):
     # action is defined as (method, key, document_id)
     for indexer in get_indexers():
-        import redis
         r = redis.Redis(host='0.0.0.0', port=63079, db=0, socket_timeout=10)
         r.flushdb()
         indexer.workspace = tmpdir
