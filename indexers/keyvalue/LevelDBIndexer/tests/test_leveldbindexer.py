@@ -61,6 +61,7 @@ def apply_actions(save_abspath, index_abspath, actions):
 
 
 def validate_positive_results(keys, documents, searcher):
+    assert len(list(zip(keys, documents))) > 0
     for key, query_doc in zip(keys, documents):
         result_doc = searcher.query(key)
         assert result_doc.id == str(query_doc[0]) * 16
@@ -70,6 +71,7 @@ def validate_positive_results(keys, documents, searcher):
 
 
 def validate_negative_results(keys, searcher):
+    assert len(keys) > 0
     for key in keys:
         result_doc = searcher.query(key)
         assert result_doc is None
@@ -86,12 +88,10 @@ def validate_results(save_abspath, results, negative_results, _validate_positive
 
 
 def get_indexers(tmpdir):
-    # test construction from code
-    indexer_1 = LevelDBIndexer(level='doc', index_filename=Path(tmpdir) / 'leveldb.db')
-    # test construction from yaml
+    indexer_from_constructor = LevelDBIndexer(level='doc', index_filename=Path(tmpdir) / 'leveldb.db')
     from jina.executors import BaseExecutor
-    indexer_2 = BaseExecutor.load_config(str(cur_dir / 'yaml/test-leveldb.yml'))
-    return indexer_1, indexer_2
+    indexer_from_config = BaseExecutor.load_config(str(cur_dir / 'yaml/test-leveldb.yml'))
+    return indexer_from_constructor, indexer_from_config
 
 
 def run_crud_test_exception_aware(actions, results, no_results, exception, mocker, tmpdir):
