@@ -104,6 +104,57 @@ def test_annoy_indexer_known(metas):
         np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
 
 
+def test_annoy_indexer_known_update_delete(metas):
+    vectors = np.array([[1, 1, 1],
+                        [10, 10, 10],
+                        [100, 100, 100],
+                        [1000, 1000, 1000]])
+    keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
+    with AnnoyIndexer(index_filename='annoy.test.gz', metas=metas) as indexer:
+        indexer.add(keys, vectors)
+        indexer.save()
+        assert os.path.exists(indexer.index_abspath)
+        save_abspath = indexer.save_abspath
+
+    queries = np.array([[1, 1, 1],
+                        [10, 10, 10],
+                        [100, 100, 100],
+                        [1000, 1000, 1000]])
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, AnnoyIndexer)
+        idx, dist = indexer.query(queries, top_k=2)
+        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        assert idx.shape == dist.shape
+        assert idx.shape == (4, 2)
+        np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
+
+    # update
+    with BaseIndexer.load(save_abspath) as indexer:
+        indexer.update([4], np.array([[200, 200, 200]]))
+        indexer.save()
+        assert indexer.size == 4
+
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, AnnoyIndexer)
+        idx, dist = indexer.query(queries, top_k=3)
+        np.testing.assert_equal(idx, np.array([[5, 6, 4], [5, 6, 4], [6, 5, 4], [7, 4, 6]]))
+        assert idx.shape == dist.shape
+        assert idx.shape == (4, 3)
+
+    # delete
+    with BaseIndexer.load(save_abspath) as indexer:
+        indexer.delete([4])
+        indexer.save()
+        assert indexer.size == 3
+
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, AnnoyIndexer)
+        idx, dist = indexer.query(queries, top_k=2)
+        np.testing.assert_equal(idx, np.array([[5, 6], [5, 6], [6, 5], [7, 6]]))
+        assert idx.shape == dist.shape
+        assert idx.shape == (4, 2)
+
+
 def test_annoy_indexer_known_big(metas):
     """Let's try to have some real test. We will have an index with 10k vectors of random values between 5 and 10.
      We will change tweak some specific vectors that we expect to be retrieved at query time. We will tweak vector
