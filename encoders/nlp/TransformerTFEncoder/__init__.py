@@ -72,6 +72,8 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         self.truncation_strategy = truncation_strategy
         self.model_save_path = model_save_path
 
+        self._padding_strategy = 'max_length' if self.max_length else 'longest'
+
     def __getstate__(self):
         if self.model_save_path:
             if not os.path.exists(self.model_abspath):
@@ -128,15 +130,15 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
                 self.tokenizer.pad_token = self.tokenizer.eos_token
                 if self.tokenizer.pad_token is None:
                     self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-            ids_info = self.tokenizer.batch_encode_plus(data,
+            ids_info = self.tokenizer.batch_encode_plus(list(data),
                                                         max_length=self.max_length,
                                                         truncation=self.truncation_strategy,
-                                                        pad_to_max_length=True)
+                                                        padding=self._padding_strategy)
         except ValueError:
             self.model.resize_token_embeddings(len(self.tokenizer))
-            ids_info = self.tokenizer.batch_encode_plus(data,
+            ids_info = self.tokenizer.batch_encode_plus(list(data),
                                                         max_length=self.max_length,
-                                                        pad_to_max_length=True)
+                                                        padding=self._padding_strategy)
         token_ids_batch = self.array2tensor(ids_info['input_ids'])
         mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
         with self.no_gradients():
