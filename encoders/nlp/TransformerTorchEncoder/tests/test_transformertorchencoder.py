@@ -64,6 +64,12 @@ encoders_parameters = [
         "pooling_strategy": 'max',
         "pretrained_model_name_or_path": 'xlnet-base-cased',
         "model_save_path": 'xlnet-base-cased-max',
+    },
+    {
+        "pooling_strategy": 'mean',
+        "pretrained_model_name_or_path": 'bert-base-uncased',
+        "model_save_path": 'bert-base-uncased-mean',
+        "layer_index": -2,
     }
 ]
 
@@ -111,3 +117,10 @@ def test_parameter_override(encoder):
     assert encoder.pretrained_model_name_or_path == encoder_preset['pretrained_model_name_or_path']
     assert encoder.pooling_strategy == encoder_preset['pooling_strategy']
     assert encoder.model_save_path == encoder_preset['model_save_path']
+
+@pytest.mark.parametrize('encoder', encoders_parameters[0:1], indirect=['encoder'])
+def test_wrong_layer_index(encoder):
+    encoder.layer_index = 100
+    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+    with pytest.raises(ValueError, match=f'Invalid value {encoder.layer_index}'):
+        encoded_data = encoder.encode(test_data)
