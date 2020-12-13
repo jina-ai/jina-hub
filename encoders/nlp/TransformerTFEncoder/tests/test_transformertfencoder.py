@@ -64,7 +64,13 @@ encoders_parameters = [
         "pooling_strategy": 'max',
         "pretrained_model_name_or_path": 'xlnet-base-cased',
         "model_save_path": 'xlnet-base-cased-max',
-    }
+    },
+    {
+        "pooling_strategy": 'mean',
+        "pretrained_model_name_or_path": 'distilbert-base-cased',
+        "model_save_path": 'distilbert-base-cased-mean',
+        "max_length": 100
+    },
 ]
 
 
