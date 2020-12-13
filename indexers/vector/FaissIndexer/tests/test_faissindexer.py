@@ -46,19 +46,29 @@ def test_faiss_indexer(metas):
         assert idx.shape == (10, 4)
 
 
-def test_faiss_indexer_known(metas):
+@pytest.mark.parametrize('compression_level', [0, 1, 2, 3])
+@pytest.mark.parametrize('train_data', ['new', 'none', 'index'])
+def test_faiss_indexer_known(metas, train_data, compression_level):
     vectors = np.array([[1, 1, 1],
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]], dtype=np.float32)
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
 
-    train_filepath = os.path.join(os.environ['TEST_WORKSPACE'], 'train.tgz')
-    train_data = vectors
-    with gzip.open(train_filepath, 'wb', compresslevel=1) as f:
-        f.write(train_data.tobytes())
+    if train_data == 'new':
+        train_filepath = os.path.join(os.environ['TEST_WORKSPACE'], 'train.tgz')
+        train_data = vectors
+        with gzip.open(train_filepath, 'wb', compresslevel=1) as f:
+            f.write(train_data.tobytes())
+    elif train_data == 'none':
+        train_filepath = None
+    elif train_data == 'index':
+        train_filepath = os.path.join(metas['workspace'], 'faiss.test.gz')
 
-    with FaissIndexer(index_filename='faiss.test.gz', index_key='Flat', train_filepath=train_filepath,
+    with FaissIndexer(index_filename='faiss.test.gz',
+                      compression_level=compression_level,
+                      index_key='Flat',
+                      train_filepath=train_filepath,
                       metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
@@ -114,3 +124,32 @@ def test_faiss_indexer_known_big(metas):
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
         np.testing.assert_equal(indexer.query_by_id([10000, 15000]), vectors[[0, 5000]])
+
+
+@pytest.mark.parametrize('compression_level', [0, 1, 2, 3, 4])
+def test_indexer_train_from_index_different_compression_levels(metas, compression_level):
+    np.random.seed(500)
+    num_data = 500
+    num_dim = 64
+    num_query = 10
+    query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
+    vec_idx = np.random.randint(0, high=num_data, size=[num_data])
+    vec = np.random.random([num_data, num_dim])
+
+    train_filepath = os.path.join(metas['workspace'], 'faiss.test.gz')
+
+    with FaissIndexer(index_filename='faiss.test.gz',
+                      index_key='IVF10,PQ4',
+                      train_filepath=train_filepath,
+                      compression_level=compression_level,
+                      metas=metas) as indexer:
+        indexer.add(vec_idx, vec)
+        indexer.save()
+        assert os.path.exists(indexer.index_abspath)
+        save_abspath = indexer.save_abspath
+
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, FaissIndexer)
+        idx, dist = indexer.query(query, top_k=4)
+        assert idx.shape == dist.shape
+        assert idx.shape == (num_query, 4)
