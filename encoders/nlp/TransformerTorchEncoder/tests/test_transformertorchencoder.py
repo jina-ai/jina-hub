@@ -117,3 +117,10 @@ def test_parameter_override(encoder):
     assert encoder.pretrained_model_name_or_path == encoder_preset['pretrained_model_name_or_path']
     assert encoder.pooling_strategy == encoder_preset['pooling_strategy']
     assert encoder.model_save_path == encoder_preset['model_save_path']
+
+def test_max_length(test_metas):
+    encoder = TransformerTFEncoder(metas=test_metas, max_length=3)
+    test_data = np.array(['it is a very good day!', 'it is a very sunny day!'])
+    encoded_data = encoder.encode(test_data)
+
+    numpy.testing.assert_allclose(encoded_data[0], encoded_data[1])
