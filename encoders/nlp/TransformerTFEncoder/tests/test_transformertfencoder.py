@@ -124,4 +124,4 @@ def test_max_length(test_metas):
     test_data = np.array(['it is a very good day!', 'it is a very sunny day!'])
     encoded_data = encoder.encode(test_data)
 
-    numpy.testing.assert_allclose(encoded_data[0], encoded_data[1])
+    np.testing.assert_allclose(encoded_data[0], encoded_data[1])
