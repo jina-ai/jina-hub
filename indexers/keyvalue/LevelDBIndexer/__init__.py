@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 from typing import Optional, Iterator, Any
 
-from google.protobuf.json_format import Parse
 from jina import Document
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 
@@ -36,6 +35,7 @@ class LevelDBIndexer(BinaryPbIndexer):
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
+        from google.protobuf.json_format import Parse
         v = self.query_handler.get(bytes(key))
         value = None
         if v is not None:
