@@ -87,7 +87,8 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         dist, ids = self.query_handler.search(keys, top_k)
-        return self.int2ext_id[ids], dist
+        keys = self.int2ext_id[self.valid_indices][ids]
+        return keys, dist
 
     def train(self, index, data: 'np.ndarray', *args, **kwargs) -> None:
         _num_samples, _num_dim = data.shape

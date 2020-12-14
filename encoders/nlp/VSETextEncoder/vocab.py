@@ -1,9 +1,6 @@
 # Create a vocabulary wrapper
-import nltk
 import pickle
 from collections import Counter
-from pycocotools.coco import COCO
-import json
 import argparse
 import os
 
@@ -43,6 +40,7 @@ class Vocabulary(object):
 
 
 def from_coco_json(path):
+    from pycocotools.coco import COCO
     coco = COCO(path)
     ids = coco.anns.keys()
     captions = []
@@ -53,6 +51,7 @@ def from_coco_json(path):
 
 
 def from_flickr_json(path):
+    import json
     dataset = json.load(open(path, 'r'))['images']
     captions = []
     for i, d in enumerate(dataset):
@@ -70,6 +69,8 @@ def from_txt(txt):
 
 
 def build_vocab(data_path, data_name, jsons, threshold):
+    import nltk
+
     """Build a simple vocabulary wrapper."""
     counter = Counter()
     for path in jsons[data_name]:
