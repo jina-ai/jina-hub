@@ -28,27 +28,23 @@ def test_metas(tmpdir, random_workspace_name):
 
 encoders_parameters = [
     {
-        "pretrained_model_name_or_path": 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
-        "model_save_path": 'distilbert-base-nli-stsb-mean-tokens',
-    },
-    {
-        "pretrained_model_name_or_path": 'bert-base-uncased',
-        "model_save_path": 'bert-base-uncased',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased',
     },
     {
         "pooling_strategy": 'auto',
-        "pretrained_model_name_or_path": 'bert-base-uncased',
-        "model_save_path": 'bert-base-uncased-mean',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased-mean',
     },
     {
         "pooling_strategy": 'min',
-        "pretrained_model_name_or_path": 'bert-base-uncased',
-        "model_save_path": 'bert-base-uncased-min',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased-min',
     },
     {
         "pooling_strategy": 'max',
-        "pretrained_model_name_or_path": 'bert-base-uncased',
-        "model_save_path": 'bert-base-uncased-max',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased-max',
     },
     {
         "pretrained_model_name_or_path": 'xlnet-base-cased',
@@ -71,8 +67,8 @@ encoders_parameters = [
     },
     {
         "pooling_strategy": 'mean',
-        "pretrained_model_name_or_path": 'bert-base-uncased',
-        "model_save_path": 'bert-base-uncased-mean',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased-mean',
         "layer_index": -2,
     },
     {

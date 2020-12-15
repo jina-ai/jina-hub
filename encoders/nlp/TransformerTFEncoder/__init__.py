@@ -36,7 +36,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
 
     def __init__(
         self,
-        pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+        pretrained_model_name_or_path: str = 'distilbert-base-uncased',
         pooling_strategy: str = 'mean',
         layer_index: int = -1,
         max_length: Optional[int] = None,
