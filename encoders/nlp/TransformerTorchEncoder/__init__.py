@@ -36,7 +36,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
 
     def __init__(
         self,
-        pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-mean-tokens',
+        pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
         pooling_strategy: str = 'mean',
         layer_index: int = -1,
         max_length: Optional[int] = None,
@@ -152,7 +152,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
                                  attention_mask=mask_ids_batch,
                                  output_hidden_states=True)
 
-            hidden_states = outputs[self.layer_index]
+            hidden_states = outputs[-1]
             n_layers = len(hidden_states)
             if not self.layer_index in list(range(-n_layers, n_layers)):
                 raise ValueError(f'Invalid value {self.layer_index} for `layer_index`,'

@@ -28,8 +28,8 @@ def test_metas(tmpdir, random_workspace_name):
 
 encoders_parameters = [
     {
-        "pretrained_model_name_or_path": 'sentence-transformers/distilbert-base-nli-mean-tokens',
-        "model_save_path": 'sentence-transformers/distilbert-base-nli-mean-tokens',
+        "pretrained_model_name_or_path": 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+        "model_save_path": 'distilbert-base-nli-stsb-mean-tokens',
     },
     {
         "pretrained_model_name_or_path": 'bert-base-uncased',
