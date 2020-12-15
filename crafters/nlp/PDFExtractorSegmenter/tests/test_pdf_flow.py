@@ -1,7 +1,4 @@
-from typing import io
-
-from jina.drivers.helper import array2pb
-from jina.proto import jina_pb2
+from jina import Document
 from jina.flow import Flow
 from PIL import Image
 import os
@@ -22,7 +19,7 @@ def validate_img_fn(resp):
     for d in resp.search.docs:
         for chunk in range(len(d.chunks)):
             img = Image.open(os.path.join(cur_dir, f'test_img_{chunk}.jpg'))
-            blob = d.chunks[chunk].blob
+            blob = d.chunks[chunk].blob.dense
             assert blob.shape[1], blob.shape[0] == img.size
 
 
@@ -30,18 +27,19 @@ def validate_mix_fn(resp):
     for d in resp.search.docs:
         for chunk in range(len(d.chunks) - 1):
             img = Image.open(os.path.join(cur_dir, f'test_img_{chunk}.jpg'))
-            blob = d.chunks[chunk].blob
+            blob = d.chunks[chunk].blob.dense
             assert blob.shape[1], blob.shape[0] == img.size
 
         assert expected_text == d.chunks[2].text
 
 
 def search_generator(path: str, buffer: bytes):
-    d = jina_pb2.Document()
+    d = Document()
+    d.update_id()
     if buffer:
         d.buffer = buffer
     if path:
-        d.uri = path
+        d.content = path
     yield d
 
 
