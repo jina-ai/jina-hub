@@ -9,8 +9,6 @@ from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTorchEncoder
 from jina.excepts import PretrainedModelFileDoesNotExist
 
-from .img_text_composition_models import TIRG
-
 
 class TirgImageEncoder(BaseTorchEncoder):
 
@@ -30,6 +28,7 @@ class TirgImageEncoder(BaseTorchEncoder):
 
     def post_init(self):
         super().post_init()
+        from .img_text_composition_models import TIRG
         import torch
         if self.model_path and os.path.exists(self.model_path):
             with open (self.texts_path, 'rb') as fp:
