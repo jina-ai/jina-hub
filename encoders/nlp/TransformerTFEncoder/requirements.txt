@@ -1,5 +1,5 @@
 jina
-transformers==3.0.0
-tensorflow_cpu==2.1.0
+transformers>=3.0.2
+tensorflow-cpu>=2.1.0
 protobuf>=3.9.2
 grpcio>=1.24.3

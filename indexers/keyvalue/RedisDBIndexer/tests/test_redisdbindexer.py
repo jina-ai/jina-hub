@@ -1,58 +1,198 @@
-import os
-import random
+from pathlib import Path
+
 import pytest
-import numpy as np
-
-from google.protobuf.json_format import MessageToJson
+import redis
+from google.protobuf.json_format import MessageToJson, Parse
+from jina import Document
+from jina.executors import BaseExecutor
 from jina.executors.indexers import BaseIndexer
-from jina.executors.metas import get_default_metas
-from jina.drivers.helper import array2pb
-from jina.proto import jina_pb2, uid
-
 
 from .. import RedisDBIndexer
 
-
-@pytest.fixture(scope='function', autouse=True)
-def metas(tmpdir):
-    os.environ['TEST_WORKSPACE'] = str(tmpdir)
-    metas = get_default_metas()
-    metas['workspace'] = os.environ['TEST_WORKSPACE']
-    yield metas
-    del os.environ['TEST_WORKSPACE']
+cur_dir = Path(__file__).parent.absolute()
 
 
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
-    c_id = 3 * num_docs  # avoid collision with docs
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        d.tags['id'] = j
-        d.text = b'hello world doc id %d' % j
-        d.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
-        d.id = uid.new_doc_id(d)
-        yield d
+def create_document(doc_id, text, weight, length):
+    d = Document()
+    d._document.id = (str(doc_id) * 16)[:16]
+    d.buffer = text.encode('utf8')
+    d.weight = weight
+    d.length = length
+    return d
 
 
-def test_redis_db_indexer(metas):
-    num_docs = 5
-    docs = list(random_docs(num_docs=num_docs,
-                            chunks_per_doc=3))
-    keys = [uid.id2hash(doc.id) for doc in docs]
-    values = [doc.SerializeToString() for doc in docs]
+def get_documents(ids):
+    documents = [
+        [0, 'cat', 0.1, 3],
+        [1, 'dog', 0.2, 3],
+        [2, 'crow', 0.3, 4],
+        [3, 'pikachu', 0.4, 7],
+        [4, 'magikarp', 0.5, 8]
+    ]
+    id_to_document = {d[0]: d for d in documents}
+    data = [
+        (id_to_document[id][0], id_to_document[id], MessageToJson(create_document(*id_to_document[id])).encode('utf-8'))
+        for id in ids
+    ]
+    return zip(*data)
 
-    query_index = random.randint(0, num_docs - 1)
-    query_id = docs[query_index].id
-    query_key = uid.id2hash(query_id)
-    query_text = docs[query_index].text
 
-    with RedisDBIndexer(metas=metas) as idx:
-        idx.add(keys=keys, values=values)
+def apply_action(idx, action):
+    method, key_to_id = action
+    with idx:
+        keys = key_to_id.keys()
+        ids = key_to_id.values()
+        ids, documents, documents_bytes = get_documents(ids)
+        if method == 'add':
+            idx.add(keys, documents_bytes)
+        elif method == 'delete':
+            idx.delete(keys)
+        elif method == 'update':
+            idx.update(keys, documents_bytes)
+        else:
+            print(f'method {method} is not implemented')
+        idx.touch()
+        idx.save()
 
-    with RedisDBIndexer(metas=metas) as redis_query:
-        query_results = redis_query.query(key=query_key)
-        for result in query_results:
-            assert result is not None
-            assert result['key'] == str(query_key).encode()
-            d = jina_pb2.Document()
-            d.ParseFromString(result['values'])
-            assert d.text == query_text
+
+def apply_actions(save_abspath, index_abspath, actions):
+    for action in actions:
+        idx = BaseIndexer.load(save_abspath)
+        apply_action(idx, action)
+
+    return save_abspath, index_abspath
+
+
+def validate_positive_results(keys, documents, searcher):
+    for key, query_doc in zip(keys, documents):
+        result_doc = Parse(searcher.query(key)[0]['values'].decode('utf8'), Document())
+        assert result_doc.id == str(query_doc[0]) * 16
+        assert result_doc.buffer == query_doc[1].encode('utf8')
+        assert round(result_doc.weight, 5) == query_doc[2]
+        assert result_doc.length == query_doc[3]
+
+
+def validate_negative_results(keys, searcher):
+    for key in keys:
+        result_docs = searcher.query(key)
+        assert result_docs == []
+
+def validate_results(save_abspath, results, negative_results, _validate_positive_results, _validate_negative_results):
+    with BaseIndexer.load(save_abspath) as searcher:
+        if results:
+            keys, ids = zip(*[[k, v] for k, v in results.items()])
+            _, documents, _ = get_documents(ids)
+            _validate_positive_results(keys, documents, searcher)
+        if negative_results:
+            _validate_negative_results(negative_results, searcher)
+
+
+def get_indexers():
+    # test construction from code
+    indexer_1 = RedisDBIndexer(level='doc', db=0)
+    # test construction from yaml
+    indexer_2 = BaseExecutor.load_config(str(cur_dir / 'yaml/test-redis.yml'))
+    return indexer_1, indexer_2
+
+
+def run_crud_test_exception_aware(actions, results, no_results, exception, mocker, tmpdir):
+    # action is defined as (method, key, document_id)
+    for indexer in get_indexers():
+        r = redis.Redis(host='0.0.0.0', port=63079, db=0, socket_timeout=10)
+        r.flushdb()
+        indexer.workspace = tmpdir
+        with indexer:
+            indexer.touch()
+            indexer.save()
+        save_abspath = indexer.save_abspath
+        index_abspath = indexer.index_abspath
+        assert Path(index_abspath).exists()
+        assert Path(save_abspath).exists()
+        if exception is not None:
+            with pytest.raises(exception):
+                apply_actions(save_abspath, index_abspath, actions)
+        else:
+            apply_actions(save_abspath, index_abspath, actions)
+            _validate_positive_results = mocker.Mock(wraps=validate_positive_results)
+            _validate_negative_results = mocker.Mock(wraps=validate_negative_results)
+            validate_results(save_abspath, results, no_results, _validate_positive_results, _validate_negative_results)
+            _validate_positive_results.assert_called()
+            _validate_negative_results.assert_called()
+
+
+def test_basic_add(mocker, tmpdir):
+    run_crud_test_exception_aware(
+        [('add', {0: 0, 1: 1}), ('add', {3: 3})],
+        {0: 0, 1: 1, 3: 3},
+        [2],
+        None,
+        mocker,
+        tmpdir
+    )
+
+
+def test_add_existing_key(mocker, tmpdir):
+    run_crud_test_exception_aware(
+        [('add', {0: 0, 1: 1}), ('add', {0: 3})],
+        {0: 3, 1: 1},
+        [2],
+        None,
+        mocker,
+        tmpdir
+    )
+
+
+def test_update_existing_key(mocker, tmpdir):
+    run_crud_test_exception_aware(
+        [('add', {1: 1, 2: 2}), ('update', {1: 4})],
+        {1: 4, 2: 2},
+        [0, 3],
+        None,
+        mocker,
+        tmpdir
+    )
+
+
+def test_update_non_existing_key(mocker, tmpdir):
+    run_crud_test_exception_aware(
+        [('update', {1: 4})],
+        {},
+        [0, 3],
+        KeyError,
+        mocker,
+        tmpdir
+    )
+
+
+def test_update_existing_and_non_existing_key(mocker, tmpdir):
+    run_crud_test_exception_aware(
+        [('add', {1: 1, 2: 2}), ('update', {1: 4, 3: 4})],
+        {},
+        [0, 3],
+        KeyError,
+        mocker,
+        tmpdir
+    )
+
+
+def test_same_value(mocker, tmpdir):
+    run_crud_test_exception_aware(
+        [('add', {1: 1, 2: 2}), ('update', {1: 2})],
+        {1: 2, 2: 2},
+        [0, 3],
+        None,
+        mocker,
+        tmpdir
+    )
+
+
+def test_chain(mocker, tmpdir):
+    run_crud_test_exception_aware(
+        [('add', {0: 0, 1: 1}), ('delete', {1: 1}), ('add', {3: 3, 9: 4, 2: 4}), ('delete', {0: 0, 2: 4}),
+         ('update', {3: 0})],
+        {9: 4, 3: 0},
+        [0, 1, 4],
+        None,
+        mocker,
+        tmpdir
+    )

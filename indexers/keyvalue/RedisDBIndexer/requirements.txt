@@ -1,2 +1,2 @@
 jina
-redis
+redis==3.5.3

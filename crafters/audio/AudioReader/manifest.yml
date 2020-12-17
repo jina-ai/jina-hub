@@ -13,4 +13,3 @@ keywords:
 manifest_version: 1
 type: pod
 kind: crafter
-jina_version: 0.7.11

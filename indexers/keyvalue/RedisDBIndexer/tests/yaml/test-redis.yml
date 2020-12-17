@@ -1,0 +1,4 @@
+!RedisDBIndexer
+with:
+  level: doc
+  db: 0

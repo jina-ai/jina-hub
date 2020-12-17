@@ -11,4 +11,3 @@ version: 0.0.2
 license: apache-2.0
 keywords: [evaluator, edit distance]
 type: pod
-jina_version: 0.7.11

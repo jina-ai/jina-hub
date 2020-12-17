@@ -6,8 +6,8 @@ import pickle
 from jina.executors.encoders.frameworks import BaseTorchEncoder
 from jina.executors.decorators import as_ndarray, batching
 
-from .model import VSE
 from .vocab import Vocabulary
+
 
 class CustomUnpickler(pickle.Unpickler):
 
@@ -38,6 +38,8 @@ class VSETextEncoder(BaseTorchEncoder):
     def post_init(self):
         import nltk
         import torch
+        from .model import VSE
+
         nltk.download('punkt')
         checkpoint = torch.load(self.path,
                                 map_location=torch.device('cpu' if not self.on_gpu else 'cuda'))

@@ -10,5 +10,3 @@ version: 0.0.8
 license: apache-2.0
 keywords: [sptag, indexer]
 type: pod
-jina-version: 0.7.11
-jina_version: 0.7.11

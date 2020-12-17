@@ -20,16 +20,15 @@ class TirgMultiModalEncoder(TorchDevice, BaseMultiModalEncoder):
 
     def __init__(self, model_path: str = 'checkpoint.pth',
                  texts_path: str = 'texts.pkl',
-                 positional_modality: List[str] = ['image', 'text'],
                  channel_axis: int = -1,
+                 positional_modality: List[str] = ['image', 'text'],
                  *args, **kwargs):
         """
         :param model_path: the path where the model is stored.
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(positional_modality=positional_modality, *args, **kwargs)
         self.model_path = model_path
         self.texts_path = texts_path
-        self.positional_modality = positional_modality
         self.channel_axis = channel_axis
         # axis 0 is the batch
         self._default_channel_axis = 1
