@@ -40,9 +40,9 @@ def chunk_scores(factor=1):
     match_idx_numpy = np.array(
         match_idx,
         dtype=[
-            (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
-            (Chunk2DocRanker.COL_MATCH_HASH, np.int64),
-            (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.int64),
+            (Chunk2DocRanker.COL_MATCH_PARENT_ID, np.int64),
+            (Chunk2DocRanker.COL_MATCH_ID, np.int64),
+            (Chunk2DocRanker.COL_DOC_CHUNK_ID, np.int64),
             (Chunk2DocRanker.COL_SCORE, np.float64)
         ]
     )
