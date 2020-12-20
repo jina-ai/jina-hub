@@ -1,7 +1,4 @@
 import os
-from itertools import product
-import random
-import string
 
 import numpy as np
 import pytest
