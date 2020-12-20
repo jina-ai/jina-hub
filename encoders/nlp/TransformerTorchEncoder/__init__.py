@@ -56,7 +56,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         self.model_save_path = model_save_path
 
         if self.pooling_strategy == "auto":
-            self.pooling_strategy == "cls"
+            self.pooling_strategy = "cls"
             raise DeprecationWarning(
                 "'auto' pooling_strategy is deprecated, please use"
                 " 'cls' to maintain the old default behavior."
