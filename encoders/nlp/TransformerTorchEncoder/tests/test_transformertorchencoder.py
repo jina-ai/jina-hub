@@ -18,12 +18,11 @@ def test_metas(tmp_path):
 
 
 def get_encoder(test_metas, **kwargs):
-    kwargs['model_save_path'] = (
-        kwargs['pretrained_model_name_or_path'].replace(
-            '/', '.'
+    if 'pretrained_model_name_or_path' in kwargs and 'pooling_strategy' in kwargs:
+        kwargs['model_save_path'] = (
+            kwargs['pretrained_model_name_or_path'].replace('/', '.')
+            + f'-{kwargs["pooling_strategy"]}'
         )
-        + f'-{kwargs["pooling_strategy"]}'
-    )
     return TransformerTorchEncoder(metas=test_metas, **kwargs)
 
 
