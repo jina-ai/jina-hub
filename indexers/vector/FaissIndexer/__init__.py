@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple, Optional
 
+from faiss import normalize_L2
 import numpy as np
 from jina.executors.devices import FaissDevice
 from jina.executors.indexers.vector import BaseNumpyIndexer
@@ -25,7 +26,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
                  index_key: str,
                  train_filepath: Optional[str] = None,
                  distance: str = 'l2',
-                 normalize: bool = False,
+                 normalize: bool = True,
                  nprobe: int = 1,
                  *args,
                  **kwargs):
@@ -36,7 +37,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         :param train_filepath: the training data file path, e.g ``faiss.tgz`` or `faiss.npy`. The data file is expected
             to be either `.npy` file from `numpy.save()` or a `.tgz` file from `NumpyIndexer`.
         :param distance: 'l2' or 'inner_product' accepted. Determines which distances to optimize by FAISS
-        :param normalize: whether or not to normalize the vectors (e.g. for the cosine similarity)
+        :param normalize: whether or not to normalize the vectors e.g. for the cosine similarity
         :param nprobe: Number of clusters to consider at search time.
 
         .. highlight:: python
@@ -81,19 +82,23 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
             else:
                 train_data = train_data.astype(np.float32)
                 if self.normalize:
-                    faiss.normalize_L2(train_data)
+                    normalize_L2(train_data)
                 self.train(index, train_data)
-        if self.normalize:
-            faiss.normalize_L2(vecs)
+        
         self.build_partial_index(vecs, index)
         index.nprobe = self.nprobe
         return index
 
     @batching
     def build_partial_index(self, vecs: 'np.ndarray', index):
-        index.add(vecs.astype(np.float32))
+        vecs = vecs.astype(np.float32)
+        if self.normalize:
+            normalize_L2(vecs)
+        index.add(vecs)
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        if self.normalize:
+            normalize_L2(keys)
         dist, ids = self.query_handler.search(keys, top_k)
         keys = self.int2ext_id[self.valid_indices][ids]
         return keys, dist
