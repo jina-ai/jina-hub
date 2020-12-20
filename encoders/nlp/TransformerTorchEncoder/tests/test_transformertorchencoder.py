@@ -63,8 +63,8 @@ def test_encoding_results(encoder):
     hidden_dim_sizes = {
         'sentence-transformers/distilbert-base-nli-stsb-mean-tokens': 768,
         'sentence-transformers/bert-base-nli-stsb-mean-tokens': 768,
-        'sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens': 768,
-        'sentence-transformers/roberta-base-nli-stsb-mean-tokens': 768,
+        'deepset/roberta-base-squad2': 768,
+        'xlm-roberta-base': 768,
         'xlnet-base-cased': 768,
     }
     hidden_dim_size = hidden_dim_sizes[encoder.pretrained_model_name_or_path]
