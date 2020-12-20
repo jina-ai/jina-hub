@@ -211,3 +211,23 @@ def test_indexer_train_from_index_different_compression_levels(metas, compressio
         idx, dist = indexer.query(query, top_k=4)
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
+
+def test_faiss_normalization(metas):
+    num_data = 1
+    num_dims = 64
+    vec_idx = np.random.randint(0, high=num_data, size=[num_data])
+    with FaissIndexer(index_key='Flat', distance="inner_product", normalize=True) as indexer:
+        vecs = np.zeros((num_data, num_dims))
+        vecs[0, 0] = 1
+        indexer.add(vec_idx, vecs)
+        indexer.save()
+        save_abspath = indexer.save_abspath
+
+
+    with BaseIndexer.load(save_abspath) as indexer:
+        query = np.zeros((1, num_dims))
+        query[0, 0] = 1
+        idx, dist = indexer.query(query.astype("float32"), top_k=1)
+        assert dist == 1.
+
+
