@@ -120,7 +120,7 @@ def test_save_and_load_config(encoder, params):
 
 
 @pytest.mark.parametrize('layer_index', [-100, 100])
-@pytest.mark.parametrize('encoder', encoder_params[0], indirect=['encoder'])
+@pytest.mark.parametrize('encoder', [encoder_params[0]], indirect=['encoder'])
 def test_wrong_layer_index(encoder, layer_index):
     encoder.layer_index = layer_index
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
