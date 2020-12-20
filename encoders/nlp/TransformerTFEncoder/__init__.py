@@ -36,8 +36,9 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
 
     def __init__(
         self,
-        pretrained_model_name_or_path: str = 'bert-base-uncased',
-        pooling_strategy: str = 'auto',
+        pretrained_model_name_or_path: str = 'distilbert-base-uncased',
+        pooling_strategy: str = 'mean',
+        layer_index: int = -1,
         max_length: Optional[int] = None,
         truncation_strategy: str = 'longest_first',
         model_save_path: Optional[str] = None,
@@ -54,6 +55,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
             checkpoint in a PyTorch model using the provided conversion scripts and loading the PyTorch model afterwards.
         :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
             strategies include 'auto', 'cls', 'mean', 'max', 'min'.
+        :param layer_index: index of the transformer layer that is used to create encodings. Layer 0 corresponds to the embeddings layer
         :param max_length: the max length to truncate the tokenized sequences to.
         :param model_save_path: the path of the encoder model. If a valid path is given, the encoder will be saved to the given path
         :param truncation_strategy: select truncation strategy. Supported values
@@ -68,9 +70,12 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.pooling_strategy = pooling_strategy
+        self.layer_index = layer_index
         self.max_length = max_length
         self.truncation_strategy = truncation_strategy
         self.model_save_path = model_save_path
+
+        self._padding_strategy = 'max_length' if self.max_length else 'longest'
 
     def __getstate__(self):
         if self.model_save_path:
@@ -128,15 +133,15 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
                 self.tokenizer.pad_token = self.tokenizer.eos_token
                 if self.tokenizer.pad_token is None:
                     self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-            ids_info = self.tokenizer.batch_encode_plus(data,
+            ids_info = self.tokenizer.batch_encode_plus(list(data),
                                                         max_length=self.max_length,
                                                         truncation=self.truncation_strategy,
-                                                        pad_to_max_length=True)
+                                                        padding=self._padding_strategy)
         except ValueError:
             self.model.resize_token_embeddings(len(self.tokenizer))
-            ids_info = self.tokenizer.batch_encode_plus(data,
+            ids_info = self.tokenizer.batch_encode_plus(list(data),
                                                         max_length=self.max_length,
-                                                        pad_to_max_length=True)
+                                                        padding=self._padding_strategy)
         token_ids_batch = self.array2tensor(ids_info['input_ids'])
         mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
         with self.no_gradients():
@@ -145,7 +150,13 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
                                  output_hidden_states=True)
 
             hidden_states = outputs[-1]
-            output_embeddings = hidden_states[-1]
+            n_layers = len(hidden_states)
+            if not self.layer_index in list(range(-n_layers, n_layers)):
+                raise ValueError(f'Invalid value {self.layer_index} for `layer_index`,'
+                                 f' for the model {self.pretrained_model_name_or_path}'
+                                 f' valid values are integers from {-n_layers} to {n_layers-1}.')
+
+            output_embeddings = hidden_states[self.layer_index]
             _mask_ids_batch = self.tensor2array(mask_ids_batch)
             _seq_output = self.tensor2array(output_embeddings)
             if self.pooling_strategy == 'auto':

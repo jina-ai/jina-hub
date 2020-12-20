@@ -19,9 +19,9 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
 
     def __init__(
         self,
-        pretrained_model_name_or_path: str = "bert-base-uncased",
+        pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
         base_model: str = None,
-        pooling_strategy: str = "cls",
+        pooling_strategy: str = 'mean',
         layer_index: int = -1,
         max_length: Optional[int] = None,
         truncation_strategy: bool = True,
@@ -51,6 +51,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.base_model = base_model if base_model else pretrained_model_name_or_path
         self.pooling_strategy = pooling_strategy
+        self.layer_index = layer_index
         self.max_length = max_length
         self.model_save_path = model_save_path
 

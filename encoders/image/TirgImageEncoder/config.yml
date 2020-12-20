@@ -1,0 +1,9 @@
+!TirgImageEncoder
+with:
+  {}
+metas:
+  py_modules:
+    - torch_functions.py
+    - text_model.py
+    - img_text_composition_models.py
+    - __init__.py

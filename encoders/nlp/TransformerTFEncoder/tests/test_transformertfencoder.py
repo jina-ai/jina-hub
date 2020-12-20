@@ -28,30 +28,30 @@ def test_metas(tmpdir, random_workspace_name):
 
 encoders_parameters = [
     {
-        "pretrained_model_name_or_path": 'bert-base-uncased',
-        "model_save_path": 'bert-base-uncased',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased',
     },
     {
-        "pooling_strategy": 'mean',
-        "pretrained_model_name_or_path": 'bert-base-uncased',
-        "model_save_path": 'bert-base-uncased-mean',
+        "pooling_strategy": 'auto',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased-mean',
     },
     {
         "pooling_strategy": 'min',
-        "pretrained_model_name_or_path": 'bert-base-uncased',
-        "model_save_path": 'bert-base-uncased-min',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased-min',
     },
     {
         "pooling_strategy": 'max',
-        "pretrained_model_name_or_path": 'bert-base-uncased',
-        "model_save_path": 'bert-base-uncased-max',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased-max',
     },
     {
         "pretrained_model_name_or_path": 'xlnet-base-cased',
         "model_save_path": 'xlnet-base-cased',
     },
     {
-        "pooling_strategy": 'mean',
+        "pooling_strategy": 'auto',
         "pretrained_model_name_or_path": 'xlnet-base-cased',
         "model_save_path": 'xlnet-base-cased-mean',
     },
@@ -64,7 +64,19 @@ encoders_parameters = [
         "pooling_strategy": 'max',
         "pretrained_model_name_or_path": 'xlnet-base-cased',
         "model_save_path": 'xlnet-base-cased-max',
-    }
+    },
+    {
+        "pooling_strategy": 'mean',
+        "pretrained_model_name_or_path": 'distilbert-base-uncased',
+        "model_save_path": 'distilbert-base-uncased-mean',
+        "layer_index": -2,
+    },
+    {
+        "pooling_strategy": 'mean',
+        "pretrained_model_name_or_path": 'distilbert-base-cased',
+        "model_save_path": 'distilbert-base-cased-mean',
+        "max_length": 100
+    },
 ]
 
 
@@ -112,3 +124,18 @@ def test_parameter_override(encoder):
     assert encoder.pretrained_model_name_or_path == encoder_preset['pretrained_model_name_or_path']
     assert encoder.pooling_strategy == encoder_preset['pooling_strategy']
     assert encoder.model_save_path == encoder_preset['model_save_path']
+
+@pytest.mark.parametrize('layer_index', [-100, 100])
+@pytest.mark.parametrize('encoder', encoders_parameters[0:1], indirect=['encoder'])
+def test_wrong_layer_index(encoder, layer_index):
+    encoder.layer_index = layer_index
+    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+    with pytest.raises(ValueError, match=f'Invalid value {encoder.layer_index}'):
+        encoded_data = encoder.encode(test_data)
+
+def test_max_length(test_metas):
+    encoder = TransformerTFEncoder(metas=test_metas, max_length=3)
+    test_data = np.array(['it is a very good day!', 'it is a very sunny day!'])
+    encoded_data = encoder.encode(test_data)
+
+    np.testing.assert_allclose(encoded_data[0], encoded_data[1])
