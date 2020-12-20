@@ -91,8 +91,8 @@ def test_max_length_truncation(test_metas, model_name, pooling_strategy, layer_i
 
 
 @pytest.mark.parametrize('model_name', _models)
-@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
-@pytest.mark.parametrize('layer_index', [-1, -2, 0])
+@pytest.mark.parametrize('pooling_strategy', ['min'])
+@pytest.mark.parametrize('layer_index', [-2])
 def test_save_and_load(test_metas, model_name, pooling_strategy, layer_index):
     params = {
         'pretrained_model_name_or_path': model_name,
@@ -120,8 +120,8 @@ def test_save_and_load(test_metas, model_name, pooling_strategy, layer_index):
 
 
 @pytest.mark.parametrize('model_name', _models)
-@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
-@pytest.mark.parametrize('layer_index', [-1, -2, 0])
+@pytest.mark.parametrize('pooling_strategy', ['min'])
+@pytest.mark.parametrize('layer_index', [-2])
 def test_save_and_load_config(test_metas, model_name, pooling_strategy, layer_index):
     params = {
         'pretrained_model_name_or_path': model_name,
