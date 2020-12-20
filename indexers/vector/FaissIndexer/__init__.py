@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple, Optional
 
-from faiss import normalize_L2
 import numpy as np
 from jina.executors.devices import FaissDevice
 from jina.executors.indexers.vector import BaseNumpyIndexer
@@ -63,11 +62,15 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         self.train_filepath = train_filepath
         self.distance = distance
         self.normalize = normalize
+        self.normalize_L2 = None
         self.nprobe = nprobe
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """
         import faiss
+        if self.normalize:
+            self.normalize_L2 = faiss.normalize_L2
+
         metric = faiss.METRIC_L2
         if self.distance == 'inner_product':
             metric = faiss.METRIC_INNER_PRODUCT
@@ -81,8 +84,8 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
                 self.logger.warning('loading training data failed. some faiss indexes require previous training.')
             else:
                 train_data = train_data.astype(np.float32)
-                if self.normalize:
-                    normalize_L2(train_data)
+                if self.normalize_L2:
+                    self.normalize_L2(train_data)
                 self.train(index, train_data)
         
         self.build_partial_index(vecs, index)
@@ -92,14 +95,17 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
     @batching
     def build_partial_index(self, vecs: 'np.ndarray', index):
         vecs = vecs.astype(np.float32)
-        if self.normalize:
-            normalize_L2(vecs)
+        if self.normalize_L2:
+            self.normalize_L2(vecs)
         index.add(vecs)
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(self, vecs: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         if self.normalize:
-            normalize_L2(keys)
-        dist, ids = self.query_handler.search(keys, top_k)
+            if self.normalize_L2 is None:
+                from faiss import normalize_L2
+                self.normalize_L2 = normalize_L2
+            self.normalize_L2(vecs)
+        dist, ids = self.query_handler.search(vecs, top_k)
         keys = self.int2ext_id[self.valid_indices][ids]
         return keys, dist
 
