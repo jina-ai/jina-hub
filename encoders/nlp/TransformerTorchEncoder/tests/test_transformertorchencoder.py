@@ -24,7 +24,7 @@ def test_metas(tmp_path):
 def encoder(request, test_metas):
     request.param['model_save_path'] = (
         request.param['pretrained_model_name_or_path'].replace(
-            'sentence-transformers/', ''
+            '/', '.'
         )
         + f'-{request.param["pooling_strategy"]}'
     )
@@ -35,9 +35,8 @@ _params_dict = {
     'pretrained_model_name_or_path': [
         'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
         'sentence-transformers/bert-base-nli-stsb-mean-tokens',
-        'sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens',
-        # Temporarily not tested due to a bug in tokenizers
-        #'sentence-transformers/roberta-base-nli-stsb-mean-tokens',
+        'deepset/roberta-base-squad2',
+        'xlm-roberta-base',
         'xlnet-base-cased',
     ],
     'pooling_strategy': ['cls', 'mean', 'max'],
