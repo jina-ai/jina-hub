@@ -20,43 +20,40 @@ def test_metas(tmp_path):
     yield metas
 
 
-@pytest.fixture
-def encoder(request, test_metas):
-    request.param['model_save_path'] = (
-        request.param['pretrained_model_name_or_path'].replace(
+def get_encoder(test_metas, **kwargs):
+    kwargs['model_save_path'] = (
+        kwargs['pretrained_model_name_or_path'].replace(
             '/', '.'
         )
-        + f'-{request.param["pooling_strategy"]}'
+        + f'-{kwargs["pooling_strategy"]}'
     )
-    return TransformerTorchEncoder(metas=test_metas, **request.param)
+    return TransformerTorchEncoder(metas=test_metas, **kwargs)
 
 
-_params_dict = {
-    'pretrained_model_name_or_path': [
-        'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
-        'sentence-transformers/bert-base-nli-stsb-mean-tokens',
-        'deepset/roberta-base-squad2',
-        'xlm-roberta-base',
-        'xlnet-base-cased',
-    ],
-    'pooling_strategy': ['cls', 'mean', 'max'],
-    'layer_index': [-1, -2, 0],
-}
-
-# Create a cartesian product of the param lists
-encoder_params = [
-    dict(zip(_params_dict.keys(), vals)) for vals in product(*_params_dict.values())
+_models = [
+    'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+    'sentence-transformers/bert-base-nli-stsb-mean-tokens',
+    'deepset/roberta-base-squad2',
+    'xlm-roberta-base',
+    'xlnet-base-cased',
 ]
-encoder_params_ind_1 = filter(lambda x: x['layer_index'] == -1, encoder_params)
-
 
 def _assert_params_equal(params_dict: dict, encoder: TransformerTorchEncoder):
     for key, val in params_dict.items():
         assert val == getattr(encoder, key)
 
 
-@pytest.mark.parametrize('encoder', encoder_params, indirect=True)
-def test_encoding_results(encoder):
+@pytest.mark.parametrize('model_name', _models)
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+@pytest.mark.parametrize('layer_index', [-1, -2, 0])
+def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index
+    }
+    encoder = get_encoder(test_metas, **params)
+
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
 
@@ -76,19 +73,34 @@ def test_encoding_results(encoder):
         assert np.allclose(encoded_data[0], encoded_data[1], atol=1e-5, rtol=1e-4)
 
 
-@pytest.mark.parametrize('encoder', encoder_params_ind_1, indirect=True)
-def test_max_length_truncation(encoder):
-    encoder.max_length = 3
+@pytest.mark.parametrize('model_name', _models)
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+@pytest.mark.parametrize('layer_index', [-1])
+def test_max_length_truncation(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index,
+        'max_length': 3
+    }
+    encoder = get_encoder(test_metas, **params)    
     test_data = np.array(['it is a very good day!', 'it is a very sunny day!'])
     encoded_data = encoder.encode(test_data)
 
     np.testing.assert_allclose(encoded_data[0], encoded_data[1], atol=1e-5, rtol=1e-4)
 
 
-@pytest.mark.parametrize(
-    'encoder, params', list(zip(encoder_params, encoder_params)), indirect=['encoder']
-)
-def test_save_and_load(encoder, params):
+@pytest.mark.parametrize('model_name', _models)
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+@pytest.mark.parametrize('layer_index', [-1, -2, 0])
+def test_save_and_load(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index
+    }
+    encoder = get_encoder(test_metas, **params)
+
     encoder.save_config()
     _assert_params_equal(params, encoder)
     assert os.path.exists(encoder.config_abspath)
@@ -107,10 +119,17 @@ def test_save_and_load(encoder, params):
     np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
 
 
-@pytest.mark.parametrize(
-    'encoder, params', list(zip(encoder_params, encoder_params)), indirect=['encoder']
-)
-def test_save_and_load_config(encoder, params):
+@pytest.mark.parametrize('model_name', _models)
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+@pytest.mark.parametrize('layer_index', [-1, -2, 0])
+def test_save_and_load_config(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index
+    }
+    encoder = get_encoder(test_metas, **params)
+    
     encoder.save_config()
     _assert_params_equal(params, encoder)
     assert os.path.exists(encoder.config_abspath)
@@ -120,8 +139,10 @@ def test_save_and_load_config(encoder, params):
 
 
 @pytest.mark.parametrize('layer_index', [-100, 100])
-@pytest.mark.parametrize('encoder', [encoder_params[0]], indirect=['encoder'])
-def test_wrong_layer_index(encoder, layer_index):
+def test_wrong_layer_index(test_metas, layer_index):
+    params = {'layer_index': layer_index}
+    encoder = get_encoder(test_metas, **params)
+
     encoder.layer_index = layer_index
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     with pytest.raises(ValueError):
@@ -134,11 +155,11 @@ def test_wrong_pooling_strategy():
 
 
 @pytest.mark.parametrize(
-    'encoder',
+    'params',
     [{'pooling_strategy': 'cls', 'pretrained_model_name_or_path': 'gpt2'}],
-    indirect=True,
 )
-def test_no_cls_token(encoder):
+def test_no_cls_token(test_metas, params):
+    encoder = get_encoder(test_metas, **params)
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     with pytest.raises(ValueError):
         encoder.encode(test_data)
