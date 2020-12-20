@@ -36,7 +36,8 @@ _params_dict = {
         'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
         'sentence-transformers/bert-base-nli-stsb-mean-tokens',
         'sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens',
-        'sentence-transformers/roberta-base-nli-stsb-mean-tokens',
+        # Temporarily not tested due to a bug in tokenizers
+        #'sentence-transformers/roberta-base-nli-stsb-mean-tokens',
         'xlnet-base-cased',
     ],
     'pooling_strategy': ['cls', 'mean', 'max'],
