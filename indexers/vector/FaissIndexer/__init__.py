@@ -25,6 +25,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
                  index_key: str,
                  train_filepath: Optional[str] = None,
                  distance: str = 'l2',
+                 normalize: bool = False,
                  nprobe: int = 1,
                  *args,
                  **kwargs):
@@ -34,7 +35,8 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         :param index_key: index type supported by ``faiss.index_factory``
         :param train_filepath: the training data file path, e.g ``faiss.tgz`` or `faiss.npy`. The data file is expected
             to be either `.npy` file from `numpy.save()` or a `.tgz` file from `NumpyIndexer`.
-        :param distance: 'l2' or 'inner_product' accepted. Determines which distances to optimize by FAISS
+        :param distance: 'l2' or 'inner_product' accepted. Determines which distances to optimize by FAISS. l2...smaller is better, inner_product...larger is better
+        :param normalize: whether or not to normalize the vectors e.g. for the cosine similarity https://github.com/facebookresearch/faiss/wiki/MetricType-and-distances#how-can-i-index-vectors-for-cosine-similarity
         :param nprobe: Number of clusters to consider at search time.
 
         .. highlight:: python
@@ -59,11 +61,13 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         self.index_key = index_key
         self.train_filepath = train_filepath
         self.distance = distance
+        self.normalize = normalize
         self.nprobe = nprobe
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """
         import faiss
+
         metric = faiss.METRIC_L2
         if self.distance == 'inner_product':
             metric = faiss.METRIC_INNER_PRODUCT
@@ -76,17 +80,28 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
             if train_data is None:
                 self.logger.warning('loading training data failed. some faiss indexes require previous training.')
             else:
-                self.train(index, train_data.astype(np.float32))
+                train_data = train_data.astype(np.float32)
+                if self.normalize:
+                    faiss.normalize_L2(train_data)
+                self.train(index, train_data)
+        
         self.build_partial_index(vecs, index)
         index.nprobe = self.nprobe
         return index
 
     @batching
     def build_partial_index(self, vecs: 'np.ndarray', index):
-        index.add(vecs.astype(np.float32))
+        vecs = vecs.astype(np.float32)
+        if self.normalize:
+            from faiss import normalize_L2
+            normalize_L2(vecs)
+        index.add(vecs)
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        dist, ids = self.query_handler.search(keys, top_k)
+    def query(self, vecs: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        if self.normalize:
+            from faiss import normalize_L2
+            normalize_L2(vecs)
+        dist, ids = self.query_handler.search(vecs, top_k)
         keys = self.int2ext_id[self.valid_indices][ids]
         return keys, dist
 
