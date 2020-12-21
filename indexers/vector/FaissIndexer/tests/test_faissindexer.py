@@ -214,21 +214,23 @@ def test_indexer_train_from_index_different_compression_levels(metas, compressio
 
 @pytest.mark.parametrize('distance', ['l2', 'inner_product'])
 def test_faiss_normalization(metas, distance):
-    num_data = 1
+    num_data = 2
     num_dims = 64
     vec_idx = np.random.randint(0, high=num_data, size=[num_data])
 
     with FaissIndexer(index_key='Flat', distance=distance, normalize=True) as indexer:
         vecs = np.zeros((num_data, num_dims))
-        vecs[0, 0] = 2
-        indexer.add(vec_idx, vecs)
+        vecs[:, 0] = 2
+        vecs[0, 1] = 3
+        keys = np.arange(0, num_data).reshape(-1, 1)
+        indexer.add(keys, vecs)
         indexer.save()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
         query = np.zeros((1, num_dims))
         query[0, 0] = 5
-        idx, dist = indexer.query(query.astype("float32"), top_k=1)
+        idx, dist = indexer.query(query.astype("float32"), top_k=2)
         expected_dist = 1 if distance == "inner_product" else 0
-        assert dist == expected_dist
+        assert dist[0, 0] == expected_dist
 
