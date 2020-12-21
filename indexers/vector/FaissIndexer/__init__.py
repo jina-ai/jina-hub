@@ -26,7 +26,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
                  index_key: str,
                  train_filepath: Optional[str] = None,
                  distance: str = 'l2',
-                 normalize: bool = True,
+                 normalize: bool = False,
                  nprobe: int = 1,
                  *args,
                  **kwargs):
