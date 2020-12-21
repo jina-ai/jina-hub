@@ -213,8 +213,7 @@ def test_indexer_train_from_index_different_compression_levels(metas, compressio
         assert idx.shape == (num_query, 4)
 
 @pytest.mark.parametrize('distance', ['l2', 'inner_product'])
-def test_faiss_normalization(metas):
-    distance = metas["distance"]
+def test_faiss_normalization(metas, distance):
     num_data = 1
     num_dims = 64
     vec_idx = np.random.randint(0, high=num_data, size=[num_data])
