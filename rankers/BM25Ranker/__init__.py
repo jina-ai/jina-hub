@@ -62,8 +62,8 @@ class BM25Ranker(Chunk2DocRanker):
         :return: a tuple of two `np.ndarray` in the size of ``M``, i.e. the document frequency array and the chunk id
             array. ``M`` is the number of query chunks.
         """
-        a = match_idx[match_idx[self.COL_DOC_CHUNK_HASH].argsort()]
-        q_id, q_df = np.unique(a[self.COL_DOC_CHUNK_HASH], return_counts=True)
+        a = match_idx[match_idx[self.COL_DOC_CHUNK_ID].argsort()]
+        q_id, q_df = np.unique(a[self.COL_DOC_CHUNK_ID], return_counts=True)
         return q_df, q_id
 
     def _get_tf(self, match_idx):
@@ -79,10 +79,10 @@ class BM25Ranker(Chunk2DocRanker):
             The query chunks with matching scores that is lower than the threshold are dropped.
         """
         _m = match_idx[match_idx[self.COL_SCORE] >= self.threshold]
-        _sorted_m = _m[_m[self.COL_DOC_CHUNK_HASH].argsort()]
-        q_id_list, q_tf_list = np.unique(_sorted_m[self.COL_DOC_CHUNK_HASH], return_counts=True)
+        _sorted_m = _m[_m[self.COL_DOC_CHUNK_ID].argsort()]
+        q_id_list, q_tf_list = np.unique(_sorted_m[self.COL_DOC_CHUNK_ID], return_counts=True)
         row_id = np.cumsum(q_tf_list) - 1
-        c_id_list = _sorted_m[row_id][self.COL_MATCH_HASH]
+        c_id_list = _sorted_m[row_id][self.COL_MATCH_ID]
         return q_tf_list, q_id_list, c_id_list
 
     def get_idf(self, match_idx):
@@ -138,8 +138,8 @@ class BM25Ranker(Chunk2DocRanker):
         """
         tf = self.get_tf(match_idx, match_chunk_meta)
         _weights = match_idx[self.COL_SCORE]
-        _q_tfidf = np.vectorize(tf.get)(match_idx[self.COL_DOC_CHUNK_HASH], 0) * \
-                   np.vectorize(idf.get)(match_idx[self.COL_DOC_CHUNK_HASH], 0)
+        _q_tfidf = np.vectorize(tf.get)(match_idx[self.COL_DOC_CHUNK_ID], 0) * \
+                   np.vectorize(idf.get)(match_idx[self.COL_DOC_CHUNK_ID], 0)
         _sum = np.sum(_q_tfidf)
         _doc_id = self.get_doc_id(match_idx)
         _score = 0. if _sum == 0 else np.sum(_weights * _q_tfidf) * 1.0 / _sum

@@ -26,7 +26,7 @@ def test_levenshteinranker():
         new_scores,
         np.array(
             [(1, 0), (2, -3)],
-            dtype=[(Match2DocRanker.COL_MATCH_HASH, np.int64), (Match2DocRanker.COL_SCORE, np.float64)],
+            dtype=[(Match2DocRanker.COL_MATCH_ID, np.int64), (Match2DocRanker.COL_SCORE, np.float64)],
         )
     )
     # Guarantee no side-effects happen
