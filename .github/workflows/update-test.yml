@@ -16,3 +16,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           TAG_IN_ISSUES: '@jina-ai/engineering'
           MODULES_REPO: 'jina-ai/jina-hub'
+          COMPARISON_LEVEL: 'patch'
