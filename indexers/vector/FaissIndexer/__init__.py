@@ -26,7 +26,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
                  index_key: str,
                  train_filepath: Optional[str] = None,
                  distance: str = 'l2',
-                 normalize: bool = True,
+                 normalize: bool = False,
                  nprobe: int = 1,
                  *args,
                  **kwargs):
@@ -36,8 +36,8 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         :param index_key: index type supported by ``faiss.index_factory``
         :param train_filepath: the training data file path, e.g ``faiss.tgz`` or `faiss.npy`. The data file is expected
             to be either `.npy` file from `numpy.save()` or a `.tgz` file from `NumpyIndexer`.
-        :param distance: 'l2' or 'inner_product' accepted. Determines which distances to optimize by FAISS
-        :param normalize: whether or not to normalize the vectors e.g. for the cosine similarity
+        :param distance: 'l2' or 'inner_product' accepted. Determines which distances to optimize by FAISS. l2...smaller is better, inner_product...larger is better
+        :param normalize: whether or not to normalize the vectors e.g. for the cosine similarity https://github.com/facebookresearch/faiss/wiki/MetricType-and-distances#how-can-i-index-vectors-for-cosine-similarity
         :param nprobe: Number of clusters to consider at search time.
 
         .. highlight:: python
