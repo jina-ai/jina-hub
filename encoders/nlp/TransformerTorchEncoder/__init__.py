@@ -24,7 +24,6 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         pooling_strategy: str = 'mean',
         layer_index: int = -1,
         max_length: Optional[int] = None,
-        truncation_strategy: str = 'longest_first',
         model_save_path: Optional[str] = None,
         *args,
         **kwargs,
@@ -39,9 +38,6 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         :param layer_index: index of the transformer layer that is used to create encodings. Layer 0 corresponds to the embeddings layer
         :param max_length: the max length to truncate the tokenized sequences to.
         :param model_save_path: the path of the encoder model. If a valid path is given, the encoder will be saved to the given path
-        :param truncation_strategy: Truncation strategy
-            ..deprecated::
-                This parameter has no effect - ``truncation=True`` is always applied on tokenizing by default.
 
         ..warning::
             `model_save_path` should be relative to executor's workspace
