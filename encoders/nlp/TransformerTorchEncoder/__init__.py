@@ -8,61 +8,36 @@ import numpy as np
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.devices import TorchDevice
 from jina.executors.encoders import BaseEncoder
-from jina.executors.encoders.helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from jina.helper import cached_property
 from jina.logging import default_logger
 
 
-def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: str) -> 'np.ndarray':
-    """
-    Automatically creates a sentence embedding from its token embeddings.
-        * For BERT-like models (BERT, RoBERTa, DistillBERT, Electra ...) uses embedding of first token
-        * For XLM and XLNet models uses embedding of last token
-        * Assumes that other models are language-model like and uses embedding of last token
-    """
-    if 'bert' in model_name or 'electra' in model_name:
-        return reduce_cls(model_outputs, mask_2d)
-    if 'xlnet' in model_name:
-        return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
-    default_logger.warning('Using embedding of a last token as a sequence embedding. '
-                           'If that is not desirable, change `pooling_strategy`')
-    return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
-
-
 class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     """
-    Internally, TransformerTorchEncoder wraps the tensorflow-version of transformers from huggingface.
+    Internally, TransformerTorchEncoder wraps the pytorch version of transformers from huggingface.
     """
 
     def __init__(
         self,
         pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+        base_tokenizer_model: Optional[str] = None,
         pooling_strategy: str = 'mean',
         layer_index: int = -1,
         max_length: Optional[int] = None,
-        truncation_strategy: str = 'longest_first',
         model_save_path: Optional[str] = None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         :param pretrained_model_name_or_path: Either:
-            - a string with the `shortcut name` of a pre-trained model to load from cache or download, e.g.: ``bert-base-uncased``.
-            - a string with the `identifier name` of a pre-trained model that was user-uploaded to Hugging Face S3, e.g.: ``dbmdz/bert-base-german-cased``.
+            - a string, the `model id` of a pretrained model hosted inside a model repo on huggingface.co, e.g.: ``bert-base-uncased``.
             - a path to a `directory` containing model weights saved using :func:`~transformers.PreTrainedModel.save_pretrained`, e.g.: ``./my_model_directory/``.
-            - a path or url to a `tensorflow index checkpoint file` (e.g. `./tf_model/model.ckpt.index`). In this case, ``from_tf`` should be set to True and a configuration object should be provided as ``config`` argument.
-            This loading path is slower than converting the TensorFlow
-            checkpoint in a PyTorch model using the provided conversion scripts and loading the PyTorch model afterwards.
+        :param base_tokenizer_model: The name of the base model to use for creating the tokenizer. If None, will be equal to `pretrained_model_name_or_path`.
         :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
-            strategies include 'auto', 'cls', 'mean', 'max', 'min'.
+            strategies include 'cls', 'mean', 'max', 'min'.
         :param layer_index: index of the transformer layer that is used to create encodings. Layer 0 corresponds to the embeddings layer
         :param max_length: the max length to truncate the tokenized sequences to.
         :param model_save_path: the path of the encoder model. If a valid path is given, the encoder will be saved to the given path
-        :param truncation_strategy: select truncation strategy. Supported values
-            * `True` or `'longest_first'` (default): truncate to a max length specified in `max_length` or to the max acceptable input length for the model if no length is provided (`max_length=None`).
-            * `'only_first'`:  This will only truncate the first sequence of a pair if a pair of sequences (or a batch of pairs) is provided
-            * `'only_second'`: This will only truncate the second sequence of a pair if a pair of sequences (or a batch of pairs) is provided
-            * `False` or `'do_not_truncate'`: No truncation (i.e. can output batch with sequences length greater than the model max admissible input size)
 
         ..warning::
             `model_save_path` should be relative to executor's workspace
@@ -70,58 +45,55 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
 
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
+        self.base_tokenizer_model = base_tokenizer_model or pretrained_model_name_or_path
         self.pooling_strategy = pooling_strategy
         self.layer_index = layer_index
         self.max_length = max_length
-        self.truncation_strategy = truncation_strategy
         self.model_save_path = model_save_path
 
-        self._padding_strategy = 'max_length' if self.max_length else 'longest'
+        if self.pooling_strategy == 'auto':
+            self.pooling_strategy = 'cls'
+            raise DeprecationWarning(
+                "'auto' pooling_strategy is deprecated, please use"
+                " 'cls' to maintain the old default behavior."
+            )
+
+        if self.pooling_strategy not in ['cls', 'mean', 'max', 'min']:
+            self.logger.error(
+                f"pooling strategy not found: {self.pooling_strategy}."
+                " The allowed pooling strategies are 'cls', 'mean', 'max', 'min'."
+            )
+            raise NotImplementedError
 
     def __getstate__(self):
         if self.model_save_path:
             if not os.path.exists(self.model_abspath):
-                self.logger.info(f'create folder for saving transformer models: {self.model_abspath}')
+                self.logger.info(
+                    f'create folder for saving transformer models: {self.model_abspath}'
+                )
                 os.mkdir(self.model_abspath)
             self.model.save_pretrained(self.model_abspath)
             self.tokenizer.save_pretrained(self.model_abspath)
         return super().__getstate__()
 
-    def array2tensor(self, array):
-        import torch
-        tensor = torch.tensor(array)
-        return tensor.cuda() if self.on_gpu else tensor
-
-    def tensor2array(self, tensor):
-        return tensor.cpu().numpy() if self.on_gpu else tensor.numpy()
-
     @property
     def model_abspath(self) -> str:
-        """Get the file path of the encoder model storage
-        """
+        """Get the file path of the encoder model storage"""
         return self.get_file_from_workspace(self.model_save_path)
 
     @cached_property
     def model(self):
-        from transformers import AutoModelForPreTraining
-        model = AutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
+        from transformers import AutoModel
+        model = AutoModel.from_pretrained(
+            self.pretrained_model_name_or_path, output_hidden_states=True
+        )
         self.to_device(model)
         return model
 
     @cached_property
-    def no_gradients(self):
-        import torch
-        return torch.no_grad
-
-    @cached_property
-    def tensor_func(self):
-        import torch
-        return torch.tensor
-
-    @cached_property
     def tokenizer(self):
         from transformers import AutoTokenizer
-        tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
+        tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
         return tokenizer
 
     @batching
@@ -131,47 +103,57 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
-        try:
-            if self.tokenizer.pad_token is None:
-                self.tokenizer.pad_token = self.tokenizer.eos_token
-                if self.tokenizer.pad_token is None:
-                    self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-            ids_info = self.tokenizer.batch_encode_plus(list(data),
-                                                        max_length=self.max_length,
-                                                        truncation=self.truncation_strategy,
-                                                        padding=self._padding_strategy)
-        except ValueError:
-            self.model.resize_token_embeddings(len(self.tokenizer))
-            ids_info = self.tokenizer.batch_encode_plus(list(data),
-                                                        max_length=self.max_length,
-                                                        padding=self._padding_strategy)
-        token_ids_batch = self.array2tensor(ids_info['input_ids'])
-        mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
-        with self.no_gradients():
-            outputs = self.model(token_ids_batch,
-                                 attention_mask=mask_ids_batch,
-                                 output_hidden_states=True)
+        import torch
+        torch.set_grad_enabled(False)
 
-            hidden_states = outputs[-1]
-            n_layers = len(hidden_states)
-            if not self.layer_index in list(range(-n_layers, n_layers)):
-                raise ValueError(f'Invalid value {self.layer_index} for `layer_index`,'
-                                 f' for the model {self.pretrained_model_name_or_path}'
-                                 f' valid values are integers from {-n_layers} to {n_layers-1}.')
+        if not self.tokenizer.pad_token:
+            self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            self.model.resize_token_embeddings(len(self.tokenizer.vocab))
 
-            output_embeddings = hidden_states[self.layer_index]
-            _mask_ids_batch = self.tensor2array(mask_ids_batch)
-            _seq_output = self.tensor2array(output_embeddings)
-            if self.pooling_strategy == 'auto':
-                output = auto_reduce(_seq_output, _mask_ids_batch, self.model.base_model_prefix)
-            elif self.pooling_strategy == 'mean':
-                output = reduce_mean(_seq_output, _mask_ids_batch)
-            elif self.pooling_strategy == 'max':
-                output = reduce_max(_seq_output, _mask_ids_batch)
-            elif self.pooling_strategy == 'min':
-                output = reduce_min(_seq_output, _mask_ids_batch)
-            else:
-                self.logger.error(f'pooling strategy not found: {self.pooling_strategy}')
-                raise NotImplementedError
-        return output
+        input_tokens = self.tokenizer(
+            list(data),
+            max_length=self.max_length,
+            padding='longest',
+            truncation=True,
+            return_tensors='pt',
+        )
+        input_tokens = {k: v.to(self.device) for k, v in input_tokens.items()}
+        outputs = self.model(**input_tokens)
 
+        n_layers = len(outputs.hidden_states)
+        if self.layer_index not in list(range(-n_layers, n_layers)):
+            self.logger.error(
+                f'Invalid value {self.layer_index} for `layer_index`,'
+                f' for the model {self.pretrained_model_name_or_path}'
+                f' valid values are integers from {-n_layers} to {n_layers-1}.'
+            )
+            raise ValueError
+
+        if self.pooling_strategy == 'cls' and not self.tokenizer.cls_token:
+            self.logger.error(
+                f"You have set pooling_strategy to 'cls', but the tokenizer"
+                f" for the model {self.pretrained_model_name_or_path}"
+                f" does not have a cls token set."
+            )
+            raise ValueError
+
+        fill_vals = {'cls': 0.0, 'mean': 0.0, 'max': -np.inf, 'min': np.inf}
+        fill_val = torch.tensor(fill_vals[self.pooling_strategy], device=self.device)
+
+        layer = outputs.hidden_states[self.layer_index]
+        attn_mask = input_tokens['attention_mask'].unsqueeze(-1).expand_as(layer)
+        layer = torch.where(attn_mask.bool(), layer, fill_val)
+
+        if self.pooling_strategy == 'cls':
+            CLS = self.tokenizer.cls_token_id
+            ind = torch.nonzero(input_tokens['input_ids'] == CLS)[:, 1]
+            ind = ind.unsqueeze(-1).unsqueeze(-1).expand(-1, -1, layer.shape[2])
+            embeddings = torch.gather(layer, 1, ind).squeeze()
+        elif self.pooling_strategy == 'mean':
+            embeddings = layer.sum(dim=1) / attn_mask.sum(dim=1)
+        elif self.pooling_strategy == 'max':
+            embeddings = layer.max(dim=1).values
+        elif self.pooling_strategy == 'min':
+            embeddings = layer.min(dim=1).values
+
+        return embeddings.cpu().numpy()

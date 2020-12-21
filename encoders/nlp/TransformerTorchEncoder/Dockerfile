@@ -8,6 +8,6 @@ WORKDIR /workspace
 RUN pip install -r requirements.txt
 
 # for testing the image
-RUN pip install pytest && pytest && rm -rf '~/.cache/torch/transformers/'
+RUN pip install pytest && pytest && rm -rf '~/.cache/huggingface/transformers/'
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]

@@ -1,140 +1,181 @@
 import os
+
 import numpy as np
 import pytest
-import random
-import string
-from .. import TransformerTorchEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
-
-@pytest.fixture(scope='function')
-def random_workspace_name():
-    """Generate a random workspace name with digits and letters."""
-    rand = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-    return f'JINA_TEST_WORKSPACE_{rand}'
+from .. import TransformerTorchEncoder
 
 
 @pytest.fixture(scope='function')
-def test_metas(tmpdir, random_workspace_name):
-    os.environ[random_workspace_name] = str(tmpdir)
+def test_metas(tmp_path):
     metas = get_default_metas()
-    metas['workspace'] = os.environ[random_workspace_name]
+    metas['workspace'] = str(tmp_path)
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
     yield metas
-    del os.environ[random_workspace_name]
 
 
-encoders_parameters = [
-    {
-        "pretrained_model_name_or_path": 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
-        "model_save_path": 'distilbert-base-nli-stsb-mean-tokens',
-    },
-    {
-        "pooling_strategy": 'auto',
-        "pretrained_model_name_or_path": 'distilbert-base-uncased',
-        "model_save_path": 'distilbert-base-uncased-mean',
-    },
-    {
-        "pooling_strategy": 'min',
-        "pretrained_model_name_or_path": 'distilbert-base-uncased',
-        "model_save_path": 'distilbert-base-uncased-min',
-    },
-    {
-        "pooling_strategy": 'max',
-        "pretrained_model_name_or_path": 'distilbert-base-uncased',
-        "model_save_path": 'distilbert-base-uncased-max',
-    },
-    {
-        "pretrained_model_name_or_path": 'xlnet-base-cased',
-        "model_save_path": 'xlnet-base-cased',
-    },
-    {
-        "pooling_strategy": 'auto',
-        "pretrained_model_name_or_path": 'xlnet-base-cased',
-        "model_save_path": 'xlnet-base-cased-mean',
-    },
-    {
-        "pooling_strategy": 'min',
-        "pretrained_model_name_or_path": 'xlnet-base-cased',
-        "model_save_path": 'xlnet-base-cased-min',
-    },
-    {
-        "pooling_strategy": 'max',
-        "pretrained_model_name_or_path": 'xlnet-base-cased',
-        "model_save_path": 'xlnet-base-cased-max',
-    },
-    {
-        "pooling_strategy": 'mean',
-        "pretrained_model_name_or_path": 'distilbert-base-uncased',
-        "model_save_path": 'distilbert-base-uncased-mean',
-        "layer_index": -2,
-    },
-    {
-        "pooling_strategy": 'mean',
-        "pretrained_model_name_or_path": 'distilbert-base-cased',
-        "model_save_path": 'distilbert-base-cased-mean',
-        "max_length": 100
-    },
+def get_encoder(test_metas, **kwargs):
+    if 'pretrained_model_name_or_path' in kwargs and 'pooling_strategy' in kwargs:
+        kwargs['model_save_path'] = (
+            kwargs['pretrained_model_name_or_path'].replace('/', '.')
+            + f'-{kwargs["pooling_strategy"]}'
+        )
+    return TransformerTorchEncoder(metas=test_metas, **kwargs)
+
+
+_models = [
+    'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+    'sentence-transformers/bert-base-nli-stsb-mean-tokens',
+    'deepset/roberta-base-squad2',
+    'xlm-roberta-base',
+    'xlnet-base-cased',
 ]
 
+def _assert_params_equal(params_dict: dict, encoder: TransformerTorchEncoder):
+    for key, val in params_dict.items():
+        assert val == getattr(encoder, key)
 
-@pytest.fixture
-def encoder(request, test_metas):
-    return TransformerTorchEncoder(metas=test_metas, **request.param)
 
+@pytest.mark.parametrize('model_name', _models)
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+@pytest.mark.parametrize('layer_index', [-1, -2, 0])
+def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index
+    }
+    encoder = get_encoder(test_metas, **params)
 
-@pytest.mark.parametrize('encoder', encoders_parameters, indirect=['encoder'])
-def test_encoding_results(encoder):
-    target_output_dim = 768
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
-    assert encoded_data.shape == (2, target_output_dim)
-    assert not np.allclose(encoded_data[0], encoded_data[1])
+
+    hidden_dim_sizes = {
+        'sentence-transformers/distilbert-base-nli-stsb-mean-tokens': 768,
+        'sentence-transformers/bert-base-nli-stsb-mean-tokens': 768,
+        'deepset/roberta-base-squad2': 768,
+        'xlm-roberta-base': 768,
+        'xlnet-base-cased': 768,
+    }
+    hidden_dim_size = hidden_dim_sizes[encoder.pretrained_model_name_or_path]
+    assert encoded_data.shape == (2, hidden_dim_size)
+
+    if encoder.pooling_strategy != 'cls' or encoder.layer_index != 0:
+        assert not np.allclose(encoded_data[0], encoded_data[1], rtol=1)
+    else:
+        assert np.allclose(encoded_data[0], encoded_data[1], atol=1e-5, rtol=1e-4)
 
 
-@pytest.mark.parametrize('encoder', encoders_parameters, indirect=['encoder'])
-def test_save_and_load(encoder):
-    encoder.save_config()
-    assert os.path.exists(encoder.config_abspath)
-    test_data = np.array(['a', 'b', 'c', 'x', '!'])
-    encoded_data_control = encoder.encode(test_data)
-    encoder.touch()
-    encoder.save()
-    assert os.path.exists(encoder.save_abspath)
-    encoder_loaded = BaseExecutor.load(encoder.save_abspath)
-    encoded_data_test = encoder_loaded.encode(test_data)
-    assert encoder_loaded.max_length == encoder.max_length
-    np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
-
-
-@pytest.mark.parametrize('encoder', encoders_parameters, indirect=['encoder'])
-def test_save_and_load_config(encoder):
-    encoder.save_config()
-    assert os.path.exists(encoder.config_abspath)
-    encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-    assert encoder_loaded.max_length == encoder.max_length
-
-
-@pytest.mark.parametrize('encoder', encoders_parameters[5:6], indirect=['encoder'])
-def test_parameter_override(encoder):
-    encoder_preset = encoders_parameters[5]
-    assert encoder.pretrained_model_name_or_path == encoder_preset['pretrained_model_name_or_path']
-    assert encoder.pooling_strategy == encoder_preset['pooling_strategy']
-    assert encoder.model_save_path == encoder_preset['model_save_path']
-
-@pytest.mark.parametrize('layer_index', [-100, 100])
-@pytest.mark.parametrize('encoder', encoders_parameters[0:1], indirect=['encoder'])
-def test_wrong_layer_index(encoder, layer_index):
-    encoder.layer_index = layer_index
+@pytest.mark.parametrize('model_name', ['bert-base-uncased'])
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+@pytest.mark.parametrize('layer_index', [-1, -2])
+def test_embedding_consistency(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index,
+    }
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
-    with pytest.raises(ValueError, match=f'Invalid value {encoder.layer_index}'):
-        encoded_data = encoder.encode(test_data)
 
-def test_max_length(test_metas):
-    encoder = TransformerTorchEncoder(metas=test_metas, max_length=3)
+    encoder = get_encoder(test_metas, **params)
+    encoded_data = encoder.encode(test_data)
+    
+    encoded_data_file = f'tests/{model_name}-{pooling_strategy}-{layer_index}.npy'
+    enc_data_loaded = np.load(encoded_data_file)
+    
+    np.testing.assert_allclose(encoded_data, enc_data_loaded, atol=1e-5, rtol=1e-6)
+
+
+@pytest.mark.parametrize('model_name', _models)
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+@pytest.mark.parametrize('layer_index', [-1])
+def test_max_length_truncation(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index,
+        'max_length': 3
+    }
+    encoder = get_encoder(test_metas, **params)    
     test_data = np.array(['it is a very good day!', 'it is a very sunny day!'])
     encoded_data = encoder.encode(test_data)
 
-    np.testing.assert_allclose(encoded_data[0], encoded_data[1])
+    np.testing.assert_allclose(encoded_data[0], encoded_data[1], atol=1e-5, rtol=1e-4)
+
+
+@pytest.mark.parametrize('model_name', _models)
+@pytest.mark.parametrize('pooling_strategy', ['min'])
+@pytest.mark.parametrize('layer_index', [-2])
+def test_save_and_load(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index
+    }
+    encoder = get_encoder(test_metas, **params)
+
+    encoder.save_config()
+    _assert_params_equal(params, encoder)
+    assert os.path.exists(encoder.config_abspath)
+
+    test_data = np.array(['a', 'b', 'c', 'x', '!'])
+    encoded_data_control = encoder.encode(test_data)
+
+    encoder.touch()
+    encoder.save()
+    assert os.path.exists(encoder.save_abspath)
+
+    encoder_loaded = BaseExecutor.load(encoder.save_abspath)
+    _assert_params_equal(params, encoder_loaded)
+
+    encoded_data_test = encoder_loaded.encode(test_data)
+    np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
+
+
+@pytest.mark.parametrize('model_name', _models)
+@pytest.mark.parametrize('pooling_strategy', ['min'])
+@pytest.mark.parametrize('layer_index', [-2])
+def test_save_and_load_config(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index
+    }
+    encoder = get_encoder(test_metas, **params)
+    
+    encoder.save_config()
+    _assert_params_equal(params, encoder)
+    assert os.path.exists(encoder.config_abspath)
+
+    encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
+    _assert_params_equal(params, encoder_loaded)
+
+
+@pytest.mark.parametrize('layer_index', [-100, 100])
+def test_wrong_layer_index(test_metas, layer_index):
+    params = {'layer_index': layer_index}
+    encoder = get_encoder(test_metas, **params)
+
+    encoder.layer_index = layer_index
+    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+    with pytest.raises(ValueError):
+        encoded_data = encoder.encode(test_data)
+
+
+def test_wrong_pooling_strategy():
+    with pytest.raises(NotImplementedError):
+        TransformerTorchEncoder(pooling_strategy='wrong')
+
+
+@pytest.mark.parametrize(
+    'params',
+    [{'pooling_strategy': 'cls', 'pretrained_model_name_or_path': 'gpt2'}],
+)
+def test_no_cls_token(test_metas, params):
+    encoder = get_encoder(test_metas, **params)
+    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+    with pytest.raises(ValueError):
+        encoder.encode(test_data)
