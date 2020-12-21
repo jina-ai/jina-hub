@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple, Optional
 
-from faiss import normalize_L2
 import numpy as np
 from jina.executors.devices import FaissDevice
 from jina.executors.indexers.vector import BaseNumpyIndexer
