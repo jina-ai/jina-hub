@@ -17,7 +17,7 @@ class MilvusIndexer(BaseVectorIndexer):
 
     def __init__(self,
                  host: str = '0.0.0.0',
-                 port: int = 9091,
+                 port: int = 19530,
                  collection_name: str = 'default',
                  index_type: str = 'IVF,Flat',
                  index_params: Optional[Dict] = None, *args, **kwargs):
@@ -30,7 +30,7 @@ class MilvusIndexer(BaseVectorIndexer):
 
     @cached_property
     def milvus(self):
-        from milvusdbhandler import MilvusDBHandler
+        from .milvusdbhandler import MilvusDBHandler
         return MilvusDBHandler(self.host, self.port, self.collection_name)
 
     def get_query_handler(self):

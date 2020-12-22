@@ -84,7 +84,7 @@ class MilvusDBHandler:
 
     def connect(self):
         from milvus import Milvus
-        if self.milvus_client is None or not self.milvus_client.server_status()[0].OK():
+        if self.milvus_client is None:
             self.logger.info(f'Setting connection to Milvus Server at {self.host}:{self.port}')
             self.milvus_client = Milvus(self.host, self.port)
         return self

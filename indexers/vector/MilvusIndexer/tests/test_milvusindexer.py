@@ -12,16 +12,15 @@ from ..milvusdbhandler import MilvusDBHandler
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-port = 9091
+port = 19530
 host = '0.0.0.0'
-collection_name = 'test-collection'
+collection_name = 'test_collection'
 
 
 @pytest.fixture
 def collection():
     with Milvus(host, str(port)) as client:
-        status, ok = client.has_collection(collection_name)
-        if not ok:
+        if not client.has_collection(collection_name):
             param = {
                 'collection_name': collection_name,
                 'dimension': 3,
