@@ -2,8 +2,8 @@ import os
 import shutil
 import time
 
-import numpy as np
 import pytest
+import numpy as np
 from milvus import Milvus
 
 from .. import MilvusIndexer
@@ -13,7 +13,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 port = 19530
 host = '127.0.0.1'
-img_name = 'milvusdb/milvus:0.10.0-cpu-d061620-5f3c00'
+img_name = 'milvusdb/milvus:latest'
 host_milvus_tmp = os.path.join(cur_dir, 'milvus_tmp')
 
 

@@ -1,23 +1,27 @@
 import os
-import shutil
 
+import pytest
 from jina.executors.indexers import BaseIndexer
+from jina.executors.metas import get_default_metas
 
 from .. import MilvusIndexer
+from ..milvusdbhandler import MilvusDBHandler
 
 
-def rm_files(file_paths):
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
+@pytest.fixture(scope='function', autouse=True)
+def metas(tmpdir):
+    os.environ['TEST_WORKSPACE'] = str(tmpdir)
+    metas = get_default_metas()
+    metas['workspace'] = os.environ['TEST_WORKSPACE']
+    yield metas
+    del os.environ['TEST_WORKSPACE']
 
 
-def test_milvus_indexer_save_and_load():
+def test_milvus_indexer_save_and_load(monkeypatch, metas):
+    monkeypatch.setattr(MilvusDBHandler, 'connect', None)
     with MilvusIndexer('localhost', 19530,
-                       'collection', 'IVF', {'key': 'value'}) as indexer:
+                       'collection', 'IVF', {'key': 'value'},
+                       metas=metas) as indexer:
         indexer.touch()
         indexer.save()
         assert os.path.exists(indexer.save_abspath)
@@ -30,5 +34,3 @@ def test_milvus_indexer_save_and_load():
         assert indexer.collection_name == 'collection'
         assert indexer.index_type == 'IVF'
         assert indexer.index_params['key'] == 'value'
-
-    rm_files([save_abspath])
