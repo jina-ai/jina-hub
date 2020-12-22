@@ -20,21 +20,6 @@ class MilvusDBHandler:
             - https://github.com/milvus-io/milvus/
     """
 
-    @staticmethod
-    def get_index_type(index_type):
-        from milvus import IndexType
-
-        return {
-            'Flat': IndexType.FLAT,
-            'IVF,Flat': IndexType.IVFLAT,
-            'IVF,SQ8': IndexType.IVF_SQ8,
-            'RNSG': IndexType.RNSG,
-            'IVF,SQ8H': IndexType.IVF_SQ8H,
-            'IVF,PQ': IndexType.IVF_PQ,
-            'HNSW': IndexType.IVF_PQ,
-            'Annoy': IndexType.ANNOY
-        }.get(index_type, IndexType.FLAT)
-
     class MilvusDBInserter:
         """Milvus DB Inserter
             This class is an inner class and provides a context manager to insert vectors into Milvus while ensuring
@@ -57,7 +42,7 @@ class MilvusDBHandler:
             self.client.flush([self.collection_name])
 
         def insert(self, keys: list, vectors: 'np.ndarray'):
-            status, _ = self.client.insert(collection_name=self.collection_name, records=vectors, ids=keys)
+            status, _ = self.client.insert(collection_name=self.collection_name, entities=vectors, ids=keys)
             if not status.OK():
                 self.logger.error('Insert failed: {}'.format(status))
                 raise MilvusDBException(status.message)
@@ -98,11 +83,9 @@ class MilvusDBHandler:
             db.insert(reduce(operator.concat, keys.tolist()), vectors)
 
     def build_index(self, index_type: str, index_params: dict):
-        type = self.get_index_type(index_type)
-
         self.logger.info(f'Creating index of type: {index_type} at'
                          f' Milvus Server. collection: {self.collection_name} with index params: {index_params}')
-        status = self.milvus_client.create_index(self.collection_name, type, index_params)
+        status = self.milvus_client.create_index(self.collection_name, index_type, index_params)
         if not status.OK():
             self.logger.error('Creating index failed: {}'.format(status))
             raise MilvusDBException(status.message)

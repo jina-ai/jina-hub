@@ -3,7 +3,7 @@ import os
 import pytest
 import numpy as np
 
-from milvus import Milvus
+from milvus import Milvus, DataType
 from jina.executors.indexers import BaseIndexer
 from jina.executors.metas import get_default_metas
 
@@ -22,9 +22,16 @@ def collection():
     with Milvus(host, str(port)) as client:
         if not client.has_collection(collection_name):
             param = {
-                'collection_name': collection_name,
-                'dimension': 3,
-            }
+                'fields': [
+                    {
+                        'name': 'embedding',
+                        'type': DataType.FLOAT_VECTOR,
+                        'params': {'dim': 8}
+                    }
+                ],
+                'segment_row_limit': 4096,
+                'auto_id': False
+                }
             client.create_collection(param)
     yield
     with Milvus(host, str(port)) as client:
@@ -42,7 +49,7 @@ def metas(tmpdir):
 
 def test_milvus_indexer_save_and_load(metas):
     with MilvusIndexer(host, port,
-                       'collection', 'IVF', {'key': 'value'},
+                       collection_name, 'IVF', {'key': 'value'},
                        metas=metas) as indexer:
         indexer.touch()
         indexer.save()
@@ -51,9 +58,9 @@ def test_milvus_indexer_save_and_load(metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, MilvusIndexer)
-        assert indexer.host == 'localhost'
-        assert indexer.port == 19530
-        assert indexer.collection_name == 'collection'
+        assert indexer.host == host
+        assert indexer.port == port
+        assert indexer.collection_name == collection_name
         assert indexer.index_type == 'IVF'
         assert indexer.index_params['key'] == 'value'
 
