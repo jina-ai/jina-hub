@@ -5,7 +5,7 @@ import operator
 from functools import reduce
 
 import numpy as np
-from jina.logging.base import get_logger
+from jina.logging import JinaLogger
 
 
 class MilvusDBException(Exception):
@@ -45,7 +45,7 @@ class MilvusDBHandler:
         """
 
         def __init__(self, client, collection_name: str):
-            self.logger = get_logger(self.__class__.__name__)
+            self.logger = JinaLogger(self.__class__.__name__)
             self.client = client
             self.collection_name = collection_name
 
@@ -70,7 +70,7 @@ class MilvusDBHandler:
         :param port: Port to connect to the Milvus Server
         :param collection_name: Name of the collection where the Handler will insert and query vectors.
         """
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         self.host = host
         self.port = str(port)
         self.collection_name = collection_name
