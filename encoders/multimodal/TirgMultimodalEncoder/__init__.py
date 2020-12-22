@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-import sys
 import pickle
 from typing import List
 
@@ -12,8 +11,6 @@ from jina.executors.devices import TorchDevice
 from jina.excepts import PretrainedModelFileDoesNotExist
 from jina.executors.decorators import batching_multi_input, as_ndarray
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
-
-from .img_text_composition_models import TIRG
 
 
 class TirgMultiModalEncoder(TorchDevice, BaseMultiModalEncoder):
@@ -36,6 +33,7 @@ class TirgMultiModalEncoder(TorchDevice, BaseMultiModalEncoder):
     def post_init(self):
         super().post_init()
         import torch
+        from .img_text_composition_models import TIRG
         if self.model_path and os.path.exists(self.model_path):
             with open(self.texts_path, 'rb') as fp:
                 texts = pickle.load(fp)
