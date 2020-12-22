@@ -101,7 +101,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
     def post_init(self):
         from transformers import TFAutoModel, AutoTokenizer
 
-        self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
         self.model = TFAutoModel.from_pretrained(
             self.pretrained_model_name_or_path, output_hidden_states=True
         )
