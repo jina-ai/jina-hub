@@ -81,20 +81,14 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         """Get the file path of the encoder model storage"""
         return self.get_file_from_workspace(self.model_save_path)
 
-    @cached_property
-    def model(self):
-        from transformers import AutoModel
-        model = AutoModel.from_pretrained(
+    def post_init(self):
+        from transformers import AutoModel, AutoTokenizer
+
+        self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
+        self.model = AutoModel.from_pretrained(
             self.pretrained_model_name_or_path, output_hidden_states=True
         )
-        self.to_device(model)
-        return model
-
-    @cached_property
-    def tokenizer(self):
-        from transformers import AutoTokenizer
-        tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
-        return tokenizer
+        self.to_device(self.model)
 
     @batching
     @as_ndarray

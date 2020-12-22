@@ -98,12 +98,14 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         """
         return self.get_file_from_workspace(self.model_save_path)
 
-    @cached_property
-    def model(self):
-        from transformers import TFAutoModelForPreTraining
-        model = TFAutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
+    def post_init(self):
+        from transformers import TFAutoModel, AutoTokenizer
+
+        self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
+        self.model = TFAutoModel.from_pretrained(
+            self.pretrained_model_name_or_path, output_hidden_states=True
+        )
         self.to_device()
-        return model
 
     @cached_property
     def no_gradients(self):
@@ -114,12 +116,6 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
     def tensor_func(self):
         import tensorflow as tf
         return tf.constant
-
-    @cached_property
-    def tokenizer(self):
-        from transformers import AutoTokenizer
-        tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
-        return tokenizer
 
     @batching
     @as_ndarray
@@ -145,9 +141,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         token_ids_batch = self.array2tensor(ids_info['input_ids'])
         mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
         with self.no_gradients():
-            outputs = self.model(token_ids_batch,
-                                 attention_mask=mask_ids_batch,
-                                 output_hidden_states=True)
+            outputs = self.model(token_ids_batch, attention_mask=mask_ids_batch)
 
             hidden_states = outputs[-1]
             n_layers = len(hidden_states)
