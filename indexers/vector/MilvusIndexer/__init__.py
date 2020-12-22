@@ -17,7 +17,7 @@ class MilvusIndexer(BaseVectorIndexer):
 
     def __init__(self,
                  host: str = '0.0.0.0',
-                 port: int = 19530,
+                 port: int = 9091,
                  collection_name: str = 'default',
                  index_type: str = 'IVF,Flat',
                  index_params: Optional[Dict] = None, *args, **kwargs):

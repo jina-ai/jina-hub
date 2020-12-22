@@ -10,7 +10,7 @@ cd ~/Python-3.7.2 && ./configure --enable-optimizations && make altinstall
 
 RUN pip3.7 install --upgrade pip && pip3.7 install -r requirements.txt
 
-# for testing the image
-#RUN pip install pytest && pytest
+ENV LD_LIBRARY_PATH=:/var/lib/milvus/lib
+RUN ../var/lib/milvus/bin/milvus_server -c ../var/lib/milvus/conf/milvus.yaml -d && pip3.7 install pytest && pytest && ../var/lib/milvus/scripts/stop_server.sh
 
-ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
+ENTRYPOINT ["../var/lib/milvus/bin/milvus_server -c ../var/lib/milvus/conf/milvus.yaml -d && jina pod --uses config.yml"]
