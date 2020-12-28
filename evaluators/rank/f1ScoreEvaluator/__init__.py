@@ -1,17 +1,20 @@
+from typing import Sequence, Any, Optional
+
 from jina.executors.evaluators.rank import BaseRankingEvaluator
-from typing import Sequence,Any
+
 
 class f1ScoreEvaluator(BaseRankingEvaluator):
     """
     :class:`f1ScoreEvaluator` Gives the f1 score of a result given the groundtruth..
     """
 
-    def __init__(self, eval_at=1 ,*args, **kwargs):
-        super().__init__(eval_at, *args, **kwargs)
+    def __init__(self, eval_at: Optional[int] = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.eval_at = eval_at
 
     @property
     def metric(self):
-        return f'f1Score@{self.eval_at}'
+        return f'f1Score@{self.eval_at}' if self.eval_at else 'f1Score'
 
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
@@ -19,26 +22,23 @@ class f1ScoreEvaluator(BaseRankingEvaluator):
         :param desired: the expected documents matches ids sorted as they are expected
         :return the evaluation metric value for the request document
         """
-        if not desired:
+        if not desired or self.eval_at == 0:
             """TODO: Agree on a behavior"""
             return 0.0
 
-        ret = 0.0
-        for doc_id in actual[:self.eval_at]:
-            if doc_id in desired:
-                ret += 1.0
+        actual_at_k = actual[:self.eval_at] if self.eval_at else actual
+        ret = len(set(actual_at_k).intersection(set(desired)))
 
-        recall = ret/len(desired)
-        divisor = min(self.eval_at, len(desired))
-        
+        recall = ret / len(desired)
+
+        divisor = min(self.eval_at or len(desired), len(desired))
+
         if divisor != 0.0:
-            precision = ret / divisor 
+            precision = ret / divisor
         else:
             precision = 0
 
         if precision + recall == 0:
             return 0
 
-        return 2*(precision*recall)/(precision+recall)
-
-
+        return 2 * (precision * recall) / (precision + recall)
