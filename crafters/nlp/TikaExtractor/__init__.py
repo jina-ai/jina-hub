@@ -60,7 +60,7 @@ class TikaExtractor(BaseCrafter):
         from tika import parser
         headers = {
             'X-Tika-PDFOcrStrategy': self.tika_ocr_strategy,
-            'X-Tika-PDFextractInlineImages': self.tika_extract_inline_images,
+            'X-Tika-PDFextractInlineImages': str(self.tika_extract_inline_images),
             'X-Tika-OCRLanguage': self.tika_ocr_language
         }
         request_options = {
