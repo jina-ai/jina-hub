@@ -5,7 +5,7 @@ COPY . /workspace
 WORKDIR /workspace
 
 RUN apt-get update && \
-    apt-get -y install libgomp1 libgl1-mesa-glx libglib2.0-0
+    apt-get -y install libgomp1 libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev
 
 # install the third-party requirements
 RUN pip install -r requirements.txt && pip uninstall -y pathlib
