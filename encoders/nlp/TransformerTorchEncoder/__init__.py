@@ -53,15 +53,15 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
 
         if self.pooling_strategy == 'auto':
             self.pooling_strategy = 'cls'
-            raise DeprecationWarning(
-                "'auto' pooling_strategy is deprecated, please use"
-                " 'cls' to maintain the old default behavior."
+            self.logger.warning(
+                '"auto" pooling_strategy is deprecated, Defaulting to '
+                ' "cls" to maintain the old default behavior.'
             )
 
         if self.pooling_strategy not in ['cls', 'mean', 'max', 'min']:
             self.logger.error(
-                f"pooling strategy not found: {self.pooling_strategy}."
-                " The allowed pooling strategies are 'cls', 'mean', 'max', 'min'."
+                f'pooling strategy not found: {self.pooling_strategy}.'
+                ' The allowed pooling strategies are "cls", "mean", "max", "min".'
             )
             raise NotImplementedError
 
@@ -131,9 +131,9 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
 
         if self.pooling_strategy == 'cls' and not self.tokenizer.cls_token:
             self.logger.error(
-                f"You have set pooling_strategy to 'cls', but the tokenizer"
-                f" for the model {self.pretrained_model_name_or_path}"
-                f" does not have a cls token set."
+                f'You have set pooling_strategy to "cls", but the tokenizer'
+                f' for the model {self.pretrained_model_name_or_path}'
+                f' does not have a cls token set.'
             )
             raise ValueError
 
