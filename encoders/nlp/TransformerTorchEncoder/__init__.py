@@ -81,7 +81,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             )
             raise NotImplementedError
 
-        if self.acceleration not in [None, "amp", "quant"]:
+        if self.acceleration not in [None, 'amp', 'quant']:
             self.logger.error(
                 f'acceleration not found: {self.acceleration}.'
                 ' The allowed accelerations are "amp" and "quant".'
@@ -114,7 +114,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         )
         self.to_device(model)
         
-        if self.acceleration == "quant" and not self.on_gpu:
+        if self.acceleration == 'quant' and not self.on_gpu:
             model = torch.quantization.quantize_dynamic(
                 model, {torch.nn.Linear}, dtype=torch.qint8
             )     
@@ -131,7 +131,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         import torch
         from contextlib import nullcontext
 
-        if self.acceleration == "amp":
+        if self.acceleration == 'amp':
             return torch.cuda.amp.autocast()
         else:
             return nullcontext()

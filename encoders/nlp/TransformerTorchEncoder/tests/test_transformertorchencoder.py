@@ -68,10 +68,10 @@ def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index)
     else:
         assert np.allclose(encoded_data[0], encoded_data[1], atol=1e-5, rtol=1e-4)
 
-@pytest.mark.parametrize('acceleration', ["amp", "quant"])
+@pytest.mark.parametrize('acceleration', ['amp', 'quant'])
 def test_encoding_results_acceleration(test_metas, acceleration):
 
-    if 'JINA_TEST_GPU' in os.environ and acceleration == "quant":
+    if 'JINA_TEST_GPU' in os.environ and acceleration == 'quant':
         pytest.skip("Can't test quantization on GPU.")
 
     encoder = get_encoder(test_metas, **{"acceleration": acceleration})
