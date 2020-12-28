@@ -11,6 +11,9 @@ from jina.executors.encoders import BaseEncoder
 from jina.helper import cached_property
 from jina.logging import default_logger
 
+def no_grad():
+    import torch
+    return torch.no_grad()
 
 class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     """
@@ -24,6 +27,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         pooling_strategy: str = 'mean',
         layer_index: int = -1,
         max_length: Optional[int] = None,
+        acceleration: Optional[str] = None,
         model_save_path: Optional[str] = None,
         *args,
         **kwargs,
@@ -37,6 +41,17 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             strategies include 'cls', 'mean', 'max', 'min'.
         :param layer_index: index of the transformer layer that is used to create encodings. Layer 0 corresponds to the embeddings layer
         :param max_length: the max length to truncate the tokenized sequences to.
+        :acceleration: The method to accelerate encoding. The available options are:
+            - ``'amp'``, which uses `automatic mixed precision <https://pytorch.org/docs/stable/amp.html>`__ autocasting.
+              This option is only available on GPUs that support it (architecture newer than or equal to NVIDIA Volatire).
+            - ``'quant'``, which uses dynamic quantization on the transformer model. See 
+              `this tutorial <https://pytorch.org/tutorials/intermediate/dynamic_quantization_bert_tutorial.html>`__
+              for more information. This option is currently not supported on GPUs.
+
+            ..note::
+                While acceleration methods can significantly speed up the encoding, they result in loss of precision.
+                Make sure that the tradeoff is worthwhile for your use case.
+
         :param model_save_path: the path of the encoder model. If a valid path is given, the encoder will be saved to the given path
 
         ..warning::
@@ -49,6 +64,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         self.pooling_strategy = pooling_strategy
         self.layer_index = layer_index
         self.max_length = max_length
+        self.acceleration = acceleration
         self.model_save_path = model_save_path
 
         if self.pooling_strategy == 'auto':
@@ -62,6 +78,13 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             self.logger.error(
                 f'pooling strategy not found: {self.pooling_strategy}.'
                 ' The allowed pooling strategies are "cls", "mean", "max", "min".'
+            )
+            raise NotImplementedError
+
+        if self.acceleration not in [None, "amp", "quant"]:
+            self.logger.error(
+                f'acceleration not found: {self.acceleration}.'
+                ' The allowed accelerations are "amp" and "quant".'
             )
             raise NotImplementedError
 
@@ -83,11 +106,19 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
 
     @cached_property
     def model(self):
+        import torch
         from transformers import AutoModel
+
         model = AutoModel.from_pretrained(
             self.pretrained_model_name_or_path, output_hidden_states=True
         )
         self.to_device(model)
+        
+        if self.acceleration == "quant" and not self.on_gpu:
+            model = torch.quantization.quantize_dynamic(
+                model, {torch.nn.Linear}, dtype=torch.qint8
+            )     
+
         return model
 
     @cached_property
@@ -96,6 +127,16 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
         return tokenizer
 
+    def amp_accelerate(self):
+        import torch
+        from contextlib import nullcontext
+
+        if self.acceleration == "amp":
+            return torch.cuda.amp.autocast()
+        else:
+            return nullcontext()
+
+    @no_grad()
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
@@ -104,7 +145,6 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         :return: an ndarray in size `B x D`
         """
         import torch
-        torch.set_grad_enabled(False)
 
         if not self.tokenizer.pad_token:
             self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
@@ -118,7 +158,9 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             return_tensors='pt',
         )
         input_tokens = {k: v.to(self.device) for k, v in input_tokens.items()}
-        outputs = self.model(**input_tokens)
+
+        with self.amp_accelerate():
+            outputs = self.model(**input_tokens)
 
         n_layers = len(outputs.hidden_states)
         if self.layer_index not in list(range(-n_layers, n_layers)):
