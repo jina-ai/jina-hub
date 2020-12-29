@@ -1,5 +1,5 @@
 from math import log
-from typing import Sequence, Union
+from typing import Sequence, Union, Optional
 
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 
@@ -21,21 +21,24 @@ def _compute_idcg(gains, power_relevance):
     sorted_gains = sorted(gains, reverse=True)
     return _compute_dcg(sorted_gains, power_relevance)
 
+
 class NDCGEvaluator(BaseRankingEvaluator):
     """
     :class:`NDCGEvaluator` evaluates normalized discounted cumulative gain for information retrieval.
     """
-    def __init__(self, eval_at, power_relevance=True):
+
+    def __init__(self, eval_at: Optional[int] = None, power_relevance: bool =True):
         """
         :param power_relevance: The power relevance places stronger emphasis on retrieving relevant documents.
             For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
         """
-        super().__init__(eval_at=eval_at)
+        super().__init__()
+        self.eval_at = eval_at
         self._power_relevance = power_relevance
 
     @property
     def metric(self):
-        return f'nDCG@{self.eval_at}'
+        return f'nDCG@{self.eval_at}' if self.eval_at else f'nDCG'
 
     def evaluate(
             self,
@@ -49,15 +52,14 @@ class NDCGEvaluator(BaseRankingEvaluator):
         :return the evaluation metric value for the request document.
         """
         # Information gain must be greater or equal to 0.
-        if any(item < 0 for item in actual) or any(item < 0 for item in desired):
-            raise ValueError('One or multiple score is less than 0.')
-        actual_at_k = actual[:self.eval_at]
-        desired_at_k = desired[:self.eval_at]
+        actual_at_k = actual[:self.eval_at] if self.eval_at else actual
+        desired_at_k = desired[:self.eval_at] if self.eval_at else desired
         if not actual_at_k:
             raise ValueError(f'Expecting gains at k with minimal length of 1, {len(actual_at_k)} received.')
         if not desired_at_k:
             raise ValueError(f'Expecting desired at k with minimal length of 1, {len(desired_at_k)} received.')
-        dcg  = _compute_dcg(gains=actual_at_k, power_relevance=self._power_relevance)
+        if any(item < 0 for item in actual_at_k) or any(item < 0 for item in desired_at_k):
+            raise ValueError('One or multiple score is less than 0.')
+        dcg = _compute_dcg(gains=actual_at_k, power_relevance=self._power_relevance)
         idcg = _compute_idcg(gains=desired_at_k, power_relevance=self._power_relevance)
-        return 0.0 if idcg == 0.0 else dcg/idcg
-
+        return 0.0 if idcg == 0.0 else dcg / idcg

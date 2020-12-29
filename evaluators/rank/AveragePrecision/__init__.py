@@ -8,7 +8,7 @@ class AveragePrecisionEvaluator(BaseRankingEvaluator):
        https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Average_precision
     """
     def __init__(self, *args, **kwargs):
-        super().__init__(-1, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def metric(self):
