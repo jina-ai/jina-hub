@@ -6,6 +6,7 @@ from .. import f1ScoreEvaluator
 @pytest.mark.parametrize(
     'eval_at, expected',
     [
+        (None, 0.4),
         (0, 0.0),
         (2, 0.5714285714285715),
         (5, 0.4),
@@ -19,7 +20,3 @@ def test_f1score_evaluator(eval_at, expected):
 
     evaluator = f1ScoreEvaluator(eval_at=eval_at)
     assert evaluator.evaluate(actual=matches_ids, desired=desired_ids) == pytest.approx(expected)
-    np.testing.assert_almost_equal(evaluator.mean, expected)
-
-
-
