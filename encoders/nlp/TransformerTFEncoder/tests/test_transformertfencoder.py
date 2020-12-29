@@ -27,9 +27,9 @@ def get_encoder(test_metas, **kwargs):
 
 
 _models = [
-    'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
-    'sentence-transformers/bert-base-nli-stsb-mean-tokens',
-    'deepset/roberta-base-squad2',
+    'distilbert-base-uncased',
+    'bert-base-uncased',
+    'roberta-base',
     'xlm-roberta-base',
     'xlnet-base-cased',
 ]
@@ -55,9 +55,9 @@ def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index)
     encoded_data = encoder.encode(test_data)
 
     hidden_dim_sizes = {
-        'sentence-transformers/distilbert-base-nli-stsb-mean-tokens': 768,
-        'sentence-transformers/bert-base-nli-stsb-mean-tokens': 768,
-        'deepset/roberta-base-squad2': 768,
+        'distilbert-base-uncased': 768,
+        'bert-base-uncased': 768,
+        'roberta-base': 768,
         'xlm-roberta-base': 768,
         'xlnet-base-cased': 768,
     }

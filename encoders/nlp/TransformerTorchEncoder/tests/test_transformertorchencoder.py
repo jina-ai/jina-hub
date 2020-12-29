@@ -27,9 +27,9 @@ def get_encoder(test_metas, **kwargs):
 
 
 _models = [
-    'distilbert-base-uncased',
-    'bert-base-uncased',
-    'roberta-base',
+    'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+    'sentence-transformers/bert-base-nli-stsb-mean-tokens',
+    'deepset/roberta-base-squad2',
     'xlm-roberta-base',
     'xlnet-base-cased',
 ]
