@@ -190,7 +190,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             CLS = self.tokenizer.cls_token_id
             ind = torch.nonzero(input_tokens['input_ids'] == CLS)[:, 1]
             ind = ind.unsqueeze(-1).unsqueeze(-1).expand(-1, -1, layer.shape[2])
-            embeddings = torch.gather(layer, 1, ind).squeeze()
+            embeddings = torch.gather(layer, 1, ind).squeeze(dim=1)
         elif self.pooling_strategy == 'mean':
             embeddings = layer.sum(dim=1) / attn_mask.sum(dim=1)
         elif self.pooling_strategy == 'max':

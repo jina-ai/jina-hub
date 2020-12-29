@@ -20,8 +20,8 @@ def test_metas(tmp_path):
 def get_encoder(test_metas, **kwargs):
     if 'pretrained_model_name_or_path' in kwargs and 'pooling_strategy' in kwargs:
         kwargs['model_save_path'] = (
-            kwargs['pretrained_model_name_or_path'].replace('/', '.')
-            + f'-{kwargs["pooling_strategy"]}'
+                kwargs['pretrained_model_name_or_path'].replace('/', '.')
+                + f'-{kwargs["pooling_strategy"]}'
         )
     return TransformerTorchEncoder(metas=test_metas, **kwargs)
 
@@ -33,6 +33,7 @@ _models = [
     'xlm-roberta-base',
     'xlnet-base-cased',
 ]
+
 
 def _assert_params_equal(params_dict: dict, encoder: TransformerTorchEncoder):
     for key, val in params_dict.items():
@@ -95,10 +96,10 @@ def test_embedding_consistency(test_metas, model_name, pooling_strategy, layer_i
 
     encoder = get_encoder(test_metas, **params)
     encoded_data = encoder.encode(test_data)
-    
+
     encoded_data_file = f'tests/{model_name}-{pooling_strategy}-{layer_index}.npy'
     enc_data_loaded = np.load(encoded_data_file)
-    
+
     np.testing.assert_allclose(encoded_data, enc_data_loaded, atol=1e-5, rtol=1e-6)
 
 
@@ -112,11 +113,28 @@ def test_max_length_truncation(test_metas, model_name, pooling_strategy, layer_i
         'layer_index': layer_index,
         'max_length': 3
     }
-    encoder = get_encoder(test_metas, **params)    
+    encoder = get_encoder(test_metas, **params)
     test_data = np.array(['it is a very good day!', 'it is a very sunny day!'])
     encoded_data = encoder.encode(test_data)
 
     np.testing.assert_allclose(encoded_data[0], encoded_data[1], atol=1e-5, rtol=1e-4)
+
+
+@pytest.mark.parametrize('model_name', _models)
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+@pytest.mark.parametrize('layer_index', [-1, -2])
+def test_shape_single_document(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index,
+        'max_length': 3
+    }
+    encoder = get_encoder(test_metas, **params)
+    test_data = np.array(['it is a very good day!'])
+    encoded_data = encoder.encode(test_data)
+    assert len(encoded_data.shape) == 2
+    assert encoded_data.shape[0] == 1
 
 
 @pytest.mark.parametrize('model_name', _models)
@@ -158,7 +176,7 @@ def test_save_and_load_config(test_metas, model_name, pooling_strategy, layer_in
         'layer_index': layer_index
     }
     encoder = get_encoder(test_metas, **params)
-    
+
     encoder.save_config()
     _assert_params_equal(params, encoder)
     assert os.path.exists(encoder.config_abspath)
