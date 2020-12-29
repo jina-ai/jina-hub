@@ -12,22 +12,6 @@ from jina.executors.encoders.helper import reduce_mean, reduce_max, reduce_min, 
 from jina.logging import default_logger
 
 
-def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: str) -> 'np.ndarray':
-    """
-    Automatically creates a sentence embedding from its token embeddings.
-        * For BERT-like models (BERT, RoBERTa, DistillBERT, Electra ...) uses embedding of first token
-        * For XLM and XLNet models uses embedding of last token
-        * Assumes that other models are language-model like and uses embedding of last token
-    """
-    if 'bert' in model_name or 'electra' in model_name:
-        return reduce_cls(model_outputs, mask_2d)
-    if 'xlnet' in model_name:
-        return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
-    default_logger.warning('Using embedding of a last token as a sequence embedding. '
-                           'If that is not desirable, change `pooling_strategy`')
-    return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
-
-
 class TransformerTFEncoder(TFDevice, BaseEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
@@ -111,6 +95,8 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
+        import tensorflow as tf
+
         if not self.tokenizer.pad_token:
             self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
             self.model.resize_token_embeddings(len(self.tokenizer.vocab))
@@ -142,17 +128,23 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
             )
             raise ValueError
 
-        output_embeddings = outputs.hidden_states[self.layer_index]
-        _mask_ids_batch = input_tokens['attention_mask'].numpy()
-        _seq_output = output_embeddings.numpy()
+        fill_vals = {'cls': 0.0, 'mean': 0.0, 'max': -np.inf, 'min': np.inf}
+        fill_val = tf.constant(fill_vals[self.pooling_strategy])
+
+        layer = outputs.hidden_states[self.layer_index]
+        attn_mask = tf.expand_dims(input_tokens['attention_mask'], -1)
+        attn_mask = tf.broadcast_to(attn_mask, layer.shape)
+        layer = tf.where(attn_mask == 1, layer, fill_val)
 
         if self.pooling_strategy == 'cls':
-            output = auto_reduce(_seq_output, _mask_ids_batch, self.model.base_model_prefix)
+            CLS = self.tokenizer.cls_token_id
+            ind = tf.experimental.numpy.nonzero(input_tokens['input_ids'] == CLS)
+            output = tf.gather_nd(layer, tf.stack(ind, axis=1))
         elif self.pooling_strategy == 'mean':
-            output = reduce_mean(_seq_output, _mask_ids_batch)
+            output = tf.reduce_sum(layer, 1) / tf.reduce_sum(tf.cast(attn_mask, tf.float32), 1)
         elif self.pooling_strategy == 'max':
-            output = reduce_max(_seq_output, _mask_ids_batch)
+            output = tf.reduce_max(layer, 1)
         elif self.pooling_strategy == 'min':
-            output = reduce_min(_seq_output, _mask_ids_batch)
+            output = tf.reduce_min(layer, 1)
 
         return output

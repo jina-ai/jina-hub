@@ -68,38 +68,25 @@ def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index)
     else:
         assert np.allclose(encoded_data[0], encoded_data[1], atol=1e-5, rtol=1e-4)
 
-@pytest.mark.parametrize('acceleration', ['amp', 'quant'])
-def test_encoding_results_acceleration(test_metas, acceleration):
 
-    if 'JINA_TEST_GPU' in os.environ and acceleration == 'quant':
-        pytest.skip("Can't test quantization on GPU.")
-
-    encoder = get_encoder(test_metas, **{"acceleration": acceleration})
-
+@pytest.mark.parametrize('model_name', ['bert-base-uncased'])
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+@pytest.mark.parametrize('layer_index', [-1, -2])
+def test_embedding_consistency(test_metas, model_name, pooling_strategy, layer_index):
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'pooling_strategy': pooling_strategy,
+        'layer_index': layer_index,
+    }
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+
+    encoder = get_encoder(test_metas, **params)
     encoded_data = encoder.encode(test_data)
 
-    assert encoded_data.shape == (2, 768)
-    assert not np.allclose(encoded_data[0], encoded_data[1], rtol=1)
+    encoded_data_file = f'tests/{model_name}-{pooling_strategy}-{layer_index}.npy'
+    enc_data_loaded = np.load(encoded_data_file)
 
-# @pytest.mark.parametrize('model_name', ['bert-base-uncased'])
-# @pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
-# @pytest.mark.parametrize('layer_index', [-1, -2])
-# def test_embedding_consistency(test_metas, model_name, pooling_strategy, layer_index):
-#     params = {
-#         'pretrained_model_name_or_path': model_name,
-#         'pooling_strategy': pooling_strategy,
-#         'layer_index': layer_index,
-#     }
-#     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
-
-#     encoder = get_encoder(test_metas, **params)
-#     encoded_data = encoder.encode(test_data)
-
-#     encoded_data_file = f'tests/{model_name}-{pooling_strategy}-{layer_index}.npy'
-#     enc_data_loaded = np.load(encoded_data_file)
-
-#     np.testing.assert_allclose(encoded_data, enc_data_loaded, atol=1e-5, rtol=1e-6)
+    np.testing.assert_allclose(encoded_data, enc_data_loaded, atol=1e-5, rtol=1e-6)
 
 
 @pytest.mark.parametrize('model_name', _models)
