@@ -104,28 +104,20 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         """Get the file path of the encoder model storage"""
         return self.get_file_from_workspace(self.model_save_path)
 
-    @cached_property
-    def model(self):
+    def post_init(self):
         import torch
-        from transformers import AutoModel
+        from transformers import AutoModel, AutoTokenizer
 
-        model = AutoModel.from_pretrained(
+        self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
+        self.model = AutoModel.from_pretrained(
             self.pretrained_model_name_or_path, output_hidden_states=True
         )
-        self.to_device(model)
-        
+        self.to_device(self.model)
+
         if self.acceleration == 'quant' and not self.on_gpu:
-            model = torch.quantization.quantize_dynamic(
-                model, {torch.nn.Linear}, dtype=torch.qint8
-            )     
-
-        return model
-
-    @cached_property
-    def tokenizer(self):
-        from transformers import AutoTokenizer
-        tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
-        return tokenizer
+            self.model = torch.quantization.quantize_dynamic(
+                self.model, {torch.nn.Linear}, dtype=torch.qint8
+            )
 
     def amp_accelerate(self):
         import torch
