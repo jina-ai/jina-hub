@@ -30,7 +30,6 @@ _models = [
     'distilbert-base-uncased',
     'bert-base-uncased',
     'roberta-base',
-    'xlm-roberta-base',
     'xlnet-base-cased',
 ]
 
@@ -199,10 +198,6 @@ def test_wrong_layer_index(test_metas, layer_index):
 def test_wrong_pooling_strategy():
     with pytest.raises(NotImplementedError):
         TransformerTFEncoder(pooling_strategy='wrong')
-
-def test_wrong_pooling_acceleration():
-    with pytest.raises(NotImplementedError):
-        TransformerTFEncoder(acceleration='wrong')
 
 @pytest.mark.parametrize(
     'params',

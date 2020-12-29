@@ -142,7 +142,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
             )
             raise ValueError
 
-        output_embeddings = hidden_states[self.layer_index]
+        output_embeddings = outputs.hidden_states[self.layer_index]
         _mask_ids_batch = input_tokens['attention_mask'].numpy()
         _seq_output = output_embeddings.numpy()
 
