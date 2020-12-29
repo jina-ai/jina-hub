@@ -5,15 +5,16 @@ import os
 from typing import Optional
 
 import numpy as np
+
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.devices import TorchDevice
 from jina.executors.encoders import BaseEncoder
-from jina.helper import cached_property
-from jina.logging import default_logger
+
 
 def no_grad():
     import torch
     return torch.no_grad()
+
 
 class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     """
@@ -21,16 +22,16 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     """
 
     def __init__(
-        self,
-        pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
-        base_tokenizer_model: Optional[str] = None,
-        pooling_strategy: str = 'mean',
-        layer_index: int = -1,
-        max_length: Optional[int] = None,
-        acceleration: Optional[str] = None,
-        model_save_path: Optional[str] = None,
-        *args,
-        **kwargs,
+            self,
+            pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+            base_tokenizer_model: Optional[str] = None,
+            pooling_strategy: str = 'mean',
+            layer_index: int = -1,
+            max_length: Optional[int] = None,
+            acceleration: Optional[str] = None,
+            model_save_path: Optional[str] = None,
+            *args,
+            **kwargs,
     ):
         """
         :param pretrained_model_name_or_path: Either:
@@ -159,7 +160,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             self.logger.error(
                 f'Invalid value {self.layer_index} for `layer_index`,'
                 f' for the model {self.pretrained_model_name_or_path}'
-                f' valid values are integers from {-n_layers} to {n_layers-1}.'
+                f' valid values are integers from {-n_layers} to {n_layers - 1}.'
             )
             raise ValueError
 
