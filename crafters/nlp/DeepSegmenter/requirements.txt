@@ -1,3 +1,2 @@
 deepsegment
 tensorflow==2.2.0
-jina
