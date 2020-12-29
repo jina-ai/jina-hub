@@ -147,4 +147,4 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         elif self.pooling_strategy == 'min':
             output = tf.reduce_min(layer, 1)
 
-        return output
+        return output.numpy()
