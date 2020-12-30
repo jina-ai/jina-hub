@@ -64,6 +64,7 @@ def apply_actions(save_abspath, index_abspath, actions):
 
 
 def validate_positive_results(keys, documents, searcher):
+    print('validate_positive_results')
     for key, query_doc in zip(keys, documents):
         result_doc = Parse(searcher.query(key)[0]['values'].decode('utf8'), Document())
         assert result_doc.id == str(query_doc[0]) * 16
@@ -77,14 +78,12 @@ def validate_negative_results(keys, searcher):
         result_docs = searcher.query(key)
         assert result_docs == []
 
-def validate_results(save_abspath, results, negative_results, _validate_positive_results, _validate_negative_results):
+def validate_results(save_abspath, results, negative_results):
     with BaseIndexer.load(save_abspath) as searcher:
-        if results:
-            keys, ids = zip(*[[k, v] for k, v in results.items()])
-            _, documents, _ = get_documents(ids)
-            _validate_positive_results(keys, documents, searcher)
-        if negative_results:
-            _validate_negative_results(negative_results, searcher)
+        keys, ids = zip(*[[k, v] for k, v in results.items()])
+        _, documents, _ = get_documents(ids)
+        validate_positive_results(keys, documents, searcher)
+        validate_negative_results(negative_results, searcher)
 
 
 def get_indexers():
@@ -113,12 +112,7 @@ def run_crud_test_exception_aware(actions, results, no_results, exception, mocke
                 apply_actions(save_abspath, index_abspath, actions)
         else:
             apply_actions(save_abspath, index_abspath, actions)
-            _validate_positive_results = mocker.Mock(wraps=validate_positive_results)
-            _validate_negative_results = mocker.Mock(wraps=validate_negative_results)
-            validate_results(save_abspath, results, no_results, _validate_positive_results, _validate_negative_results)
-            _validate_positive_results.assert_called()
-            _validate_negative_results.assert_called()
-
+            validate_results(save_abspath, results, no_results)
 
 def test_basic_add(mocker, tmpdir):
     run_crud_test_exception_aware(
