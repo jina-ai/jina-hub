@@ -16,7 +16,7 @@ class BM25Ranker(Chunk2DocRanker):
         as the naive ``document-frequency``. Please refer to the functions for the details of calculating ``tf`` and
         ``idf``.
     """
-    required_keys = {'text', 'length'}
+    required_keys = {'length', }
 
     def __init__(self, k=1.2, b=0.75, threshold=0.1, *args, **kwargs):
         """
