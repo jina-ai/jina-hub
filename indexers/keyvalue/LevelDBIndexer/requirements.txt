@@ -1,2 +1,1 @@
 plyvel==1.3.0
-jina
