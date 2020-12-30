@@ -1,4 +1,4 @@
-FROM jinaai/jina:devel
+FROM jinaai/jina
 
 # setup the workspace
 COPY . /workspace
@@ -6,8 +6,7 @@ WORKDIR /workspace
 
 # install dependency
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y gcc\
-                                               python-dev
+    apt-get install --no-install-recommends -y gcc python-dev g++
 
 # install the third-party requirements
 RUN pip install -r requirements.txt
