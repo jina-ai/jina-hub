@@ -23,7 +23,8 @@ def transformer():
                                          [0.229, 0.224, 0.225])])
 
 
-def test_multimodal_embeddings(transformer):
+@pytest.mark.parametrize('batch_size', [1, 2, 3, 4, 5])
+def test_multimodal_embeddings(transformer, batch_size):
     imgs = []
     for img_name in range(4):
         img_path = os.path.join(cur_dir, f'imgs/{img_name}.jpeg')
@@ -44,6 +45,7 @@ def test_multimodal_embeddings(transformer):
         positional_modality=['image', 'text'],
         channel_axis=1,
     )
+    encoder.batch_size = batch_size
     embeddings = encoder.encode(imgs, img_captions)
     expected = np.load(os.path.join(cur_dir, 'expected.npy'))
     np.testing.assert_almost_equal(embeddings, expected, decimal=3)
