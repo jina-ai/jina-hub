@@ -1,2 +1,1 @@
-jina
 torchvision>=0.3.0
