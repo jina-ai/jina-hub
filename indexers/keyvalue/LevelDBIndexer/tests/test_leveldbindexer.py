@@ -77,14 +77,12 @@ def validate_negative_results(keys, searcher):
         assert result_doc is None
 
 
-def validate_results(save_abspath, results, negative_results, _validate_positive_results, _validate_negative_results):
+def validate_results(save_abspath, results, negative_results):
     with BaseIndexer.load(save_abspath) as searcher:
-        if results:
-            keys, ids = zip(*[[k, v] for k, v in results.items()])
-            _, documents, _ = get_documents(ids)
-            _validate_positive_results(keys, documents, searcher)
-        if negative_results:
-            _validate_negative_results(negative_results, searcher)
+        keys, ids = zip(*[[k, v] for k, v in results.items()])
+        _, documents, _ = get_documents(ids)
+        validate_positive_results(keys, documents, searcher)
+        validate_negative_results(negative_results, searcher)
 
 
 def get_indexers(tmpdir):
@@ -94,7 +92,7 @@ def get_indexers(tmpdir):
     return indexer_from_constructor, indexer_from_config
 
 
-def run_crud_test_exception_aware(actions, results, no_results, exception, mocker, tmpdir):
+def run_crud_test_exception_aware(actions, results, no_results, exception, tmpdir):
     # action is defined as (method, key, document_id)
     for indexer in get_indexers(tmpdir):
         indexer.workspace = tmpdir
@@ -110,86 +108,75 @@ def run_crud_test_exception_aware(actions, results, no_results, exception, mocke
                 apply_actions(save_abspath, index_abspath, actions)
         else:
             apply_actions(save_abspath, index_abspath, actions)
-            _validate_positive_results = mocker.Mock(wraps=validate_positive_results)
-            _validate_negative_results = mocker.Mock(wraps=validate_negative_results)
-            validate_results(save_abspath, results, no_results, _validate_positive_results, _validate_negative_results)
-            _validate_positive_results.assert_called()
-            _validate_negative_results.assert_called()
+            validate_results(save_abspath, results, no_results)
 
 
-def test_basic_add(mocker, tmpdir):
+def test_basic_add(tmpdir):
     run_crud_test_exception_aware(
         [('add', {0: 0, 1: 1}), ('add', {3: 3})],
         {0: 0, 1: 1, 3: 3},
         [2],
         None,
-        mocker,
         tmpdir
     )
 
 
-def test_add_existing_key(mocker, tmpdir):
+def test_add_existing_key(tmpdir):
     run_crud_test_exception_aware(
         [('add', {0: 0, 1: 1}), ('add', {0: 3})],
         {0: 3, 1: 1},
         [2],
         None,
-        mocker,
         tmpdir
     )
 
 
-def test_update_existing_key(mocker, tmpdir):
+def test_update_existing_key(tmpdir):
     run_crud_test_exception_aware(
         [('add', {1: 1, 2: 2}), ('update', {1: 4})],
         {1: 4, 2: 2},
         [0, 3],
         None,
-        mocker,
         tmpdir
     )
 
 
-def test_update_non_existing_key(mocker, tmpdir):
+def test_update_non_existing_key(tmpdir):
     run_crud_test_exception_aware(
         [('update', {1: 4})],
         {},
         [0, 3],
         KeyError,
-        mocker,
         tmpdir
     )
 
 
-def test_update_existing_and_non_existing_key(mocker, tmpdir):
+def test_update_existing_and_non_existing_key(tmpdir):
     run_crud_test_exception_aware(
         [('add', {1: 1, 2: 2}), ('update', {1: 4, 3: 4})],
         {},
         [0, 3],
         KeyError,
-        mocker,
         tmpdir
     )
 
 
-def test_same_value(mocker, tmpdir):
+def test_same_value(tmpdir):
     run_crud_test_exception_aware(
         [('add', {1: 1, 2: 2}), ('update', {1: 2})],
         {1: 2, 2: 2},
         [0, 3],
         None,
-        mocker,
         tmpdir
     )
 
 
-def test_chain(mocker, tmpdir):
+def test_chain(tmpdir):
     run_crud_test_exception_aware(
         [('add', {0: 0, 1: 1}), ('delete', {1: 1}), ('add', {3: 3, 9: 4, 2: 4}), ('delete', {0: 0, 2: 4}),
          ('update', {3: 0})],
         {9: 4, 3: 0},
         [0, 1, 4],
         None,
-        mocker,
         tmpdir
     )
