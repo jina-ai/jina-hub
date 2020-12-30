@@ -1,2 +1,1 @@
-jina
-librosa
+librosa>=0.7.2
