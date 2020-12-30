@@ -35,7 +35,6 @@ def validate_mix_fn(resp):
 
 def search_generator(path: str, buffer: bytes):
     d = Document()
-    d.update_id()
     if buffer:
         d.buffer = buffer
     if path:
