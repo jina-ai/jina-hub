@@ -8,8 +8,6 @@ import numpy as np
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.devices import TFDevice
 from jina.executors.encoders import BaseEncoder
-from jina.executors.encoders.helper import reduce_mean, reduce_max, reduce_min, reduce_cls
-from jina.logging import default_logger
 
 
 class TransformerTFEncoder(TFDevice, BaseEncoder):
