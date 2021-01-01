@@ -39,16 +39,15 @@ jina hub new --type pod
 It will start a wizard in CLI to guide you create your first executor. The resulted file structure should look like the following:
 
 ```text
-- MyAwesomeExecutor/
-    |
-    |- Dockerfile
-    |- manifest.yml
-    |- README.md
-    |- requirements.txt
-    |- __init__.py
-    |- tests/
-        |- test_MyAwesomeExecutor.py
-        |- __init__.py
+MyAwesomeExecutor/
+├── Dockerfile
+├── manifest.yml
+├── README.md
+├── requirements.txt
+├── __init__.py
+└── tests/
+    ├── test_MyAwesomeExecutor.py
+    └── __init__.py
 ```
 
 ### Test an Executor Locally
