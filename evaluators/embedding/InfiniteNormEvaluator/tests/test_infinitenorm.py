@@ -1,5 +1,3 @@
-from math import sqrt
-
 import numpy as np
 import pytest
 
@@ -30,5 +28,4 @@ from .. import InfiniteNormEvaluator
 def test_infinitenorm_evaluator(doc_embedding, gt_embedding, expected):
     evaluator = InfiniteNormEvaluator()
     assert evaluator.evaluate(actual=doc_embedding, desired=gt_embedding) == expected
-    assert evaluator._running_stats._n == 1
     np.testing.assert_almost_equal(evaluator.mean, expected)

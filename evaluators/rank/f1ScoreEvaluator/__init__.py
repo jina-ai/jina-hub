@@ -12,10 +12,6 @@ class f1ScoreEvaluator(BaseRankingEvaluator):
         super().__init__(*args, **kwargs)
         self.eval_at = eval_at
 
-    @property
-    def metric(self):
-        return f'f1Score@{self.eval_at}' if self.eval_at else 'f1Score'
-
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
         :param actual: the matched document identifiers from the request as matched by jina indexers and rankers

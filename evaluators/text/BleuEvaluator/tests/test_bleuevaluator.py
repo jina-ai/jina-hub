@@ -1,23 +1,22 @@
-from .. import BleuEvaluator
 import pytest
+from .. import BleuEvaluator
 
 
 @pytest.mark.parametrize('actual, desired, score',
-    [
-        ('All cats are so super beautiful', 'All cats are so super beautiful', 1.0),
-        ('All cats are so super beautiful', '', 0.0),
-        ('', 'All cats are so super beautiful', 0.0),
-        ('All cats are so super beautiful', 'ALL CATS ARE SO SUPER BEAUTIFUL', 1.0), 
-        ('All cats are so super beautiful', 'All dogs are so super beautiful', 0.5),
-        ('All cats are so super beautiful', 'Why is there an unicorn here', 0.0),
-        ('A small cat', 'A small cat', 1.0),
-        ('Even smaller', 'Even smaller', 1.0)
-    ])
-
-
+                         [
+                             ('All cats are so super beautiful', 'All cats are so super beautiful', 1.0),
+                             ('All cats are so super beautiful', '', 0.0),
+                             ('', 'All cats are so super beautiful', 0.0),
+                             ('All cats are so super beautiful', 'ALL CATS ARE SO SUPER BEAUTIFUL', 1.0),
+                             ('All cats are so super beautiful', 'All dogs are so super beautiful', 0.5),
+                             ('All cats are so super beautiful', 'Why is there an unicorn here', 0.0),
+                             ('A small cat', 'A small cat', 1.0),
+                             ('Even smaller', 'Even smaller', 1.0)
+                         ])
 def test_bleu_evaluator(actual, desired, score):
     evaluator = BleuEvaluator()
     assert evaluator.evaluate(actual, desired) == pytest.approx(score, 0.1)
+
 
 def test_without_reset_weight():
     '''
@@ -35,7 +34,3 @@ def test_without_reset_weight():
     actual_list = 'A small cat'.lower().split()
     desired_list = 'A small cat'.lower().split()
     assert evalualtor.get_score(actual_list, [desired_list], 4) < 1
-
-
-
-
