@@ -16,11 +16,10 @@ class UniversalSentenceEncoder(BaseTFEncoder):
     It encodes data from an 1d array of string in size `B` into an ndarray in size `B x D`.
     """
 
-    def __init_(
+    def __init__(
             self,
             model_url: str = 'https://tfhub.dev/google/universal-sentence-encoder/4',
-            preprocessor_url: Optional[str] = None,
-            * args,
+            *args,
             **kwargs):
         """
         :param model_url: the url of the model (TensorFlow Hub). For supported models see
@@ -41,8 +40,8 @@ class UniversalSentenceEncoder(BaseTFEncoder):
             self.preprocessor = hub.KerasLayer(self.preprocessor_url)
         self.model = hub.KerasLayer(self.model_url)
 
-    @ batching
-    @ as_ndarray
+    @batching
+    @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 
