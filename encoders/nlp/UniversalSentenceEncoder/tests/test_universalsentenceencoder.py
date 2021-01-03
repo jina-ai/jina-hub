@@ -4,9 +4,10 @@ import numpy as np
 import shutil
 import pytest
 
-from .. import UniversalSentenceEncoder
+from .. import UniversalSentenceEncoder, UNIVERSAL_SENTENCE_ENCODER
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
+
 
 def get_metas():
     metas = get_default_metas()
@@ -33,6 +34,7 @@ class MockModule:
 
 target_output_dim = 512
 test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+
 
 def _test_encoding_results():
     metas = get_metas()
@@ -75,3 +77,10 @@ def test_save_and_load_config(mocker):
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
     assert encoder_loaded.model_url == encoder.model_url
     rm_files([encoder.config_abspath])
+
+
+@mock.patch('tensorflow_hub.load', return_value=MockModule())
+def test_get_universal_sentence_encoder(mocker):
+    metas = get_metas()
+    encoder = UniversalSentenceEncoder(metas=metas)
+    assert encoder.model_url == UNIVERSAL_SENTENCE_ENCODER
