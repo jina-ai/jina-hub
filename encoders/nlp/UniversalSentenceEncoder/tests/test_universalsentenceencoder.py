@@ -43,9 +43,19 @@ def _test_encoding_results():
     assert encoded_data.shape == (2, target_output_dim)
 
 
+def _test_encoding_results_cmlm():
+    metas = get_metas()
+    encoder = UniversalSentenceEncoder(
+        metas=metas, model_url=UNIVERSAL_SENTENCE_ENCODER_CMLM)
+    encoded_data = encoder.encode(test_data)
+    print(encoded_data.shape)
+    assert encoded_data.shape == (2, target_output_dim)
+
+
 @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
 def test_encoding_result():
     _test_encoding_results()
+    _test_encoding_results_cmlm()
 
 
 @mock.patch('tensorflow_hub.load', return_value=MockModule())
