@@ -34,18 +34,25 @@ class UniversalSentenceEncoder(BaseTFEncoder):
 
     def post_init(self):
         self.to_device()
-        import tensorflow_hub as hub
         if UNIVERSAL_SENTENCE_ENCODER_CMLM == self.model_url:
-            @as_ndarray
-            def __customized_model(data: 'np.ndarray') -> 'np.ndarray':
-                preprocessor = hub.KerasLayerc(
-                    "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/2")
-                encoder = hub.KerasLayer(UNIVERSAL_SENTENCE_ENCODER_CMLM)
-                return encoder(preprocessor(data))["default"]
-            self.model = __customized_model
+            self.model = self._load_model_cmlm
 
         else:
-            self.model = hub.load(self.model_url)
+            self.model = self._load_model_universal_sentence
+
+    @as_ndarray
+    def _load_model_cmlm(self, data: 'np.ndarray') -> 'np.ndarray':
+        import tensorflow_hub as hub
+        preprocessor = hub.KerasLayer(
+            "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/2")
+        encoder = hub.KerasLayer(UNIVERSAL_SENTENCE_ENCODER_CMLM)
+        return encoder(preprocessor(data))["default"]
+
+    @as_ndarray
+    def _load_model_universal_sentence(self, data: 'np.ndarray') -> 'np.ndarray':
+        import tensorflow_hub as hub
+        model = hub.load(self.model_url)
+        return model(data)
 
     @ batching
     @ as_ndarray
