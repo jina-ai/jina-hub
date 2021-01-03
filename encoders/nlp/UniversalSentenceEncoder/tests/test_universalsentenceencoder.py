@@ -4,7 +4,7 @@ import numpy as np
 import shutil
 import pytest
 
-from .. import UniversalSentenceEncoder, UNIVERSAL_SENTENCE_ENCODER
+from .. import UniversalSentenceEncoder, UNIVERSAL_SENTENCE_ENCODER, UNIVERSAL_SENTENCE_ENCODER_CMLM
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
@@ -84,3 +84,11 @@ def test_get_universal_sentence_encoder(mocker):
     metas = get_metas()
     encoder = UniversalSentenceEncoder(metas=metas)
     assert encoder.model_url == UNIVERSAL_SENTENCE_ENCODER
+
+
+@mock.patch('tensorflow_hub.load', return_value=MockModule())
+def test_get_universal_sentence_encoder_cmlm(mocker):
+    metas = get_metas()
+    encoder = UniversalSentenceEncoder(
+        metas=metas, model_url=UNIVERSAL_SENTENCE_ENCODER_CMLM)
+    assert encoder.model_url == UNIVERSAL_SENTENCE_ENCODER_CMLM
