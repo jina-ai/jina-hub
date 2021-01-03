@@ -79,19 +79,6 @@ def test_save_and_load_config(mocker):
 
 @mock.patch('tensorflow_hub.load', return_value=MockModule())
 def test_get_universal_sentence_encoder(mocker):
-    MODEL_ENCODER = 'https://tfhub.dev/google/universal-sentence-encoder/4'
     metas = get_metas()
     encoder = UniversalSentenceEncoder(metas=metas)
-    assert encoder.model_url == MODEL_ENCODER
-
-
-@mock.patch('tensorflow_hub.load', return_value=MockModule())
-def test_get_universal_sentence_encoder_cmlm(mocker):
-    MODEL_ENCODER_CMLM = "https://tfhub.dev/google/universal-sentence-encoder-cmlm/en-base/1"
-    PREPROCESOR_CMLM = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/2"
-
-    metas = get_metas()
-    encoder = UniversalSentenceEncoder(
-        metas=metas, model_url=MODEL_ENCODER_CMLM, preprocessor_url=PREPROCESOR_CMLM)
-    assert encoder.model_url == MODEL_ENCODER_CMLM
-    assert encoder.preprocessor_url == PREPROCESOR_CMLM
+    assert encoder.model_url == UNIVERSAL_SENTENCE_ENCODER
