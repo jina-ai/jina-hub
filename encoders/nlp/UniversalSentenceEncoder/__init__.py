@@ -7,6 +7,10 @@ from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTFEncoder
 
 
+UNIVERSAL_SENTENCE_ENCODER_CMLM = "https://tfhub.dev/google/universal-sentence-encoder-cmlm/en-base/1"
+UNIVERSAL_SENTENCE_ENCODER = 'https://tfhub.dev/google/universal-sentence-encoder/4'
+
+
 class UniversalSentenceEncoder(BaseTFEncoder):
     """
     :class:`UniversalSentenceEncoder` is a encoder based on the Universal Sentence
@@ -16,8 +20,8 @@ class UniversalSentenceEncoder(BaseTFEncoder):
 
     def __init__(
             self,
-            model_url: str = 'https://tfhub.dev/google/universal-sentence-encoder/4',
-            *args,
+            model_url: str = UNIVERSAL_SENTENCE_ENCODER,
+            * args,
             **kwargs):
         """
         :param model_url: the url of the model (TensorFlow Hub). For supported models see
