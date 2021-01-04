@@ -1,4 +1,4 @@
-paddlehub>=1.8.2
-paddlepaddle
-protobuf>=3.11.0
-six>=1.14.0
+paddlehub==1.8.2
+paddlepaddle==1.8.5
+protobuf==3.14.0
+six==1.15.0
