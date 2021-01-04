@@ -1,1 +1,1 @@
-annoy
+annoy==1.17.0

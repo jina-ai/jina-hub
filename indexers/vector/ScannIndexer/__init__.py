@@ -77,9 +77,9 @@ class ScannIndexer(BaseNumpyIndexer):
         Then the top-k from this new measurement will be selected.
         """
         import scann
-        index = scann.ScannBuilder(vecs, self.training_iterations, self.distance_measure). \
+        index = scann.scann_ops_pybind.builder(vecs, self.training_iterations, self.distance_measure). \
             score_ah(self.dimensions_per_block, self.anisotropic_quantization_threshold). \
-            reorder(self.reordering_num_neighbors).create_pybind()
+            reorder(self.reordering_num_neighbors).build()
         return index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
