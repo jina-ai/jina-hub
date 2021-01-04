@@ -486,7 +486,7 @@ class MITStates(BaseDataset):
       self.caption2imgids[cap].append(i)
       if adj not in self.noun2adjs[noun]:
         self.noun2adjs[noun].append(adj)
-    for noun, adjs in self.noun2adjs.iteritems():
+    for noun, adjs in self.noun2adjs.items():
       assert len(adjs) >= 2
 
   def caption_index_sample_(self, idx):
