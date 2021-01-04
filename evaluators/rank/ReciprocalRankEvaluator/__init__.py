@@ -12,10 +12,6 @@ class ReciprocalRankEvaluator(BaseRankingEvaluator):
         super().__init__(*args, **kwargs)
         self.eval_at = eval_at
 
-    @property
-    def metric(self):
-        return f'ReciprocalRank@{self.eval_at}'
-
     def evaluate(self, actual: Sequence[Union[str, int]], desired: Sequence[Union[str, int]], *args, **kwargs) -> float:
         """
         :param actual: should be a sequence of document IDs

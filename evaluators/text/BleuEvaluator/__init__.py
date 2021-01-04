@@ -2,6 +2,7 @@ from typing import List
 
 from jina.executors.evaluators.text import BaseTextEvaluator
 
+
 class BleuEvaluator(BaseTextEvaluator):
     """
     :class:`BleuEvaluator`Bilingual Evaluation Understudy Score. 
@@ -18,7 +19,6 @@ class BleuEvaluator(BaseTextEvaluator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-
     @staticmethod
     def get_score(actual_list: List[str], desired_list: List[List[str]], n_gram: int):
         '''
@@ -31,24 +31,26 @@ class BleuEvaluator(BaseTextEvaluator):
         It will check the n-gram size, if the n-gram is smaller than 4, 
         which is the standard for NLTK, it is neccesary to reset the weights
         '''
-        import nltk.translate.bleu_score as bleu    
+        import nltk.translate.bleu_score as bleu
         from nltk.translate.bleu_score import SmoothingFunction
 
         if n_gram == 1:
-            return bleu.sentence_bleu(desired_list, actual_list, weights = (1.0, 0, 0, 0), smoothing_function=SmoothingFunction().method1)
+            return bleu.sentence_bleu(desired_list, actual_list, weights=(1.0, 0, 0, 0),
+                                      smoothing_function=SmoothingFunction().method1)
         elif n_gram == 2:
-            return bleu.sentence_bleu(desired_list, actual_list, weights = (0.5, 0.5, 0, 0), smoothing_function=SmoothingFunction().method2)
+            return bleu.sentence_bleu(desired_list, actual_list, weights=(0.5, 0.5, 0, 0),
+                                      smoothing_function=SmoothingFunction().method2)
         elif n_gram == 3:
-            return bleu.sentence_bleu(desired_list, actual_list, weights = (0.33, 0.33, 0.33, 0), smoothing_function=SmoothingFunction().method3)
+            return bleu.sentence_bleu(desired_list, actual_list, weights=(0.33, 0.33, 0.33, 0),
+                                      smoothing_function=SmoothingFunction().method3)
         else:
-            return bleu.sentence_bleu(desired_list, actual_list) #if the ngram is at least 4, use the standard 
-        
+            return bleu.sentence_bleu(desired_list, actual_list)  # if the ngram is at least 4, use the standard
 
     def evaluate(self,
-            actual,
-            desired,
-            *args,
-            **kwargs) -> float:
+                 actual,
+                 desired,
+                 *args,
+                 **kwargs) -> float:
         """"
         :param desired: the expected text given by user as groundtruth.
         :param actual: the text predicted by the search system.
@@ -64,4 +66,3 @@ class BleuEvaluator(BaseTextEvaluator):
         actual_list = actual.lower().split()
 
         return self.get_score(actual_list, [desired_list], len(actual_list))
-

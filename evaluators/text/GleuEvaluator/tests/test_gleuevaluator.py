@@ -1,5 +1,5 @@
-from .. import GleuEvaluator
 import pytest
+from .. import GleuEvaluator
 
 
 @pytest.mark.parametrize('actual, desired, score', [
