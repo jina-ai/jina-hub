@@ -25,9 +25,6 @@ RUN apt update && apt install -y build-essential && \
     apt update && \
     apt install -y gcc-9 g++-9
 
-# isntall jina
-RUN pip install jina
-
 COPY . /workspace
 WORKDIR /workspace
 
