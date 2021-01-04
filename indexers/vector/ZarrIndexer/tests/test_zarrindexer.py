@@ -29,7 +29,7 @@ def metas(tmpdir):
 
 
 def test_zarr_indexer(metas):
-    with ZarrIndexer(index_filename='test.zarr', metas=metas) as indexer:
+    with ZarrIndexer(index_filename='test.zarr', metric='euclidean', metas=metas) as indexer:
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
@@ -55,7 +55,7 @@ def test_zarr_indexer_known(metas):
                         [100, 100, 100],
                         [1000, 1000, 1000]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with ZarrIndexer(index_filename='test.zarr', metas=metas) as indexer:
+    with ZarrIndexer(index_filename='test.zarr', metric='euclidean', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
@@ -90,7 +90,7 @@ def test_zarr_indexer_known_big(metas):
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with ZarrIndexer(index_filename='test.zarr', metas=metas) as indexer:
+    with ZarrIndexer(index_filename='test.zarr', metric='euclidean', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
