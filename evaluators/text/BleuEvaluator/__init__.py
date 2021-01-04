@@ -21,16 +21,16 @@ class BleuEvaluator(BaseTextEvaluator):
 
     @staticmethod
     def get_score(actual_list: List[str], desired_list: List[List[str]], n_gram: int):
-        '''
+        """
         :param desired_list: A List of a List of all possible sentences ex: [['cats are cute'], ['dogs are cute']]
         :param actual_list: A list of the sentences to be scored ex: ['cats are cute']
         :param n_gram: is the gram size ex: ['cats are cute'] -> n_gram = 3
         return gives a float of the sentence-level BLEU score
         Cumulative score is the calculation of individual n-grams
         from 1 to n-order, and then weights them with the geometric mean
-        It will check the n-gram size, if the n-gram is smaller than 4, 
+        It will check the n-gram size, if the n-gram is smaller than 4,
         which is the standard for NLTK, it is neccesary to reset the weights
-        '''
+        """
         import nltk.translate.bleu_score as bleu
         from nltk.translate.bleu_score import SmoothingFunction
 

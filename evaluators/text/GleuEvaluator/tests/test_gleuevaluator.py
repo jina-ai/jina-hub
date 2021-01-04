@@ -1,6 +1,8 @@
 import pytest
 from .. import GleuEvaluator
 
+from .. import GleuEvaluator
+
 
 @pytest.mark.parametrize('actual, desired, score', [
     ('I like watching soccer on tv', 'I like watching soccer on tv', 1.0),

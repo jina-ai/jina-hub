@@ -1,4 +1,5 @@
 import pytest
+
 from .. import BleuEvaluator
 
 
@@ -19,7 +20,7 @@ def test_bleu_evaluator(actual, desired, score):
 
 
 def test_without_reset_weight():
-    '''
+    """
     This 2 sentences are not very similar, they should have a score close to, but bigger than 0
     If we set the weights correctly, we have a score of around 0.5 as in the past test
     but if we don'd do that and harcode the n-gram to 4 or more
@@ -29,7 +30,7 @@ def test_without_reset_weight():
     but since the weights are not set correctly
     we get a warning invovling ZeroDivisionError: Fraction(0, 0)
     We need to reset the scores because the n-gram is 3 in this case.
-    '''
+    """
     evalualtor = BleuEvaluator()
     actual_list = 'A small cat'.lower().split()
     desired_list = 'A small cat'.lower().split()
