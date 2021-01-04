@@ -1,2 +1,1 @@
-jina
-zarr
+zarr==2.5.0
