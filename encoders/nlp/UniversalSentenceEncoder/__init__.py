@@ -1,14 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Optional
+
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTFEncoder
-
-
-UNIVERSAL_SENTENCE_ENCODER_CMLM = "https://tfhub.dev/google/universal-sentence-encoder-cmlm/en-base/1"
-UNIVERSAL_SENTENCE_ENCODER = 'https://tfhub.dev/google/universal-sentence-encoder/4'
 
 
 class UniversalSentenceEncoder(BaseTFEncoder):
@@ -18,41 +16,30 @@ class UniversalSentenceEncoder(BaseTFEncoder):
     It encodes data from an 1d array of string in size `B` into an ndarray in size `B x D`.
     """
 
-    def __init__(
+    def __init_(
             self,
-            model_url: str = UNIVERSAL_SENTENCE_ENCODER,
+            model_url: str = 'https://tfhub.dev/google/universal-sentence-encoder/4',
+            preprocessor_url: Optional[str] = None,
             * args,
             **kwargs):
         """
         :param model_url: the url of the model (TensorFlow Hub). For supported models see
                           family overview: https://tfhub.dev/google/collections/universal-sentence-encoder/1)
+        :param preprocessor_url: the url of preprocessors (TensorFlow Hub).
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
         self.model_url = model_url
+        self.preprocessor_url = preprocessor_url
 
     def post_init(self):
         self.to_device()
-        if UNIVERSAL_SENTENCE_ENCODER_CMLM == self.model_url:
-            self.model = self._load_model_cmlm
-
-        else:
-            self.model = self._load_model_universal_sentence
-
-    @as_ndarray
-    def _load_model_cmlm(self, data: 'np.ndarray') -> 'np.ndarray':
         import tensorflow_hub as hub
-        preprocessor = hub.KerasLayer(
-            "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/2")
-        encoder = hub.KerasLayer(UNIVERSAL_SENTENCE_ENCODER_CMLM)
-        return encoder(preprocessor(data))["default"]
-
-    @as_ndarray
-    def _load_model_universal_sentence(self, data: 'np.ndarray') -> 'np.ndarray':
-        import tensorflow_hub as hub
-        model = hub.load(self.model_url)
-        return model(data)
+        self.preprocessor = None
+        if self.preprocessor_url:
+            self.preprocessor = hub.KerasLayer(self.preprocessor_url)
+        self.model = hub.KerasLayer(self.model_url)
 
     @ batching
     @ as_ndarray
@@ -64,4 +51,6 @@ class UniversalSentenceEncoder(BaseTFEncoder):
         :param kwargs:
         :return: an ndarray in size `B x D`
         """
+        if self.preprocessor:
+            data = self.preprocessor(data)
         return self.model(data)
