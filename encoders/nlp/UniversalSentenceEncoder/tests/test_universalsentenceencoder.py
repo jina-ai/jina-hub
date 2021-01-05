@@ -43,19 +43,9 @@ def _test_encoding_results():
     assert encoded_data.shape == (2, target_output_dim)
 
 
-def _test_encoding_results_cmlm():
-    metas = get_metas()
-    encoder = UniversalSentenceEncoder(
-        metas=metas, model_url=UNIVERSAL_SENTENCE_ENCODER_CMLM)
-    encoded_data = encoder.encode(test_data)
-    print(encoded_data.shape)
-    assert encoded_data.shape == (2, target_output_dim)
-
-
 @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
 def test_encoding_result():
     _test_encoding_results()
-    _test_encoding_results_cmlm()
 
 
 @mock.patch('tensorflow_hub.load', return_value=MockModule())
@@ -91,14 +81,19 @@ def test_save_and_load_config(mocker):
 
 @mock.patch('tensorflow_hub.load', return_value=MockModule())
 def test_get_universal_sentence_encoder(mocker):
+    MODEL_ENCODER = 'https://tfhub.dev/google/universal-sentence-encoder/4'
     metas = get_metas()
     encoder = UniversalSentenceEncoder(metas=metas)
-    assert encoder.model_url == UNIVERSAL_SENTENCE_ENCODER
+    assert encoder.model_url == MODEL_ENCODER
 
 
 @mock.patch('tensorflow_hub.load', return_value=MockModule())
 def test_get_universal_sentence_encoder_cmlm(mocker):
+    MODEL_ENCODER_CMLM = "https://tfhub.dev/google/universal-sentence-encoder-cmlm/en-base/1"
+    PREPROCESOR_CMLM = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/2"
+
     metas = get_metas()
     encoder = UniversalSentenceEncoder(
-        metas=metas, model_url=UNIVERSAL_SENTENCE_ENCODER_CMLM)
-    assert encoder.model_url == UNIVERSAL_SENTENCE_ENCODER_CMLM
+        metas=metas, model_url=MODEL_ENCODER_CMLM, preprocessor_url=PREPROCESOR_CMLM)
+    assert encoder.model_url == MODEL_ENCODER_CMLM
+    assert encoder.preprocessor_url == PREPROCESOR_CMLM
