@@ -19,7 +19,8 @@ class UniversalSentenceEncoder(BaseTFEncoder):
     def __init__(
             self,
             model_url: str = 'https://tfhub.dev/google/universal-sentence-encoder/4',
-            *args,
+            preprocessor_url: Optional[str] = None,
+            * args,
             **kwargs):
         """
         :param model_url: the url of the model (TensorFlow Hub). For supported models see
