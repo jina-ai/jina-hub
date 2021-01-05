@@ -62,7 +62,7 @@ metas:
   py_modules:
     - B.py
     - A.py
-    - __init.py
+    - __init__.py
 ```
 
 #### Legacy Hub Pod Structure
