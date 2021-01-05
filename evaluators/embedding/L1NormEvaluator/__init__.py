@@ -8,10 +8,6 @@ class L1NormEvaluator(BaseEmbeddingEvaluator):
     the L1 Norm between them
     """
 
-    @property
-    def metric(self):
-        return 'L1NormEvaluator'
-
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
         :param actual: the embedding of the document (resulting from an Encoder)

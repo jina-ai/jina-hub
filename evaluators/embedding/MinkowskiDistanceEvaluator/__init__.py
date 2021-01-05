@@ -14,10 +14,6 @@ class MinkowskiDistanceEvaluator(BaseEmbeddingEvaluator):
         super().__init__(self, *args, **kwargs)
         self.order = order
 
-    @property
-    def metric(self):
-        return 'MinkowskiDistanceEvaluator'
-
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
         :param actual: the embedding of the document (resulting from an Encoder)

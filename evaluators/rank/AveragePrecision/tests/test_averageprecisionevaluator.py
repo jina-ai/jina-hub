@@ -1,6 +1,7 @@
-from .. import AveragePrecisionEvaluator
 import numpy as np
 import pytest
+
+from .. import AveragePrecisionEvaluator
 
 
 @pytest.mark.parametrize(

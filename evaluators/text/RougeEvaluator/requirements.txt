@@ -1,1 +1,1 @@
-rouge
+rouge==1.0.0

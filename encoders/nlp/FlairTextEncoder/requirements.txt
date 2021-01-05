@@ -1,1 +1,1 @@
-flair
+flair==0.7.0

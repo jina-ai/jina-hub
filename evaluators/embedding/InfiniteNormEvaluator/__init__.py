@@ -8,10 +8,6 @@ class InfiniteNormEvaluator(BaseEmbeddingEvaluator):
     the Infinite Norm between them
     """
 
-    @property
-    def metric(self):
-        return 'InfiniteNormEvaluator'
-
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
         :param actual: the embedding of the document (resulting from an Encoder)
