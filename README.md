@@ -86,9 +86,10 @@ This is also a valid structure, it works but not recommended:
 ```
 
 Please note that:
-    - Here `MyAwesomeExecutor` directory is not a python module, as it lacks `__init__.py` under the root;
-    - To import ``foo.py``, you must to use ``from jinahub.foo import bar``, where ``jinahub`` is the common namespace for all external modules;
-    - In `config.yml:metas.py_modules`, ``helper.py`` needs to be put before `MyAwesomeExecutor.py` in YAML ``py_modules``.
+    
+- Here `MyAwesomeExecutor` directory is not a python module, as it lacks `__init__.py` under the root;
+- To import ``foo.py``, you must to use ``from jinahub.foo import bar``, where ``jinahub`` is the common namespace for all external modules;
+- In `config.yml:metas.py_modules`, ``helper.py`` needs to be put before `MyAwesomeExecutor.py` in YAML ``py_modules``.
 
 
 
