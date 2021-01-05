@@ -1,3 +1,3 @@
-PyPDF2
-PyMuPDF
-Pillow
+PyPDF2==1.26.0
+PyMuPDF==1.18.5
+Pillow==8.0.1
