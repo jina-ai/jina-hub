@@ -32,7 +32,6 @@ Install [Docker](https://docs.docker.com/get-docker/).
 
 ### Create a New Executor
 ```bash
-git clone https://github.com/jina-ai/jina-hub.git
 jina hub new --type pod
 ```
 
