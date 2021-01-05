@@ -97,7 +97,6 @@ git push
 | `license` | License under which contained software is distributed, it should be [in this list](legacy/builder/osi-approved.yml) | `apache-2.0` |
 | `avatar` | A picture that personalizes and distinguishes your image | None |
 | `platform` | A list of CPU architectures that your image built on, each item should be [in this list](legacy/builder/platforms.yml) | `[linux/amd64]` |
-| `update` | The update policy of the image, see the table below for details  | `nightly` |
 | `keywords` | A list of strings help user to filter and locate your package  | None | 
 
 
