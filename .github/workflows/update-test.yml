@@ -11,9 +11,10 @@ jobs:
     timeout-minutes: 600
     steps:
       - name: Jina Hub Updater
-        uses: jina-ai/action-hub-updater@master
+        uses: jina-ai/action-hub-updater@fix-debugging-abuse-error
         with:
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           TAG_IN_ISSUES: '@jina-ai/engineering'
           MODULES_REPO: 'jina-ai/jina-hub'
           COMPARISON_LEVEL: 'patch'
+          FORCE_RECHECK_PR: 'true'
