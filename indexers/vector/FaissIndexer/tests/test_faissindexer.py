@@ -44,6 +44,7 @@ def test_faiss_indexer(metas):
         idx, dist = indexer.query(query, top_k=4)
         assert idx.shape == dist.shape
         assert idx.shape == (10, 4)
+        assert not indexer.is_trained
 
 
 @pytest.mark.parametrize('compression_level', [0, 1, 2, 3])
