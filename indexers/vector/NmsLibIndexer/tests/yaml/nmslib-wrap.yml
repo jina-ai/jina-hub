@@ -7,9 +7,10 @@ with:
       workspace: $TEST_WORKSPACE
     with:
       backend: numpy
-      compress_level: 1
       index_filename: wrap-npidx
       metric: euclidean
   space: l2
   index_params:
     post: 4
+metas:
+  workspace: $TEST_WORKSPACE
