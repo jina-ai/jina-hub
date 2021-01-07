@@ -1,15 +1,12 @@
 from jina.executors.evaluators.text import BaseTextEvaluator
 
+
 class HammingDistanceEvaluator(BaseTextEvaluator):
     """A:class:`HammingDistanceEvaluator` Gives the Hamming distance between result and groundtruth string..
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    @property
-    def metric(self):
-        return 'HammingDistance'
 
     def evaluate(self, actual: str, desired: str):
         if len(actual) != len(desired):
@@ -19,4 +16,3 @@ class HammingDistanceEvaluator(BaseTextEvaluator):
             if actual[n] != desired[n]:
                 dist_counter += 1
         return dist_counter
-    

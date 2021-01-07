@@ -30,7 +30,6 @@ def test_annoy_wrap_indexer(metas):
     with NumpyIndexer(index_filename='wrap-npidx.gz', metas=metas) as indexer:
         indexer.name = 'wrap-npidx'
         indexer.add(vec_idx, vec)
-        indexer.save()
 
     with BaseIndexer.load_config(os.path.join(cur_dir, 'yaml/annoy-wrap.yml')) as indexer:
         assert isinstance(indexer, AnnoyIndexer)

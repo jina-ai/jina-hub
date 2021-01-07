@@ -75,7 +75,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
             self.logger.warning('Invalid distance metric for Faiss index construction. Defaulting to l2 distance')
 
         index = self.to_device(index=faiss.index_factory(self.num_dim, self.index_key, metric))
-        if not self.is_trained and self.train_filepath:
+        if self.train_filepath:
             train_data = self._load_training_data(self.train_filepath)
             if train_data is None:
                 self.logger.warning('loading training data failed. some faiss indexes require previous training.')
@@ -83,7 +83,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
                 train_data = train_data.astype(np.float32)
                 if self.normalize:
                     faiss.normalize_L2(train_data)
-                self.train(index, train_data)
+                self._train(index, train_data)
         
         self.build_partial_index(vecs, index)
         index.nprobe = self.nprobe
@@ -105,7 +105,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         keys = self.int2ext_id[self.valid_indices][ids]
         return keys, dist
 
-    def train(self, index, data: 'np.ndarray', *args, **kwargs) -> None:
+    def _train(self, index, data: 'np.ndarray', *args, **kwargs) -> None:
         _num_samples, _num_dim = data.shape
         if not self.num_dim:
             self.num_dim = _num_dim

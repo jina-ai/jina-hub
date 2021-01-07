@@ -1,1 +1,1 @@
-nmslib
+nmslib==2.0.9

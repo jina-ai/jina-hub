@@ -17,22 +17,20 @@ From Jina 0.4.10, Jina Hub is referred as a Git Submodule in [`jina-ai/jina`](ht
 ```python
 # my_image_tag is the the built image name
 
-from jina.flow import Flow
-with Flow().add(uses=my_image_tag):
+from jina import Flow
+with Flow().add(uses='docker://' + my_image_tag):
     pass
 ```
 
-## Contribute to This Repository
+## Create a new Hub Pod/App
 
 ### Prerequisites
-```bash
-pip install "jina[hub]"
-```
-Install [Docker](https://docs.docker.com/get-docker/).
+
+- Install [Docker](https://docs.docker.com/get-docker/).
+- `pip install "jina[hub]"`
 
 ### Create a New Executor
 ```bash
-git clone https://github.com/jina-ai/jina-hub.git
 jina hub new --type pod
 ```
 
@@ -48,9 +46,53 @@ MyAwesomeExecutor/
 └── tests/
     ├── test_MyAwesomeExecutor.py
     └── __init__.py
+
 ```
 
-### Test an Executor Locally
+### Use `py_modules` to Import Multiple Files
+
+By default, `jina hub new` creates a Python module structure and guides you to write `MyAwesomeExecutor` class into `__init__.py`. If you have some other files that need to be imported for `MyAwesomeExecutor`, say `helper.py`, you can change [`metas.pymodules`](https://docs.jina.ai/api/jina.executors.metas.html?highlight=py_modules#confval-py_modules) in `config.yml` to import those files. Note, you have to write the dependency in reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
+
+```yaml
+!MyAwesomeExecutor
+with:
+  ...
+metas:
+  py_modules:
+    - B.py
+    - A.py
+    - __init__.py
+```
+
+#### Legacy Hub Pod Structure
+
+This is also a valid structure, it works but not recommended:
+
+
+```text
+- MyAwesomeExecutor/
+    |
+    |- Dockerfile
+    |- manifest.yml
+    |- README.md
+    |- requirements.txt
+    |- MyAwesomeExecutor.py
+    |- helper.py
+    |- config.yml
+        |- metas.py_modules
+            |- helper.py
+            |- MyAwesomeExecutor.py
+```
+
+Please note that:
+    
+- Here `MyAwesomeExecutor` directory is not a python module, as it lacks `__init__.py` under the root;
+- to import ``foo.py``, you must to use ``from jinahub.foo import bar``, where ``jinahub`` is the common namespace for all external modules;
+- in `config.yml:metas.py_modules`, ``helper.py`` needs to be put before `MyAwesomeExecutor.py`.
+
+
+
+### Test an Pod/App Locally
 
 ```bash
 jina hub build /MyAwesomeExecutor/
@@ -96,7 +138,6 @@ git push
 | `license` | License under which contained software is distributed, it should be [in this list](legacy/builder/osi-approved.yml) | `apache-2.0` |
 | `avatar` | A picture that personalizes and distinguishes your image | None |
 | `platform` | A list of CPU architectures that your image built on, each item should be [in this list](legacy/builder/platforms.yml) | `[linux/amd64]` |
-| `update` | The update policy of the image, see the table below for details  | `nightly` |
 | `keywords` | A list of strings help user to filter and locate your package  | None | 
 
 

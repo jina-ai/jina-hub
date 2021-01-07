@@ -42,9 +42,8 @@ class Sentencizer(BaseSegmenter):
         Split the text into sentences.
 
         :param text: the raw text
-        :return: a list of chunk dicts with the cropped images
+        :return: a list of chunk dicts with the split sentences
         """
-
         results = []
         ret = [(m.group(0), m.start(), m.end()) for m in
                re.finditer(self._slit_pat, text)]

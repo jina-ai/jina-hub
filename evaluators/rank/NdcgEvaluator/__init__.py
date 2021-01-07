@@ -36,10 +36,6 @@ class NDCGEvaluator(BaseRankingEvaluator):
         self.eval_at = eval_at
         self._power_relevance = power_relevance
 
-    @property
-    def metric(self):
-        return f'nDCG@{self.eval_at}' if self.eval_at else f'nDCG'
-
     def evaluate(
             self,
             actual: Sequence[Union[int, float]],

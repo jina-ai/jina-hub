@@ -1,2 +1,1 @@
-annoy
-jina
+annoy==1.17.0
