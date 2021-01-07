@@ -1,4 +1,4 @@
 jina
-torch>=1.1.0
-nltk
-pycocotools
+torch==1.7.0
+nltk==3.5
+pycocotools==2.0.2
