@@ -3,6 +3,7 @@ from typing import List, Union, Optional
 
 import numpy as np
 
+from jina.executors.decorators import as_update_method
 from jina.executors.indexers.vector import NumpyIndexer
 from jina.helper import cached_property
 
@@ -35,7 +36,8 @@ class ZarrIndexer(NumpyIndexer):
         """
         import zarr
         return zarr.open(store=self.index_abspath, mode='w')
-    
+
+    @as_update_method
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs) -> None:
         self._validate_key_vector_shapes(keys, vectors)
         if 'default' in self.write_handler.array_keys():
@@ -45,6 +47,7 @@ class ZarrIndexer(NumpyIndexer):
         self.key_bytes += keys.tobytes()
         self.key_dtype = keys.dtype.name
         self._size += keys.shape[0]
+        self.valid_indices = np.concatenate((self.valid_indices, np.full(len(keys), True)))
     
     @property
     def query_handler(self):
@@ -58,6 +61,7 @@ class ZarrIndexer(NumpyIndexer):
                          shape=(self._size, self.num_dim), chunks=True)
     
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
+        self._check_keys(ids)
         int_ids = [self.ext2int_id[j] for j in ids]
         return self.raw_ndarray.get_orthogonal_selection(int_ids)
     
