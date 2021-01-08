@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 from .. import InfiniteNormEvaluator
@@ -28,4 +27,3 @@ from .. import InfiniteNormEvaluator
 def test_infinitenorm_evaluator(doc_embedding, gt_embedding, expected):
     evaluator = InfiniteNormEvaluator()
     assert evaluator.evaluate(actual=doc_embedding, desired=gt_embedding) == expected
-    np.testing.assert_almost_equal(evaluator.mean, expected)
