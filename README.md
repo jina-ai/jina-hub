@@ -63,7 +63,7 @@ It will start a wizard in CLI to guide you create your app.
 Build your Docker image using our [naming conventions](#naming-conventions):
 
 ```bash
-docker image build -r jinahub/type.kind.jina-image-name:image_version-jina_version <your_folder>
+docker image build -t jinahub/type.kind.jina-image-name:image_version-jina_version <your_folder>
 ```
 
 Push to Jina Hub:
