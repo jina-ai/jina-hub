@@ -15,14 +15,14 @@ From Jina 0.4.10 onwards, Jina Hub is referred as a Git Submodule in [`jina-ai/j
 ## Use Hub Image in Flow API
 
 ```python
-# my_image_tag is the the built image name
+# my_image_tag is the built image name
 
 from jina import Flow
 with Flow().add(uses='docker://' + my_image_tag):
     pass
 ```
 
-## Create a new Hub Pod/App
+## Create a New Hub Pod/App
 
 ### Prerequisites
 
@@ -30,6 +30,7 @@ with Flow().add(uses='docker://' + my_image_tag):
 - `pip install "jina[hub]"`
 
 ### Create a New Executor
+
 ```bash
 jina hub new --type pod
 ```
@@ -57,13 +58,12 @@ jina hub new --type app
 
 It will start a wizard in CLI to guide you create your app.
 
-### Push a Dockerized App
+## Upload Your Image to Jina Hub
 
-Build your Docker image:
+Build your Docker image using our [naming conventions](#naming-conventions):
 
 ```bash
-cd <app_folder>
-docker image build -t jinahub/app.app.jina-wikipedia-sentences-30k:0.2.0-0.8.2 .
+docker image build -r jinahub/type.kind.jina-image-name:image_version-jina_version <your_folder>
 ```
 
 Push to Jina Hub:
@@ -71,12 +71,12 @@ Push to Jina Hub:
 `jina hub login`, then copy/paste the token into GitHub to verify your account
 
 ```bash
-jina hub push jinahub/app.app.jina-wikipedia-sentences-30k:0.2.0-0.8.2
+jina hub push jinahub/type.kind.jina-image-name:image-jina_version 
 ```
 
 ### Use `py_modules` to Import Multiple Files
 
-By default, `jina hub new` creates a Python module structure and guides you to write `MyAwesomeExecutor` class into `__init__.py`. If you have some other files that need to be imported for `MyAwesomeExecutor`, say `helper.py`, you can change [`metas.pymodules`](https://docs.jina.ai/api/jina.executors.metas.html?highlight=py_modules#confval-py_modules) in `config.yml` to import those files. Note, you have to write the dependency in reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
+By default, `jina hub new --pod` creates a Python module structure and guides you to write `MyAwesomeExecutor` class into `__init__.py`. If you have some other files that need to be imported for `MyAwesomeExecutor`, say `helper.py`, you can change [`metas.pymodules`](https://docs.jina.ai/api/jina.executors.metas.html?highlight=py_modules#confval-py_modules) in `config.yml` to import those files. Note, you have to write the dependencies in reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
 
 ```yaml
 !MyAwesomeExecutor
@@ -114,8 +114,6 @@ Please note that:
 - Here `MyAwesomeExecutor` directory is not a python module, as it lacks `__init__.py` under the root;
 - to import ``foo.py``, you must to use ``from jinahub.foo import bar``, where ``jinahub`` is the common namespace for all external modules;
 - in `config.yml:metas.py_modules`, ``helper.py`` needs to be put before `MyAwesomeExecutor.py`.
-
-
 
 ### Test a Pod/App Locally
 
@@ -170,7 +168,7 @@ git push
 All apps and executors should follow the naming convention:
 
 ```
-jinahub/type.kind.jina-app-name:app_version-jina_version
+jinahub/type.kind.jina-image-name:image-jina_version
 ```
 
 For example:
