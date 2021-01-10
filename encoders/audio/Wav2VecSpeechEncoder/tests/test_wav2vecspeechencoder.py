@@ -22,4 +22,4 @@ def test_encoding_results(tmpdir):
 
 def test_raise_exception():
     with pytest.raises(PretrainedModelFileDoesNotExist):
-        Wav2VecSpeechEncoder()
+        Wav2VecSpeechEncoder(model_path=None)
