@@ -2,6 +2,8 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
+from typing import Optional
+
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
@@ -19,7 +21,11 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
     ndarray into a `Batch x Concatenated Features` ndarray.
     """
 
-    def __init__(self, model_path: str = None, input_sample_rate: int = 22050, *args, **kwargs):
+    def __init__(self,
+                 model_path: Optional[str] = '/tmp/wav2vec_large.pt',
+                 input_sample_rate: int = 22050,
+                 *args,
+                 **kwargs):
         """
         Wav2vec model produces a representation for each time step at a rate of 100 Hz.
 
