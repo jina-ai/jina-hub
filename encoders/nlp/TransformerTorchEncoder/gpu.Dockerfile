@@ -7,7 +7,7 @@ RUN conda update conda -c conda-forge && \
     pip install -r  /requirements.txt --no-cache-dir && \
     conda clean -afy
 
-FROM ubuntu:20.04
+FROM nvidia/cuda:11.0-base-ubuntu20.04
 
 # Prepare shell and file system
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 SHELL=/bin/bash
