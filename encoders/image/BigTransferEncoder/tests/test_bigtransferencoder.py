@@ -1,18 +1,20 @@
-import pytest
 import os
+
+import pytest
 import numpy as np
 
-from .. import BigTransferEncoder
 from jina.executors.metas import get_default_metas
 from jina.executors import BaseExecutor
 from jina.excepts import PretrainedModelFileDoesNotExist
+
+from .. import BigTransferEncoder
 
 
 def get_encoder(model_path_tmp_dir):
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
-        metas['workspace'] = model_path_tmp_dir
+    metas['workspace'] = model_path_tmp_dir
     return BigTransferEncoder(model_path='pretrained', channel_axis=1, metas=metas)
 
 
@@ -36,4 +38,4 @@ def test_save_and_load(tmpdir):
 
 def test_raise_exception():
     with pytest.raises(PretrainedModelFileDoesNotExist):
-        assert BigTransferEncoder()
+        assert BigTransferEncoder(model_path=None)
