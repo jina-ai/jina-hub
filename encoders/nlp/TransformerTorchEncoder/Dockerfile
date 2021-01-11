@@ -3,7 +3,7 @@ FROM continuumio/miniconda3 AS conda
 COPY env_gpu.yml /
 COPY requirements.txt /
 RUN conda update conda -c conda-forge && \
-    conda env update -f /env_gpu.yml -n base && \
+    conda env update -f /env.yml -n base && \
     pip install -r  /requirements.txt --no-cache-dir && \
     conda clean -afy
 
