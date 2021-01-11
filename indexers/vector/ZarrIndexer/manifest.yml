@@ -12,3 +12,4 @@ version: 0.0.8
 license: apache-2.0
 keywords: [zarr, numpy, indexer]
 type: pod
+timestamp: 1610393989
