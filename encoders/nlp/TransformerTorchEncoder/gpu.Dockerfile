@@ -16,7 +16,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Copy over conda and bashrc, install environment
 COPY --from=conda /opt/ /opt/
-RUN sudo ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
