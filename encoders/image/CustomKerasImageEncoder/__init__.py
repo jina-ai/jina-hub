@@ -1,8 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import numpy as np
 import os
+from typing import Optional
+
+import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTFEncoder
@@ -17,7 +19,11 @@ class CustomKerasImageEncoder(BaseTFEncoder):
     https://www.tensorflow.org/api_docs/python/tf/keras/applications
     """
 
-    def __init__(self, model_path: str = None, layer_name: str = None, channel_axis: int = -1, *args, **kwargs):
+    def __init__(self,
+                 model_path: Optional[str] = 'models/mobilenet_v2.h5',
+                 layer_name: Optional[str] = 'global_average_pooling2d',
+                 channel_axis: int = 1,
+                 *args, **kwargs):
 
         """
         :param model_path: the path where the model is stored.
