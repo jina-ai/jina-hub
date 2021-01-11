@@ -22,7 +22,8 @@ jobs:
       - id: changed-files
         uses: jitterbit/get-changed-files@v1
         continue-on-error: true
-      - id: executor-changed
+      - name: Check if any executor has changed
+        id: executor-changed
         run: |
           is_changed=0
           executor_dirs=("crafters encoders evaluators indexers rankers segmenters")
