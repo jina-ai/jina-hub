@@ -1,6 +1,6 @@
 FROM continuumio/miniconda3 AS conda
 
-COPY env_gpu.yml /
+COPY env.yml /
 COPY requirements.txt /
 RUN conda update conda -c conda-forge && \
     conda env update -f /env.yml -n base && \
