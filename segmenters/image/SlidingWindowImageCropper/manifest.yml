@@ -1,6 +1,6 @@
 manifest_version: 1
 name: SlidingWindowImageCropper
-kind: crafter
+kind: segmenter
 type: pod
 description: crops the image with a sliding window.
 author: Jina AI Dev-Team (dev-team@jina.ai)
