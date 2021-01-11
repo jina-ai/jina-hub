@@ -4,12 +4,12 @@ __license__ = "Apache-2.0"
 from typing import Dict
 
 import numpy as np
-from jina.executors.crafters import BaseCrafter
+from jina.executors.segmenters import BaseSegmenter
 
 from .helper import _crop_image, _move_channel_axis, _load_image
 
 
-class ImageCropper(BaseCrafter):
+class ImageCropper(BaseSegmenter):
     """
     :class:`ImageCropper` crops the image with the specific crop box. The coordinate is the same coordinate-system in
         the :py:mode:`PIL.Image`.
@@ -31,7 +31,7 @@ class ImageCropper(BaseCrafter):
         self.width = width
         self.channel_axis = channel_axis
 
-    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
+    def segment(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
         Crop the input image array.
 

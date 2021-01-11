@@ -1,6 +1,6 @@
 manifest_version: 1
 name: ImageCropper
-kind: crafter
+kind: segmenter
 type: pod
 description: crops the image with the specific crop box. The coordinate is the same
   coordinate-system in
