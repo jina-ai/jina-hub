@@ -21,7 +21,7 @@ def test_crop():
     width = 30
     height = 20
     crafter = ImageCropper(top=top, left=left, width=width, height=height)
-    crafted_doc = crafter.craft(img_array)
+    crafted_doc = crafter.segment(img_array)
     np.testing.assert_array_equal(
         crafted_doc['blob'], np.asarray(img_array[top:top + height, left:left + width, :]),
         'img_array: {}\ntest: {}\ncontrol:{}'.format(
@@ -40,7 +40,7 @@ def test_crop_file_image():
     img = Image.open(tmp_fn).convert('RGB')
     img_array = np.array(img).astype('float32')
     crafter = ImageCropper(top=541, left=992, width=24, height=67)
-    crafted_doc = crafter.craft(img_array)
+    crafted_doc = crafter.segment(img_array)
     assert crafted_doc['blob'].shape == (67, 24, 3)
     crop_real_img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-0.png'))
     crop_real_img_array = np.array(crop_real_img).astype('float32')
