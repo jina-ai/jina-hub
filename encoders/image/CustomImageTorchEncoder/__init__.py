@@ -52,7 +52,7 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
     def _get_features(self, data):
         feature_map = None
 
-        def get_activation(model, input, output):
+        def get_activation(model, model_input, output):
             nonlocal feature_map
             feature_map = output.detach()
 

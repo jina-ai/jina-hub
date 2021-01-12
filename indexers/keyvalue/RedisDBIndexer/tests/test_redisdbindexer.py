@@ -31,8 +31,8 @@ def get_documents(ids):
     ]
     id_to_document = {d[0]: d for d in documents}
     data = [
-        (id_to_document[id][0], id_to_document[id], MessageToJson(create_document(*id_to_document[id])).encode('utf-8'))
-        for id in ids
+        (id_to_document[doc_id][0], id_to_document[doc_id], MessageToJson(create_document(*id_to_document[doc_id])).encode('utf-8'))
+        for doc_id in ids
     ]
     return zip(*data)
 
