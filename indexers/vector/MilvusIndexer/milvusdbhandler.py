@@ -98,11 +98,11 @@ class MilvusDBHandler:
             db.insert(reduce(operator.concat, keys.tolist()), vectors)
 
     def build_index(self, index_type: str, index_params: dict):
-        t = self.get_index_type(index_type)
+        type = self.get_index_type(index_type)
 
         self.logger.info(f'Creating index of type: {index_type} at'
                          f' Milvus Server. collection: {self.collection_name} with index params: {index_params}')
-        status = self.milvus_client.create_index(self.collection_name, t, index_params)
+        status = self.milvus_client.create_index(self.collection_name, type, index_params)
         if not status.OK():
             self.logger.error('Creating index failed: {}'.format(status))
             raise MilvusDBException(status.message)
