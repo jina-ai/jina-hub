@@ -8,6 +8,7 @@ from .. import UniversalSentenceEncoder
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
+
 def get_metas():
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
@@ -34,6 +35,7 @@ class MockModule:
 target_output_dim = 512
 test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
 
+
 def _test_encoding_results():
     metas = get_metas()
     encoder = UniversalSentenceEncoder(metas=metas)
@@ -46,12 +48,12 @@ def test_encoding_result():
     _test_encoding_results()
 
 
-@mock.patch('tensorflow_hub.load', return_value=MockModule())
+@mock.patch('tensorflow_hub.KerasLayer', return_value=MockModule())
 def test_encoding_result_local(mocker):
     _test_encoding_results()
 
 
-@mock.patch('tensorflow_hub.load', return_value=MockModule())
+@mock.patch('tensorflow_hub.KerasLayer', return_value=MockModule())
 def test_save_and_load(mocker):
     metas = get_metas()
     encoder = UniversalSentenceEncoder(metas=metas)
@@ -66,7 +68,7 @@ def test_save_and_load(mocker):
     rm_files([encoder.save_abspath])
 
 
-@mock.patch('tensorflow_hub.load', return_value=MockModule())
+@mock.patch('tensorflow_hub.KerasLayer', return_value=MockModule())
 def test_save_and_load_config(mocker):
     metas = get_metas()
     encoder = UniversalSentenceEncoder(metas=metas)
@@ -77,7 +79,7 @@ def test_save_and_load_config(mocker):
     rm_files([encoder.config_abspath])
 
 
-@mock.patch('tensorflow_hub.load', return_value=MockModule())
+@mock.patch('tensorflow_hub.KerasLayer', return_value=MockModule())
 def test_get_universal_sentence_encoder(mocker):
     MODEL_ENCODER = 'https://tfhub.dev/google/universal-sentence-encoder/4'
     metas = get_metas()
@@ -85,7 +87,7 @@ def test_get_universal_sentence_encoder(mocker):
     assert encoder.model_url == MODEL_ENCODER
 
 
-@mock.patch('tensorflow_hub.load', return_value=MockModule())
+@mock.patch('tensorflow_hub.KerasLayer', return_value=MockModule())
 def test_get_universal_sentence_encoder_cmlm(mocker):
     MODEL_ENCODER_CMLM = "https://tfhub.dev/google/universal-sentence-encoder-cmlm/en-base/1"
     PREPROCESOR_CMLM = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/2"
