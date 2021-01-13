@@ -35,6 +35,8 @@ class UniversalSentenceEncoder(BaseTFEncoder):
 
     def post_init(self):
         self.to_device()
+        import tensorflow as tf
+        import tensorflow_text as text
         import tensorflow_hub as hub
         self.preprocessor = None
         if self.preprocessor_url:
