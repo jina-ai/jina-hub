@@ -69,9 +69,9 @@ def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index)
     else:
         assert np.allclose(encoded_data[0], encoded_data[1], atol=1e-5, rtol=1e-4)
 
+
 @pytest.mark.parametrize('acceleration', ['amp', 'quant'])
 def test_encoding_results_acceleration(test_metas, acceleration):
-
     if 'JINA_TEST_GPU' in os.environ and acceleration == 'quant':
         pytest.skip("Can't test quantization on GPU.")
 
@@ -82,6 +82,7 @@ def test_encoding_results_acceleration(test_metas, acceleration):
 
     assert encoded_data.shape == (2, 768)
     assert not np.allclose(encoded_data[0], encoded_data[1], rtol=1)
+
 
 @pytest.mark.parametrize('model_name', ['bert-base-uncased'])
 @pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
@@ -147,11 +148,6 @@ def test_save_and_load(test_metas, model_name, pooling_strategy, layer_index):
         'layer_index': layer_index
     }
     encoder = get_encoder(test_metas, **params)
-
-    encoder.save_config()
-    _assert_params_equal(params, encoder)
-    assert os.path.exists(encoder.config_abspath)
-
     test_data = np.array(['a', 'b', 'c', 'x', '!'])
     encoded_data_control = encoder.encode(test_data)
 
@@ -193,16 +189,18 @@ def test_wrong_layer_index(test_metas, layer_index):
     encoder.layer_index = layer_index
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     with pytest.raises(ValueError):
-        encoded_data = encoder.encode(test_data)
+        _ = encoder.encode(test_data)
 
 
 def test_wrong_pooling_strategy():
     with pytest.raises(NotImplementedError):
         TransformerTorchEncoder(pooling_strategy='wrong')
 
+
 def test_wrong_pooling_acceleration():
     with pytest.raises(NotImplementedError):
         TransformerTorchEncoder(acceleration='wrong')
+
 
 @pytest.mark.parametrize(
     'params',
@@ -212,4 +210,4 @@ def test_no_cls_token(test_metas, params):
     encoder = get_encoder(test_metas, **params)
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     with pytest.raises(ValueError):
-        encoder.encode(test_data)
+        _ = encoder.encode(test_data)
