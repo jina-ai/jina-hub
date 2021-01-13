@@ -14,6 +14,9 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 SHELL=/bin/bash
 ENV PATH /opt/conda/bin:$PATH
 SHELL ["/bin/bash", "-c"]
 
+# Commented out until GPU testing possible in CI
+# ENV JINA_TEST_GPU=true
+
 # Copy over conda and bashrc, install environment
 COPY --from=conda /opt/ /opt/
 RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
