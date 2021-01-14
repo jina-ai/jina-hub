@@ -1,8 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import numpy as np
 import os
+from typing import Optional
+
+import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTFEncoder
@@ -22,7 +24,10 @@ class BigTransferEncoder(BaseTFEncoder):
         Known issue: this does not work on tensorflow==2.2.0, https://github.com/tensorflow/tensorflow/issues/38571
     """
 
-    def __init__(self, model_path: str = None, channel_axis: int = 1, *args, **kwargs):
+    def __init__(self,
+                 model_path: Optional[str] = '/workspace/pretrained',
+                 channel_axis: int = 1,
+                 *args, **kwargs):
         """
         :param model_path: the path of the model in the `SavedModel` format. `model_path` should be a directory path,
             which has the following structure. The pretrained model can be downloaded at

@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Optional
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
@@ -14,7 +15,10 @@ class ImageOnnxEncoder(BaseOnnxEncoder):
     Internally, :class:`OnnxImageEncoder` wraps the models from `onnxruntime`.
     """
 
-    def __init__(self, pool_strategy: str = 'mean', *args, **kwargs):
+    def __init__(self,
+                 model_path: Optional[str] = 'models/vision/classification/mobilenet/model/mobilenetv2-7.onnx',
+                 output_feature: Optional[str] = 'mobilenetv20_features_relu1_fwd',
+                 pool_strategy: str = 'mean', *args, **kwargs):
         """
         :param pool_strategy: the pooling strategy
             - `None` means that the output of the model will be the 4D tensor output of the last convolutional block.
@@ -22,7 +26,7 @@ class ImageOnnxEncoder(BaseOnnxEncoder):
             and thus the output of the model will be a 2D tensor.
             - `max` means that global max pooling will be applied.
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(model_path=model_path, output_feature=output_feature, *args, **kwargs)
         self.pool_strategy = pool_strategy
         if pool_strategy not in ('mean', 'max', None):
             raise NotImplementedError(f'unknown pool_strategy: {self.pool_strategy}')
