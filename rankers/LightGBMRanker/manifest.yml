@@ -1,0 +1,13 @@
+manifest_version: 1
+name: LightGBMRanker
+kind: ranker
+description: |
+  Uses Learning to Rank Algorithms pre-trained with LightGBM
+author: maximilian.werk@jina.ai
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [ltr, lightgbm, ranker]
+type: pod
