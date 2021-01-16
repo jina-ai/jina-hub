@@ -1,5 +1,7 @@
 FROM jinaai/jina
 
+RUN apt-get update && apt-get install libgomp1
+
 # setup the workspace
 COPY . /workspace
 WORKDIR /workspace
