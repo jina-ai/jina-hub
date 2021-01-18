@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-from typing import List
+from typing import Sequence
 
 import numpy as np
 
@@ -18,7 +18,7 @@ class TirgMultiModalEncoder(TorchDevice, BaseMultiModalEncoder):
     def __init__(self, model_path: str = 'checkpoint.pth',
                  texts_path: str = 'texts.pkl',
                  channel_axis: int = -1,
-                 positional_modality: List[str] = ['image', 'text'],
+                 positional_modality: Sequence[str] = ['image', 'text'],
                  *args, **kwargs):
         """
         :param model_path: the path where the model is stored.
