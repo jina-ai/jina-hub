@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional, Iterator, Any
+from typing import Optional, Iterator
 
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 
@@ -13,7 +13,8 @@ class RedisDBIndexer(BinaryPbIndexer):
 
     def __init__(self,
                  hostname: str = '0.0.0.0',
-                 port: int = 63079,
+                 # default port on linux
+                 port: int = 6379,
                  db: int = 0,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -32,20 +33,26 @@ class RedisDBIndexer(BinaryPbIndexer):
         except redis.exceptions.ConnectionError as r_con_error:
             self.logger.error('Redis connection error: ', r_con_error)
 
-    def query(self, key: int, *args, **kwargs) -> Optional[Any]:
+    def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
         """Find the protobuf chunk/doc using id
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
-        result = []
+        results = []
         with self.get_query_handler() as redis_handler:
             for _key in redis_handler.scan_iter(match=key):
                 res = {
                     "key": _key,
                     "values": redis_handler.get(_key),
                 }
-                result.append(res)
-        return result
+                results.append(res)
+        if len(results) == 0:
+            self.logger.warning(f'No matches for key {key} in {self.index_filename}')
+            return None
+
+        if len(results) > 1:
+            self.logger.warning(f'More than 1 element retrieved from Redis with matching key {key}. Will return first...')
+        return results[0]['values']
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         """Add a JSON-friendly object to the indexer
@@ -63,7 +70,7 @@ class RedisDBIndexer(BinaryPbIndexer):
         """
         missed = []
         for key in keys:
-            if len(self.query(key)) == 0:
+            if self.query(key) is None:
                 missed.append(key)
         if missed:
             raise KeyError(f'Key(s) {missed} were not found in redis')

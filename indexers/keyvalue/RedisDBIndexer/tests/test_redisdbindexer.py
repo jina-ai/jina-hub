@@ -2,11 +2,10 @@ from pathlib import Path
 
 import pytest
 import redis
-from google.protobuf.json_format import MessageToJson, Parse
+
 from jina import Document
 from jina.executors import BaseExecutor
 from jina.executors.indexers import BaseIndexer
-
 from .. import RedisDBIndexer
 
 cur_dir = Path(__file__).parent.absolute()
@@ -31,7 +30,11 @@ def get_documents(ids):
     ]
     id_to_document = {d[0]: d for d in documents}
     data = [
-        (id_to_document[doc_id][0], id_to_document[doc_id], MessageToJson(create_document(*id_to_document[doc_id])).encode('utf-8'))
+        (
+            id_to_document[doc_id][0],
+            id_to_document[doc_id],
+            create_document(*id_to_document[doc_id])
+        )
         for doc_id in ids
     ]
     return zip(*data)
@@ -42,13 +45,13 @@ def apply_action(idx, action):
     with idx:
         keys = key_to_id.keys()
         ids = key_to_id.values()
-        ids, documents, documents_bytes = get_documents(ids)
+        ids, documents, documents_proto = get_documents(ids)
         if method == 'add':
-            idx.add(keys, documents_bytes)
+            idx.add(keys, [doc.SerializeToString() for doc in documents_proto])
         elif method == 'delete':
             idx.delete(keys)
         elif method == 'update':
-            idx.update(keys, documents_bytes)
+            idx.update(keys, [doc.SerializeToString() for doc in documents_proto])
         else:
             print(f'method {method} is not implemented')
         idx.touch()
@@ -63,10 +66,12 @@ def apply_actions(save_abspath, index_abspath, actions):
     return save_abspath, index_abspath
 
 
-def validate_positive_results(keys, documents, searcher):
+def validate_positive_results(keys, documents, searcher: RedisDBIndexer):
     print('validate_positive_results')
     for key, query_doc in zip(keys, documents):
-        result_doc = Parse(searcher.query(key)[0]['values'].decode('utf8'), Document())
+        result = searcher.query(key)
+        result_doc = Document()
+        result_doc._document.ParseFromString(result)
         assert result_doc.id == str(query_doc[0]) * 16
         assert result_doc.buffer == query_doc[1].encode('utf8')
         assert round(result_doc.weight, 5) == query_doc[2]
@@ -76,7 +81,8 @@ def validate_positive_results(keys, documents, searcher):
 def validate_negative_results(keys, searcher):
     for key in keys:
         result_docs = searcher.query(key)
-        assert result_docs == []
+        assert result_docs is None
+
 
 def validate_results(save_abspath, results, negative_results):
     with BaseIndexer.load(save_abspath) as searcher:
@@ -97,7 +103,7 @@ def get_indexers():
 def run_crud_test_exception_aware(actions, results, no_results, exception, mocker, tmpdir):
     # action is defined as (method, key, document_id)
     for indexer in get_indexers():
-        r = redis.Redis(host='0.0.0.0', port=63079, db=0, socket_timeout=10)
+        r = redis.Redis(host='0.0.0.0', port=6379, db=0, socket_timeout=10)
         r.flushdb()
         indexer.workspace = tmpdir
         with indexer:
@@ -113,6 +119,7 @@ def run_crud_test_exception_aware(actions, results, no_results, exception, mocke
         else:
             apply_actions(save_abspath, index_abspath, actions)
             validate_results(save_abspath, results, no_results)
+
 
 def test_basic_add(mocker, tmpdir):
     run_crud_test_exception_aware(
@@ -142,28 +149,6 @@ def test_update_existing_key(mocker, tmpdir):
         {1: 4, 2: 2},
         [0, 3],
         None,
-        mocker,
-        tmpdir
-    )
-
-
-def test_update_non_existing_key(mocker, tmpdir):
-    run_crud_test_exception_aware(
-        [('update', {1: 4})],
-        {},
-        [0, 3],
-        KeyError,
-        mocker,
-        tmpdir
-    )
-
-
-def test_update_existing_and_non_existing_key(mocker, tmpdir):
-    run_crud_test_exception_aware(
-        [('add', {1: 1, 2: 2}), ('update', {1: 4, 3: 4})],
-        {},
-        [0, 3],
-        KeyError,
         mocker,
         tmpdir
     )
