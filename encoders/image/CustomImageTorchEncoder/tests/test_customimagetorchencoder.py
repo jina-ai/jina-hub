@@ -37,7 +37,7 @@ def test_metas(tmpdir):
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
-    metas['workspace'] = tmpdir
+    metas['workspace'] = str(tmpdir)
     yield metas
 
 
