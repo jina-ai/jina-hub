@@ -1,18 +1,21 @@
 FROM continuumio/miniconda3 AS conda
 
-COPY env.yml /
+COPY env_gpu.yml /
 COPY requirements.txt /
 RUN conda update conda -c conda-forge && \
-    conda env update -f /env.yml -n base && \
+    conda env update -f /env_gpu.yml -n base && \
     pip install -r  /requirements.txt --no-cache-dir && \
     conda clean -afy
 
-FROM ubuntu:20.04 AS base
+FROM nvidia/cuda:11.0-base-ubuntu20.04 AS base
 
 # Prepare shell and file system
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 SHELL=/bin/bash
 ENV PATH /opt/conda/bin:$PATH
 SHELL ["/bin/bash", "-c"]
+
+# Commented out until GPU testing possible in CI
+# ENV JINA_TEST_GPU=true
 
 # Copy over conda and bashrc, install environment
 COPY --from=conda /opt/ /opt/
