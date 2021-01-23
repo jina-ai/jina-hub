@@ -47,7 +47,7 @@ class MockEncoderCMLM:
         assert len(data['input_word_ids'].shape) == 2
         result['default'] = np.empty(
             shape=(2, data['input_word_ids'].shape[1]))
-       return result
+        return result
 
 
 target_output_dim = 512
