@@ -16,6 +16,12 @@ PREPROCESOR_CMLM = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/2"
 
 
 class CMLMEncoder:
+    """
+    :class:`UniversalSentenceEncoder` is a encoder based on the CMLM Universal Sentence
+    Encoder family (https://tfhub.dev/google/collections/universal-sentence-encoder/1).
+    It encodes data from an 1d array of string in size `B` into an ndarray in size `B x D`.
+    """
+
     def post_init(self):
         import tensorflow as tf
         import tensorflow_text as text
