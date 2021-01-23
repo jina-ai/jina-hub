@@ -36,7 +36,7 @@ class MockPreprocessorCMLM:
     def __call__(self, data, *args, **kwargs):
         result = {}
         assert len(data.shape) == 1
-        result[self.tag] = np.stack(
+        result['input_word_ids'] = np.stack(
             [[i for i in range(target_output_dim_cmlm)]] * data.shape[0])
         return result
 
@@ -83,8 +83,7 @@ def test_encoding_result_local(mocker):
 
 @ mock.patch('tensorflow_hub.KerasLayer')
 def test_encoding_result_local_cmlm(mocker):
-    mocker.side_effect = [MockModuleCMLM(
-        'input_word_ids'), MockModuleCMLM('default')]
+    mocker.side_effect = [MockPreprocessorCMLM(), MockEncoderCMLM()]
     _test_cmlm_encoding_results()
 
 
