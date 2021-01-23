@@ -17,8 +17,9 @@ PREPROCESOR_CMLM = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/2"
 
 class CMLMEncoder:
     """
-    :class:`UniversalSentenceEncoder` is a encoder based on the CMLM Universal Sentence
-    Encoder family (https://tfhub.dev/google/collections/universal-sentence-encoder/1).
+    :class:`CMLMEncoder` is an private class  encoder to represent a CMLM
+    Universal Sentence Encoder family
+    (https://tfhub.dev/google/universal-sentence-encoder-cmlm/en-base/1).
     It encodes data from an 1d array of string in size `B` into an ndarray in size `B x D`.
     """
 
@@ -29,10 +30,22 @@ class CMLMEncoder:
         self.encoder = hub.KerasLayer(MODEL_ENCODER_CMLM)
 
     def encode(self, data: 'np.ndarray') -> 'np.ndarray':
+        """
+        :param data: a 1d array of string type in size `B`
+        :param args:
+        :param kwargs:
+        :return: an ndarray in size `B x D`
+        """
         return self.encoder(self.bert_preprocessor(data))['default']
 
 
 class GeneralEncoder:
+    """
+    :class:`GeneralEncoder` is general universal sentence encoder
+    which load a model and it encodes from an 1d array of string
+    in size `B` into an ndarray in size `B x D`.
+    """
+
     def __init__(self, model_url: str):
         self.model_url = model_url
 
@@ -40,6 +53,12 @@ class GeneralEncoder:
         self.model = hub.load(self.model_url)
 
     def encode(self, data: 'np.ndarray') -> 'np.ndarray':
+        """
+        :param data: a 1d array of string type in size `B`
+        :param args:
+        :param kwargs:
+        :return: an ndarray in size `B x D`
+        """
         return self.model(data)
 
 
@@ -78,7 +97,6 @@ class UniversalSentenceEncoder(BaseTFEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-
         :param data: a 1d array of string type in size `B`
         :param args:
         :param kwargs:
