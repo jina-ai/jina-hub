@@ -20,6 +20,6 @@ RUN git clone https://github.com/onnx/models.git && \
     cd ..
 
 # for downloading pre-trained model and testing the image
-RUN pip install pytest && pytest -v -s && rm -rf models
+RUN pip install pytest && pytest -v -s
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]

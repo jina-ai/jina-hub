@@ -143,8 +143,8 @@ def test_aggregate_functions(chunk_scores, aggregate_function, is_reversed_score
     ranker = SimpleAggregateRanker(aggregate_function=aggregate_function, is_reversed_score=is_reversed_score)
     doc_idx = ranker.score(*chunk_scores)
     assert_document_order(doc_idx)
-    for i, (id, score) in enumerate(zip(doc_ids, doc_scores)):
-        assert doc_idx[i][0] == id
+    for i, (doc_id, score) in enumerate(zip(doc_ids, doc_scores)):
+        assert doc_idx[i][0] == doc_id
         assert doc_idx[i][1] == score
     assert len(doc_idx) == len(doc_ids) == len(doc_scores)
 

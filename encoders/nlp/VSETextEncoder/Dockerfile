@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:latest
+FROM pytorch/pytorch:1.7.0-cuda11.0-cudnn8-runtime
 
 RUN apt-get update && apt-get install --no-install-recommends -y git wget gcc
 

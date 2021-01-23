@@ -2,16 +2,18 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
+from typing import Optional
+
 import numpy as np
 import json
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders import BaseNumericEncoder
-from jina.executors.encoders.frameworks import BaseTFEncoder
+from jina.executors.devices import TFDevice
 from jina.excepts import PretrainedModelFileDoesNotExist
 
 
-class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
+class CompressionVaeEncoder(TFDevice, BaseNumericEncoder):
     """
     :class:`CompressionVaeEncoder` is a dimensionality reduction tool based on the idea of
     Variational Autoencoders. It encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
@@ -19,7 +21,7 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
     Full code and documentation can be found here: https://github.com/maxfrenzel/CompressionVAE..
     """
 
-    def __init__(self, model_path: str = None,
+    def __init__(self, model_path: Optional[str] = 'model',
                  *args, **kwargs):
         """
         :param model_path: specifies the path to the pretrained model
@@ -81,11 +83,9 @@ class CompressionVaeEncoder(BaseNumericEncoder, BaseTFEncoder):
         :param data: a `B x T` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
         """
-        import tensorflow as tf
-
         return self.sess.run([self.embeddings],
                              feed_dict={self.data_feature_placeholder: data})[0]
 
     def close(self) -> None:
-        super.close()
+        super().close()
         self.sess.close()

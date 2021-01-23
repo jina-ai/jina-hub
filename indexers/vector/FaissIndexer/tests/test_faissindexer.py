@@ -168,7 +168,10 @@ def test_faiss_indexer_known_big(metas):
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with FaissIndexer(index_filename='faiss.test.gz', index_key='Flat', train_filepath=train_filepath,
+    with FaissIndexer(index_filename='faiss.test.gz',
+                      index_key='Flat',
+                      requires_training=True,
+                      train_filepath=train_filepath,
                       metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
@@ -185,8 +188,10 @@ def test_faiss_indexer_known_big(metas):
         np.testing.assert_equal(indexer.query_by_id([10000, 15000]), vectors[[0, 5000]])
 
 
-@pytest.mark.parametrize('compression_level', [0, 1, 2, 3, 4])
-def test_indexer_train_from_index_different_compression_levels(metas, compression_level):
+@pytest.mark.parametrize('compression_level', [0, 1, 4])
+@pytest.mark.parametrize('train_data', ['new', 'none', 'index'])
+@pytest.mark.parametrize('max_num_points', [None, 257, 500, 10000])
+def test_indexer_train_from_index_different_compression_levels(metas, compression_level, train_data, max_num_points):
     np.random.seed(500)
     num_data = 500
     num_dim = 64
@@ -196,10 +201,21 @@ def test_indexer_train_from_index_different_compression_levels(metas, compressio
     vec = np.random.random([num_data, num_dim])
 
     train_filepath = os.path.join(metas['workspace'], 'faiss.test.gz')
+    if train_data == 'new':
+        train_filepath = os.path.join(os.environ['TEST_WORKSPACE'], 'train.tgz')
+        train_data = vec
+        with gzip.open(train_filepath, 'wb', compresslevel=1) as f:
+            f.write(train_data.tobytes())
+    elif train_data == 'none':
+        train_filepath = None
+    elif train_data == 'index':
+        train_filepath = os.path.join(metas['workspace'], 'faiss.test.gz')
 
     with FaissIndexer(index_filename='faiss.test.gz',
                       index_key='IVF10,PQ4',
                       train_filepath=train_filepath,
+                      max_num_training_points=max_num_points,
+                      requires_training=True,
                       compression_level=compression_level,
                       metas=metas) as indexer:
         indexer.add(vec_idx, vec)
@@ -213,13 +229,17 @@ def test_indexer_train_from_index_different_compression_levels(metas, compressio
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
 
+
 @pytest.mark.parametrize('distance', ['l2', 'inner_product'])
 def test_faiss_normalization(metas, distance):
     num_data = 2
     num_dims = 64
-    vec_idx = np.random.randint(0, high=num_data, size=[num_data])
 
-    with FaissIndexer(index_key='Flat', distance=distance, normalize=True) as indexer:
+    with FaissIndexer(index_key='Flat',
+                      distance=distance,
+                      normalize=True,
+                      requires_training=True,
+                      metas=metas) as indexer:
         vecs = np.zeros((num_data, num_dims))
         vecs[:, 0] = 2
         vecs[0, 1] = 3

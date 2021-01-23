@@ -22,6 +22,19 @@ def metas(tmpdir):
     del os.environ['TEST_WORKSPACE']
 
 
+@pytest.fixture(scope="function")
+def test_data():
+    """
+    Create an array of the given shape and populate it with random samples from a uniform distribution over [0, 1).
+    :return: a `B x T` numpy ``ndarray``, `B` is the size of the batch
+    """
+    batch_size = 10
+    input_dim = 28
+    test_data = np.random.rand(batch_size, input_dim)
+
+    return test_data
+
+
 def get_encoder(metadata, test_data):
     tmpdir = metadata['workspace']
     model_path = os.path.join(tmpdir, 'model')
@@ -40,19 +53,6 @@ def get_encoder(metadata, test_data):
     model.train()
 
     return CompressionVaeEncoder(model_path=model_path, metas=metadata)
-
-
-@pytest.fixture(scope="function")
-def test_data():
-    """
-    Create an array of the given shape and populate it with random samples from a uniform distribution over [0, 1).
-    :return: a `B x T` numpy ``ndarray``, `B` is the size of the batch
-    """
-    batch_size = 10
-    input_dim = 28
-    test_data = np.random.rand(batch_size, input_dim)
-
-    return test_data
 
 
 def test_encoding_results(metas, test_data):
