@@ -23,7 +23,7 @@ class CMLMEncoder:
     It encodes data from an 1d array of string in size `B` into an ndarray in size `B x D`.
     """
 
-    def post_init(self):
+    def __init__(self):
         import tensorflow as tf
         import tensorflow_text as text
         self.bert_preprocessor = hub.KerasLayer(PREPROCESOR_CMLM)
@@ -48,8 +48,6 @@ class GeneralEncoder:
 
     def __init__(self, model_url: str):
         self.model_url = model_url
-
-    def post_init(self):
         self.model = hub.load(self.model_url)
 
     def encode(self, data: 'np.ndarray') -> 'np.ndarray':
@@ -81,16 +79,16 @@ class UniversalSentenceEncoder(BaseTFEncoder):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-
         self.model_url = model_url
+
+    def post_init(self):
+        self.to_device()
 
         if self.model_url == MODEL_ENCODER_CMLM:
             self.sentence_encoder = CMLMEncoder()
         else:
             self.sentence_encoder = GeneralEncoder(self.model_url)
 
-    def post_init(self):
-        self.to_device()
         self.sentence_encoder.post_init()
 
     @batching
