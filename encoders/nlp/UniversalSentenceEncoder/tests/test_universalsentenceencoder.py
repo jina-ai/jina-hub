@@ -32,21 +32,22 @@ class MockModule:
         return np.stack([[i for i in range(target_output_dim)]] * data.shape[0])
 
 
-class MockModuleCMLM:
-    def __init__(self, tag):
-        self.tag = tag
-
+class MockPreprocessorCMLM:
     def __call__(self, data, *args, **kwargs):
         result = {}
-        if self.tag == 'default':
-            assert len(data['input_word_ids'].shape) == 2
-            result[self.tag] = np.empty(
-                shape=(2, data['input_word_ids'].shape[1]))
-        else:
-            assert len(data.shape) == 1
-            result[self.tag] = np.stack(
-                [[i for i in range(target_output_dim_cmlm)]] * data.shape[0])
+        assert len(data.shape) == 1
+        result[self.tag] = np.stack(
+            [[i for i in range(target_output_dim_cmlm)]] * data.shape[0])
         return result
+
+
+class MockEncoderCMLM:
+    def __call__(self, data, *args, **kwargs):
+        result = {}
+        assert len(data['input_word_ids'].shape) == 2
+        result['default'] = np.empty(
+            shape=(2, data['input_word_ids'].shape[1]))
+       return result
 
 
 target_output_dim = 512
@@ -123,7 +124,7 @@ def test_get_universal_sentence_encoder(mocker):
 
 @ mock.patch('tensorflow_hub.KerasLayer')
 def test_get_universal_sentence_encoder_mlcm(mocker):
-    mocker.side_effect = [MockModuleCMLM(''), MockModuleCMLM('default')]
+    mocker.side_effect = [MockPreprocessorCMLM(), MockEncoderCMLM()]
     metas = get_metas()
     encoder = UniversalSentenceEncoder(
         metas=metas, model_url=MODEL_ENCODER_CMLM)
