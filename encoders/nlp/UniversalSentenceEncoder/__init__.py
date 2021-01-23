@@ -8,6 +8,8 @@ import numpy as np
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTFEncoder
 
+UNIVERSAL_SENTENCE_ENCODER = 'https://tfhub.dev/google/universal-sentence-encoder/4',
+
 
 class UniversalSentenceEncoder(BaseTFEncoder):
     """
@@ -18,7 +20,7 @@ class UniversalSentenceEncoder(BaseTFEncoder):
 
     def __init__(
             self,
-            model_url: str = 'https://tfhub.dev/google/universal-sentence-encoder/4',
+            model_url: str = UNIVERSAL_SENTENCE_ENCODER
             preprocessor_url: Optional[str] = None,
             * args,
             **kwargs):
@@ -36,6 +38,7 @@ class UniversalSentenceEncoder(BaseTFEncoder):
     def post_init(self):
         self.to_device()
         import tensorflow as tf
+        import tensorflow_text as text
         import tensorflow_hub as hub
         self.preprocessor = None
         if self.preprocessor_url:
