@@ -24,7 +24,6 @@ class CMLMEncoder:
     """
 
     def __init__(self):
-        import tensorflow as tf
         import tensorflow_text as text
         self.bert_preprocessor = hub.KerasLayer(PREPROCESOR_CMLM)
         self.encoder = hub.KerasLayer(MODEL_ENCODER_CMLM)
