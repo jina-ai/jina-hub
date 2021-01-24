@@ -89,8 +89,6 @@ class UniversalSentenceEncoder(BaseTFEncoder):
         else:
             self.sentence_encoder = GeneralEncoder(self.model_url)
 
-        self.sentence_encoder.post_init()
-
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
