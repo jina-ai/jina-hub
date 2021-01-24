@@ -52,6 +52,5 @@ def test_resize_gray(img_array):
     # Test for tuple/list target_size
     output_dim = (img_height, img_width)
     crafter = ImageResizer(target_size=output_dim)
-    img_array = create_random_gray_img_array(img_width, img_height)
     crafted_doc = crafter.craft(img_array)
     assert crafted_doc['blob'].shape == output_dim
