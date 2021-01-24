@@ -2,6 +2,8 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
+from typing import Optional
+
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
@@ -17,8 +19,8 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
     https://pytorch.org/docs/stable/torchvision/models.html
     """
 
-    def __init__(self, model_path: str = None,
-                 layer_name: str = None,
+    def __init__(self, model_path: Optional[str] = 'models/mobilenet_v2.pth',
+                 layer_name: Optional[str] = 'features',
                  pool_strategy: str = 'mean',
                  channel_axis: int = 1,
                  *args, **kwargs):
@@ -36,8 +38,8 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
 
     def post_init(self):
         super().post_init()
-        import torch
         if self.model_path and os.path.exists(self.model_path):
+            import torch
             if self.pool_strategy is not None:
                 self.pool_fn = getattr(np, self.pool_strategy)
             self.model = torch.load(self.model_path)
@@ -50,7 +52,7 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
     def _get_features(self, data):
         feature_map = None
 
-        def get_activation(model, input, output):
+        def get_activation(model, model_input, output):
             nonlocal feature_map
             feature_map = output.detach()
 

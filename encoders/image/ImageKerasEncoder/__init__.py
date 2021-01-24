@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Optional
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
@@ -15,7 +16,7 @@ class ImageKerasEncoder(BaseTFEncoder):
     https://keras.io/applications/
     """
 
-    def __init__(self, model_name: str = None, img_shape: int = 96,
+    def __init__(self, model_name: Optional[str] = None, img_shape: int = 96,
                  pool_strategy: str = 'avg', channel_axis: int = 1, *args, **kwargs):
         """
         :param model_name: the name of the model. Supported models include
