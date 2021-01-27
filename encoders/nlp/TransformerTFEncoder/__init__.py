@@ -22,7 +22,6 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         pooling_strategy: str = 'mean',
         layer_index: int = -1,
         max_length: Optional[int] = None,
-        model_save_path: Optional[str] = None,
         *args,
         **kwargs,
     ):
@@ -35,10 +34,6 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
             strategies include 'cls', 'mean', 'max', 'min'.
         :param layer_index: index of the transformer layer that is used to create encodings. Layer 0 corresponds to the embeddings layer
         :param max_length: the max length to truncate the tokenized sequences to.
-        :param model_save_path: the path of the encoder model. If a valid path is given, the encoder will be saved to the given path
-
-        ..warning::
-            `model_save_path` should be relative to executor's workspace
         """
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
@@ -46,7 +41,6 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         self.pooling_strategy = pooling_strategy
         self.layer_index = layer_index
         self.max_length = max_length
-        self.model_save_path = model_save_path
 
         if self.pooling_strategy == 'auto':
             self.pooling_strategy = 'cls'
@@ -70,21 +64,6 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
             self.pretrained_model_name_or_path, output_hidden_states=True
         )
         self.to_device()
-
-    def __getstate__(self):
-        if self.model_save_path:
-            if not os.path.exists(self.model_abspath):
-                self.logger.info(f'create folder for saving transformer models: {self.model_abspath}')
-                os.mkdir(self.model_abspath)
-            self.model.save_pretrained(self.model_abspath)
-            self.tokenizer.save_pretrained(self.model_abspath)
-        return super().__getstate__()
-
-    @property
-    def model_abspath(self) -> str:
-        """Get the file path of the encoder model storage
-        """
-        return self.get_file_from_workspace(self.model_save_path)
 
     @batching
     @as_ndarray
