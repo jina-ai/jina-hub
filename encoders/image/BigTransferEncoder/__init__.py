@@ -27,6 +27,7 @@ class BigTransferEncoder(BaseTFEncoder):
     def __init__(self,
                  model_path: Optional[str] = '/workspace/pretrained',
                  channel_axis: int = 1,
+                 layer=None,
                  *args, **kwargs):
         """
         :param model_path: the path of the model in the `SavedModel` format. `model_path` should be a directory path,
@@ -48,10 +49,12 @@ class BigTransferEncoder(BaseTFEncoder):
 
         :param channel_axis: the axis id of the channel, -1 indicate the color channel info at the last axis.
                 If given other, then ``np.moveaxis(data, channel_axis, -1)`` is performed before :meth:`encode`.
+        :param layer: Layer to get the encodings from. It can be between 1 and 8.
         """
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
         self.model_path = model_path
+        self.layer = layer
 
     def post_init(self):
         super().post_init()
@@ -59,8 +62,13 @@ class BigTransferEncoder(BaseTFEncoder):
             self.to_device()
             import tensorflow as tf
             self.logger.info(f'model_path: {self.model_path}')
-            _model = tf.saved_model.load(self.model_path)
-            self.model = _model.signatures['serving_default']
+
+            if self.layer is not None:
+                _model = tf.keras.models.load_model(self.model_path)
+                self.model = tf.keras.Sequential(_model.layers[0:self.layer])
+            else:
+                _model = tf.saved_model.load(self.model_path)
+                self.model = _model.signatures['serving_default']
             self._get_input = tf.convert_to_tensor
         else:
             raise PretrainedModelFileDoesNotExist(f'model at {self.model_path} does not exist')
@@ -68,7 +76,12 @@ class BigTransferEncoder(BaseTFEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        import tensorflow as tf
         if self.channel_axis != -1:
             data = np.moveaxis(data, self.channel_axis, -1)
-        _output = self.model(self._get_input(data.astype(np.float32)))
-        return _output['output_1'].numpy()
+        if self.layer is not None:
+            output = self.model(tf.image.resize(self._get_input(data.astype(np.float32)), [224, 224])).numpy()
+        else:
+            tensor = self.model(self._get_input(data.astype(np.float32)))
+            output = tensor['output_1'].numpy()
+        return output

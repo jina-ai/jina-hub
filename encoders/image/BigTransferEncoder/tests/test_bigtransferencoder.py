@@ -10,25 +10,28 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 from .. import BigTransferEncoder
 
 
-def get_encoder(model_path_tmp_dir):
+def get_encoder(model_path_tmp_dir, layer):
     metas = get_default_metas()
     if 'JINA_TEST_GPU' in os.environ:
         metas['on_gpu'] = True
     metas['workspace'] = model_path_tmp_dir
-    return BigTransferEncoder(model_path='pretrained', channel_axis=1, metas=metas)
+    return BigTransferEncoder(model_path='pretrained', channel_axis=1, layer=layer, metas=metas)
 
-
-def test_encoding_results(tmpdir):
+@pytest.mark.parametrize('layer', [None, 4])
+def test_encoding_results(tmpdir, layer):
     input_dim = 48
     output_dim = 2048
-    encoder = get_encoder(str(tmpdir))
+    encoder = get_encoder(str(tmpdir), layer)
     test_data = np.random.rand(2, 3, input_dim, input_dim)
     encoded_data = encoder.encode(test_data)
-    assert encoded_data.shape == (2, output_dim)
+    if layer is None:
+        assert encoded_data.shape == (2, output_dim)
+    else:
+        assert encoded_data.shape == (2, 14, 14, 1024)
 
-
-def test_save_and_load(tmpdir):
-    encoder = get_encoder(str(tmpdir))
+@pytest.mark.parametrize('layer', [None, 3])
+def test_save_and_load(tmpdir, layer):
+    encoder = get_encoder(str(tmpdir), layer)
     encoder.touch()
     encoder.save()
     assert os.path.exists(encoder.save_abspath)
