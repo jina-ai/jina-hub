@@ -1,5 +1,4 @@
 import io
-import os
 
 import numpy as np
 from PIL import Image
@@ -16,7 +15,7 @@ def create_test_image(output_fn, size_width=50, size_height=50):
 
 def test_io_uri():
     crafter = ImageReader()
-    tmp_fn = os.path.join(crafter.current_workspace, 'test.jpeg')
+    tmp_fn = crafter.get_file_from_workspace('test.jpeg')
     img_size = 50
     create_test_image(tmp_fn, size_width=img_size, size_height=img_size)
     test_doc = crafter.craft(buffer=None, uri=tmp_fn)
@@ -25,7 +24,7 @@ def test_io_uri():
 
 def test_io_buffer():
     crafter = ImageReader()
-    tmp_fn = os.path.join(crafter.current_workspace, 'test.jpeg')
+    tmp_fn = crafter.get_file_from_workspace('test.jpeg')
     img_size = 50
     create_test_image(tmp_fn, size_width=img_size, size_height=img_size)
     image_buffer = io.BytesIO()
