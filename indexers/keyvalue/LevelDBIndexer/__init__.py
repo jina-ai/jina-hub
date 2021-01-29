@@ -43,14 +43,21 @@ class LevelDBIndexer(BinaryPbIndexer):
         return value
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """Add a JSON-friendly object to the indexer
-        :param objs: objects can be serialized into JSON format
+        """Add JSON-friendly serialized documents to the indexer.
+
+        :param keys: document ids
+        :param values: JSON-friendly serialized documents
         """
         with self.query_handler.write_batch() as h:
             for k, v in zip(keys, values):
                 h.put(bytes(k), v)
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        """Update JSON-friendly serialized documents on the indexer.
+
+        :param keys: document ids to update
+        :param values: JSON-friendly serialized documents
+        """
         missed = []
         for key in keys:
             if self.query_handler.get(bytes(key)) is None:
@@ -63,6 +70,10 @@ class LevelDBIndexer(BinaryPbIndexer):
         return
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
+        """Delete JSON-friendly serialized documents from the indexer.
+
+        :param keys: document ids to delete
+        """
         with self.query_handler.write_batch() as h:
             for k in keys:
                 h.delete(bytes(k))
