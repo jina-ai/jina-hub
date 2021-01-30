@@ -13,8 +13,8 @@ class MongoDBIndexer(BinaryPbIndexer):
     def __init__(self,
                  hostname: str = '127.0.0.1',
                  port: int = 27017,
-                 username: str = None,
-                 password: str = None,
+                 username: Optional[str] = None,
+                 password: Optional[str] = None,
                  database: str = 'defaultdb',
                  collection: str = 'defaultcol',
                  *args, **kwargs):
@@ -54,10 +54,10 @@ class MongoDBIndexer(BinaryPbIndexer):
         return self.handler
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs) -> None:
-        """Add JSON-friendly serialized documents to the indexer.
+        """Add JSON-friendly serialized documents to the index.
 
         :param keys: document ids
-        :param values: JSON-friendly serialized documents
+        :param values: serialized documents
         """
         total_inserted_ids = []
         with self.write_handler as mongo_handler:
@@ -67,7 +67,7 @@ class MongoDBIndexer(BinaryPbIndexer):
                 total_inserted_ids.extend(inserted_ids)
 
         if total_inserted_ids and len(total_inserted_ids) != len(list(keys)):
-            self.logger.error(f'Mismatch in mongo insert')
+            self.logger.error(f'Mismatch in mongo insert - expected: {len(list(keys))}, actual: {len(total_inserted_ids)}')
 
     @cached_property
     def query_handler(self):
@@ -78,7 +78,7 @@ class MongoDBIndexer(BinaryPbIndexer):
     def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
         """Query the protobuf documents via id.
         :param key: ``id``
-        :return: protobuf chunk or protobuf document
+        :return: serialized document
         """
         with self.query_handler as mongo_handler:
             result = mongo_handler.query(key)

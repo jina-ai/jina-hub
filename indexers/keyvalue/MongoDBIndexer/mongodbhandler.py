@@ -9,7 +9,7 @@ class MongoDBException(Exception):
 
 
 class MongoDBHandler:
-    """Mongodb Handler to connect to the database & insert documents into the collection.
+    """Mongodb Handler to connect to the database and can apply add, update, delete and query.
     MongoDB has no access control by default, hence it can be used without username:password.
     """
 
@@ -101,7 +101,7 @@ class MongoDBHandler:
     def delete(self, keys: Iterator[int], *args, **kwargs):
         """Delete documents from the indexer.
 
-        :param keys: document ids to delete
+        :param keys: document ids to delete related documents
         """
         import pymongo
         try:
@@ -111,6 +111,10 @@ class MongoDBHandler:
             self.logger.error(f'got an error while deleting a document in the db {exp}')
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        """Update documents on the indexer.
+
+        :param keys: documents to be updated
+        """
         import pymongo
         try:
             # update_many updates several keys with the same op. / data.

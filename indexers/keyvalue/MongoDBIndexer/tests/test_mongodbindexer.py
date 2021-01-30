@@ -49,11 +49,11 @@ def test_mongodbindexer():
         d.ParseFromString(result['values'])
         assert d.text == query_text
 
-    # update
+    # documents to be updated
     new_docs = list(random_docs(num_docs=num_docs, chunks_per_doc=3))
-    # what we insert
+    # documents for insertion
     new_values = [doc.SerializeToString() for doc in new_docs]
-    # what we assert
+    # documents for assertion
     new_texts = [doc.text for doc in new_docs]
 
     with MongoDBIndexer() as mongo_indexer:
