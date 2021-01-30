@@ -59,15 +59,18 @@ class MongoDBIndexer(BinaryPbIndexer):
         :param keys: document ids
         :param values: serialized documents
         """
-        total_inserted_ids = []
+
+        added_id_counter = 0
+        total_id_counter = 0
         with self.write_handler as mongo_handler:
             for i, j in zip(keys, values):
                 doc = {'_id': i, 'values': j}
                 inserted_ids = mongo_handler.add(documents=[doc])
-                total_inserted_ids.extend(inserted_ids)
+                added_id_counter += len(inserted_ids)
+                total_id_counter += 1
 
-        if total_inserted_ids and len(total_inserted_ids) != len(list(keys)):
-            self.logger.error(f'Mismatch in mongo insert - expected: {len(list(keys))}, actual: {len(total_inserted_ids)}')
+        if added_id_counter != total_id_counter:
+            self.logger.error(f'Mismatch in mongo insert - expected: {total_id_counter}, actual: {added_id_counter}')
 
     @cached_property
     def query_handler(self):
