@@ -37,7 +37,7 @@ class RedisDBIndexer(BinaryPbIndexer):
     def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
         """Find the protobuf documents via id.
         :param key: ``id``
-        :return: protobuf chunk or protobuf document
+        :return: matching document
         """
         results = []
         with self.get_query_handler() as redis_handler:
