@@ -4,14 +4,13 @@ from jina.logging.logger import JinaLogger
 
 
 class MongoDBException(Exception):
-    """ Any errors raised by MongoDb """
+    """Any errors raised by MongoDb.
+    """
 
 
 class MongoDBHandler:
-    """
-    Mongodb Handler to connect to the database & insert documents in the collection
-    MongoDB has no access control by default, hence can be used without username:password.
-    If username & password are passed, we need to create it (can be changed to existing un:pw)
+    """Mongodb Handler to connect to the database & insert documents into the collection.
+    MongoDB has no access control by default, hence it can be used without username:password.
     """
 
     def __init__(self,
@@ -39,6 +38,8 @@ class MongoDBHandler:
         return self.connect()
 
     def connect(self) -> 'MongoDBHandler':
+        """Connect to the database.
+        """
         import pymongo
         try:
             self.client = pymongo.MongoClient(self.connection_string)
@@ -56,13 +57,17 @@ class MongoDBHandler:
 
     @property
     def database(self):
+        """Get database instance.
+        """
         return self.client[self.database_name]
 
     @property
     def collection(self):
+        """Get collection.
+        """
         return self.database[self.collection_name]
 
-    def find(self, key: int) -> Optional[bytes]:
+    def query(self, key: int) -> Optional[bytes]:
         import pymongo
         try:
             cursor = self.collection.find({'_id': key})
@@ -73,7 +78,11 @@ class MongoDBHandler:
         except pymongo.errors.PyMongoError as exp:
             self.logger.error(f'Got an error while finding a document in the db {exp}')
 
-    def insert(self, documents: Iterator[Dict]) -> Optional[str]:
+    def add(self, documents: Iterator[Dict]) -> Optional[str]:
+        """Add JSON-friendly python objects to the indexer.
+
+        :param documents: JSON-friendly serialized documents
+        """
         import pymongo
         try:
             result = self.collection.insert_many(documents)
@@ -90,6 +99,10 @@ class MongoDBHandler:
             raise MongoDBException(exp)
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
+        """Delete documents from the indexer.
+
+        :param keys: document ids to delete
+        """
         import pymongo
         try:
             count = self.collection.delete_many({'_id': {'$in': list(keys)}}).deleted_count
