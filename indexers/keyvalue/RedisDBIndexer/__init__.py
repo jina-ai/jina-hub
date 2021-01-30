@@ -23,7 +23,7 @@ class RedisDBIndexer(BinaryPbIndexer):
         self.db = db
 
     def get_query_handler(self):
-        """Get the database handler
+        """Get the database handler.
         """
         import redis
         r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
@@ -33,8 +33,9 @@ class RedisDBIndexer(BinaryPbIndexer):
         except redis.exceptions.ConnectionError as r_con_error:
             self.logger.error('Redis connection error: ', r_con_error)
 
+    # TODO unify result interface
     def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
-        """Find the protobuf chunk/doc using id
+        """Find the protobuf documents via id.
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
@@ -51,13 +52,15 @@ class RedisDBIndexer(BinaryPbIndexer):
             return None
 
         if len(results) > 1:
-            self.logger.warning(f'More than 1 element retrieved from Redis with matching key {key}. Will return first...')
+            self.logger.warning(
+                f'More than 1 element retrieved from Redis with matching key {key}. Will return first...')
         return results[0]['values']
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """Add a JSON-friendly object to the indexer
-        :param keys: keys to be added
-        :param values: values to be added
+        """Add JSON-friendly serialized documents to the index.
+
+        :param keys: document ids
+        :param values: JSON-friendly serialized documents
         """
         redis_docs = [{'_id': i, 'values': j} for i, j in zip(keys, values)]
 
@@ -66,7 +69,10 @@ class RedisDBIndexer(BinaryPbIndexer):
                 redis_handler.set(k['_id'], k['values'])
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """updates the keys if they exist
+        """Update JSON-friendly serialized documents on the index.
+
+        :param keys: document ids to update
+        :param values: JSON-friendly serialized documents
         """
         missed = []
         for key in keys:
@@ -79,7 +85,9 @@ class RedisDBIndexer(BinaryPbIndexer):
         self.add(keys, values)
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
-        """deletes the keys in redis
+        """Delete documents from the index.
+
+        :param keys: document ids to delete
         """
         with self.get_query_handler() as h:
             for k in keys:
