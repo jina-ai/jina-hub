@@ -16,8 +16,8 @@ class MongoDBHandler:
     def __init__(self,
                  hostname: str = '127.0.0.1',
                  port: int = 27017,
-                 username: str = None,
-                 password: str = None,
+                 username: Optional[str] = None,
+                 password: Optional[str] = None,
                  database: str = 'defaultdb',
                  collection: str = 'defaultcol'):
         self.logger = JinaLogger(self.__class__.__name__)
