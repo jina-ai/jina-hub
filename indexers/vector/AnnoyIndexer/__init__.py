@@ -34,6 +34,10 @@ class AnnoyIndexer(BaseNumpyIndexer):
         self.search_k = search_k
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
+        """Build an advanced index structure from a numpy array.
+
+        :param vecs: numpy array containing the vectors to index
+        """
         from annoy import AnnoyIndex
         _index = AnnoyIndex(self.num_dim, self.metric)
         for idx, v in enumerate(vecs):
@@ -42,6 +46,10 @@ class AnnoyIndexer(BaseNumpyIndexer):
         return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
+        :param keys: numpy array containing vectors to search for
+        :param top_k: upper limit of responses for each search vector
+        """
         all_idx = []
         all_dist = []
         for k in keys:
