@@ -30,8 +30,8 @@ _models = [
     'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
     'sentence-transformers/bert-base-nli-stsb-mean-tokens',
     'deepset/roberta-base-squad2',
-    'xlm-roberta-base',
-    'xlnet-base-cased',
+    # 'xlm-roberta-base',
+    # 'xlnet-base-cased',
 ]
 
 
