@@ -13,25 +13,25 @@ class LevelDBIndexer(BinaryPbIndexer):
     """
 
     def get_add_handler(self):
-        """Get the database handler
+        """Get the database handler.
         """
         import plyvel
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
     def get_create_handler(self):
-        """Get the database handler
+        """Get the database handler.
         """
         import plyvel
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
     def get_query_handler(self):
-        """Get the database handler
+        """Get the database handler.
         """
         import plyvel
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
     def query(self, key: Any, *args, **kwargs) -> Optional[Any]:
-        """Find the protobuf chunk/doc using id
+        """Find the protobuf documents via id.
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
@@ -70,7 +70,7 @@ class LevelDBIndexer(BinaryPbIndexer):
         return
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
-        """Delete JSON-friendly serialized documents from the indexer.
+        """Delete documents from the index.
 
         :param keys: document ids to delete
         """
