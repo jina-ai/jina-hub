@@ -71,6 +71,10 @@ class SptagIndexer(BaseNumpyIndexer):
         self.num_threads = num_threads
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
+        """Build an advanced index structure from a numpy array.
+
+        :param vecs: numpy array containing the vectors to index
+        """
         import SPTAG
 
         _index = SPTAG.AnnIndex(self.method, 'Float', vecs.shape[1])
@@ -94,6 +98,10 @@ class SptagIndexer(BaseNumpyIndexer):
             return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
+        :param keys: numpy array containing vectors to search for
+        :param top_k: upper limit of responses for each search vector
+        """
         idx = np.ones((keys.shape[0], top_k)) * (-1)
         dist = np.ones((keys.shape[0], top_k)) * (-1)
         for r_id, k in enumerate(keys):
