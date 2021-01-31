@@ -20,8 +20,7 @@ class NGTIndexer(BaseNumpyIndexer):
     """
 
     def __init__(self, num_threads: int = 2, metric: str = 'L2', epsilon: float = 0.1, *args, **kwargs):
-        """
-        Initialize an NGT Indexer
+        """Initialize an NGT Indexer.
         :param num_threads: Number of threads to build index
         :param metric: Should be one of {L1,L2,Hamming,Jaccard,Angle,Normalized Angle,Cosine,Normalized Cosine}
         :param epsilon: Toggle this variable for speed vs recall tradeoff.
@@ -35,10 +34,16 @@ class NGTIndexer(BaseNumpyIndexer):
         self.epsilon = epsilon
 
     def post_init(self):
+        """Setup workspace.
+        """
         super().post_init()
         self.index_path = os.path.join(self._workspace, 'index')
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
+        """Build an advanced index structure from a numpy array.
+
+        :param vecs: numpy array containing the vectors to index
+        """
         import ngtpy
         ngtpy.create(path=self.index_path, dimension=self.num_dim, distance_type=self.metric)
         _index = ngtpy.Index(self.index_path)
@@ -46,6 +51,11 @@ class NGTIndexer(BaseNumpyIndexer):
         return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
+        :param keys: numpy array containing vectors to search for
+        :param top_k: upper limit of responses for each search vector
+        """
+
         dist = []
         idx = []
         for key in keys:
