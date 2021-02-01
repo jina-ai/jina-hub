@@ -1,8 +1,7 @@
 manifest_version: 1
 name: MongoDBIndexer
 kind: indexer
-description:
-  |
+description: |
   MongoDB based KV Indexer
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai

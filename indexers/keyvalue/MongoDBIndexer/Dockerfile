@@ -1,4 +1,4 @@
-FROM mongo as base
+FROM mongo AS base
 
 # setup the workspace
 COPY . /workspace
