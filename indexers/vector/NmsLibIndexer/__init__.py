@@ -49,17 +49,25 @@ class NmsLibIndexer(BaseNumpyIndexer):
         self.num_threads = num_threads
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
+        """Build an advanced index structure from a numpy array.
+
+        :param vecs: numpy array containing the vectors to index
+        """
         import nmslib
         _index = nmslib.init(method=self.method, space=self.space)
-        self.build_partial_index(vecs, slice(0, len(vecs)), _index)
+        self._build_partial_index(vecs, slice(0, len(vecs)), _index)
         _index.createIndex(index_params=self.index_params, print_progress=self.print_progress)
         return _index
 
     @batching(ordinal_idx_arg=2)
-    def build_partial_index(self, vecs: 'np.ndarray', ord_idx: 'slice', _index):
+    def _build_partial_index(self, vecs: 'np.ndarray', ord_idx: 'slice', _index):
         _index.addDataPointBatch(vecs.astype(np.float32), range(ord_idx.start, ord_idx.stop))
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
+        :param keys: numpy array containing vectors to search for
+        :param top_k: upper limit of responses for each search vector
+        """
         ret = self.query_handler.knnQueryBatch(keys, k=top_k, num_threads=self.num_threads)
         idx, dist = zip(*ret)
         return self.int2ext_id[np.array(idx)], np.array(dist)

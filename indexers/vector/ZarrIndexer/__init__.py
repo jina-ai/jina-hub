@@ -39,6 +39,11 @@ class ZarrIndexer(NumpyIndexer):
 
     @as_update_method
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs) -> None:
+        """Add the embeddings and document ids to the index.
+
+        :param keys: document ids
+        :param vectors: embeddings
+        """
         self._validate_key_vector_shapes(keys, vectors)
         if 'default' in self.write_handler.array_keys():
             self.write_handler['default'].append(data=vectors)
@@ -51,9 +56,13 @@ class ZarrIndexer(NumpyIndexer):
     
     @property
     def query_handler(self):
+        """Get zarr file handler
+        """
         return self.get_query_handler()
     
     def get_query_handler(self) -> Optional['zarr.core.Array']:
+        """Get zarr file handler
+        """
         import zarr
         if not (path.exists(self.index_abspath) or self.num_dim or self.dtype):
             return
@@ -61,6 +70,11 @@ class ZarrIndexer(NumpyIndexer):
                          shape=(self._size, self.num_dim), chunks=True)
     
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
+        """Get the vectors by ids.
+
+        :param ids: list of document ids` as 1D-ndarray
+        :return: subset of indexed vectors
+        """
         ids = self._filter_nonexistent_keys(ids, self.ext2int_id.keys(), self.save_abspath)
         int_ids = [self.ext2int_id[j] for j in ids]
         return self.raw_ndarray.get_orthogonal_selection(int_ids)
