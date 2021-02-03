@@ -69,7 +69,7 @@ class ZarrIndexer(NumpyIndexer):
         return zarr.open(store=f'{self.index_abspath}/default', mode='r',
                          shape=(self._size, self.num_dim), chunks=True)
     
-    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
+    def query_by_key(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
         """Get the vectors by ids.
 
         :param ids: list of document ids` as 1D-ndarray
