@@ -35,7 +35,7 @@ class RedisDBIndexer(BinaryPbIndexer):
 
     # TODO unify result interface
     def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
-        """Find the protobuf documents via id.
+        """Find the protobuf document via id.
         :param key: ``id``
         :return: matching document
         """
