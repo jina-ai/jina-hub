@@ -11,7 +11,7 @@ from .. import AnnoyIndexer
 # fix the seed here
 np.random.seed(500)
 retr_idx = None
-vec_idx = np.random.randint(0, high=100, size=[10])
+vec_idx = np.random.randint(0, high=100, size=[10]).astype(str)
 vec = np.random.random([10, 10])
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -83,7 +83,7 @@ def test_annoy_indexer_known(metas):
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]])
-    keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
+    keys = np.array([4, 5, 6, 7]).reshape(-1, 1).astype(str)
     with AnnoyIndexer(index_filename='annoy.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
@@ -97,10 +97,10 @@ def test_annoy_indexer_known(metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, AnnoyIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
+        np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
 
 def test_annoy_indexer_known_update_delete(metas):
@@ -108,7 +108,7 @@ def test_annoy_indexer_known_update_delete(metas):
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]])
-    keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
+    keys = np.array([4, 5, 6, 7]).reshape(-1, 1).astype(str)
     with AnnoyIndexer(index_filename='annoy.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
@@ -122,34 +122,34 @@ def test_annoy_indexer_known_update_delete(metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, AnnoyIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
+        np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
     # update
     with BaseIndexer.load(save_abspath) as indexer:
-        indexer.update([4], np.array([[200, 200, 200]]))
+        indexer.update(['4'], np.array([[200, 200, 200]]))
         indexer.save()
         assert indexer.size == 4
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, AnnoyIndexer)
         idx, dist = indexer.query(queries, top_k=3)
-        np.testing.assert_equal(idx, np.array([[5, 6, 4], [5, 6, 4], [6, 5, 4], [7, 4, 6]]))
+        np.testing.assert_equal(idx, np.array([[5, 6, 4], [5, 6, 4], [6, 5, 4], [7, 4, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 3)
 
     # delete
     with BaseIndexer.load(save_abspath) as indexer:
-        indexer.delete([4])
+        indexer.delete(['4'])
         indexer.save()
         assert indexer.size == 3
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, AnnoyIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[5, 6], [5, 6], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([[5, 6], [5, 6], [6, 5], [7, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
 
@@ -168,7 +168,7 @@ def test_annoy_indexer_known_big(metas):
         queries[int(idx / 1000)] = array
         vectors[idx] = array
 
-    keys = np.arange(10000, 20000).reshape(-1, 1)
+    keys = np.arange(10000, 20000).reshape(-1, 1).astype(str)
     with AnnoyIndexer(index_filename='annoy.test.gz', n_trees=5000, metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
@@ -180,7 +180,7 @@ def test_annoy_indexer_known_big(metas):
         idx, dist = indexer.query(queries, top_k=1)
         print(f' idx {idx}')
         np.testing.assert_equal(idx, np.array(
-            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]))
+            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
-        np.testing.assert_equal(indexer.query_by_id([10000, 15000]), vectors[[0, 5000]])
+        np.testing.assert_equal(indexer.query_by_key(['10000', '15000']), vectors[[0, 5000]])
