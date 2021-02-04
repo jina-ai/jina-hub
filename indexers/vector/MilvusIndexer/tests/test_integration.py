@@ -88,7 +88,7 @@ def test_milvusdbhandler_simple():
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]])
-    keys = np.array([0, 1, 2, 3]).reshape(-1, 1)
+    keys = np.array([0, 1, 2, 3]).reshape(-1, 1).astype(str)
     with MilvusDBHandler(host, port, collection_name) as db:
         db.insert(keys, vectors)
         dist, idx = db.search(vectors, 2)
@@ -96,7 +96,7 @@ def test_milvusdbhandler_simple():
         idx = np.array(idx)
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]))
+        np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]).astype(str))
 
 
 @pytest.mark.skip
@@ -109,7 +109,7 @@ def test_milvusdbhandler_build():
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]])
-    keys = np.array([0, 1, 2, 3]).reshape(-1, 1)
+    keys = np.array([0, 1, 2, 3]).reshape(-1, 1).astype(str)
     with MilvusDBHandler(host, port, collection_name) as db:
         db.insert(keys, vectors)
         db.build_index(index_type='IVF,Flat', index_params={'nlist': 2})
@@ -119,7 +119,7 @@ def test_milvusdbhandler_build():
         idx = np.array(idx)
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]))
+        np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]).astype(str))
 
 
 @pytest.mark.skip
@@ -132,7 +132,7 @@ def test_milvus_indexer():
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]])
-    keys = np.array([0, 1, 2, 3]).reshape(-1, 1)
+    keys = np.array([0, 1, 2, 3]).reshape(-1, 1).astype(str)
     with MilvusIndexer(host=host, port=port,
                        collection_name=collection_name, index_type='IVF,Flat',
                        index_params={'nlist': 2}) as indexer:
@@ -142,4 +142,4 @@ def test_milvus_indexer():
         idx = np.array(idx)
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]))
+        np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]).astype(str))
