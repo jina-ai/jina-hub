@@ -71,7 +71,7 @@ class MongoDBHandler:
                 return cursor_contents[0]
             return None
         except pymongo.errors.PyMongoError as exp:
-            self.logger.error(f'Got an error while finding a document in the db {exp}')
+            raise Exception(f'Got an error while finding a document in the db {exp}')
 
     def insert(self, documents: Iterator[Dict]) -> Optional[str]:
         import pymongo
@@ -80,7 +80,7 @@ class MongoDBHandler:
             self.logger.debug(f'inserted {len(result.inserted_ids)} documents in the database')
             return result.inserted_ids
         except pymongo.errors.PyMongoError as exp:
-            self.logger.error(f'got an error while inserting a document in the db {exp}')
+            raise Exception(f'got an error while inserting a document in the db {exp}')
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         import pymongo
@@ -95,7 +95,7 @@ class MongoDBHandler:
             count = self.collection.delete_many({'_id': {'$in': list(keys)}}).deleted_count
             self.logger.debug(f'deleted {count} documents in the database')
         except pymongo.errors.PyMongoError as exp:
-            self.logger.error(f'got an error while deleting a document in the db {exp}')
+            raise Exception(f'got an error while deleting a document in the db {exp}')
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         import pymongo
@@ -114,4 +114,4 @@ class MongoDBHandler:
             self.logger.debug(f'updated {count} documents in the database')
             return
         except pymongo.errors.PyMongoError as exp:
-            self.logger.error(f'got an error while updating documents in the db {exp}')
+            raise Exception(f'got an error while updating documents in the db {exp}')

@@ -24,7 +24,7 @@ class MongoDBIndexer(BinaryPbIndexer):
         self.password = password
         self.database_name = database
         self.collection_name = collection
-        
+
     def post_init(self):
         from .mongodbhandler import MongoDBHandler
         super().post_init()
@@ -34,7 +34,7 @@ class MongoDBIndexer(BinaryPbIndexer):
                                       password=self.password,
                                       database=self.database_name,
                                       collection=self.collection_name)
-    
+
     def get_add_handler(self):
         return self.handler
 
@@ -43,18 +43,15 @@ class MongoDBIndexer(BinaryPbIndexer):
 
     def get_query_handler(self):
         return self.handler
-    
+
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs) -> None:
-        total_inserted_ids = []
         with self.write_handler as mongo_handler:
             for i, j in zip(keys, values):
                 doc = {'_id': i, 'values': j}
                 inserted_ids = mongo_handler.insert(documents=[doc])
-                total_inserted_ids.extend(inserted_ids)
-        
-        if total_inserted_ids and len(total_inserted_ids) != len(list(keys)):
-            self.logger.error(f'Mismatch in mongo insert')
-    
+                if len(inserted_ids) != 1:
+                    raise Exception(f'Mismatch in mongo insert')
+
     @cached_property
     def query_handler(self):
         return self.get_query_handler()
@@ -62,7 +59,7 @@ class MongoDBIndexer(BinaryPbIndexer):
     def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
         with self.query_handler as mongo_handler:
             result = mongo_handler.find(key)
-        
+
         if result:
             return result
 
