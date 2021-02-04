@@ -9,7 +9,7 @@ from .. import NGTIndexer
 
 # fix the seed here
 np.random.seed(500)
-vec_idx = np.random.randint(0, high=100, size=[10])
+vec_idx = np.random.randint(0, high=100, size=[10]).astype(str)
 vec = np.random.random([10, 10]).astype('float32')
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
 
@@ -70,7 +70,7 @@ def test_ngt_indexer_known(metas):
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]], dtype=np.float32)
-    keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
+    keys = np.array([4, 5, 6, 7]).reshape(-1, 1).astype(str)
     with NGTIndexer(index_filename='ngt.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
@@ -84,10 +84,10 @@ def test_ngt_indexer_known(metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NGTIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(indexer.query_by_key([7, 4]), vectors[[3, 0]])
+        np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
 
 def test_ngt_indexer_known_big(metas):
@@ -104,7 +104,7 @@ def test_ngt_indexer_known_big(metas):
         queries[int(idx / 1000)] = array
         vectors[idx] = array
 
-    keys = np.arange(10000, 20000).reshape(-1, 1)
+    keys = np.arange(10000, 20000).reshape(-1, 1).astype(str)
 
     with NGTIndexer(index_filename='ngt.test.gz', num_threads=4, metas=metas) as indexer:
         indexer.add(keys, vectors)
@@ -116,7 +116,7 @@ def test_ngt_indexer_known_big(metas):
         assert isinstance(indexer, NGTIndexer)
         idx, dist = indexer.query(queries, top_k=1)
         np.testing.assert_equal(idx, np.array(
-            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]))
+            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
-        np.testing.assert_equal(indexer.query_by_key([10000, 15000]), vectors[[0, 5000]])
+        np.testing.assert_equal(indexer.query_by_key(['10000', '15000']), vectors[[0, 5000]])
