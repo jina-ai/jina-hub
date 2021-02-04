@@ -14,7 +14,7 @@ num_dimensions = 10
 num_vectors = 30
 num_queries = 20
 top_k = 4
-vec_idx = np.random.randint(0, high=100, size=[num_vectors])
+vec_idx = np.random.randint(0, high=100, size=[num_vectors]).astype(str)
 vec = np.random.random([num_vectors, num_dimensions]).astype(np.float32)
 query = np.random.random([num_queries, num_dimensions]).astype(np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -61,7 +61,7 @@ def test_sptag_indexer_known(metas):
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]], dtype=np.float32)
-    keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
+    keys = np.array([4, 5, 6, 7]).reshape(-1, 1).astype(str)
     with SptagIndexer(dist_calc_method='L2', index_filename='sptag.test.gz', metas=metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
@@ -75,10 +75,10 @@ def test_sptag_indexer_known(metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, SptagIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(indexer.query_by_key([7, 4]), vectors[[3, 0]])
+        np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
 
 @pytest.mark.skip(reason='SPTAG index is returning -1 index so it is failing, did not succeed to find the best parameters')
@@ -96,7 +96,7 @@ def test_sptag_indexer_known_big(metas):
         queries[int(idx / 1000)] = array
         vectors[idx] = array
 
-    keys = np.arange(10000, 20000).reshape(-1, 1)
+    keys = np.arange(10000, 20000).reshape(-1, 1).astype(str)
 
     with SptagIndexer(dist_calc_method='L2', index_filename='sptag.test.gz', num_threads=4, metas=metas) as indexer:
         indexer.add(keys, vectors)
@@ -108,7 +108,7 @@ def test_sptag_indexer_known_big(metas):
         assert isinstance(indexer, SptagIndexer)
         idx, dist = indexer.query(queries, top_k=1)
         np.testing.assert_equal(idx, np.array(
-            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]))
+            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
-        np.testing.assert_equal(indexer.query_by_key([10000, 15000]), vectors[[0, 5000]])
+        np.testing.assert_equal(indexer.query_by_key(['10000', '15000']), vectors[[0, 5000]])
