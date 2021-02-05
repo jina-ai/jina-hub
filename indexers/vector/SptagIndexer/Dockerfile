@@ -13,8 +13,10 @@ RUN wget https://cmake.org/files/v3.15/cmake-3.15.5.tar.gz && \
     make install
 
 RUN git clone https://github.com/microsoft/SPTAG.git
-RUN cd SPTAG && \
-    mkdir build && \
+RUN cd SPTAG
+RUN git fetch origin a91ed49a041a24bd145874d3b3c815bde0430e65
+RUN git reset --hard FETCH_HEAD
+RUN mkdir build && \
     cd build && \
     cmake .. && \
     grep -rl python2.7 CMakeCache.txt | xargs sed -i 's/python2.7/python3.7/g' && \
