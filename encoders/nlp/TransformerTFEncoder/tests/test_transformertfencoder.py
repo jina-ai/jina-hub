@@ -17,15 +17,6 @@ def test_metas(tmp_path):
     yield metas
 
 
-def get_encoder(test_metas, **kwargs):
-    if 'pretrained_model_name_or_path' in kwargs and 'pooling_strategy' in kwargs:
-        kwargs['model_save_path'] = (
-                kwargs['pretrained_model_name_or_path'].replace('/', '.')
-                + f'-{kwargs["pooling_strategy"]}'
-        )
-    return TransformerTFEncoder(metas=test_metas, **kwargs)
-
-
 _models = [
     'distilbert-base-uncased',
     'bert-base-uncased',
@@ -48,7 +39,7 @@ def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index)
         'pooling_strategy': pooling_strategy,
         'layer_index': layer_index
     }
-    encoder = get_encoder(test_metas, **params)
+    encoder = TransformerTFEncoder(metas=test_metas, **params)
 
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
@@ -80,7 +71,7 @@ def test_embedding_consistency(test_metas, model_name, pooling_strategy, layer_i
     }
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
 
-    encoder = get_encoder(test_metas, **params)
+    encoder = TransformerTFEncoder(metas=test_metas, **params)
     encoded_data = encoder.encode(test_data)
 
     encoded_data_file = f'tests/{model_name}-{pooling_strategy}-{layer_index}.npy'
@@ -99,7 +90,7 @@ def test_max_length_truncation(test_metas, model_name, pooling_strategy, layer_i
         'layer_index': layer_index,
         'max_length': 3
     }
-    encoder = get_encoder(test_metas, **params)
+    encoder = TransformerTFEncoder(metas=test_metas, **params)
     test_data = np.array(['it is a very good day!', 'it is a very sunny day!'])
     encoded_data = encoder.encode(test_data)
 
@@ -116,7 +107,7 @@ def test_shape_single_document(test_metas, model_name, pooling_strategy, layer_i
         'layer_index': layer_index,
         'max_length': 3
     }
-    encoder = get_encoder(test_metas, **params)
+    encoder = TransformerTFEncoder(metas=test_metas, **params)
     test_data = np.array(['it is a very good day!'])
     encoded_data = encoder.encode(test_data)
     assert len(encoded_data.shape) == 2
@@ -132,7 +123,7 @@ def test_save_and_load(test_metas, model_name, pooling_strategy, layer_index):
         'pooling_strategy': pooling_strategy,
         'layer_index': layer_index
     }
-    encoder = get_encoder(test_metas, **params)
+    encoder = TransformerTFEncoder(metas=test_metas, **params)
 
     encoder.save_config()
     _assert_params_equal(params, encoder)
@@ -161,7 +152,7 @@ def test_save_and_load_config(test_metas, model_name, pooling_strategy, layer_in
         'pooling_strategy': pooling_strategy,
         'layer_index': layer_index
     }
-    encoder = get_encoder(test_metas, **params)
+    encoder = TransformerTFEncoder(metas=test_metas, **params)
 
     encoder.save_config()
     _assert_params_equal(params, encoder)
@@ -174,7 +165,7 @@ def test_save_and_load_config(test_metas, model_name, pooling_strategy, layer_in
 @pytest.mark.parametrize('layer_index', [-100, 100])
 def test_wrong_layer_index(test_metas, layer_index):
     params = {'layer_index': layer_index}
-    encoder = get_encoder(test_metas, **params)
+    encoder = TransformerTFEncoder(metas=test_metas, **params)
 
     encoder.layer_index = layer_index
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
@@ -191,7 +182,7 @@ def test_wrong_pooling_strategy():
     [{'pooling_strategy': 'cls', 'pretrained_model_name_or_path': 'gpt2'}],
 )
 def test_no_cls_token(test_metas, params):
-    encoder = get_encoder(test_metas, **params)
+    encoder = TransformerTFEncoder(metas=test_metas, **params)
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     with pytest.raises(ValueError):
         encoder.encode(test_data)
