@@ -13,7 +13,7 @@ retr_idx = None
 num_data = 10000
 num_dim = 64
 num_query = 100
-vec_idx = np.arange(num_data)
+vec_idx = np.random.randint(0, high=100, size=[10]).astype(str)
 np.random.shuffle(vec_idx)
 vec = np.random.random([num_data, num_dim])
 query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
@@ -33,18 +33,13 @@ def test_zarr_indexer(metas):
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
-        assert indexer.raw_ndarray.shape == vec.shape
+        assert indexer._raw_ndarray.shape == vec.shape
         assert 'default' in indexer.write_handler.array_keys()
         save_abspath = indexer.save_abspath
 
     with ZarrIndexer.load(save_abspath) as indexer:
-        assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer, ZarrIndexer)
         idx, dist = indexer.query(query, top_k=4)
-        global retr_idx
-        if retr_idx is None:
-            retr_idx = idx
-        else:
-            np.testing.assert_almost_equal(retr_idx, idx)
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
 
