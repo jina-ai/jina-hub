@@ -7,6 +7,8 @@ Additional links:
 - [BiT Research Paper](https://arxiv.org/abs/1912.11370)
 
 Usage:
+
 Initialise this executor specifying parameters i.e. `model_path` (the directory path of the model in the `SavedModel` format), `model_name` (includes `R50x1`, `R101x1`, `R50x3`, `R101x3`, `R152x4`) `channel_axis` (axis id of the channel), etc.
+Snippet:
 `BigTransferEncoder(model_path='pretrained', channel_axis=1, metas=metas)`
 
