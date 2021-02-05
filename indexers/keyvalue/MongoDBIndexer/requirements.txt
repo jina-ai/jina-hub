@@ -1,2 +1,2 @@
-jina
+jina==0.9.28
 pymongo==3.11.2
