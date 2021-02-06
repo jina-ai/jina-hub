@@ -26,33 +26,21 @@ class RedisDBIndexer(BinaryPbIndexer):
         """Get the database handler
         """
         import redis
-        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
         try:
+            r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
             r.ping()
             return r
         except redis.exceptions.ConnectionError as r_con_error:
             self.logger.error('Redis connection error: ', r_con_error)
+            raise
 
-    def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
-        """Find the protobuf chunk/doc using id
+    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+        """Find the doc using id
         :param key: ``id``
-        :return: protobuf chunk or protobuf document
+        :return: resulting document stored
         """
-        results = []
         with self.get_query_handler() as redis_handler:
-            for _key in redis_handler.scan_iter(match=key):
-                res = {
-                    "key": _key,
-                    "values": redis_handler.get(_key),
-                }
-                results.append(res)
-        if len(results) == 0:
-            self.logger.warning(f'No matches for key {key} in {self.index_filename}')
-            return None
-
-        if len(results) > 1:
-            self.logger.warning(f'More than 1 element retrieved from Redis with matching key {key}. Will return first...')
-        return results[0]['values']
+            return redis_handler.get(key)
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         """Add a JSON-friendly object to the indexer
