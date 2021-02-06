@@ -36,7 +36,7 @@ class NGTIndexer(BaseNumpyIndexer):
 
     def post_init(self):
         super().post_init()
-        self.index_path = os.path.join(self.workspace, 'index')
+        self.index_path = os.path.join(self._workspace, 'index')
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         import ngtpy
