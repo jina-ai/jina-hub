@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import tensorflow_hub as hub
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
@@ -27,6 +26,7 @@ class UniversalSentenceEncoder(BaseTFEncoder):
         """
 
         def __init__(self, model_url: str):
+            import tensorflow_hub as hub
             self.model_url = model_url
             self.model = hub.load(self.model_url)
 
@@ -49,6 +49,7 @@ class UniversalSentenceEncoder(BaseTFEncoder):
 
         def __init__(self):
             import tensorflow_text as text
+            import tensorflow_hub as hub
             self.bert_preprocessor = hub.KerasLayer(PREPROCESOR_CMLM)
             self.encoder = hub.KerasLayer(MODEL_ENCODER_CMLM)
 

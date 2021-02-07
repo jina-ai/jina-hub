@@ -83,6 +83,10 @@ class ScannIndexer(BaseNumpyIndexer):
         return index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
+        :param keys: numpy array containing vectors to search for
+        :param top_k: upper limit of responses for each search vector
+        """
         if self.reordering_num_neighbors < top_k:
             self.logger.warning('The number of reordering_num_neighbors should be the same or higher than top_k')
 

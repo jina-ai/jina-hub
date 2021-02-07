@@ -15,7 +15,7 @@ ENV PATH /opt/conda/bin:$PATH
 SHELL ["/bin/bash", "-c"]
 
 # Commented out until GPU testing possible in CI
-# ENV JINA_TEST_GPU=true
+#ENV JINA_TEST_GPU=true
 
 # Copy over conda and bashrc, install environment
 COPY --from=conda /opt/ /opt/
@@ -34,4 +34,4 @@ RUN pip install pytest && pytest
 
 FROM base
 
-ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
+ENTRYPOINT ["jina", "pod", "--uses", "config.yml", "--timeout-ready", "180000"]

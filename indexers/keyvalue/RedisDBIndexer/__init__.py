@@ -26,20 +26,20 @@ class RedisDBIndexer(BinaryPbIndexer):
         """Get the database handler.
         """
         import redis
-        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
         try:
+            r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
             r.ping()
             return r
         except redis.exceptions.ConnectionError as r_con_error:
             self.logger.error('Redis connection error: ', r_con_error)
+            raise
 
-    # TODO unify result interface
-    def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
+
+    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
         """Find the protobuf document via id.
         :param key: ``id``
         :return: matching document
         """
-        results = []
         with self.get_query_handler() as redis_handler:
             for _key in redis_handler.scan_iter(match=key):
                 res = {
@@ -55,6 +55,7 @@ class RedisDBIndexer(BinaryPbIndexer):
             self.logger.warning(
                 f'More than 1 element retrieved from Redis with matching key {key}. Will return first...')
         return results[0]['values']
+
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         """Add JSON-friendly serialized documents to the index.

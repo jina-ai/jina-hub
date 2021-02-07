@@ -123,7 +123,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
             from faiss import normalize_L2
             normalize_L2(vecs)
         dist, ids = self.query_handler.search(vecs, top_k)
-        keys = self.int2ext_id[self.valid_indices][ids]
+        keys = self._int2ext_id[self.valid_indices][ids]
         return keys, dist
 
     def _train(self, index, data: 'np.ndarray', *args, **kwargs) -> None:
