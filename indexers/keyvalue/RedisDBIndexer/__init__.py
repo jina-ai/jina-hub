@@ -41,20 +41,7 @@ class RedisDBIndexer(BinaryPbIndexer):
         :return: matching document
         """
         with self.get_query_handler() as redis_handler:
-            for _key in redis_handler.scan_iter(match=key):
-                res = {
-                    "key": _key,
-                    "values": redis_handler.get(_key),
-                }
-                results.append(res)
-        if len(results) == 0:
-            self.logger.warning(f'No matches for key {key} in {self.index_filename}')
-            return None
-
-        if len(results) > 1:
-            self.logger.warning(
-                f'More than 1 element retrieved from Redis with matching key {key}. Will return first...')
-        return results[0]['values']
+            return redis_handler.get(key)
 
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
