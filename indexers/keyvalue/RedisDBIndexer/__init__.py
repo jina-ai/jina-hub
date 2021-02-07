@@ -23,7 +23,7 @@ class RedisDBIndexer(BinaryPbIndexer):
         self.db = db
 
     def get_query_handler(self):
-        """Get the database handler
+        """Get the database handler.
         """
         import redis
         try:
@@ -34,18 +34,21 @@ class RedisDBIndexer(BinaryPbIndexer):
             self.logger.error('Redis connection error: ', r_con_error)
             raise
 
+
     def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
-        """Find the doc using id
+        """Find the protobuf document via id.
         :param key: ``id``
-        :return: resulting document stored
+        :return: matching document
         """
         with self.get_query_handler() as redis_handler:
             return redis_handler.get(key)
 
+
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """Add a JSON-friendly object to the indexer
-        :param keys: keys to be added
-        :param values: values to be added
+        """Add JSON-friendly serialized documents to the index.
+
+        :param keys: document ids
+        :param values: JSON-friendly serialized documents
         """
         redis_docs = [{'_id': i, 'values': j} for i, j in zip(keys, values)]
 
@@ -54,7 +57,10 @@ class RedisDBIndexer(BinaryPbIndexer):
                 redis_handler.set(k['_id'], k['values'])
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """updates the keys if they exist
+        """Update JSON-friendly serialized documents on the index.
+
+        :param keys: document ids to update
+        :param values: JSON-friendly serialized documents
         """
         missed = []
         for key in keys:
@@ -67,7 +73,9 @@ class RedisDBIndexer(BinaryPbIndexer):
         self.add(keys, values)
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
-        """deletes the keys in redis
+        """Delete documents from the index.
+
+        :param keys: document ids to delete
         """
         with self.get_query_handler() as h:
             for k in keys:
