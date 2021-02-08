@@ -74,7 +74,7 @@ class MongoDBIndexer(BinaryPbIndexer):
         with self.write_handler as mongo_handler:
             for i, j in zip(keys, values):
                 doc = {'_id': i, 'values': j}
-                inserted_ids = mongo_handler.insert(documents=[doc])
+                inserted_ids = mongo_handler.index(documents=[doc])
                 if len(inserted_ids) != 1:
                     raise Exception(f'Mismatch in mongo insert')
 

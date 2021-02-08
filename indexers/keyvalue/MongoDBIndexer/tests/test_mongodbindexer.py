@@ -7,7 +7,7 @@ from jina import Document
 from .. import MongoDBIndexer
 
 
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
+def _random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
     c_id = 3 * num_docs  # avoid collision with docs
     for j in range(num_docs):
         with Document() as d:
@@ -28,7 +28,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
 
 def test_mongodbindexer():
     num_docs = 5
-    docs = list(random_docs(num_docs=num_docs,
+    docs = list(_random_docs(num_docs=num_docs,
                             chunks_per_doc=3))
     keys: Iterable[str] = [doc.id for doc in docs]
     values = [doc.SerializeToString() for doc in docs]
@@ -50,7 +50,7 @@ def test_mongodbindexer():
         assert d.text == query_text
 
     # documents to be updated
-    new_docs = list(random_docs(num_docs=num_docs, chunks_per_doc=3))
+    new_docs = list(_random_docs(num_docs=num_docs, chunks_per_doc=3))
     # documents for insertion
     new_values = [doc.SerializeToString() for doc in new_docs]
     # documents for assertion

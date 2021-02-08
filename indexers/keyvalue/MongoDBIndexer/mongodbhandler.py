@@ -84,7 +84,7 @@ class MongoDBHandler:
         except pymongo.errors.PyMongoError as exp:
             raise Exception(f'Got an error while finding a document in the db {exp}')
 
-    def add(self, documents: Iterable[Dict]) -> Optional[str]:
+    def index(self, documents: Iterable[Dict]) -> Optional[str]:
         """ Insert the documents into the database.
 
         :param documents: documents to be inserted
