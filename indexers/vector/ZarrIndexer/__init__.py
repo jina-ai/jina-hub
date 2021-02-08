@@ -49,8 +49,6 @@ class ZarrIndexer(NumpyIndexer):
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: embeddings
         """
-        max_key_len = max([len(k) for k in keys])
-        self.key_length = max_key_len
         np_keys = np.array(keys, (np.str_, self.key_length))
 
         self._add(np_keys, vectors)
@@ -93,10 +91,11 @@ class ZarrIndexer(NumpyIndexer):
         :param keys: list of document keys` as 1D-ndarray
         :return: subset of indexed vectors
         """
-        filtered_keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
+        filtered_keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
         int_ids = [self._ext2int_id[j] for j in filtered_keys]
         return self._raw_ndarray.get_orthogonal_selection(int_ids)
 
     @cached_property
     def _raw_ndarray(self):
-        return self.query_handler
+        a = self.query_handler
+        return a
