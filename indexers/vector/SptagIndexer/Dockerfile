@@ -14,6 +14,8 @@ RUN wget https://cmake.org/files/v3.15/cmake-3.15.5.tar.gz && \
 
 RUN git clone https://github.com/microsoft/SPTAG.git
 RUN cd SPTAG && \
+    git fetch origin a91ed49a041a24bd145874d3b3c815bde0430e65 && \
+    git reset --hard FETCH_HEAD && \
     mkdir build && \
     cd build && \
     cmake .. && \

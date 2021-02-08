@@ -94,10 +94,10 @@ class SptagIndexer(BaseNumpyIndexer):
             return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        idx = np.ones((keys.shape[0], top_k)) * (-1)
+        idx = (np.ones((keys.shape[0], top_k)) * (-1)).astype(str)
         dist = np.ones((keys.shape[0], top_k)) * (-1)
         for r_id, k in enumerate(keys):
             _idx, _dist, _ = self.query_handler.Search(k, top_k)
-            idx[r_id, :] = self.int2ext_id[np.array(_idx)]
+            idx[r_id, :] = self._int2ext_id[np.array(_idx)]
             dist[r_id, :] = np.array(_dist)
         return idx, dist
