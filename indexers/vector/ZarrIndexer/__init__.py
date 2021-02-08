@@ -13,12 +13,11 @@ if False:
 
 class ZarrIndexer(NumpyIndexer):
     """Indexing based on Zarr arrays
-
+    
     For more information about Zarr, please check
     https://zarr.readthedocs.io/en/stable/index.html
-
+    
     """
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -54,13 +53,13 @@ class ZarrIndexer(NumpyIndexer):
         self.key_dtype = keys.dtype.name
         self._size += keys.shape[0]
         self.valid_indices = np.concatenate((self.valid_indices, np.full(len(keys), True)))
-
+    
     @property
     def query_handler(self):
         """Get zarr file handler
         """
         return self.get_query_handler()
-
+    
     def get_query_handler(self) -> Optional['zarr.core.Array']:
         """Get zarr file handler
         """
@@ -69,7 +68,7 @@ class ZarrIndexer(NumpyIndexer):
             return
         return zarr.open(store=f'{self.index_abspath}/default', mode='r',
                          shape=(self._size, self.num_dim), chunks=True)
-
+    
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
         """Get the vectors by ids.
 
@@ -79,7 +78,7 @@ class ZarrIndexer(NumpyIndexer):
         ids = self._filter_nonexistent_keys(ids, self.ext2int_id.keys(), self.save_abspath)
         int_ids = [self.ext2int_id[j] for j in ids]
         return self.raw_ndarray.get_orthogonal_selection(int_ids)
-
+    
     @cached_property
     def raw_ndarray(self):
         return self.query_handler
