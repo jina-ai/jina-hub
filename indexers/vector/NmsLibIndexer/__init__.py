@@ -70,4 +70,4 @@ class NmsLibIndexer(BaseNumpyIndexer):
         """
         ret = self.query_handler.knnQueryBatch(keys, k=top_k, num_threads=self.num_threads)
         idx, dist = zip(*ret)
-        return self.int2ext_id[np.array(idx)], np.array(dist)
+        return self._int2ext_id[np.array(idx)], np.array(dist)
