@@ -18,7 +18,7 @@ class PDFExtractorSegmenter(BaseSegmenter):
         """
         Segements PDF files. Extracts data from them.
 
-        It will check whether the input is a string of the filename,
+        Checks if the input is a string of the filename,
         or if it's the file in bytes.
         It will then extract the data from the file, creating a list for images,
         and text.
