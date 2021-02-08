@@ -1,8 +1,11 @@
 """This package wraps a Key Value Indexer to the MongoDB NoSQL Database."""
-from typing import Optional, Iterator
+from typing import Optional, Iterable
 
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.helper import cached_property
+
+if False:
+    from jina.hub.indexers.keyvalue.MongoDBIndexer.mongodbhandler import MongoDBHandler
 
 
 class MongoDBIndexer(BinaryPbIndexer):
@@ -60,7 +63,7 @@ class MongoDBIndexer(BinaryPbIndexer):
         """Get the handler to MongoDB."""
         return self.handler
 
-    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs) -> None:
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Add a Document to MongoDB.
 
         :param keys: the keys by which you will add
@@ -76,13 +79,14 @@ class MongoDBIndexer(BinaryPbIndexer):
                     raise Exception(f'Mismatch in mongo insert')
 
     @cached_property
-    def query_handler(self):
+    def query_handler(self) -> 'MongoDBHandler':
         """Get the handler to MongoDB."""
         return self.get_query_handler()
 
-    def query(self, key: int, *args, **kwargs) -> Optional[bytes]:
-        """Query the protobuf documents via id.
-        :param key: ``id``
+    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+        """Query the serialized documents by document id.
+
+        :param key: document id
         :return: serialized document
         """
         with self.query_handler as mongo_handler:
@@ -91,8 +95,8 @@ class MongoDBIndexer(BinaryPbIndexer):
         if result:
             return result
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs) -> None:
-        """Update serialized documents on the indexer.
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+        """Update the document at the given key in the database.
 
         :param keys: document ids to update
         :param values: serialized documents
@@ -100,7 +104,7 @@ class MongoDBIndexer(BinaryPbIndexer):
         with self.query_handler as mongo_handler:
             mongo_handler.update(keys, values)
 
-    def delete(self, keys: Iterator[int], *args, **kwargs) -> None:
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         """Delete documents from the indexer.
 
         :param keys: document ids to delete

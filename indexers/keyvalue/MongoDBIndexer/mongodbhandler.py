@@ -1,6 +1,10 @@
-from typing import Dict, Optional, Iterator
+from typing import Dict, Optional, Iterable
 
 from jina.logging.logger import JinaLogger
+
+if False:
+    from pymongo.database import Database
+    from pymongo.collection import Collection
 
 
 class MongoDBException(Exception):
@@ -56,18 +60,20 @@ class MongoDBHandler:
         return self
 
     @property
-    def database(self):
-        """Get database instance.
-        """
+    def database(self) -> 'Database':
+        """ Get database. """
         return self.client[self.database_name]
 
     @property
-    def collection(self):
-        """Get collection.
-        """
+    def collection(self) -> 'Collection':
+        """ Get collection. """
         return self.database[self.collection_name]
 
-    def query(self, key: int) -> Optional[bytes]:
+    def query(self, key: str) -> Optional[bytes]:
+        """ Queries the related document for the provided ``key``.
+
+        :param key: id of the document
+        """
         import pymongo
         try:
             cursor = self.collection.find({'_id': key})
@@ -78,10 +84,10 @@ class MongoDBHandler:
         except pymongo.errors.PyMongoError as exp:
             raise Exception(f'Got an error while finding a document in the db {exp}')
 
-    def add(self, documents: Iterator[Dict]) -> Optional[str]:
-        """Add JSON-friendly python objects to the indexer.
+    def add(self, documents: Iterable[Dict]) -> Optional[str]:
+        """ Insert the documents into the database.
 
-        :param documents: JSON-friendly serialized documents
+        :param documents: documents to be inserted
         """
         import pymongo
         try:
@@ -91,14 +97,16 @@ class MongoDBHandler:
         except pymongo.errors.PyMongoError as exp:
             raise Exception(f'got an error while inserting a document in the db {exp}')
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, *args):
+        """ Make sure the connection to the database is closed.
+        """
         import pymongo
         try:
             self.client.close()
         except pymongo.errors.PyMongoError as exp:
             raise MongoDBException(exp)
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs):
         """Delete documents from the indexer.
 
         :param keys: document ids to delete related documents
@@ -110,10 +118,11 @@ class MongoDBHandler:
         except pymongo.errors.PyMongoError as exp:
             raise Exception(f'got an error while deleting a document in the db {exp}')
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """Update documents on the indexer.
+    def update(self, keys: Iterable[str], values: Iterable[bytes]) -> None:
+        """ Update the documents on the database.
 
-        :param keys: documents to be updated
+        :param keys: document ids
+        :param values: serialized documents
         """
         import pymongo
         try:

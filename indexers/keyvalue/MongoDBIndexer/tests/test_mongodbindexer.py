@@ -1,5 +1,5 @@
 import random
-from collections import Iterator
+from collections import Iterable
 
 import numpy as np
 from jina import Document
@@ -30,12 +30,12 @@ def test_mongodbindexer():
     num_docs = 5
     docs = list(random_docs(num_docs=num_docs,
                             chunks_per_doc=3))
-    keys: Iterator[int] = iter([doc.id for doc in docs])
+    keys: Iterable[str] = [doc.id for doc in docs]
     values = [doc.SerializeToString() for doc in docs]
 
     query_index = random.randint(0, num_docs - 1)
     # adding type annotations to remove further warnings
-    query_key: int = docs[query_index].id
+    query_key: str = docs[query_index].id
     query_text = docs[query_index].text
 
     # add
