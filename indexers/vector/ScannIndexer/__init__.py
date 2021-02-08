@@ -91,5 +91,5 @@ class ScannIndexer(BaseNumpyIndexer):
             self.logger.warning('The number of reordering_num_neighbors should be the same or higher than top_k')
 
         neighbors, dist = self.query_handler.search_batched(keys, top_k)
-        return self._int2ext_id[np.array(neighbors)], np.array(dist)
+        return self.int2ext_id[np.array(neighbors)], np.array(dist)
 
