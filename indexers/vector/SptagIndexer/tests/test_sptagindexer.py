@@ -74,9 +74,11 @@ def test_sptag_indexer_known(metas):
                         [1000, 1000, 1000]], dtype=np.float32)
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, SptagIndexer)
-        idx, dist = indexer.query(queries, top_k=2)
+        idx, distances = indexer.query(queries, top_k=2)
         np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]).astype(str))
-        assert idx.shape == dist.shape
+        for distance in distances:
+            assert distance[0] < distance[1]
+        assert idx.shape == distances.shape
         assert idx.shape == (4, 2)
         np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
