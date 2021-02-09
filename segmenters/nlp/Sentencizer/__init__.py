@@ -14,8 +14,9 @@ class Sentencizer(BaseSegmenter):
     :param min_sent_len: the minimal number of characters,
         (including white spaces) of the sentence, by default 1.
     :param max_sent_len: the maximal number of characters,
-        (including white spaces) of the sentence, by default 1e5.
-    :param punct_chars: the punctuation characters to split on.
+        (including white spaces) of the sentence, by default 512.
+    :param punct_chars: the punctuation characters to split on,
+        for example, but not limited to '.', ',', '!'
     :param uniform_weight: the definition of it should have
         uniform weight or should be calculated
     :param args:  Additional positional arguments
