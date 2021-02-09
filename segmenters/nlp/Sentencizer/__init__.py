@@ -8,8 +8,19 @@ from jina.executors.segmenters import BaseSegmenter
 class Sentencizer(BaseSegmenter):
     """
     :class:`Sentencizer` split the text on the doc-level into sentences on the chunk-level with a rule-base strategy.
-        The text is split by the punctuation characters listed in ``punct_chars``.
-        The sentences that are shorter than the ``min_sent_len`` or longer than the ``max_sent_len`` after stripping will be discarded.
+    The text is split by the punctuation characters listed in ``punct_chars``.
+    The sentences that are shorter than the ``min_sent_len`` or longer than the ``max_sent_len`` after stripping will be discarded.
+
+    :param min_sent_len: the minimal number of characters,
+        (including white spaces) of the sentence, by default 1.
+    :param max_sent_len: the maximal number of characters,
+        (including white spaces) of the sentence, by default 1e5.
+    :param punct_chars: the punctuation characters to split on.
+    :param uniform_weight: the definition of it should have
+        uniform weight or should be calculated
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
+
     """
 
     def __init__(self,
@@ -18,12 +29,7 @@ class Sentencizer(BaseSegmenter):
                  punct_chars: str = None,
                  uniform_weight: bool = True,
                  *args, **kwargs):
-        """
-
-        :param min_sent_len: the minimal number of characters (including white spaces) of the sentence, by default 1.
-        :param max_sent_len: the maximal number of characters (including white spaces) of the sentence, by default 1e5.
-        :param punct_chars: the punctuation characters to split on.
-        """
+        """Set constructor."""
         super().__init__(*args, **kwargs)
         self.min_sent_len = min_sent_len
         self.max_sent_len = max_sent_len
@@ -43,6 +49,9 @@ class Sentencizer(BaseSegmenter):
 
         :param text: the raw text
         :return: a list of chunk dicts with the split sentences
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+
         """
         results = []
         ret = [(m.group(0), m.start(), m.end()) for m in
