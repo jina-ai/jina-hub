@@ -5,7 +5,7 @@ from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.helper import cached_property
 
 if False:
-    from jina.hub.indexers.keyvalue.MongoDBIndexer.mongodbhandler import MongoDBHandler
+    from ..MongoDBIndexer.mongodbhandler import MongoDBHandler
 
 
 class MongoDBIndexer(BinaryPbIndexer):
@@ -74,7 +74,7 @@ class MongoDBIndexer(BinaryPbIndexer):
         with self.write_handler as mongo_handler:
             for i, j in zip(keys, values):
                 doc = {'_id': i, 'values': j}
-                inserted_ids = mongo_handler.index(documents=[doc])
+                inserted_ids = mongo_handler.add(documents=[doc])
                 if len(inserted_ids) != 1:
                     raise Exception(f'Mismatch in mongo insert')
 
