@@ -12,10 +12,8 @@ RUN wget https://cmake.org/files/v3.15/cmake-3.15.5.tar.gz && \
     make -j2 && \
     make install
 
-RUN git clone https://github.com/microsoft/SPTAG.git/tree/ac451def1040e16366a323da799da7d1ddff6ac6
+RUN git clone https://github.com/microsoft/SPTAG.git/tree/a91ed49a041a24bd145874d3b3c815bde0430e65
 RUN cd SPTAG && \
-    git fetch origin a91ed49a041a24bd145874d3b3c815bde0430e65 && \
-    git reset --hard FETCH_HEAD && \
     mkdir build && \
     cd build && \
     cmake .. && \
