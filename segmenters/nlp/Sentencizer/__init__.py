@@ -1,6 +1,6 @@
 import re
 import string
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from jina.executors.segmenters import BaseSegmenter
 
@@ -16,7 +16,8 @@ class Sentencizer(BaseSegmenter):
     :param max_sent_len: the maximal number of characters,
         (including white spaces) of the sentence, by default 512.
     :param punct_chars: the punctuation characters to split on,
-        for example, but not limited to '.', ',', '!'
+        whatever is in the list will be used,
+        for example ['!', '.', '?'] will use '!', '.' and '?'
     :param uniform_weight: the definition of it should have
         uniform weight or should be calculated
     :param args:  Additional positional arguments
@@ -27,7 +28,7 @@ class Sentencizer(BaseSegmenter):
     def __init__(self,
                  min_sent_len: int = 1,
                  max_sent_len: int = 512,
-                 punct_chars: str = None,
+                 punct_chars: Optional[List[str]] = None,
                  uniform_weight: bool = True,
                  *args, **kwargs):
         """Set constructor."""
