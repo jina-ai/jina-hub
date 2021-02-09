@@ -27,7 +27,7 @@ class BigTransferEncoder(BaseTFEncoder):
     def __init__(self,
                  model_path: Optional[str] = '/workspace/pretrained',
                  channel_axis: int = 1,
-                 layer=None,
+                 layer: Optional[int] = None,
                  *args, **kwargs):
         """
         :param model_path: the path of the model in the `SavedModel` format. `model_path` should be a directory path,
