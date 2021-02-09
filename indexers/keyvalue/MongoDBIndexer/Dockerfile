@@ -1,7 +1,8 @@
-FROM mongo
+FROM mongo:4.4.3-bionic
 
-# install pip
-RUN apt-get update && apt-get install -y python3.8 python3.8-dev python3.8-distutils python3.8-venv python3-pip
+# install and upgrade pip
+RUN apt-get update && apt-get install -y python3.8 python3.8-dev python3-pip
+RUN python3.8 -m pip install --upgrade pip
 
 # setup the workspace
 COPY requirements.txt /requirements.txt
