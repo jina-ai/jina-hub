@@ -12,7 +12,7 @@ RUN wget https://cmake.org/files/v3.15/cmake-3.15.5.tar.gz && \
     make -j2 && \
     make install
 
-RUN git clone https://github.com/microsoft/SPTAG.git
+RUN git clone https://github.com/microsoft/SPTAG.git/tree/ac451def1040e16366a323da799da7d1ddff6ac6
 RUN cd SPTAG && \
     mkdir build && \
     cd build && \
