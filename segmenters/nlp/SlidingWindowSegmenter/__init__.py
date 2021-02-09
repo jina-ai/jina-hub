@@ -7,10 +7,15 @@ from jina.executors.segmenters import BaseSegmenter
 
 class SlidingWindowSegmenter(BaseSegmenter):
     """
-    :class:`SlidingWindowSegmenter` split the text on the doc-level into overlapping substrings on the chunk-level.
-        The text is split into substrings of length ``window_size`` if possible.
-        The degree of overlapping can be configured through the ``step_size`` parameter.
-        The substrings that are shorter than the ``min_substring_len`` will be discarded.
+    :class:`SlidingWindowSegmenter` split the text on the doc-level
+    into overlapping substrings on the chunk-level.
+    The text is split into substrings of length ``window_size`` if possible.
+    The degree of overlapping can be configured through the ``step_size`` parameter.
+    The substrings that are shorter than the ``min_substring_len`` will be discarded.
+
+    :param window_size: the window size that will be used to split the text into substrings
+    :param step_size: the size of the degree of overlapping
+    :param min_substring_len: the minimum size of substrings. Anything shorter will be discarded
     """
 
     def __init__(self,
@@ -18,6 +23,7 @@ class SlidingWindowSegmenter(BaseSegmenter):
                  step_size: int = 150,
                  min_substring_len: int = 1,
                  *args, **kwargs):
+        """Set constructor."""
         super().__init__(*args, **kwargs)
         self.window_size = window_size
         self.step_size = step_size
