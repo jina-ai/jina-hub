@@ -13,7 +13,7 @@ cur_dir = Path(__file__).parent.absolute()
 
 def create_document(doc_id, text, weight, length):
     d = Document()
-    d._document.id = (str(doc_id) * 16)[:16]
+    d.id = str(doc_id)
     d.buffer = text.encode('utf8')
     d.weight = weight
     d.length = length
@@ -22,11 +22,11 @@ def create_document(doc_id, text, weight, length):
 
 def get_documents(ids):
     documents = [
-        [0, 'cat', 0.1, 3],
-        [1, 'dog', 0.2, 3],
-        [2, 'crow', 0.3, 4],
-        [3, 'pikachu', 0.4, 7],
-        [4, 'magikarp', 0.5, 8]
+        ['0', 'cat', 0.1, 3],
+        ['1', 'dog', 0.2, 3],
+        ['2', 'crow', 0.3, 4],
+        ['3', 'pikachu', 0.4, 7],
+        ['4', 'magikarp', 0.5, 8]
     ]
     id_to_document = {d[0]: d for d in documents}
     data = [
@@ -71,8 +71,8 @@ def validate_positive_results(keys, documents, searcher: RedisDBIndexer):
     for key, query_doc in zip(keys, documents):
         result = searcher.query(key)
         result_doc = Document()
-        result_doc._document.ParseFromString(result)
-        assert result_doc.id == str(query_doc[0]) * 16
+        result_doc.proto.ParseFromString(result)
+        assert result_doc.id == str(query_doc[0])
         assert result_doc.buffer == query_doc[1].encode('utf8')
         assert round(result_doc.weight, 5) == query_doc[2]
         assert result_doc.length == query_doc[3]
@@ -94,7 +94,7 @@ def validate_results(save_abspath, results, negative_results):
 
 def get_indexers():
     # test construction from code
-    indexer_1 = RedisDBIndexer(level='doc', db=0)
+    indexer_1 = RedisDBIndexer(db=0)
     # test construction from yaml
     indexer_2 = BaseExecutor.load_config(str(cur_dir / 'yaml/test-redis.yml'))
     return indexer_1, indexer_2
@@ -123,8 +123,8 @@ def run_crud_test_exception_aware(actions, results, no_results, exception, mocke
 
 def test_basic_add(mocker, tmpdir):
     run_crud_test_exception_aware(
-        [('add', {0: 0, 1: 1}), ('add', {3: 3})],
-        {0: 0, 1: 1, 3: 3},
+        [('add', {0: '0', 1: '1'}), ('add', {3: '3'})],
+        {0: '0', 1: '1', 3: '3'},
         [2],
         None,
         mocker,
@@ -134,8 +134,8 @@ def test_basic_add(mocker, tmpdir):
 
 def test_add_existing_key(mocker, tmpdir):
     run_crud_test_exception_aware(
-        [('add', {0: 0, 1: 1}), ('add', {0: 3})],
-        {0: 3, 1: 1},
+        [('add', {0: '0', 1: '1'}), ('add', {0: '3'})],
+        {0: '3', 1: '1'},
         [2],
         None,
         mocker,
@@ -145,8 +145,8 @@ def test_add_existing_key(mocker, tmpdir):
 
 def test_update_existing_key(mocker, tmpdir):
     run_crud_test_exception_aware(
-        [('add', {1: 1, 2: 2}), ('update', {1: 4})],
-        {1: 4, 2: 2},
+        [('add', {1: '1', 2: '2'}), ('update', {1: '4'})],
+        {1: '4', 2: '2'},
         [0, 3],
         None,
         mocker,
@@ -156,8 +156,8 @@ def test_update_existing_key(mocker, tmpdir):
 
 def test_same_value(mocker, tmpdir):
     run_crud_test_exception_aware(
-        [('add', {1: 1, 2: 2}), ('update', {1: 2})],
-        {1: 2, 2: 2},
+        [('add', {1: '1', 2: '2'}), ('update', {1: '2'})],
+        {1: '2', 2: '2'},
         [0, 3],
         None,
         mocker,
@@ -167,9 +167,9 @@ def test_same_value(mocker, tmpdir):
 
 def test_chain(mocker, tmpdir):
     run_crud_test_exception_aware(
-        [('add', {0: 0, 1: 1}), ('delete', {1: 1}), ('add', {3: 3, 9: 4, 2: 4}), ('delete', {0: 0, 2: 4}),
-         ('update', {3: 0})],
-        {9: 4, 3: 0},
+        [('add', {0: '0', 1: '1'}), ('delete', {1: '1'}), ('add', {3: '3', 9: '4', 2: '4'}), ('delete', {0: '0', 2: '4'}),
+         ('update', {3: '0'})],
+        {9: '4', 3: '0'},
         [0, 1, 4],
         None,
         mocker,

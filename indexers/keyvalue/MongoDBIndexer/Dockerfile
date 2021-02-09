@@ -14,4 +14,4 @@ RUN python3.8 -m pip install -r requirements.txt
 RUN mongod --fork -logpath /var/log/mongod.log && python3.8 -m pip install pytest && pytest -s
 
 # starts mongod as a deamon & jina pod
-ENTRYPOINT [ "sh", "-c", "mongod --fork -logpath /var/log/mongod.log && jina pod --uses config.yml" ]
+ENTRYPOINT [ "sh", "-c", "mongod", "--fork", "-logpath", "/var/log/mongod.log", "&&", "jina", "pod", "--uses", "config.yml" ]

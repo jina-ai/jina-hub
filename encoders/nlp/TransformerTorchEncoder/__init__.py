@@ -24,7 +24,6 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             layer_index: int = -1,
             max_length: Optional[int] = None,
             acceleration: Optional[str] = None,
-            model_save_path: Optional[str] = None,
             *args,
             **kwargs,
     ):
@@ -47,11 +46,6 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             ..note::
                 While acceleration methods can significantly speed up the encoding, they result in loss of precision.
                 Make sure that the tradeoff is worthwhile for your use case.
-
-        :param model_save_path: the path of the encoder model. If a valid path is given, the encoder will be saved to the given path
-
-        ..warning::
-            `model_save_path` should be relative to executor's workspace
         """
 
         super().__init__(*args, **kwargs)
@@ -61,7 +55,6 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         self.layer_index = layer_index
         self.max_length = max_length
         self.acceleration = acceleration
-        self.model_save_path = model_save_path
 
         if self.pooling_strategy == 'auto':
             self.pooling_strategy = 'cls'
@@ -83,22 +76,6 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
                 ' The allowed accelerations are "amp" and "quant".'
             )
             raise NotImplementedError
-
-    def __getstate__(self):
-        if self.model_save_path:
-            if not os.path.exists(self.model_abspath):
-                self.logger.info(
-                    f'create folder for saving transformer models: {self.model_abspath}'
-                )
-                os.mkdir(self.model_abspath)
-            self.model.save_pretrained(self.model_abspath)
-            self.tokenizer.save_pretrained(self.model_abspath)
-        return super().__getstate__()
-
-    @property
-    def model_abspath(self) -> str:
-        """Get the file path of the encoder model storage"""
-        return self.get_file_from_workspace(self.model_save_path)
 
     def post_init(self):
         import torch
