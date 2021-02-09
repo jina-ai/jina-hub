@@ -24,6 +24,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             layer_index: int = -1,
             max_length: Optional[int] = None,
             acceleration: Optional[str] = None,
+            embedding_fn_name: str = '__call__',
             *args,
             **kwargs,
     ):
@@ -46,6 +47,8 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             ..note::
                 While acceleration methods can significantly speed up the encoding, they result in loss of precision.
                 Make sure that the tradeoff is worthwhile for your use case.
+        :param embedding_fn_name: name of the function to be called from the `model` to do the embedding. `__call__` by default.
+        A possible value would `embed_questions` for `RetriBert` based models
         """
 
         super().__init__(*args, **kwargs)
@@ -55,6 +58,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         self.layer_index = layer_index
         self.max_length = max_length
         self.acceleration = acceleration
+        self.embedding_fn_name = embedding_fn_name
 
         if self.pooling_strategy == 'auto':
             self.pooling_strategy = 'cls'
@@ -126,7 +130,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             input_tokens = {k: v.to(self.device) for k, v in input_tokens.items()}
 
             with self.amp_accelerate():
-                outputs = self.model(**input_tokens)
+                outputs = getattr(self.model, self.embedding_fn_name)(**input_tokens)
 
             n_layers = len(outputs.hidden_states)
             if self.layer_index not in list(range(-n_layers, n_layers)):
