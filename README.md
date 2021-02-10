@@ -2,7 +2,7 @@
 <img src="https://github.com/jina-ai/jina-hub/blob/master/.github/Hub.png?raw=true" alt="Jina banner" width="200px">
 </p>
 <p align="center">
-Jina's one-stop registry hosting Pods to aid neural search on the cloud
+Jina's one-stop registry for hosting Pods, enabling easy neural search on the cloud
 </p>
 <p align=center>
 <a href="#license"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true" alt="Jina" title="Jina is licensed under Apache-2.0"></a>
@@ -16,7 +16,17 @@ Jina's one-stop registry hosting Pods to aid neural search on the cloud
 
 Jina Hub is a centralized registry, where you can share and discover custom and community driven Jina Pods and Apps tailored to specific use cases of neural search.
 
-From Jina 0.4.10 onwards, Jina Hub is referred as a Git Submodule in [`jina-ai/jina`](https://github.com/jina-ai/jina).
+🌌 **Upload and Share Images** - Share your custom Jina Pods by simply uploading a Python file, a Dockerfile and a YAML, and leave the rest of the work to us. Building and version control is automatically handled on the cloud side.
+
+🌩️ **Cloud Native** - As Jina Hub images are containerized, they can be easily leveraged in any Jina Flow, even in distributed environments.
+
+❤️ **Community Driven** - Hub images are made and owned by the community.
+
+---
+
+<p align="center">
+<a href="http://docs.jina.ai">Docs</a> • <a href="#jina-hello-world-">Hello World</a> • <a href="#get-started">Quick Start</a> • <a href="#learn">Learn</a> • <a href="https://github.com/jina-ai/examples">Examples</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
+</p>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -43,7 +53,7 @@ with Flow().add(uses='docker://' + my_image_tag):
 - Install [Docker](https://docs.docker.com/get-docker/).
 - `pip install "jina[hub]"`
 
-### Create a New Executor
+### 📦 Create a New Executor
 
 ```bash
 jina hub new --type pod
@@ -200,6 +210,7 @@ jinahub/app.app.jina-wikipedia-sentences-30k:0.2.0-0.8.2
 | `0.2.0`                        | App version                   |
 | `0.8.2`                        | Jina version                  |
 
+From Jina 0.4.10 onwards, Jina Hub is referred as a Git Submodule in [`jina-ai/jina`](https://github.com/jina-ai/jina).
 
 ## Contributing
 
