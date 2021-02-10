@@ -8,7 +8,7 @@ class LevenshteinRanker(Match2DocRanker):
     """
     :class:`LevenshteinRanker` Computes the negative Levenshtein distance
         between a query and its matches. The distance is negative, in order to
-        achieve a bigger=better sorting in the respective driver.
+        achieve a bigger=better result, sort in the respective driver.
     """
 
     required_keys = {"text"}
@@ -16,6 +16,17 @@ class LevenshteinRanker(Match2DocRanker):
     def score(
         self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
     ) -> "np.ndarray":
+        """
+        Calculate the negative Levenshtein distance
+
+        :param query_meta: A Dict of queries to score
+        :param old_match_scores: Previously scored matches
+        :param match_meta: A Dict of matches of given query
+        :return: an `ndarray` of the size ``M x 2``.
+            `M`` is the number of new scores.
+            The columns correspond to the ``COL_MATCH_ID`` and ``COL_SCORE``.
+
+        """
         from Levenshtein import distance
 
         new_scores = [
