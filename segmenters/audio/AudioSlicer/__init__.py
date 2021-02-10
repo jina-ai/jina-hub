@@ -7,12 +7,13 @@ from jina.executors.segmenters import BaseSegmenter
 class AudioSlicer(BaseSegmenter):
     """
     :class:`AudioSlicer` segments the audio signal on the doc-level into frames on the chunk-level.
+
+    :param frame_length: the number of samples in each frame
+    :param hop_length: the number of steps to advance between frames
     """
 
     def __init__(self, frame_length: int = 2048, hop_length: int = 512, *args, **kwargs):
-        """
-        :param frame_size: the number of samples in each frame
-        """
+        """Set constructor"""
         super().__init__()
         self.frame_length = frame_length
         self.hop_length = hop_length
@@ -33,8 +34,8 @@ class AudioSlicer(BaseSegmenter):
 
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
-        Slices the input audio signal array into frames and saves the `ndarray` of each frame in the `blob` of each
-        Chunk.
+        Slices the input audio signal array into frames
+        and saves the `ndarray` of each frame in the `blob` of each sub-document.
 
         :param blob: the ndarray of the audio signal
         :return: a list of Chunk dicts with audio frames
