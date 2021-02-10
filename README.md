@@ -2,7 +2,7 @@
 <img src="https://github.com/jina-ai/jina-hub/blob/master/.github/Hub.png?raw=true" alt="Jina banner" width="200px">
 </p>
 <p align="center">
-Jina's one-stop registry for hosting Pods, enabling easy neural search on the cloud
+Jina's one-stop registry for hosting Pods and enabling easy neural search on the cloud
 </p>
 <p align=center>
 <a href="#license"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true" alt="Jina" title="Jina is licensed under Apache-2.0"></a>
@@ -16,7 +16,7 @@ Jina's one-stop registry for hosting Pods, enabling easy neural search on the cl
 
 Jina Hub is a centralized registry, where you can share and discover custom and community driven Jina Pods and Apps tailored to specific use cases of neural search.
 
-🌌 **Upload and Share Images** - Share your custom Jina Pods by simply uploading a Python file, a Dockerfile and a YAML, and leave the rest of the work to us. Building and version control is automatically handled on the cloud side.
+🌌 **Upload and Share Images** - Share your custom Jina Pods by simply uploading a Python file, a Dockerfile, a YAML file, and leave the rest of the work to us. Building and version control is automatically handled on the cloud side.
 
 🌩️ **Cloud Native** - As Jina Hub images are containerized, they can be easily leveraged in any Jina Flow, even in distributed environments.
 
@@ -87,7 +87,7 @@ It will start a wizard in CLI to guide you create your app.
 Build your Docker image using our [naming conventions](#naming-conventions):
 
 ```bash
-docker image build -t jinahub/type.kind.jina-image-name:image_version-jina_version <your_folder>
+jina hub build -t jinahub/type.kind.jina-image-name:image_version-jina_version <your_folder>
 ```
 
 Push to Jina Hub:
