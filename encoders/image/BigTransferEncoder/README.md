@@ -31,7 +31,7 @@ Users can use Pod images in several ways:
 
 - Run with Docker (`docker run`)
   - ```bash
-    docker run jinahub/pod.encoder.bigtransferencoder --port-in 55555 --port-out 55556
+    docker run jinahub/pod.encoder.bigtransferencoder:0.0.6-0.9.33 --port-in 55555 --port-out 55556
     ```
     
 - Flow API
@@ -39,13 +39,13 @@ Users can use Pod images in several ways:
     from jina.flow import Flow
 
     f = (Flow()
-        .add(name='my-encoder', image='jinahub/pod.encoder.bigtransferencoder', port_in=55555, port_out=55556)
+        .add(name='my-encoder', image='jinahub/pod.encoder.bigtransferencoder:0.0.6-0.9.33', port_in=55555, port_out=55556)
         .add(name='my-indexer', uses='indexer.yml'))
     ```
     
 - Jina CLI
   - ```bash
-    jina pod --uses jinahub/pod.encoder.bigtransferencoder --port-in 55555 --port-out 55556
+    jina pod --uses jinahub/pod.encoder.bigtransferencoder:0.0.6-0.9.33 --port-in 55555 --port-out 55556
     ```
     
 - Conventional local usage with `uses` argument
@@ -58,8 +58,11 @@ Users can use Pod images in several ways:
   Specify the image name along with the version tag. The snippet below uses Jina version `0.9.20`
   
   -```Dockerfile
-   docker pull jinahub/pod.encoder.bigtransferencoder:0.0.6-0.9.20
+   docker pull jinahub/pod.encoder.bigtransferencoder:0.0.6-0.9.33
    ```
    
-  
+ Note:
+ 
+ One of the limitations with the Hub Executors currently is the tags - all Executor images should have the versions appended in the name i.e.
+ if the version is `0.0.6-0.9.33`, the image name would be `jinahub/pod.encoder.bigtransferencoder:0.0.6-0.9.33`.
    
