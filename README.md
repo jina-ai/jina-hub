@@ -46,14 +46,14 @@ with Flow().add(uses='docker://' + my_image_tag):
     pass
 ```
 
-## Create a New Hub Pod/App
+## Create a new Hub Pod/App
 
 ### Prerequisites
 
 - Install [Docker](https://docs.docker.com/get-docker/).
 - `pip install "jina[hub]"`
 
-### 📦 Create a New Executor
+### 📦 Create a new Executor
 
 ```bash
 jina hub new --type pod
@@ -74,7 +74,7 @@ MyAwesomeExecutor/
 
 ```
 
-### Create a New App
+### Create a new App
 
 ```bash
 jina hub new --type app
@@ -82,7 +82,7 @@ jina hub new --type app
 
 It will start a wizard in CLI to guide you create your app.
 
-## Upload Your Image to Jina Hub
+## Upload your Image to Jina Hub
 
 Build your Docker image using our [naming conventions](#naming-conventions):
 
@@ -98,7 +98,7 @@ Push to Jina Hub:
 jina hub push jinahub/type.kind.jina-image-name:image-jina_version 
 ```
 
-### Use `py_modules` to Import Multiple Files
+### Use `py_modules` to import multiple files
 
 By default, `jina hub new --pod` creates a Python module structure and guides you to write `MyAwesomeExecutor` class into `__init__.py`. If you have some other files that need to be imported for `MyAwesomeExecutor`, say `helper.py`, you can change [`metas.pymodules`](https://docs.jina.ai/api/jina.executors.metas.html?highlight=py_modules#confval-py_modules) in `config.yml` to import those files. Note, you have to write the dependencies in reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
 
@@ -113,7 +113,7 @@ metas:
     - __init__.py
 ```
 
-#### Legacy Hub Pod Structure
+#### Legacy Hub Pod structure
 
 This is also a valid structure, it works but not recommended:
 
@@ -139,7 +139,7 @@ Please note that:
 - to import ``foo.py``, you must to use ``from jinahub.foo import bar``, where ``jinahub`` is the common namespace for all external modules;
 - in `config.yml:metas.py_modules`, ``helper.py`` needs to be put before `MyAwesomeExecutor.py`.
 
-### Test a Pod/App Locally
+### Test a Pod/App locally
 
 ```bash
 jina hub build /MyAwesomeExecutor/
@@ -147,7 +147,7 @@ jina hub build /MyAwesomeExecutor/
 
 More Hub CLI usage can be found via `jina hub build --help`
 
-## Work with Your Own Repository
+## Work with your own repository
 
 1. Create a new repository
 2. `pip install "jina[hub]" && jina hub new --type pod`
@@ -187,7 +187,7 @@ git push
 | `platform` | A list of CPU architectures that your image built on, each item should be [in this list](legacy/builder/platforms.yml) | `[linux/amd64]` |
 | `keywords` | A list of strings help user to filter and locate your package  | None | 
 
-### Naming Conventions
+### Naming conventions
 
 All apps and executors should follow the naming convention:
 
@@ -269,7 +269,7 @@ As part of our open governance model, we host Jina's [Engineering All Hands]((ht
 
 The meeting will also be live-streamed and later published to our [YouTube channel](https://youtube.com/c/jina-ai).
 
-## Join Us
+## Join us
 
 Jina is an open-source project. [We are hiring](https://jobs.jina.ai) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.
 
