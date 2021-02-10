@@ -6,15 +6,18 @@ from jina.executors.segmenters import BaseSegmenter
 
 class SlidingWindowAudioSlicer(BaseSegmenter):
     """
-    :class:`SlidingWindowAudioSlicer` segments the audio signal on the doc-level into frames on the chunk-level with a
-    sliding window.
+    :class:`SlidingWindowAudioSlicer` segments the audio signal on the doc-level
+    into frames on the chunk-level with a sliding window.
+
+    :param frame_length: the number of samples in each frame
+    :param frame_overlap_length: the number of samples
+        each frame overlaps with its previous frame
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self, frame_length: int = 2048, frame_overlap_length: int = 1536, *args, **kwargs):
-        """
-        :param frame_length: the number of samples in each frame
-        :param frame_overlap_length: the number of samples each frame overlaps its previous frame
-        """
+        """Set Constructor"""
         super().__init__()
         self.frame_length = frame_length
         self.hop_length = self.frame_length - frame_overlap_length
@@ -36,7 +39,8 @@ class SlidingWindowAudioSlicer(BaseSegmenter):
 
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
-        Slices the input audio signal array into frames with a sliding window and saves the `ndarray` of each frame in
+        Slices the input audio signal array into frames
+        with a sliding window and saves the `ndarray` of each frame in
         the `blob` of each Chunk.
 
         :param blob: the ndarray of the audio signal
