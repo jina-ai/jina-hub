@@ -21,7 +21,7 @@ Initialise this Executor specifying parameters i.e.:
 
 The pretrained default path is the result of downloading the models in `download.sh`
 
-### Usage snippet:
+### Snippets:
 
 Initialise BigTransferEncoder:
 
