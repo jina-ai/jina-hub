@@ -1,2 +1,2 @@
 jina
-pymongo==3.11.2
+pymongo==3.11.3
