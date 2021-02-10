@@ -16,5 +16,5 @@ WORKDIR /workspace
 # for testing the image
 RUN mongod --fork -logpath /var/log/mongod.log && python3.7 -m pip install pytest && pytest -s
 
-# starts mongod as a deamon & jina pod
+# jina pod
 ENTRYPOINT [ "jina", "pod", "--uses", "config.yml" ]
