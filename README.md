@@ -25,7 +25,7 @@ Jina Hub is a centralized registry, where you can share and discover custom and 
 ---
 
 <p align="center">
-<a href="http://docs.jina.ai">Docs</a> • <a href="#jina-hello-world-">Hello World</a> • <a href="#get-started">Quick Start</a> • <a href="#learn">Learn</a> • <a href="https://github.com/jina-ai/examples">Examples</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
+<a href="http://docs.jina.ai">Docs</a> • <a href="https://github.com/jina-ai/examples">Examples</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
 </p>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -73,6 +73,7 @@ MyAwesomeExecutor/
     └── __init__.py
 
 ```
+Link to the documentation for creating a containerized pod is [here](https://docs.jina.ai/chapters/hub/build-pod-image.html).
 
 ### Create a new App
 
@@ -192,13 +193,13 @@ git push
 All apps and executors should follow the naming convention:
 
 ```
-jinahub/type.kind.jina-image-name:image-jina_version
+jinahub/type.kind.jina_image_name:image_version-jina_version
 ```
 
 For example:
 
 ```
-jinahub/app.app.jina-wikipedia-sentences-30k:0.2.0-0.8.2
+jinahub/pod.encoder.transformertfencoder:0.0.16-0.9.33
 ```
 
 | Text                           | Meaning                       |
@@ -206,9 +207,9 @@ jinahub/app.app.jina-wikipedia-sentences-30k:0.2.0-0.8.2
 | `jinahub/`                     | Push to `jinahub` Docker repo |
 | `app`                          | [Type]()                      |
 | `app`                          | [Kind]()                      |
-| `jina-wikipedia-sentences-30k` | App name                      |
-| `0.2.0`                        | App version                   |
-| `0.8.2`                        | Jina version                  |
+| `transformertfencoder`         | Pod name                      |
+| `0.0.16`                       | Pod version                   |
+| `0.9.33`                       | Jina version                  |
 
 From Jina 0.4.10 onwards, Jina Hub is referred as a Git Submodule in [`jina-ai/jina`](https://github.com/jina-ai/jina).
 
