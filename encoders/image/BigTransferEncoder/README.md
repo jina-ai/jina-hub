@@ -55,11 +55,11 @@ Users can use Pod images in several ways:
     
 - Docker command
 
-  Specify the image name along with the version tag. The snippet below uses Jina version `0.9.20`
-  
-  -```Dockerfile
-   docker pull jinahub/pod.encoder.bigtransferencoder:0.0.6-0.9.33
-   ```
+  - Specify the image name along with the version tag. The snippet below uses Jina version `0.9.20`
+
+  - ```bash
+    docker pull jinahub/pod.encoder.bigtransferencoder:0.0.6-0.9.33
+    ```
    
  Note:
  
