@@ -9,8 +9,21 @@ from .helper import _crop_image, _move_channel_axis, _load_image
 
 class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
     """
-    :class:`TorchObjectDetectionSegmenter` detects objects from an image using `torchvision detection models` and crops
-    the images according tothe detected bounding boxes of the objects with a confidence higher than a threshold.
+    :class:`TorchObjectDetectionSegmenter` detects objects
+    from an image using `torchvision detection models`
+    and crops the images according tothe detected bounding boxes
+    of the objects with a confidence higher than a threshold.
+
+    :param model_name: the name of the model. Supported models include
+        ``fasterrcnn_resnet50_fpn``, ``maskrcnn_resnet50_fpn`
+    :param channel_axis: the axis id of the color channel,
+        ``-1`` indicates the color channel info at the last axis
+    :param confidence_threshold: confidence value from which it
+        considers a positive detection and therefore the object detected will be cropped and returned
+    :param label_name_map: A Dict mapping from label index to label name, by default will be
+        COCO_INSTANCE_CATEGORY_NAMES
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
         TODO: Allow changing the backbone
     """
     COCO_INSTANCE_CATEGORY_NAMES = [
@@ -33,16 +46,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
                  confidence_threshold: float = 0.0,
                  label_name_map: Dict[int, str] = None,
                  *args, **kwargs):
-        """
-        :param model_name: the name of the model. Supported models include
-        ``fasterrcnn_resnet50_fpn``,
-        ``maskrcnn_resnet50_fpn`
-        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param confidence_threshold: confidence value from which it
-        considers a positive detection and therefore the object detected will be cropped and returned
-        :param label_name_map: A Dict mapping from label index to label name, by default will be
-        COCO_INSTANCE_CATEGORY_NAMES
-        """
+        """Set constructor"""
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         if self.model_name is None:
@@ -67,7 +71,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         Run the model for prediction
 
         :param img: the image from which to run a prediction
-        :return:
+        :return: the boxes, scores and labels predicted
         """
         import torch
         _input = torch.from_numpy(img.astype('float32'))
@@ -89,6 +93,8 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
 
         :param blob: the ndarray of the image
         :return: a list of chunk dicts with the cropped images
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raw_img = np.copy(blob)
         raw_img = _move_channel_axis(raw_img, self.channel_axis, self._default_channel_axis)
