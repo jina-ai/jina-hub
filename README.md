@@ -1,7 +1,6 @@
-# Jina Hub
-
-
-
+<p align="center">
+<img src="https://github.com/jina-ai/jina-hub/blob/master/.github/Hub.png?raw=true" alt="Jina banner" width="200px">
+</p>
 <p align="center">
 Jina's one-stop registry hosting Pods to aid neural search on the cloud
 </p>
