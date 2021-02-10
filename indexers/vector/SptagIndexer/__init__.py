@@ -3,7 +3,8 @@ from typing import Tuple
 import numpy as np
 from jina.executors.indexers.vector import BaseNumpyIndexer
 
-
+if False:
+    import SPTAG
 class SptagIndexer(BaseNumpyIndexer):
     """
     :class:`SptagIndexer` SPTAG powered vector indexer.
@@ -70,7 +71,12 @@ class SptagIndexer(BaseNumpyIndexer):
         self.space = dist_calc_method
         self.num_threads = num_threads
 
-    def build_advanced_index(self, vecs: 'np.ndarray'):
+    def build_advanced_index(self, vecs: 'np.ndarray') -> 'SPTAG.AnnIndex':
+        """Build an advanced index structure from a numpy array.
+
+        :param vecs: numpy array containing the vectors to index
+        :return: advanced index
+        """
         import SPTAG
 
         _index = SPTAG.AnnIndex(self.method, 'Float', vecs.shape[1])
@@ -94,6 +100,12 @@ class SptagIndexer(BaseNumpyIndexer):
             return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
+
+        :param keys: numpy array containing vectors to search for
+        :param top_k: upper limit of responses for each search vector
+        :return: document ids and scores
+        """
         idx = (np.ones((keys.shape[0], top_k)) * (-1)).astype(str)
         dist = np.ones((keys.shape[0], top_k)) * (-1)
         for r_id, k in enumerate(keys):
