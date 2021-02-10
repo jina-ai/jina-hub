@@ -205,8 +205,8 @@ jinahub/pod.encoder.transformertfencoder:0.0.16-0.9.33
 | Text                           | Meaning                       |
 | ---                            | ---                           |
 | `jinahub/`                     | Push to `jinahub` Docker repo |
-| `app`                          | [Type]()                      |
-| `app`                          | [Kind]()                      |
+| `app`                          | Type                      |
+| `encoder`                          | Kind                      |
 | `transformertfencoder`         | Pod name                      |
 | `0.0.16`                       | Pod version                   |
 | `0.9.33`                       | Jina version                  |
