@@ -22,6 +22,9 @@ Initialise this Executor specifying parameters i.e.:
 The pretrained default path is the result of downloading the models in `download.sh`
 
 ### Usage snippet:
+
+Initialise BigTransferEncoder:
+
 `BigTransferEncoder(model_path='pretrained', channel_axis=1, metas=metas)`
 
 Users can use Pod images in several ways:
