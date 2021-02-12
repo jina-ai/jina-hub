@@ -13,8 +13,8 @@ class LambdaMartRanker(Match2DocRanker):
     """
 
     def __init__(self,
-                 model_path: Optional[str],
-                 feature_names: Tuple[str],
+                 model_path: Optional[str] = 'tmp/model.txt',
+                 feature_names: Tuple[str] = ('feature-1', 'feature-2', 'feature-3', 'feature-4', 'feature-5'),
                  *args,
                  **kwargs):
         """

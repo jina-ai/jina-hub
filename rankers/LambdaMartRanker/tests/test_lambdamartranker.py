@@ -3,8 +3,6 @@ import os
 import pytest
 import numpy as np
 
-from .. import LambdaMartRanker
-
 NUM_FEATURES = 5
 NUM_LABELS = 5
 NUM_QUERIES_TRAINING = 5
@@ -13,19 +11,9 @@ SIZE_VALIDATION_DATA = 50
 NUM_QUERIES_VALIDATION = 5
 
 
-@pytest.fixture
-def pretrained_model(tmpdir):
-    """
-    Pretrained model to be stored in tmpdir.
-    It will be trained on fake data forcing that the first feature correlates positively with relevance, while the rest are
-    are random
-    :param tmpdir:
-    :return:
-    """
+def _pretrained_model(model_path):
     import lightgbm as lgb
-    model_path = os.path.join(tmpdir, 'model.txt')
-
-    train_group = np.repeat(NUM_QUERIES_TRAINING, SIZE_TRAINING_DATA/NUM_QUERIES_TRAINING)
+    train_group = np.repeat(NUM_QUERIES_TRAINING, SIZE_TRAINING_DATA / NUM_QUERIES_TRAINING)
     train_features = np.zeros((SIZE_TRAINING_DATA, NUM_FEATURES))  # 500 entities, each contains 5 features
     train_labels = np.random.randint(NUM_LABELS, size=SIZE_TRAINING_DATA)  # 5 relevance labels
     train_data = lgb.Dataset(train_features, group=train_group, label=train_labels)
@@ -33,7 +21,7 @@ def pretrained_model(tmpdir):
     # force first feature to strongly correlate with relevance label
     train_features[:, 0] = train_labels
 
-    validation_group = np.repeat(NUM_QUERIES_VALIDATION, SIZE_VALIDATION_DATA/NUM_QUERIES_VALIDATION)
+    validation_group = np.repeat(NUM_QUERIES_VALIDATION, SIZE_VALIDATION_DATA / NUM_QUERIES_VALIDATION)
     validation_features = np.zeros((SIZE_VALIDATION_DATA, NUM_FEATURES))  # 500 entities, each contains 5 features
     validation_labels = np.random.randint(5, size=SIZE_VALIDATION_DATA)  # 5 relevance labels
     validation_data = lgb.Dataset(validation_features, group=validation_group, label=validation_labels)
@@ -48,7 +36,22 @@ def pretrained_model(tmpdir):
     return model_path
 
 
+@pytest.fixture
+def pretrained_model(tmpdir):
+    """
+    Pretrained model to be stored in tmpdir.
+    It will be trained on fake data forcing that the first feature correlates positively with relevance, while the rest are
+    are random
+    :param tmpdir:
+    :return:
+    """
+    model_path = os.path.join(tmpdir, 'model.txt')
+    return _pretrained_model(model_path)
+
+
 def test_lambdamart_ranker(pretrained_model):
+    from .. import LambdaMartRanker
+
     feature_names = [f'feature-{i + 1}' for i in range(0, NUM_FEATURES)]
     ranker = LambdaMartRanker(model_path=pretrained_model, feature_names=feature_names)
 
@@ -59,7 +62,7 @@ def test_lambdamart_ranker(pretrained_model):
             'feature-3': 0.0,
             'feature-4': 0.0,
             'feature-5': 0.0,
-            },
+        },
         '2': {
             'feature-1': 5.0,
             'feature-2': 0.0,
@@ -94,5 +97,3 @@ def test_lambdamart_ranker(pretrained_model):
 
     assert scores[0][1] > scores[1][1]
     assert scores[1][1] == scores[2][1]
-
-
