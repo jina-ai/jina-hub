@@ -16,9 +16,9 @@ put images and its captions in nearby locations in the embedding space
 
 ### Snippets:
 
-Initialise BigTransferEncoder:
+Initialise VSEImageEncoder:
 
-`BigTransferEncoder(model_path='pretrained', channel_axis=1, metas=metas)`
+`VSEImageEncoder(model_path='pretrained', channel_axis=1, metas=metas)`
 
 Users can use Pod images in several ways:
 
