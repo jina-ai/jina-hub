@@ -22,6 +22,8 @@ def _load_image(blob: 'np.ndarray', channel_axis: int):
 
     from PIL import Image
     img = _move_channel_axis(blob, channel_axis)
+    if len(img.shape) == 3 and img.shape[2] == 1:
+        img = img[:, :, 0]
     return Image.fromarray(img.astype('uint8'))
 
 
@@ -50,7 +52,8 @@ def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, 
     elif isinstance(target_size, Tuple) and len(target_size) == 2:
         target_h, target_w = target_size
     else:
-        raise ValueError(f'target_size should be an integer or a tuple of two integers: {target_size}')
+        raise ValueError(
+            f'target_size should be an integer or a tuple of two integers: {target_size}')
     w_beg = left
     h_beg = top
     if how == 'center':
@@ -61,14 +64,18 @@ def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, 
         h_beg = np.random.randint(0, img_h - target_h + 1)
     elif how == 'precise':
         assert (w_beg is not None and h_beg is not None)
-        assert (0 <= w_beg <= (img_w - target_w)), f'left must be within [0, {img_w - target_w}]: {w_beg}'
-        assert (0 <= h_beg <= (img_h - target_h)), f'top must be within [0, {img_h - target_h}]: {h_beg}'
+        assert (0 <= w_beg <= (img_w - target_w)
+                ), f'left must be within [0, {img_w - target_w}]: {w_beg}'
+        assert (0 <= h_beg <= (img_h - target_h)
+                ), f'top must be within [0, {img_h - target_h}]: {h_beg}'
     else:
         raise ValueError(f'unknown input how: {how}')
     if not isinstance(w_beg, int):
-        raise ValueError(f'left must be int number between 0 and {img_w}: {left}')
+        raise ValueError(
+            f'left must be int number between 0 and {img_w}: {left}')
     if not isinstance(h_beg, int):
-        raise ValueError(f'top must be int number between 0 and {img_h}: {top}')
+        raise ValueError(
+            f'top must be int number between 0 and {img_h}: {top}')
     w_end = w_beg + target_w
     h_end = h_beg + target_h
     img = img.crop((w_beg, h_beg, w_end, h_end))
@@ -94,6 +101,8 @@ def _resize_short(img, target_size: Union[Tuple[int, int], int], how: str = 'LAN
     elif isinstance(target_size, Tuple) and len(target_size) == 2:
         target_h, target_w = target_size
     else:
-        raise ValueError(f'target_size should be an integer or a tuple of two integers: {target_size}')
+        raise ValueError(
+            f'target_size should be an integer or a tuple of two integers: {target_size}')
+
     img = img.resize((target_w, target_h), getattr(Image, how))
     return img

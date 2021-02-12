@@ -10,11 +10,11 @@ from jina.executors.metas import get_default_metas
 
 np.random.seed(500)
 retr_idx = None
-num_data = 10000
+num_data = 10
 num_dim = 64
 num_query = 100
-vec_idx = np.arange(num_data)
-np.random.shuffle(vec_idx)
+keys = np.random.randint(0, high=100, size=[num_data]).astype(str)
+np.random.shuffle(keys)
 vec = np.random.random([num_data, num_dim])
 query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
 
@@ -30,21 +30,16 @@ def metas(tmpdir):
 
 def test_zarr_indexer(metas):
     with ZarrIndexer(index_filename='test.zarr', metric='euclidean', metas=metas) as indexer:
-        indexer.add(vec_idx, vec)
+        indexer.add(keys, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
-        assert indexer.raw_ndarray.shape == vec.shape
+        assert indexer._raw_ndarray.shape == vec.shape
         assert 'default' in indexer.write_handler.array_keys()
         save_abspath = indexer.save_abspath
 
     with ZarrIndexer.load(save_abspath) as indexer:
-        assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer, ZarrIndexer)
         idx, dist = indexer.query(query, top_k=4)
-        global retr_idx
-        if retr_idx is None:
-            retr_idx = idx
-        else:
-            np.testing.assert_almost_equal(retr_idx, idx)
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
 
@@ -68,10 +63,10 @@ def test_zarr_indexer_known(metas):
     with ZarrIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([['4', '5'], ['5', '4'], ['6', '5'], ['7', '6']]))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
+        np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
 
 def test_zarr_indexer_known_big(metas):
@@ -88,7 +83,7 @@ def test_zarr_indexer_known_big(metas):
         queries[int(idx / 1000)] = array
         vectors[idx] = array
 
-    keys = np.arange(10000, 20000).reshape(-1, 1)
+    keys = np.arange(10000, 20000).reshape(-1, 1).astype(str)
 
     with ZarrIndexer(index_filename='test.zarr', metric='euclidean', metas=metas) as indexer:
         indexer.add(keys, vectors)
@@ -100,7 +95,7 @@ def test_zarr_indexer_known_big(metas):
         assert isinstance(indexer, ZarrIndexer)
         idx, dist = indexer.query(queries, top_k=1)
         np.testing.assert_equal(idx, np.array(
-            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]))
+            [['10000'], ['11000'], ['12000'], ['13000'], ['14000'], ['15000'], ['16000'], ['17000'], ['18000'], ['19000']]))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
-        np.testing.assert_equal(indexer.query_by_id([10000, 15000]), vectors[[0, 5000]])
+        np.testing.assert_equal(indexer.query_by_key(['10000', '15000']), vectors[[0, 5000]])

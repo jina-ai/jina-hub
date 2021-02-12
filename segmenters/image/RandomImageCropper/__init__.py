@@ -8,8 +8,15 @@ from .helper import _crop_image, _move_channel_axis, _load_image
 
 class RandomImageCropper(BaseSegmenter):
     """
-    :class:`RandomImageCropper` crops the image with a random crop box. The coordinate is the same coordinate-system
-        in the :py:mode:`PIL.Image`.
+    :class:`RandomImageCropper` crops the image with a random crop box.
+    The coordinate is the same coordinate-system that the :py:mode:`PIL.Image`.
+
+    :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
+        this. If size is an int, the output will have the same height and width as the `target_size`.
+    :param num_patches: The number of crops to be done
+    :param channel_axis: Axis for channel
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self,
@@ -18,11 +25,7 @@ class RandomImageCropper(BaseSegmenter):
                  channel_axis: int = -1,
                  *args,
                  **kwargs):
-        """
-
-        :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
-            this. If size is an int, the output will have the same height and width as the `target_size`.
-        """
+        """Set constructor"""
         super().__init__(*args, **kwargs)
         self.target_size = target_size
         self.num_patches = num_patches

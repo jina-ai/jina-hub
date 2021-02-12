@@ -3,7 +3,7 @@ name: AnnoyIndexer
 kind: indexer
 type: pod
 description: Annoy powered vector indexer
-version: 0.0.14
+version: 0.0.16
 license: apache-2.0
 keywords: [indexer, annoy, ANN]
 author: Jina AI Dev-Team (dev-team@jina.ai)

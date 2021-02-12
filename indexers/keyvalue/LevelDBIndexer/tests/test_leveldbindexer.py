@@ -12,7 +12,7 @@ cur_dir = Path(__file__).parent.absolute()
 
 def create_document(doc_id, text, weight, length):
     d = Document()
-    d._document.id = (str(doc_id) * 16)[:16]
+    d.id = doc_id
     d.buffer = text.encode('utf8')
     d.weight = weight
     d.length = length
@@ -64,7 +64,7 @@ def validate_positive_results(keys, documents, searcher):
     assert len(list(zip(keys, documents))) > 0
     for key, query_doc in zip(keys, documents):
         result_doc = searcher.query(key)
-        assert result_doc.id == str(query_doc[0]) * 16
+        assert result_doc.id == str(query_doc[0])
         assert result_doc.buffer == query_doc[1].encode('utf8')
         assert round(result_doc.weight, 5) == query_doc[2]
         assert result_doc.length == query_doc[3]

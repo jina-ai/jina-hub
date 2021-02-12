@@ -1,9 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional, Iterator, Any
+from typing import Optional, Iterable
 
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
+
+if False:
+    from redis import Redis
 
 
 class RedisDBIndexer(BinaryPbIndexer):
@@ -13,7 +16,8 @@ class RedisDBIndexer(BinaryPbIndexer):
 
     def __init__(self,
                  hostname: str = '0.0.0.0',
-                 port: int = 63079,
+                 # default port on linux
+                 port: int = 6379,
                  db: int = 0,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,36 +25,31 @@ class RedisDBIndexer(BinaryPbIndexer):
         self.port = port
         self.db = db
 
-    def get_query_handler(self):
-        """Get the database handler
+    def get_query_handler(self) -> 'Redis':
+        """Get the database handler.
         """
         import redis
-        r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
         try:
+            r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
             r.ping()
             return r
         except redis.exceptions.ConnectionError as r_con_error:
             self.logger.error('Redis connection error: ', r_con_error)
+            raise
 
-    def query(self, key: int, *args, **kwargs) -> Optional[Any]:
-        """Find the protobuf chunk/doc using id
+    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+        """Find the protobuf document via id.
         :param key: ``id``
-        :return: protobuf chunk or protobuf document
+        :return: matching document
         """
-        result = []
         with self.get_query_handler() as redis_handler:
-            for _key in redis_handler.scan_iter(match=key):
-                res = {
-                    "key": _key,
-                    "values": redis_handler.get(_key),
-                }
-                result.append(res)
-        return result
+            return redis_handler.get(key)
 
-    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """Add a JSON-friendly object to the indexer
-        :param keys: keys to be added
-        :param values: values to be added
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+        """Add JSON-friendly serialized documents to the index.
+
+        :param keys: document ids
+        :param values: JSON-friendly serialized documents
         """
         redis_docs = [{'_id': i, 'values': j} for i, j in zip(keys, values)]
 
@@ -58,12 +57,15 @@ class RedisDBIndexer(BinaryPbIndexer):
             for k in redis_docs:
                 redis_handler.set(k['_id'], k['values'])
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """updates the keys if they exist
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+        """Update JSON-friendly serialized documents on the index.
+
+        :param keys: document ids to update
+        :param values: JSON-friendly serialized documents
         """
         missed = []
         for key in keys:
-            if len(self.query(key)) == 0:
+            if self.query(key) is None:
                 missed.append(key)
         if missed:
             raise KeyError(f'Key(s) {missed} were not found in redis')
@@ -71,8 +73,10 @@ class RedisDBIndexer(BinaryPbIndexer):
         self.delete(keys)
         self.add(keys, values)
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
-        """deletes the keys in redis
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+        """Delete documents from the index.
+
+        :param keys: document ids to delete
         """
         with self.get_query_handler() as h:
             for k in keys:

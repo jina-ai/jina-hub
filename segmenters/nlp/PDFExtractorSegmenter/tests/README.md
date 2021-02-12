@@ -17,13 +17,13 @@ If you have a PDF with images and text, the ```array_in_pb=True``` is necessary.
 And then we search in: 
 
     with f:
-        f.search(input_fn=search_generator(path=path, buffer=None), output_fn=validate_mix_fn)
+        f.search(input_fn=search_generator(path=path, buffer=None), on_done=validate_mix_fn)
 
 For this example I have 3 different PDF files to test. 
 
- - **Image only:** If we want to test the only-images PDF file, we use  ```validate_img_fn``` in the ```output_fn```
- - **Text only:** If we want to test the only-text PDF file, we use  ```validate_text_fn``` in the ```output_fn```
- - **Image and text:** If we want to test the mixed PDF file (images and text), we use  ```validate_mix_fn``` in the ```output_fn```
+ - **Image only:** If we want to test the only-images PDF file, we use  ```validate_img_fn``` in the ```on_done```
+ - **Text only:** If we want to test the only-text PDF file, we use  ```validate_text_fn``` in the ```on_done```
+ - **Image and text:** If we want to test the mixed PDF file (images and text), we use  ```validate_mix_fn``` in the ```on_done```
  
  ## 🤔  Tests
  

@@ -53,7 +53,7 @@ def test_sentencier_en_trim_spaces():
 
     f = Flow().add(uses='!Sentencizer')
     with f:
-        f.index_lines(['  This ,  text is...  . Amazing !!'], output_fn=validate, callback_on_body=True)
+        f.index_lines(['  This ,  text is...  . Amazing !!'], on_done=validate, callback_on_body=True)
 
 
 def test_sentencier_cn():

@@ -11,7 +11,7 @@ from .. import FaissIndexer
 # fix the seed here
 np.random.seed(500)
 retr_idx = None
-vec_idx = np.random.randint(0, high=100, size=[10])
+vec_idx = np.random.randint(0, high=100, size=[10]).astype(str)
 vec = np.array(np.random.random([10, 10]), dtype=np.float32)
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -54,7 +54,7 @@ def test_faiss_indexer_known(metas, train_data, compression_level):
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]], dtype=np.float32)
-    keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
+    keys = np.array([4, 5, 6, 7]).reshape(-1, 1).astype(str)
 
     if train_data == 'new':
         train_filepath = os.path.join(os.environ['TEST_WORKSPACE'], 'train.tgz')
@@ -83,10 +83,10 @@ def test_faiss_indexer_known(metas, train_data, compression_level):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, FaissIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
+        np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
 
 def test_faiss_indexer_known_update_delete(metas):
@@ -94,7 +94,7 @@ def test_faiss_indexer_known_update_delete(metas):
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]], dtype=np.float32)
-    keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
+    keys = np.array([4, 5, 6, 7]).reshape(-1, 1).astype(str)
 
     train_filepath = os.path.join(os.environ['TEST_WORKSPACE'], 'train.tgz')
     train_data = vectors
@@ -115,34 +115,34 @@ def test_faiss_indexer_known_update_delete(metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, FaissIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
+        np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
     # update
     with BaseIndexer.load(save_abspath) as indexer:
-        indexer.update([4], np.array([[200, 200, 200]], dtype=np.float32))
+        indexer.update(['4'], np.array([[200, 200, 200]], dtype=np.float32))
         indexer.save()
         assert indexer.size == 4
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, FaissIndexer)
         idx, dist = indexer.query(queries, top_k=3)
-        np.testing.assert_equal(idx, np.array([[5, 6, 4], [5, 6, 4], [6, 5, 4], [7, 4, 6]]))
+        np.testing.assert_equal(idx, np.array([[5, 6, 4], [5, 6, 4], [6, 5, 4], [7, 4, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 3)
 
     # delete
     with BaseIndexer.load(save_abspath) as indexer:
-        indexer.delete([4])
+        indexer.delete(['4'])
         indexer.save()
         assert indexer.size == 3
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, FaissIndexer)
         idx, dist = indexer.query(queries, top_k=2)
-        np.testing.assert_equal(idx, np.array([[5, 6], [5, 6], [6, 5], [7, 6]]))
+        np.testing.assert_equal(idx, np.array([[5, 6], [5, 6], [6, 5], [7, 6]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
 
@@ -166,7 +166,7 @@ def test_faiss_indexer_known_big(metas):
     with gzip.open(train_filepath, 'wb', compresslevel=1) as f:
         f.write(train_data.tobytes())
 
-    keys = np.arange(10000, 20000).reshape(-1, 1)
+    keys = np.arange(10000, 20000).reshape(-1, 1).astype(str)
 
     with FaissIndexer(index_filename='faiss.test.gz',
                       index_key='Flat',
@@ -182,10 +182,10 @@ def test_faiss_indexer_known_big(metas):
         assert isinstance(indexer, FaissIndexer)
         idx, dist = indexer.query(queries, top_k=1)
         np.testing.assert_equal(idx, np.array(
-            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]))
+            [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]).astype(str))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
-        np.testing.assert_equal(indexer.query_by_id([10000, 15000]), vectors[[0, 5000]])
+        np.testing.assert_equal(indexer.query_by_key(['10000', '15000']), vectors[[0, 5000]])
 
 
 @pytest.mark.parametrize('compression_level', [0, 1, 4])
@@ -197,7 +197,7 @@ def test_indexer_train_from_index_different_compression_levels(metas, compressio
     num_dim = 64
     num_query = 10
     query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
-    vec_idx = np.random.randint(0, high=num_data, size=[num_data])
+    vec_idx = np.random.randint(0, high=num_data, size=[num_data]).astype(str)
     vec = np.random.random([num_data, num_dim])
 
     train_filepath = os.path.join(metas['workspace'], 'faiss.test.gz')

@@ -1,0 +1,7 @@
+!AlbumentationsCrafter
+with:
+  transforms:
+    - VerticalFlip
+    - Resize:
+        width: 200
+        height: 300

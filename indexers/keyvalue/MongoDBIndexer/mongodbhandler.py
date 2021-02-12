@@ -1,24 +1,27 @@
-from typing import Dict, Optional, Iterator
+from typing import Dict, Optional, Iterable
 
 from jina.logging.logger import JinaLogger
 
+if False:
+    from pymongo.database import Database
+    from pymongo.collection import Collection
+
 
 class MongoDBException(Exception):
-    """ Any errors raised by MongoDb """
+    """Any errors raised by MongoDb.
+    """
 
 
 class MongoDBHandler:
-    """
-    Mongodb Handler to connect to the database & insert documents in the collection
-    MongoDB has no access control by default, hence can be used without username:password.
-    If username & password are passed, we need to create it (can be changed to existing un:pw)
+    """Mongodb Handler to connect to the database and can apply add, update, delete and query.
+    MongoDB has no access control by default, hence it can be used without username:password.
     """
 
     def __init__(self,
                  hostname: str = '127.0.0.1',
                  port: int = 27017,
-                 username: str = None,
-                 password: str = None,
+                 username: Optional[str] = None,
+                 password: Optional[str] = None,
                  database: str = 'defaultdb',
                  collection: str = 'defaultcol'):
         self.logger = JinaLogger(self.__class__.__name__)
@@ -39,6 +42,8 @@ class MongoDBHandler:
         return self.connect()
 
     def connect(self) -> 'MongoDBHandler':
+        """Connect to the database.
+        """
         import pymongo
         try:
             self.client = pymongo.MongoClient(self.connection_string)
@@ -55,14 +60,20 @@ class MongoDBHandler:
         return self
 
     @property
-    def database(self):
+    def database(self) -> 'Database':
+        """ Get database. """
         return self.client[self.database_name]
 
     @property
-    def collection(self):
+    def collection(self) -> 'Collection':
+        """ Get collection. """
         return self.database[self.collection_name]
 
-    def find(self, key: int) -> Optional[bytes]:
+    def query(self, key: str) -> Optional[bytes]:
+        """ Queries the related document for the provided ``key``.
+
+        :param key: id of the document
+        """
         import pymongo
         try:
             cursor = self.collection.find({'_id': key})
@@ -71,33 +82,48 @@ class MongoDBHandler:
                 return cursor_contents[0]
             return None
         except pymongo.errors.PyMongoError as exp:
-            self.logger.error(f'Got an error while finding a document in the db {exp}')
+            raise Exception(f'Got an error while finding a document in the db {exp}')
 
-    def insert(self, documents: Iterator[Dict]) -> Optional[str]:
+    def add(self, documents: Iterable[Dict]) -> Optional[str]:
+        """ Insert the documents into the database.
+
+        :param documents: documents to be inserted
+        """
         import pymongo
         try:
             result = self.collection.insert_many(documents)
             self.logger.debug(f'inserted {len(result.inserted_ids)} documents in the database')
             return result.inserted_ids
         except pymongo.errors.PyMongoError as exp:
-            self.logger.error(f'got an error while inserting a document in the db {exp}')
+            raise Exception(f'got an error while inserting a document in the db {exp}')
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, *args):
+        """ Make sure the connection to the database is closed.
+        """
         import pymongo
         try:
             self.client.close()
         except pymongo.errors.PyMongoError as exp:
             raise MongoDBException(exp)
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs):
+        """Delete documents from the indexer.
+
+        :param keys: document ids to delete related documents
+        """
         import pymongo
         try:
             count = self.collection.delete_many({'_id': {'$in': list(keys)}}).deleted_count
             self.logger.debug(f'deleted {count} documents in the database')
         except pymongo.errors.PyMongoError as exp:
-            self.logger.error(f'got an error while deleting a document in the db {exp}')
+            raise Exception(f'got an error while deleting a document in the db {exp}')
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes]) -> None:
+        """ Update the documents on the database.
+
+        :param keys: document ids
+        :param values: serialized documents
+        """
         import pymongo
         try:
             # update_many updates several keys with the same op. / data.
@@ -114,4 +140,4 @@ class MongoDBHandler:
             self.logger.debug(f'updated {count} documents in the database')
             return
         except pymongo.errors.PyMongoError as exp:
-            self.logger.error(f'got an error while updating documents in the db {exp}')
+            raise Exception(f'got an error while updating documents in the db {exp}')

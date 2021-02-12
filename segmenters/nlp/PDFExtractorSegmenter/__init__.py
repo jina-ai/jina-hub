@@ -8,13 +8,29 @@ from jina.executors.segmenters import BaseSegmenter
 
 class PDFExtractorSegmenter(BaseSegmenter):
     """
-    :class:`PDFExtractorSegmenter` Extracts data (text and images) from PDF.
+    :class:`PDFExtractorSegmenter` Extracts data (text and images) from PDF files.
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def segment(self, uri: str, buffer: bytes, *args, **kwargs) -> List[Dict]:
+        """
+        Segements PDF files. Extracts data from them.
+
+        Checks if the input is a string of the filename,
+        or if it's the file in bytes.
+        It will then extract the data from the file, creating a list for images,
+        and text.
+
+        :param uri: File name of PDF
+        :type uri: str
+        :param buffer: PDF file in bytes
+        :type buffer: bytes
+        :returns: A list of documents with the extracted data
+        :rtype: List[Dict]
+        """
+
         import fitz
         import PyPDF2
 
