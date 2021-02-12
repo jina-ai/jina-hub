@@ -49,7 +49,7 @@ def pretrained_model(tmpdir):
     return _pretrained_model(model_path)
 
 
-def test_lambdamart_ranker(pretrained_model):
+def test_lightgbmranker(pretrained_model):
     from .. import LightGBMRanker
 
     feature_names = [f'feature-{i + 1}' for i in range(0, NUM_FEATURES)]
