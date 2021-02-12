@@ -56,5 +56,5 @@ class LambdaMartRanker(Match2DocRanker):
 
         return np.array(
             new_scores,
-            dtype=[(self.COL_MATCH_ID, np.int64), (self.COL_SCORE, np.float64)],
+            dtype=[(self.COL_MATCH_ID, np.object), (self.COL_SCORE, np.float64)],
         )
