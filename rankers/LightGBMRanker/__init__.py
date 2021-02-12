@@ -7,9 +7,18 @@ from jina.executors.rankers import Match2DocRanker
 from jina.excepts import PretrainedModelFileDoesNotExist
 
 
-class LambdaMartRanker(Match2DocRanker):
+class LightGBMRanker(Match2DocRanker):
     """
-    :class:`LightGBMRanker` Computes a relevance score for each match using a pretrained Ltr model trained with LightGBM
+    Computes a relevance score for each match using a pretrained Ltr model trained with LightGBM (https://lightgbm.readthedocs.io/en/latest/index.html)
+
+    .. note::
+        For now all the features are extracted from `match` object by the `class:Match2DocRankerDriver`.
+
+    :param model_path: path to the pretrained model previously trained using LightGBM
+    :param feature_names: name of the features to extract from Documents and used to compute relevance scores by the model loaded
+    from model_path
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self,
@@ -17,10 +26,6 @@ class LambdaMartRanker(Match2DocRanker):
                  feature_names: Tuple[str] = ('feature-1', 'feature-2', 'feature-3', 'feature-4', 'feature-5'),
                  *args,
                  **kwargs):
-        """
-        :param model_path: the path where the model is stored.
-        :param feature_names: The feature names that will be stored from the match
-        """
         super().__init__(*args, **kwargs)
         self.model_path = model_path
         self.feature_names = feature_names

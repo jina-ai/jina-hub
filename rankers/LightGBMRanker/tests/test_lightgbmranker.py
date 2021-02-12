@@ -50,10 +50,10 @@ def pretrained_model(tmpdir):
 
 
 def test_lambdamart_ranker(pretrained_model):
-    from .. import LambdaMartRanker
+    from .. import LightGBMRanker
 
     feature_names = [f'feature-{i + 1}' for i in range(0, NUM_FEATURES)]
-    ranker = LambdaMartRanker(model_path=pretrained_model, feature_names=feature_names)
+    ranker = LightGBMRanker(model_path=pretrained_model, feature_names=feature_names)
 
     match_meta = {
         '1': {
