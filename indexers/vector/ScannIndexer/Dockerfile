@@ -25,13 +25,16 @@ RUN apt update && apt install -y build-essential && \
     apt update && \
     apt install -y gcc-9 g++-9
 
-COPY . /workspace
-WORKDIR /workspace
 
 # get the scann whl
 RUN curl https://storage.googleapis.com/scann/releases/1.0.0/scann-1.0.0-cp37-cp37m-linux_x86_64.whl --output scann-1.0.0-cp37-cp37m-linux_x86_64.whl
 
+COPY requirements.txt /requirements.txt
+
 RUN pip install -r requirements.txt
+
+COPY . /workspace
+WORKDIR /workspace
 
 # for testing the image
 RUN pip install pytest && pytest -v -s
