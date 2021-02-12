@@ -9,7 +9,7 @@ from .. import ScannIndexer
 
 # fix the seed here
 np.random.seed(500)
-vec_idx = np.random.randint(0, high=100, size=[10])
+vec_idx = np.random.randint(0, high=100, size=[10]).astype(np.str)
 vec = np.array(np.random.random([10, 10]), dtype=np.float32)
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -26,7 +26,7 @@ def metas(tmpdir):
 
 def test_scannindexer(metas):
     with ScannIndexer(index_filename='scann.test.gz', metas=metas) as indexer:
-        indexer.add([str(e) for e in vec_idx], vec)
+        indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
