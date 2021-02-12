@@ -26,7 +26,7 @@ def metas(tmpdir):
 
 def test_scannindexer(metas):
     with ScannIndexer(index_filename='scann.test.gz', metas=metas) as indexer:
-        indexer.add(vec_idx, vec)
+        indexer.add([str(e) for e in vec_idx], vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
@@ -59,7 +59,7 @@ def test_scann_indexer_known(metas):
         np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
+        np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
 
 def test_scann_indexer_known_big(metas):
