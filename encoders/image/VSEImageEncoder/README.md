@@ -12,3 +12,50 @@ put images and its captions in nearby locations in the embedding space
   url = {https://github.com/fartashf/vsepp},
   year={2018}
 }
+
+
+### Snippets:
+
+Initialise BigTransferEncoder:
+
+`BigTransferEncoder(model_path='pretrained', channel_axis=1, metas=metas)`
+
+Users can use Pod images in several ways:
+
+- Run with Docker (`docker run`)
+  - ```bash
+    docker run jinahub/pod.encoder.vseimageencoder:0.0.6-0.9.33 --port-in 55555 --port-out 55556
+    ```
+    
+- Flow API
+  - ```python
+    from jina.flow import Flow
+
+    f = (Flow()
+        .add(name='my-encoder', image='jinahub/pod.encoder.vseimageencoder:0.0.6-0.9.33', port_in=55555, port_out=55556)
+        .add(name='my-indexer', uses='indexer.yml'))
+    ```
+    
+- Jina CLI
+  - ```bash
+    jina pod --uses jinahub/pod.encoder.vseimageencoder:0.0.6-0.9.33 --port-in 55555 --port-out 55556
+    ```
+    
+- Conventional local usage with `uses` argument
+  - ```bash
+    jina pod --uses hub/example/vseimageencoder.yml --port-in 55555 --port-out 55556
+    ```
+    
+- Docker command
+
+  - Specify the image name along with the version tag. The snippet below uses Jina version `0.9.20`
+
+  - ```bash
+    docker pull jinahub/pod.encoder.vseimageencoder:0.0.6-0.9.33
+    ```
+   
+ Note:
+ 
+ One of the limitations with the Hub Executors currently is the tags - all Executor images should have the versions appended in the name i.e.
+ if the version is `0.0.6-0.9.33`, the image name would be `jinahub/pod.encoder.vseimageencoder:0.0.6-0.9.33`.
+   
