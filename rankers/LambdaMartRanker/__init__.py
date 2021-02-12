@@ -35,7 +35,7 @@ class LambdaMartRanker(Match2DocRanker):
 
     @property
     def required_keys(self):
-        return [f'tag_{feat_name}' for feat_name in self.feature_names]
+        return self.feature_names
 
     def _get_features_dataset(self, match_meta: Dict) -> 'np.array':
         return np.array([[match_meta[match_id][feat] for feat in self.feature_names] for match_id in match_meta])

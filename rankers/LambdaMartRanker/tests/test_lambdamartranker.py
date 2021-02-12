@@ -35,7 +35,7 @@ def pretrained_model(tmpdir):
     return model_path
 
 
-def test_lightgbm_ranker(pretrained_model):
+def test_lambdamart_ranker(pretrained_model):
     feature_names = [f'feature-{i + 1}' for i in range(0, NUM_FEATURES)]
     ranker = LambdaMartRanker(model_path=pretrained_model, feature_names=feature_names)
 
