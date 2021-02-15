@@ -221,12 +221,50 @@ def test_no_cls_token(test_metas, params):
         classifier._encode(test_data)
 
 
+def test_classifier_prediction_type():
+    test_data = np.array(["business", "politics", "food"])
+    test_labels = np.array(["business", "politics", "food"])
+
+    classifier = ZeroShotTFClassifier()
+
+    predictions = classifier.predict(test_data, target_labels=test_labels)
+
+    assert isinstance(predictions, np.ndarray)
+
+
+@pytest.mark.parametrize("model_name", _models)
+@pytest.mark.parametrize("pooling_strategy", ["min"])
+@pytest.mark.parametrize("layer_index", [-2])
+def test_classifier_prediction_results(test_metas,
+                                       model_name,
+                                       pooling_strategy,
+                                       layer_index):
+    params = {
+        "pretrained_model_name_or_path": model_name,
+        "pooling_strategy": pooling_strategy,
+        "layer_index": layer_index,
+    }
+
+    test_data = np.array(["business", "politics", "food"])
+    test_labels = np.array(["business", "politics", "food"])
+
+    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
+
+    predictions = classifier.predict(test_data, target_labels=test_labels)
+
+    predictions_expected = np.array([[1, 0, 0],
+                                     [0, 1, 0],
+                                     [0, 0, 1]])
+
+    np.testing.assert_array_equal(predictions, predictions_expected)
+
+
 def test_classifier_predictions_shape():
     test_data = np.array(["it is a good day!", "the dog sits on the floor."])
     test_labels = np.array(["business", "movie", "food"])
 
     classifier = ZeroShotTFClassifier()
-    predictions = classifier.predict(test_data, test_labels)
+    predictions = classifier.predict(test_data, target_labels=test_labels)
 
     assert test_data.shape[0] == predictions.shape[0]
     assert test_labels.shape[0] == predictions.shape[1]
@@ -247,4 +285,23 @@ def test_classifier_invalid_labels():
     test_labels = np.array(["business"])
 
     with pytest.raises(ValueError):
-        classifier.predict(test_data, test_labels)
+        classifier.predict(test_data, target_labels=test_labels)
+
+
+def test_classifier_missing_labels():
+    classifier = ZeroShotTFClassifier()
+
+    test_data = np.array(["it is a good day!", "the dog sits on the floor."])
+
+    with pytest.raises(ValueError):
+        classifier.predict(test_data)
+
+
+def test_classifier_duplicate_labels():
+    classifier = ZeroShotTFClassifier()
+
+    test_data = np.array(["it is a good day!", "the dog sits on the floor."])
+    test_labels = np.array(["business", "business", "business"])
+
+    with pytest.raises(ValueError):
+        classifier.predict(test_data, target_labels=test_labels)
