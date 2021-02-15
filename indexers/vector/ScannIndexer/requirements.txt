@@ -1,2 +1,2 @@
-jina
+jina==1.0.1
 scann==1.1.1
