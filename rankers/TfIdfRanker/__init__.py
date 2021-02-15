@@ -9,36 +9,48 @@ from jina.executors.rankers import Chunk2DocRanker
 
 class TfIdfRanker(Chunk2DocRanker):
     """
-    :class:`TfIdfRanker` calculates the weighted score from the matched chunks. The weights of each chunk is based on
-        the tf-idf algorithm. Each query chunk is considered as a ``term``, and the frequency of the query chunk in a
-        specific matched document is considered as the naive ``term-frequency``. All the matched results as a whole is
-        considered as the corpus, and therefore the frequency of the query chunk in all the matched docs is considered
-        as the naive ``document-frequency``. Please refer to the functions for the details of calculating ``tf`` and
-        ``idf``.
+    :class:`TfIdfRanker` calculates the weighted score from the matched chunks.
+        The weights of each chunk is based on the tf-idf algorithm.
+        Each query chunk is considered as a ``term``,
+        and the frequency of the query chunk in a
+        specific matched document is considered as the naive ``term-frequency``.
+        All the matched results as a whole is
+        considered as the corpus, and therefore the frequency of the query
+        chunk in all the matched docs is considered
+        as the naive ``document-frequency``.
+        Please refer to the functions for the details of calculating
+        ``tf`` and ``idf``.
+
+    :param threshold: the threshold of matching scores.
+        Only the matched chunks with a score that is higher or equal
+        to the ``threshold`` are counted as matched.
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
     required_keys = {'length', 'id'}
 
     def __init__(self, threshold=0.1, *args, **kwargs):
-        """
-
-        :param threshold: the threshold of matching scores. Only the matched chunks with a score that is higher or equal
-            to the ``threshold`` are counted as matched.
-        """
+        """Set Constructor"""
         super().__init__(*args, **kwargs)
         self.threshold = threshold
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
         """
+        Calculate score from the matched chunks
 
-        :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the batch size of the matched chunks for the
-            query doc. The columns correspond to the ``doc_id`` of the matched chunk, ``chunk_id`` of the matched chunk,
-             ``chunk_id`` of the query chunk, and ``score`` of the matched chunk.
-        :param query_chunk_meta: a dict of meta info for the query chunks with **ONLY** the ``required_keys`` are kept.
-        :param match_chunk_meta: a dict of meta info for the matched chunks with **ONLY** the ``required_keys`` are
-            kept.
-
-        :return: an `ndarray` of the size ``M x 2``. ``M`` is the number of matched docs. The columns correspond to the
-            ``doc_id`` and ``score``.
+        :param match_idx: an `ndarray` of the size ``N x 4``. `
+            `N`` is the batch size of the matched chunks for the
+            query doc. The columns correspond to the ``doc_id``
+            of the matched chunk, ``chunk_id`` of the matched chunk,
+             ``chunk_id`` of the query chunk, and ``score``
+             of the matched chunk.
+        :param query_chunk_meta: a dict of meta info for the query
+            chunks with **ONLY** the ``required_keys`` are kept.
+        :param match_chunk_meta: a dict of meta info for the matched
+            chunks with **ONLY** the ``required_keys`` are kept.
+        :return: an `ndarray` of the size ``M x 2``.
+            ``M`` is the number of matched docs. The columns
+            correspond to the ``doc_id`` and ``score``.
 
         .. note::
             In both `query_chunk_meta` and `match_chunk_meta`, ONLY the fields from the ``required_keys`` are kept.
@@ -55,9 +67,12 @@ class TfIdfRanker(Chunk2DocRanker):
     def get_idf(self, match_idx):
         """Get the idf dictionary for query chunks that matched a given doc.
 
-        :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the batch size of the matched chunks for the
-            query doc. The columns correspond to the ``doc_id`` of the matched chunk, ``chunk_id`` of the matched chunk,
-             ``chunk_id`` of the query chunk, and ``score`` of the matched chunk.
+        :param match_idx: an `ndarray` of the size ``N x 4``.
+            ``N`` is the batch size of the matched chunks for the
+            query doc. The columns correspond to the ``doc_id``
+            of the matched chunk, ``chunk_id`` of the matched chunk,
+            ``chunk_id`` of the query chunk, and ``score`` of
+            the matched chunk.
 
         :return: a dict in the size of query chunks
 
@@ -72,18 +87,23 @@ class TfIdfRanker(Chunk2DocRanker):
     def get_tf(self, match_idx, match_chunk_meta):
         """Get the tf dictionary for query chunks that matched a given doc.
 
-        :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the number of chunks in a given doc that matched
+        :param match_idx: an `ndarray` of the size ``N x 4``.
+            ``N`` is the number of chunks in a given doc that matched
             with the query doc.
-        :param match_chunk_meta: a dict of meta info for the matched chunks with **ONLY** the ``required_keys`` are
-            kept.
+        :param match_chunk_meta: a dict of meta info for the matched
+            chunks with **ONLY** the ``required_keys`` are kept.
 
         :return: a dict in the size of query chunks
         .. note::
-            The term-frequency of a query chunk is frequency of the query chunk that has a matching score equal or
-                higher than the ``threshold``.
-            To avoid the effects of long texts, the term-frequency of a query chunk is normalized by the total number of
-                 chunks in the matched doc, i.e. tf = (n / n_doc). ``n`` denotes the frequency of the query chunk in the
-                  matched doc. ``n_doc`` denotes the total number of chunks in the matched doc.
+            The term-frequency of a query chunk is frequency of the
+            query chunk that has a matching score equal or
+            higher than the ``threshold``.
+            To avoid the effects of long texts, the term-frequency
+            of a query chunk is normalized by the total number of
+            chunks in the matched doc, i.e. tf = (n / n_doc).
+            ``n`` denotes the frequency of the query chunk in the
+            matched doc. ``n_doc`` denotes the total number of
+            chunks in the matched doc.
         """
         q_tf_list, q_id_list, c_id_list = self._get_tf(match_idx)
         return {q_idx: n / match_chunk_meta[doc_idx]['length']
@@ -92,10 +112,12 @@ class TfIdfRanker(Chunk2DocRanker):
     def _get_df(self, match_idx):
         """Get the naive document frequency
 
-        :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the number of chunks in a given doc that matched
-            with the query doc.
+        :param match_idx: an `ndarray` of the size ``N x 4``.
+            ``N`` is the number of chunks in a given doc that
+            matched with the query doc.
 
-        :return: a tuple of two `np.ndarray` in the size of ``M``, i.e. the document frequency array and the chunk id
+        :return: a tuple of two `np.ndarray` in the size of ``M``,
+            i.e. the document frequency array and the chunk id
             array. ``M`` is the number of query chunks.
         """
         a = match_idx[match_idx[self.COL_DOC_CHUNK_ID].argsort()]
@@ -105,11 +127,14 @@ class TfIdfRanker(Chunk2DocRanker):
     def _get_tf(self, match_idx):
         """Get the naive term frequency of the query chunks
 
-        :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the number of chunks in a given doc that matched
-            with the query doc.
+        :param match_idx: an `ndarray` of the size ``N x 4``.
+            ``N`` is the number of chunks in a given doc that
+            matched with the query doc.
 
-        :return: a tuple of three `np.ndarray` in the size of ``M``, i.e. the term frequency array, the query chunk id
-            array, and the matched chunk id array.  ``M`` is the number of query chunks.
+        :return: a tuple of three `np.ndarray` in the size of ``M``,
+            i.e. the term frequency array, the query chunk id
+            array, and the matched chunk id array.
+            ``M`` is the number of query chunks.
 
         .. note::
             The query chunks with matching scores that is lower than the threshold are dropped.
@@ -122,10 +147,12 @@ class TfIdfRanker(Chunk2DocRanker):
         return q_tf_list, q_id_list, c_id_list
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, idf, *args, **kwargs):
-        """Get the doc score based on the weighted sum of matching scores. The weights are calculated from the tf-idf of
-             the query chunks.
+        """Get the doc score based on the weighted sum of matching scores.
+        The weights are calculated from the tf-idf of
+        the query chunks.
 
-        :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the number of chunks in a given doc that matched
+        :param match_idx: an `ndarray` of the size ``N x 4``.
+            ``N`` is the number of chunks in a given doc that matched
             with the query doc.
         :param tf: a dictionary with the query chunk id as key and the tf as value.
         :param idf: a dictionary with the query chunk id as key and the idf as value.
