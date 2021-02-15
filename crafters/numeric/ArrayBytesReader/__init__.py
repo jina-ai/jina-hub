@@ -11,7 +11,7 @@ class ArrayBytesReader(BaseCrafter):
     The size of the vectors is provided in the constructor
     so that the numpy array can be interpreted properly.
 
-    :param as_type: type of vector
+    :param as_type: The numpy array will be this type
     :param args:  Additional positional arguments
     :param kwargs: Additional keyword arguments
     """
