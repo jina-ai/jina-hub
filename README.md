@@ -22,6 +22,8 @@ Jina Hub is a centralized registry, where you can share and discover custom and 
 
 ❤️ **Community Driven** - Hub images are made and owned by the community.
 
+View the existing collection of hub images on [hub.Jina.ai.](https://hub.jina.ai/#/home)
+
 ---
 
 <p align="center">
