@@ -39,6 +39,8 @@ class ImageNormalizer(BaseCrafter):
             self.target_size = tuple(target_size)
         else:
             raise ValueError(f'target_size {target_size} should be an integer or tuple/list of 2 integers')
+        if not all(value > 0 for value in img_std):
+            raise ValueError(f'all values of img_std {img_std}, must be greater than zero')
         self.resize_dim = resize_dim
         self.img_mean = np.array(img_mean).reshape((1, 1, 3))
         self.img_std = np.array(img_std).reshape((1, 1, 3))
