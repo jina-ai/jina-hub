@@ -69,7 +69,8 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
 
     def predict(self,
                 data: "np.ndarray",
-                target_labels: "np.ndarray") -> "np.ndarray":
+                *args,
+                **kwargs) -> "np.ndarray":
         """
          Perform zero shot classification on `data`, the predicted label
          for each sample in X is returned.
@@ -81,19 +82,27 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
          :param data: the input textual data to be classified, a 1 d
             array of string type in size `B`
          :type data: np.ndarray
-         :param target_labels: the potential classification labels,
-            a L d array of string types in size `1
-         :type target_labels: np.ndarray
+         :keyword target_labels: the textual classification labels
          :return: zero/one one-hot predicted label of each sample
             in size `(B, L)`
-        :rtype: np.ndarray
+         :rtype: np.ndarray
         """
 
         data_encoded = self._encode(data)
-        labels_encoded = self._encode(target_labels)
 
-        if labels_encoded.shape[0] < 2:
+        if 'target_labels' not in kwargs.keys():
+            raise ValueError("The target_labels argument is undefined.")
+
+        elif kwargs['target_labels'].shape[0] < 2:
             raise ValueError("The number of target labels must be at least 2.")
+
+        elif kwargs['target_labels'].shape[0] != \
+                len(set(kwargs['target_labels'])):
+            raise ValueError(
+                "There are duplicate value in the target_label argument."
+            )
+
+        labels_encoded = self._encode(kwargs['target_labels'])
 
         distances = self._evaluate(data_encoded, labels_encoded)
 
