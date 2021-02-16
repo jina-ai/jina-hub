@@ -39,7 +39,7 @@ class ChromaPitchEncoder(BaseAudioEncoder):
         :param data: a `Batch x Signal Length` ndarray, where
             `Signal Length` is a number of samples
         :return: a `Batch x Concatenated Features` ndarray, where
-            `Concatinated Features` is a 12-dimensional feature
+            `Concatenated Features` is a 12-dimensional feature
             vector times the number of the chroma frames
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
