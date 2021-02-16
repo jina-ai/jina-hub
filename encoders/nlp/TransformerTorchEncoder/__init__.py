@@ -13,7 +13,36 @@ from jina.executors.encoders import BaseEncoder
 
 class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     """
-    Internally, TransformerTorchEncoder wraps the pytorch version of transformers from huggingface.
+    Wraps the pytorch version of transformers from huggingface.
+
+    :param pretrained_model_name_or_path: Either:
+        - a string, the `model id` of a pretrained model hosted
+            inside a model repo on huggingface.co, e.g.: ``bert-base-uncased``.
+        - a path to a `directory` containing model weights saved using
+            :func:`~transformers.PreTrainedModel.save_pretrained`, e.g.:
+            ``./my_model_directory/``.
+    :param base_tokenizer_model: The name of the base model to use for creating
+        the tokenizer. If None, will be equal to `pretrained_model_name_or_path`.
+    :param pooling_strategy: the strategy to merge the word embeddings into the
+        chunk embedding. Supported strategies include 'cls', 'mean', 'max', 'min'.
+    :param layer_index: index of the transformer layer that is used to create
+        encodings. Layer 0 corresponds to the embeddings layer
+    :param max_length: the max length to truncate the tokenized sequences to.
+    :acceleration: The method to accelerate encoding. The available options are:
+        - ``'amp'``, which uses `automatic mixed precision
+            `<https://pytorch.org/docs/stable/amp.html>`_ autocasting.
+            This option is only available on GPUs that support it
+            (architecture newer than or equal to NVIDIA Volatire).
+        - ``'quant'``, which uses dynamic quantization on the transformer model.
+            See `this tutorial
+            <https://pytorch.org/tutorials/intermediate/dynamic_quantization_bert_tutorial.html>`_
+            for more information. This option is currently not supported on GPUs.
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
+
+    ..note::
+        While acceleration methods can significantly speed up the encoding, they result in loss of precision.
+        Make sure that the tradeoff is worthwhile for your use case.
     """
 
     def __init__(
@@ -27,27 +56,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             *args,
             **kwargs,
     ):
-        """
-        :param pretrained_model_name_or_path: Either:
-            - a string, the `model id` of a pretrained model hosted inside a model repo on huggingface.co, e.g.: ``bert-base-uncased``.
-            - a path to a `directory` containing model weights saved using :func:`~transformers.PreTrainedModel.save_pretrained`, e.g.: ``./my_model_directory/``.
-        :param base_tokenizer_model: The name of the base model to use for creating the tokenizer. If None, will be equal to `pretrained_model_name_or_path`.
-        :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
-            strategies include 'cls', 'mean', 'max', 'min'.
-        :param layer_index: index of the transformer layer that is used to create encodings. Layer 0 corresponds to the embeddings layer
-        :param max_length: the max length to truncate the tokenized sequences to.
-        :acceleration: The method to accelerate encoding. The available options are:
-            - ``'amp'``, which uses `automatic mixed precision <https://pytorch.org/docs/stable/amp.html>`__ autocasting.
-              This option is only available on GPUs that support it (architecture newer than or equal to NVIDIA Volatire).
-            - ``'quant'``, which uses dynamic quantization on the transformer model. See 
-              `this tutorial <https://pytorch.org/tutorials/intermediate/dynamic_quantization_bert_tutorial.html>`__
-              for more information. This option is currently not supported on GPUs.
-
-            ..note::
-                While acceleration methods can significantly speed up the encoding, they result in loss of precision.
-                Make sure that the tradeoff is worthwhile for your use case.
-        """
-
+        """Set Constructor"""
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.base_tokenizer_model = base_tokenizer_model or pretrained_model_name_or_path
@@ -105,8 +114,10 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
+        Encode data into an ndarray
+
         :param data: a 1d array of string type in size `B`
-        :return: an ndarray in size `B x D`
+        :return: an ndarray in size `B x D` with the embeddings
         """
         import torch
 
