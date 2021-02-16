@@ -6,8 +6,24 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class FlairTextEncoder(BaseTorchEncoder):
     """
-    :class:`FlairTextEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
+    Encode data from an array of string in size `B` into a ndarray in size `B x D`.
+
     Internally, :class:`FlairTextEncoder` wraps the DocumentPoolEmbeddings from Flair.
+
+    :param embeddings: the name of the embeddings. Supported models include
+        - ``word:[ID]``: the classic word embedding model, the ``[ID]`` are listed at
+        https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/CLASSIC_WORD_EMBEDDINGS.md
+        - ``flair:[ID]``: the contextual embedding model, the ``[ID]`` are listed at
+        https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
+        - ``pooledflair:[ID]``: the pooled version of the contextual embedding model,
+        the ``[ID]`` are listed at
+        https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
+        - ``byte-pair:[ID]``: the subword-level embedding model, the ``[ID]`` are listed at
+        https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/BYTE_PAIR_EMBEDDINGS.md
+        - ``Example``: ('word:glove', 'flair:news-forward', 'flair:news-backward')
+
+    :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding.
+    Supported strategies include ``mean``, ``min``, ``max``.
     """
 
     def __init__(self,
@@ -15,17 +31,7 @@ class FlairTextEncoder(BaseTorchEncoder):
                  pooling_strategy: str = 'mean',
                  *args,
                  **kwargs):
-        """
-
-        :param embeddings: the name of the embeddings. Supported models include
-        - ``word:[ID]``: the classic word embedding model, the ``[ID]`` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/CLASSIC_WORD_EMBEDDINGS.md
-        - ``flair:[ID]``: the contextual embedding model, the ``[ID]`` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
-        - ``pooledflair:[ID]``: the pooled version of the contextual embedding model, the ``[ID]`` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
-        - ``byte-pair:[ID]``: the subword-level embedding model, the ``[ID]`` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/BYTE_PAIR_EMBEDDINGS.md
-        - ``Example``: ('word:glove', 'flair:news-forward', 'flair:news-backward'),
-        :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
-            strategies include ``mean``, ``min``, ``max``.
-        """
+        """Set Constructor."""
         super().__init__(*args, **kwargs)
         self.embeddings = embeddings
         self.pooling_strategy = pooling_strategy
@@ -66,8 +72,9 @@ class FlairTextEncoder(BaseTorchEncoder):
 
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
+        Encode data from an array of string in size `B` into a ndarray in size `B x D`.
 
-        :param data: a 1d array of string type in size `B`
+        :param data: a 1-dimension array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
         from flair.data import Sentence
