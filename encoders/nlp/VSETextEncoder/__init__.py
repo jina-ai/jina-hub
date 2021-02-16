@@ -10,6 +10,7 @@ from .vocab import Vocabulary
 
 
 class CustomUnpickler(pickle.Unpickler):
+    """Custom Unpickler method"""
 
     def find_class(self, module, name):
         try:
@@ -20,17 +21,19 @@ class CustomUnpickler(pickle.Unpickler):
 
 class VSETextEncoder(BaseTorchEncoder):
     """
-    :class:`VSETextEncoder` encodes data from a ndarray of texts into a
-        ndarray of `B x D`. using VSE text_emb branch
+    Encodes data from a ndarray of texts into a ndarray of `B x D`.
 
+    Using VSE text_emb branch
+
+    :path : path where to find the model.pth file
+    :vocab_path : path where to find the vocab.pkl file
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self, path: str = 'runs/f30k_vse++_vggfull/model_best.pth.tar',
                  vocab_path: str = 'vocab/f30k_vocab.pkl', *args, **kwargs):
-        """
-        :path : path where to find the model.pth file
-        :vocab_path : path where to find the vocab.pkl file
-        """
+        """Set VSETextEncoder Constructor"""
         super().__init__(*args, **kwargs)
         self.path = path
         self.vocab_path = vocab_path
@@ -56,6 +59,14 @@ class VSETextEncoder(BaseTorchEncoder):
 
     @batching
     def encode(self, text):
+        """
+        Encodes data from a ndarray of texts into a ndarray of `B x D`.
+
+        :param text: ndarray with texts to be encoded
+        :type text: ndarray
+        :return: Embedded sentences in ndarray of `B x D`.
+        :rtype: ndarray
+        """
         import torch
         import nltk
         from torch.autograd import Variable
