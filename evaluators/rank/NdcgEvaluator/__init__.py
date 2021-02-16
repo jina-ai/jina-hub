@@ -1,5 +1,5 @@
+from typing import Sequence, Union, Optional, Tuple, Any
 from math import log
-from typing import Sequence, Union, Optional
 
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 
@@ -24,29 +24,30 @@ def _compute_idcg(gains, power_relevance):
 
 class NDCGEvaluator(BaseRankingEvaluator):
     """
-    :class:`NDCGEvaluator` evaluates normalized discounted cumulative gain for information retrieval.
+    From a list of sorted retrieved sorted scores and expected scores, evaluates normalized discounted cumulative gain for information retrieval.
+    :param eval_at: The number of documents in each of the lists to consider in the NDCG computation. If None. the complete lists are considered
+        for the evaluation computation
+    :param power_relevance: The power relevance places stronger emphasis on retrieving relevant documents.
+        For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
     """
 
-    def __init__(self, eval_at: Optional[int] = None, power_relevance: bool =True):
-        """
-        :param power_relevance: The power relevance places stronger emphasis on retrieving relevant documents.
-            For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
-        """
+    def __init__(self, eval_at: Optional[int] = None, power_relevance: bool = True):
         super().__init__()
         self.eval_at = eval_at
         self._power_relevance = power_relevance
 
     def evaluate(
             self,
-            actual: Sequence[Union[int, float]],
-            desired: Sequence[Union[int, float]],
+            actual: Sequence[Tuple[Any, Union[int, float]]],
+            desired: Sequence[Tuple[Any, Union[int, float]]],
             *args, **kwargs
     ) -> float:
         """"
-        :param actual: the scores predicted by the search system.
-        :param desired: the expected score given by user as groundtruth, please ensure the value is in desc order.
+        :param actual: the tuple of Ids and Scores predicted by the search system. actual is sorted in descending order
+        :param desired: the expected id, relevance tuples given by user as matching groundtruth.
         :return the evaluation metric value for the request document.
         """
+
         # Information gain must be greater or equal to 0.
         actual_at_k = actual[:self.eval_at] if self.eval_at else actual
         desired_at_k = desired[:self.eval_at] if self.eval_at else desired
