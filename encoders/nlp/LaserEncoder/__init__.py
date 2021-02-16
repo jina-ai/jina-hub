@@ -9,9 +9,20 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class LaserEncoder(BaseTorchEncoder):
     """
-    :class:`LaserEncoder` is a encoder based on Facebook Research's LASER (Language-Agnostic SEntence Representations) to compute multilingual sentence embeddings.
-    It encodes data from an 1d array of string in size `B` into an ndarray in size `B x D`.
-    https://github.com/facebookresearch/LASER
+    Encode data from an 1d array of string in size `B` into an ndarray in size `B x D`.
+
+    :class:`LaserEncoder` is a encoder based on Facebook Research's LASER
+    (Language-Agnostic SEntence Representations) to compute multilingual
+    sentence embeddings: https://github.com/facebookresearch/LASER
+    :param path_to_bpe_codes: path to bpe codes from Laser.
+        Defaults to Laser.DEFAULT_BPE_CODES_FILE.
+    :param path_to_bpe_vocab: path to bpe vocabs from Laser.
+        Defaults to Laser.DEFAULT_BPE_VOCAB_FILE.
+    :param path_to_encoder: path to the encoder from Laser.
+        Defaults to Laser.DEFAULT_ENCODER_FILE.
+    :param language: language of the text. Defaults to english(en).
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(
@@ -23,14 +34,7 @@ class LaserEncoder(BaseTorchEncoder):
             *args,
             **kwargs,
     ):
-        """
-        :param path_to_bpe_codes: path to bpe codes from Laser. Defaults to Laser.DEFAULT_BPE_CODES_FILE.
-        :param path_to_bpe_vocab: path to bpe vocabs from Laser. Defaults to Laser.DEFAULT_BPE_VOCAB_FILE.
-        :param path_to_encoder: path to the encoder from Laser. Defaults to Laser.DEFAULT_ENCODER_FILE.
-        :param language: language of the text. Defaults to en.
-        :param args:
-        :param kwargs:
-        """
+        """Set Constructor."""
         super().__init__(*args, **kwargs)
         from laserembeddings import Laser
         self._path_to_bpe_codes = path_to_bpe_codes or Laser.DEFAULT_BPE_CODES_FILE
@@ -51,9 +55,11 @@ class LaserEncoder(BaseTorchEncoder):
     @as_ndarray
     def encode(self, data: "np.ndarray", *args, **kwargs) -> "np.ndarray":
         """
+         Encode data into an ndarray in size `B x D`.
+
         :param data: a 1d array of string type in size `B`
-        :param args:
-        :param kwargs:
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         :return: an ndarray in size `B x D`
         """
         return self.model.embed_sentences(data, lang=self.language)
