@@ -20,3 +20,16 @@ def test_transform_results():
     img_array = create_random_img_array(*img_size)
     crafted_doc = crafter.craft(img_array)
     assert crafted_doc["blob"].shape[:-1] == target_size
+
+
+def test_transform_std_greater_zero():
+    # All img_std values must be greater than 0
+    import pytest    
+    with pytest.raises(ValueError):
+        ImageNormalizer(img_std=(1, 0, 1))
+
+    with pytest.raises(ValueError):
+        ImageNormalizer(img_std=(1, 0.0, 1))
+
+    with pytest.raises(ValueError):
+        ImageNormalizer(img_std=(-1, 1.0, 1))
