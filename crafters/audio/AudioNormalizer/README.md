@@ -6,7 +6,7 @@ The **AudioNormalizer** executor needs only one parameter:
 
 | `param_name`  | `param_remarks` |
 | ------------- | ------------- |
-| `blob`  |The axis id of the color channel. |
+| `blob`  |It's the desired audio signal to be normalized.. |
 
 ## Usage
 
