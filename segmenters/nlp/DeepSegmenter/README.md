@@ -6,7 +6,7 @@ Additional links:
 - [DeepSegment](https://bpraneeth.com/projects/deepsegment)
 - [BiLSTM-CRF paper](https://arxiv.org/abs/1508.01991)
 
-##Usage:
+## Usage:
 
 Users can use Pod images in several ways:
 
