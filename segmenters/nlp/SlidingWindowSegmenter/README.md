@@ -1,6 +1,6 @@
 # SlidingWindowSegmenter
 
-SlidingWindowSegmenter is one segmenter used in nlp domain. It splits the text on the doc-level into overlapping substrings on the chunk-level. 
+SlidingWindowSegmenter is one segmenter used in the NLP domain. It splits the text on the doc-level into overlapping substrings on the chunk-level. 
 
 ## Usage:
 
