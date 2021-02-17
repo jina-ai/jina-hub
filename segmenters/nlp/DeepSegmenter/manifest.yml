@@ -12,4 +12,4 @@ vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.9
 license: apache-2.0
-keywords: [Some keywords to describe the executor, separated by commas]
+keywords: [text, nlp, segement]
