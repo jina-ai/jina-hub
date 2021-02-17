@@ -6,7 +6,7 @@ The **AudioNormalizer** executor needs only one parameter:
 
 | `param_name`  | `param_remarks` |
 | ------------- | ------------- |
-| `blob`  |It's the desired audio signal to be normalized.  |
+| `blob`  |The axis id of the color channel. |
 
 ## Usage
 
@@ -40,7 +40,7 @@ Users can use Pod images in several ways:
    Specify the image name along with the version tag. The snippet below uses Jina version `1.0.1`
 
    ```bash
-    docker pull jinahub/pod.crafter.audionormalizer:0.0.9-1.0.1vv
+    docker pull jinahub/pod.crafter.audionormalizer:0.0.9-1.0.1
     ```
    
  Note:
