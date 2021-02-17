@@ -1,9 +1,12 @@
 # DeepSegmenter
 
-Designed with ASR outputs in mind, DeepSegment uses BiLSTM + CRF for automatic sentence boundary detection. It significantly outperforms the standard libraries (spacy, nltk, corenlp ..) on imperfect text and performs similarly for perfectly punctuated text. 
+Designed with ASR outputs in mind, [DeepSegment](https://bpraneeth.com/projects/deepsegment) uses BiLSTM + CRF for automatic sentence boundary detection. It significantly outperforms the standard libraries (spacy, nltk, corenlp ..) on imperfect text and performs similarly for perfectly punctuated text. 
+
+Additional links:
+- [DeepSegment](https://bpraneeth.com/projects/deepsegment)
+- [BiLSTM-CRF paper](https://arxiv.org/abs/1508.01991)
 
 ##Usage:
-The Sentencizer is a rule based segmenter which will split text into sentences using '!', '.', '?', etc. as punctuation characters. The following code snippet shows how to use it as a segmenter.
 
 Users can use Pod images in several ways:
 
