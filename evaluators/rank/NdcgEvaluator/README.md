@@ -4,7 +4,17 @@
 It measures the performance of a retrieval system based on the graded relevance of the predicted scores and desired scores. 
 It ranges from `0.0` to `1.0`, with `1.0` representing the ideal ranking of the retrieved result.
 
+`NDCGEvaluator` takes 3 parameters:
+- eval_at: The number of documents in each of the lists to consider in the NDCG computation. If None. the complete lists are considered
+        for the evaluation computation
+- power_relevance: The power relevance places stronger emphasis on retrieving relevant documents.
+        For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
+- is_relevance_value: Indicating if the scores coming from the `Search System` results are to be considered relevance, meaning highest value is better.
+     Since the `input` of the `evaluate` method is sorted according to the `scores` of both actual and desired input, this parameter is
+        useful for instance when the `matches` come directly from a `VectorIndexer` where score is `distance` and therefore the `smaller` the `better`.
+
 ## Usage example.
+
 A simple example on how one would use it in Python.
 
 ```python

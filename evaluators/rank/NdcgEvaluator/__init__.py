@@ -30,7 +30,9 @@ class NDCGEvaluator(BaseRankingEvaluator):
     :param power_relevance: The power relevance places stronger emphasis on retrieving relevant documents.
         For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
     :param is_relevance_value: boolean indicating if the actual scores are to be considered relevance, meaning highest value is better.
-        If True, the information coming from the actual system results will be sorted in descending order, otherwise in ascending order
+        If True, the information coming from the actual system results will be sorted in descending order, otherwise in ascending order.
+        Since the `input` of the `evaluate` method is sorted according to the `scores` of both actual and desired input, this parameter is
+        useful for instance when the `matches` come directly from a `VectorIndexer` where score is `distance` and therefore the `smaller` the `better`.
 
     .. note:
         All the IDs that are not found in the groundtruth will be considered to have relevance 0.
