@@ -2,7 +2,7 @@
 
 SlidingWindowSegmenter is one segmenter used in nlp domain. It splits the text on the doc-level into overlapping substrings on the chunk-level. 
 
-##Usage:
+## Usage:
 
 Users can use Pod images in several ways:
 
