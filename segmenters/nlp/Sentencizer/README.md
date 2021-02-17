@@ -22,7 +22,7 @@ Users can use Pod images in several ways:
             print(chunk.text)
         print("-----------------------")
     
-    #We could use the name of an executor directly or use docker image.
+    #We could use the name of a built-in executor directly or use docker image.
     #f = Flow().add(uses='!Sentencizer')
     f = Flow()
         .add(name='p1', uses='docker://jinahub/pod.segmenter.sentencizer:0.0.9-1.0.1', port_in=55555, port_out=55556)
