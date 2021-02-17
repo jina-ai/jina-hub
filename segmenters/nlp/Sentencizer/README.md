@@ -6,7 +6,7 @@ Sentencizer is one segmenter used in nlp domain. It splits the text on the doc-l
 The Sentencizer is a rule based segmenter which will split text into sentences using '!', '.', '?', etc. as punctuation characters. The following code snippet shows how to use it as a segmenter.
 
 Users can use Pod images in several ways:
-docker pull jinahub/pod.segmenter.sentencizer:0.0.9-1.0.1
+
 - Run with Docker (`docker run`)
   - ```bash
     docker run jinahub/pod.segmenter.sentencizer:0.0.9-1.0.1 --port-in 55555 --port-out 55556
@@ -35,7 +35,7 @@ docker pull jinahub/pod.segmenter.sentencizer:0.0.9-1.0.1
     jina pod --uses docker://jinahub/pod.segmenter.sentencizer:0.0.9-1.0.1 --port-in 55555 --port-out 55556
     ```
     
-- Conventional local usage with `uses` argument, you need to create the YAML file first.
+- Conventional local usage with `uses` argument, you need to create the YAML file first. You may also want to refer [YAML Syntax](https://docs.jina.ai/chapters/yaml/executor.html).
   - ```bash
     jina pod --uses sentencizer.yml --port-in 55555 --port-out 55556
     ```
