@@ -52,4 +52,4 @@ Users can use Pod images in several ways:
  Note:
 
  One of the limitations with the Hub Executors currently is the tags - all Executor images should have the versions appended in the name i.e.
- if the version is `0.0.9-1.0.1`, the image name would be `jinahub/pod.segmenter.sentencizer:0.0.9-1.0.1`.
+ if the version is `0.0.9-1.0.1`, the image name would be `jinahub/pod.segmenter.deepsegmenter:0.0.9-1.0.1`.
