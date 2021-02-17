@@ -1,8 +1,8 @@
 # Sentencizer
 
-Sentencizer is one segmenter used in nlp domain. It splits the text on the doc-level into sentences on the chunk-level with a rule-base strategy.
+Sentencizer is one segmenter used in the NLP domain. It splits the text on the doc-level into sentences on the chunk-level with a rule-base strategy.
 
-##Usage:
+## Usage:
 The Sentencizer is a rule based segmenter which will split text into sentences using '!', '.', '?', etc. as punctuation characters. The following code snippets show how to use it as a segmenter.
 
 Users can use Pod images in several ways:

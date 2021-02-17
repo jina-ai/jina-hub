@@ -2,7 +2,7 @@ manifest_version: 1
 name: Sentencizer
 kind: segmenter
 type: pod
-description: Sentencizer is one segmenter used in nlp domain. It splits the text on the doc-level into sentences on the chunk-level with
+description: Sentencizer is one segmenter used in the NLP domain. It splits the text on the doc-level into sentences on the chunk-level with
   a rule-base strategy.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
@@ -10,4 +10,4 @@ vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub/blob/master/segmenters/nlp/Sentencizer/README.md
 version: 0.0.10
 license: apache-2.0
-keywords: [text, nlp, segement]
+keywords: [text, nlp, segment]
