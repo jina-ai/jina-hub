@@ -34,3 +34,12 @@ def test_io_buffer():
     test_doc = crafter.craft(buffer=image_buffer.getvalue(), uri=None)
     assert test_doc['blob'].shape == (img_size, img_size, 3)
     np.testing.assert_almost_equal(test_doc['blob'], np.array(img).astype('float32'))
+
+
+def test_io_buffer_metadata():
+    crafter = ImageReader()
+    import requests
+    img_url='https://raw.githubusercontent.com/x4nth055/pythoncode-tutorials/master/ethical-hacking/image-metadata-extractor/image.jpg'
+    test_doc = crafter.craft(buffer=None, uri=requests.get(img_url, stream=True).raw)
+    assert test_doc['metadata']['ImageWidth'] == 5312
+    assert test_doc['metadata']['DateTimeOriginal'] == '2016:11:10 19:33:22'

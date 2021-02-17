@@ -39,4 +39,23 @@ class ImageReader(BaseCrafter):
         img = np.array(raw_img).astype('float32')
         if self.channel_axis != -1:
             img = np.moveaxis(img, -1, self.channel_axis)
-        return dict(weight=1., blob=img)
+        # Add image metadata
+        from PIL.ExifTags import TAGS
+        from PIL.ExifTags import GPSTAGS 
+        # Extract image metadata
+        # https://github.com/python-pillow/Pillow/blob/master/src/PIL/ExifTags.py
+        metadata = {}
+        exif_data = raw_img.getexif()
+        for tag_id in exif_data:
+            tag = TAGS.get(tag_id)
+            if tag is None:
+                tag = GPSTAGS.get(tag_id, tag_id)
+            data = exif_data.get(tag_id)
+            # transform bytes to readable data
+            if isinstance(data, bytes):
+                data = data.decode()
+            # if tag does not exists in Pillow
+            if tag is None:
+                continue
+            metadata[tag] = data
+        return dict(weight=1., blob=img, metadata=metadata)
