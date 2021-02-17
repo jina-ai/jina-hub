@@ -26,12 +26,12 @@ We use Pod images in several ways:
     from jina.flow import Flow
 
     f = (Flow()
-        .add(name='my-encoder', image='jinahub/pod.crafter.audioreader:0.0.8-1.0.1', port_in=55555, port_out=55556))
+        .add(name='my_encoder', uses='docker://jinahub/pod.crafter.audioreader:0.0.8-1.0.1', port_in=55555, port_out=55556))
     ```
     
 3. Run with Jina CLI
    ```bash
-    jina pod --uses jinahub/pod.crafter.audioreader:0.0.8-1.0.1 --port-in 55555 --port-out 55556
+    jina pod --uses docker://jinahub/pod.crafter.audioreader:0.0.8-1.0.1 --port-in 55555 --port-out 55556
     ```
     
 4. Run with conventional local usage. Needs `uses` argument:
