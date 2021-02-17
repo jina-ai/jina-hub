@@ -14,7 +14,7 @@ evaluator = NDCGEvaluator(eval_at=5, power_relevance=False)
 evaluation = evaluator.evaluate(actual=results, desired=expected)
 ```
 
-This is how it would look a yaml configuration to be loaded inside a Jina Flow.
+Example of a YAML configuration:
 
 ```yaml
 !NDCGEvaluator
