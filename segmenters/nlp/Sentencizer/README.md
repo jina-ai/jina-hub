@@ -23,7 +23,7 @@ Users can use Pod images in several ways:
         print("-----------------------")
     
     #It may take some time if you don't pull the image, you can set timeout_ready=-1 or pull image locally before.
-    f = Flow().add(name='p1', uses='docker://jinahub/pod.segmenter.sentencizer:0.0.9-1.0.1', port_in=55555, port_out=55556, timeout_ready=-1)
+    f = Flow().add(name='my_segmenter', uses='docker://jinahub/pod.segmenter.sentencizer:0.0.9-1.0.1', port_in=55555, port_out=55556, timeout_ready=-1)
     with f:
         f.index_lines(['  This ,  text is...  . Amazing !!'], on_done=print_chunks,  line_format='csv')
     ```
