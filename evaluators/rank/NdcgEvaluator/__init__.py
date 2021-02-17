@@ -29,12 +29,21 @@ class NDCGEvaluator(BaseRankingEvaluator):
         for the evaluation computation
     :param power_relevance: The power relevance places stronger emphasis on retrieving relevant documents.
         For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
+    :param is_relevance_value: boolean indicating if the actual scores are to be considered relevance, meaning highest value is better.
+        If True, the information coming from the actual system results will be sorted in descending order, otherwise in ascending order
+
+    .. note:
+        All the IDs that are not found in the groundtruth will be considered to have relevance 0.
     """
 
-    def __init__(self, eval_at: Optional[int] = None, power_relevance: bool = True):
+    def __init__(self,
+                 eval_at: Optional[int] = None,
+                 power_relevance: bool = True,
+                 is_relevance_score: bool = True):
         super().__init__()
-        self.eval_at = eval_at
+        self._eval_at = eval_at
         self._power_relevance = power_relevance
+        self._is_relevance_score = is_relevance_score
 
     def evaluate(
             self,
@@ -43,14 +52,18 @@ class NDCGEvaluator(BaseRankingEvaluator):
             *args, **kwargs
     ) -> float:
         """"
-        :param actual: the tuple of Ids and Scores predicted by the search system. actual is sorted in descending order
+        :param actual: the tuple of Ids and Scores predicted by the search system. actual will be sorted in descending order
         :param desired: the expected id, relevance tuples given by user as matching groundtruth.
         :return the evaluation metric value for the request document.
         """
+        relevances = dict(desired)
+        actual_relevances = list(map(lambda x: relevances[x[0]] if x[0] in relevances else 0.,
+                                     sorted(actual, key=lambda x: x[1], reverse=self._is_relevance_score)))
+        desired_relevances = list(map(lambda x: x[1], sorted(desired, key=lambda x: x[1], reverse=True)))
 
         # Information gain must be greater or equal to 0.
-        actual_at_k = actual[:self.eval_at] if self.eval_at else actual
-        desired_at_k = desired[:self.eval_at] if self.eval_at else desired
+        actual_at_k = actual_relevances[:self._eval_at] if self._eval_at else actual
+        desired_at_k = desired_relevances[:self._eval_at] if self._eval_at else desired
         if not actual_at_k:
             raise ValueError(f'Expecting gains at k with minimal length of 1, {len(actual_at_k)} received.')
         if not desired_at_k:
