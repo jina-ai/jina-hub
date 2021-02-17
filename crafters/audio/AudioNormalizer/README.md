@@ -40,7 +40,7 @@ Users can use Pod images in several ways:
    Specify the image name along with the version tag. The snippet below uses Jina version `1.0.1`
 
    ```bash
-    docker pull jinahub/pod.crafter.audionormalizer:0.0.9-1.0.1vv
+    docker pull jinahub/pod.crafter.audionormalizer:0.0.9-1.0.1
     ```
    
  Note:
