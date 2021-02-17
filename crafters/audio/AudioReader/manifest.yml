@@ -2,7 +2,7 @@ name: AudioReader
 description: AudioReader is a crafter that reads and resamples the audio signal on doc-level.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
-documentation: https://github.com/jina-ai/jina-hub
+documentation: https://github.com/jina-ai/jina-hub/blob/master/crafters/audio/AudioReader/README.md
 version: 0.0.9
 vendor: Jina AI Limited
 license: apache-2.0
