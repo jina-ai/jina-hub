@@ -11,11 +11,12 @@ RUN apt-get update && \
                                                g++ \
                                                libsndfile1 \
                                                python3-dev && \
-    curl https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_large.pt --output /tmp/wav2vec_large.pt
+    curl https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_large.pt --output wav2vec_large.pt
 
 # install the third-party requirements
 RUN pip install -r requirements.txt
-RUN pip uninstall dataclasses
+# hotfix: upstream issues, https://github.com/google/flax/issues/269#issue-619773070
+RUN pip uninstall -y dataclasses
 
 # for testing the image
 RUN pip install pytest && pytest
