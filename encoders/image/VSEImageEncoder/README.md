@@ -1,6 +1,6 @@
 # VSEImageEncoder
 
-`VSEImageEncoder` is the image Encoder used to extract Visual Semantic Embeddings.
+`VSEImageEncoder` is an image Encoder used to extract Visual Semantic Embeddings.
 Taken from the results of [VSE++: Improving Visual-Semantic Embeddings with Hard Negatives](https://arxiv.org/abs/1707.05612).
 
 This model extracts image feature embeddings that can be used in combination with a `VSETextEncoder` which in combination will
