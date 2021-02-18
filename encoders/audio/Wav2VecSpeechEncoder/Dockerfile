@@ -10,7 +10,7 @@ RUN apt-get update && \
                                                gcc \
                                                g++ \
                                                libsndfile1 \
-                                               python-dev && \
+                                               python3-dev && \
     curl https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_large.pt --output /tmp/wav2vec_large.pt
 
 # install the third-party requirements
