@@ -10,5 +10,5 @@ vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.5
 license: apache-2.0
-keywords: [Cross-Modal, Computer Vision, VSE, Hard Negative Mining, vsepp]
+keywords: [image, cross-model, computer vision, VSE, hard negative mining, vsepp]
 type: pod
