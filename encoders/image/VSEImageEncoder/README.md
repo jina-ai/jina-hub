@@ -6,7 +6,7 @@ Taken from the results of [VSE++: Improving Visual-Semantic Embeddings with Hard
 This model extracts image feature embeddings that can be used in combination with a `VSETextEncoder` which in combination will
 put images and its captions in nearby locations in the embedding space
 
-# Usage
+## Usage
 
 Users can use Pod images in several ways:
 
