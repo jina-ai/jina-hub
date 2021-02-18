@@ -11,7 +11,7 @@ RUN apt-get update && \
                                                g++ \
                                                libsndfile1 \
                                                python3-dev && \
-    curl https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_large.pt --output wav2vec_large.pt
+    curl https://dl.fbaipublicfiles.com/fairseq/wav2vec/wav2vec_large.pt --output /tmp/wav2vec_large.pt
 
 # install the third-party requirements
 RUN pip install -r requirements.txt
