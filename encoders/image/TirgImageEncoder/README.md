@@ -10,9 +10,6 @@ As a part of **TIRG** model,
 
 To use it in the index flow, you can use our pre-trained docker image with yaml configuration:
 
-
-
-
 ```yaml
 !Flow
 version: '1'
@@ -62,4 +59,3 @@ encoder = TirgImageEncoder(
 imgs = torch.stack(imgs).float()
 embeddings = encoder.encode(imgs.numpy())
 ```
-
