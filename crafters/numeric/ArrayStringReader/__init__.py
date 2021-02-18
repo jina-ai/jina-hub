@@ -44,4 +44,4 @@ class ArrayStringReader(BaseCrafter):
             self.logger.error(
                 f'Data type mismatch. Cannot convert input to {self.as_type}.')
 
-        return dict(weight=1., blob=_array)
+        return dict(blob=_array)
