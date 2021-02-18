@@ -9,9 +9,11 @@ As a part of **TIRG** model,
 
 Note: At query time, the **TIRG** model takes `TirgMultimodalEncoder` and encode images together with it's associated texts into embeddings.
 
-# Use encoder in the Flow
+## Usage
 
-To use it in the index flow, you can use our pre-trained docker image with yaml configuration:
+Users can use Pod images in several ways:
+
+1. To use it in the index flow, you can use our pre-trained docker image with yaml configuration, The YAML configuration has been created in our [TIRG multimodal search example](https://github.com/jina-ai/examples/blob/master/multimodal-search-tirg/flow-index.yml):
 
 ```yaml
 !Flow
@@ -26,7 +28,38 @@ pods:
   - ...
 ```
 
-The YAML configuration has been created in our [TIRG multimodal search example](https://github.com/jina-ai/examples/blob/master/multimodal-search-tirg/flow-index.yml).
+2. Run with docker:
+
+```shell
+docker run jinahub/pod.encoder.tirgimageencoder:0.0.4-1.0.1
+```
+
+3. Run the Flow API:
+
+```python
+ from jina.flow import Flow
+ f = (Flow()
+     .add(name='tirg_image_encoder', uses='docker://jinahub/pod.encoder.tirgimageencoder:0.0.4-1.0.1', port_in=55555, port_out=55556))
+```
+
+4. Run with Jina CLI
+
+```shell
+ jina pod --uses docker://jinahub/pod.encoder.tirgimageencoder:0.0.4-1.0.1 --port-in 55555 --port-out 55556
+```
+
+5. Conventional local usage with `uses` argument
+
+```shell
+jina pod --uses hub/example/tirgimageencoder.yml --port-in 55555 --port-out 55556
+```
+
+6. Docker command, Specify the image name along with the version tag.
+   The snippet below uses Jina version 1.0.1
+
+```shell
+ docker pull jinahub/pod.encoder.tirgimageencoder:0.0.4-1.0.1
+```
 
 ## Encode with the encoder:
 
