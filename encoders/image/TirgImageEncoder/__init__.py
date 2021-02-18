@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
@@ -14,7 +14,7 @@ class TirgImageEncoder(BaseTorchEncoder):
     """
     Encode B x (Channel x Height x Width) ndarray into B * d ndarray.
 
-    :class:`TirgImageEncoder` is original proposed in the paper *Composing Text and Image for Image Retrieval - An Empirical Odyssey*.
+    :class:`TirgImageEncoder` is originally proposed in the paper *Composing Text and Image for Image Retrieval - An Empirical Odyssey*.
     It can been used for multimodal image retrieval purpose.
 
     :param model_path: the directory of the TIRG model.
