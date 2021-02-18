@@ -46,5 +46,5 @@ class ImageCropper(BaseCrafter):
         raw_img = _load_image(blob, self.channel_axis)
         _img, top, left = _crop_image(raw_img, target_size=(self.height, self.width), top=self.top, left=self.left)
         img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img.astype('float32'), location=(top, left))
+        return dict(offset=0, blob=img.astype('float32'), location=(top, left))
 

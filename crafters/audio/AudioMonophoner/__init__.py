@@ -24,5 +24,5 @@ class AudioMonophoner(BaseCrafter):
         import librosa
         signal_mono = librosa.to_mono(blob)
 
-        return dict(offset=0, weight=1., blob=signal_mono)
+        return dict(offset=0, blob=signal_mono)
 

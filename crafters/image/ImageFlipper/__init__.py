@@ -42,4 +42,4 @@ class ImageFlipper(BaseCrafter):
         img = np.array(raw_img).astype('float32')
         img = np.flipud(img) if self.vertical else np.fliplr(img)
         img = _move_channel_axis(img, -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img)
+        return dict(offset=0, blob=img)

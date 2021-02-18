@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-
+import warnings
 from typing import Union, Tuple, Dict, Iterable
 
 import numpy as np
@@ -30,6 +30,7 @@ class ImageResizer(BaseCrafter):
                  channel_axis: int = -1,
                  *args, **kwargs):
         """Set Constructor."""
+        warnings.warn(f'{self!r} will be retired soon, you can add `- !URI2Blob {{}}` to the driver', DeprecationWarning)
         super().__init__(*args, **kwargs)
         if isinstance(target_size, int):
             self.output_dim = target_size
@@ -50,4 +51,4 @@ class ImageResizer(BaseCrafter):
         raw_img = _load_image(blob, self.channel_axis)
         _img = _resize_short(raw_img, self.output_dim, self.how)
         img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img.astype('float32'))
+        return dict(offset=0, blob=img.astype('float32'))

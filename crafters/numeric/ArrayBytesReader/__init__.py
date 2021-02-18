@@ -31,4 +31,4 @@ class ArrayBytesReader(BaseCrafter):
         :return: a chunk dict with the numpy array
         """
         _array = np.frombuffer(buffer, self.as_type)
-        return dict(weight=1., blob=_array)
+        return dict(blob=_array)
