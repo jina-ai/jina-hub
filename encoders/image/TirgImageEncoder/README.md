@@ -1,7 +1,10 @@
 # TirgImageEncoder
 
-**Tirg** model was original proposed in [Composing Text and Image for Image Retrieval - An Empirical Odyssey](https://arxiv.org/abs/1812.07119).
+**TIRG** model was original proposed in [Composing Text and Image for Image Retrieval - An Empirical Odyssey](https://arxiv.org/abs/1812.07119).
 It has been used in Jina multimodal retrieval example.
+
+During the indexing time, the **TIRG** model takes `TirgImageEncoder` and encode images into embeddings.
+At query time, the **TIRG** model takes `TirgMultimodalEncoder` and encode images together with it's associated texts into embeddings.
 
 As a part of **TIRG** model,
 `TirgImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a B x d ndarray.
