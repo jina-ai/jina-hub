@@ -1,10 +1,13 @@
 import os
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, List
 
 import numpy as np
 
 from jina.executors.rankers import Match2DocRanker
 from jina.excepts import PretrainedModelFileDoesNotExist
+
+if False:
+    import lightgbm
 
 
 class LightGBMRanker(Match2DocRanker):
@@ -23,18 +26,34 @@ class LightGBMRanker(Match2DocRanker):
 
     def __init__(self,
                  model_path: Optional[str] = 'tmp/model.txt',
-                 feature_names: Tuple[str] = ('feature-1', 'feature-2', 'feature-3', 'feature-4', 'feature-5'),
+                 query_feature_names: Tuple[str] = (
+                         'tags__feature-1', 'tags__feature-2', 'tags__feature-3', 'tags__feature-4', 'tags__feature-5'),
+                 match_feature_names: Tuple[str] = (
+                         'tags__feature-1', 'tags__feature-2', 'tags__feature-3', 'tags__feature-4', 'tags__feature-5'),
+                 query_categorical_features: Optional[List[str]] = None,
+                 match_categorical_features: Optional[List[str]] = None,
+                 query_features_before: bool = True,
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
         self.model_path = model_path
-        self.feature_names = feature_names
+        self.query_feature_names = query_feature_names
+        self.match_feature_names = match_feature_names
+        self.query_categorical_features = query_categorical_features
+        self.match_categorical_features = match_categorical_features
+        self.query_features_before = query_features_before
 
     def post_init(self):
         super().post_init()
         if self.model_path and os.path.exists(self.model_path):
-            import lightgbm as lgb
-            self.booster = lgb.Booster(model_file=self.model_path)
+            import lightgbm
+            self.booster = lightgbm.Booster(model_file=self.model_path)
+            model_num_features = self.booster.num_feature()
+            expected_num_features = len(self.query_feature_names + self.match_feature_names)
+            if model_num_features != expected_num_features:
+                raise ValueError(f'The number of features expected by the LightGBM model {model_num_features} is different'
+                                 f'than the ones provided in input {expected_num_features}')
+
         else:
             raise PretrainedModelFileDoesNotExist(f'model {self.model_path} does not exist')
 
@@ -42,14 +61,27 @@ class LightGBMRanker(Match2DocRanker):
     def required_keys(self):
         return self.feature_names
 
-    def _get_features_dataset(self, match_meta: Dict) -> 'np.array':
-        return np.array([[match_meta[match_id][feat] for feat in self.feature_names] for match_id in match_meta])
+    def _get_features_dataset(self, query_meta: Dict, match_meta: Dict) -> 'lightgbm.Dataset':
+        import lightgbm
+
+        query_features = np.array(
+            [[query_meta[query_id][feat] for feat in self.query_feature_names] for query_id in query_meta])
+        query_dataset = lightgbm.Dataset(data=query_features, feature_names=self.query_feature_names,
+                                         categorical_features=self.query_categorical_features)
+        match_features = np.array(
+            [[match_meta[match_id][feat] for feat in self.match_feature_names] for match_id in match_meta])
+        match_dataset = lightgbm.Dataset(data=match_features, feature_names=self.match_feature_names,
+                                         categorical_features=self.match_categorical_features)
+        if self.query_features_before:
+            return query_dataset.add_features_from(match_dataset)
+        else:
+            return match_dataset.add_features_from(query_dataset)
 
     def score(
             self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
     ) -> 'np.ndarray':
 
-        dataset = self._get_features_dataset(match_meta=match_meta)
+        dataset = self._get_features_dataset(query_meta=query_meta, match_meta=match_meta)
         scores = self.booster.predict(dataset)
         new_scores = [
             (
