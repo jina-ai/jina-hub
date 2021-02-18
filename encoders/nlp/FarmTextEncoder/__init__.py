@@ -7,6 +7,9 @@ class FarmTextEncoder(BaseTorchEncoder):
     """
     Encode an array of string in size `B` into an ndarray in size `B x D`
 
+    The ndarray potentially is BatchSize x (Channel x Height x Width)
+            into an ndarray in size `B x D`. Where `D` is the Dimension.
+
     FARM-based text encoder: (Framework for Adapting Representation Models)
     https://github.com/deepset-ai/FARM
 
@@ -45,10 +48,13 @@ class FarmTextEncoder(BaseTorchEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode an array of string in size `B` into an ndarray in size `B x D`
+        Encode an array of string in size `B` into an ndarray in size `B x D`.
+
+        The ndarray potentially is BatchSize x (Channel x Height x Width)
+            into an ndarray in size `B x D`. Where `D` is the Dimension.
 
         :param data: a 1d array of string type in size `B`
-        :return: an ndarray in size `B x D`
+        :return: an ndarray in size `B x D`.
         """
         basic_texts = [{'text': s} for s in data]
         embeds = np.stack([k['vec'] for k in self.model.extract_vectors(dicts=basic_texts)])

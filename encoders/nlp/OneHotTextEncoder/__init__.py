@@ -40,7 +40,8 @@ class OneHotTextEncoder(BaseTextEncoder):
 
         :param data: each row is one character,
             an 1d array of string type (data.dtype.kind == 'U') in size B
-        :return: an ndarray of `B x D`
+        :return: an ndarray of `B x D`. Where B is the `Batch size`
+            and `D` the dimension.
         """
         output = []
         for r in data:

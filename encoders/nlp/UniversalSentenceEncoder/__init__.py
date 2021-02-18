@@ -13,7 +13,9 @@ PREPROCESOR_CMLM = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/2"
 
 class UniversalSentenceEncoder(BaseTFEncoder):
     """
-    Encode an 1d array of string in size `B` into an ndarray in size `B x D`.
+    Encode an 1d array of string in size `B` into an ndarray in size `B x D`
+
+    The ndarray potentially is BatchSize x (Channel x Height x Width)
 
     :class:`UniversalSentenceEncoder` is a encoder based on the Universal Sentence
     Encoder family (https://tfhub.dev/google/collections/universal-sentence-encoder/1).
@@ -102,7 +104,9 @@ class UniversalSentenceEncoder(BaseTFEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data into an ndarray
+        Encode an array of string in size `B` into an ndarray in size `B x D`
+
+        The ndarray potentially is BatchSize x (Channel x Height x Width)
 
         :param data: a 1d array of string type in size `B`
         :param args:  Additional positional arguments

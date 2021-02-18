@@ -10,7 +10,7 @@ from .vocab import Vocabulary
 
 
 class CustomUnpickler(pickle.Unpickler):
-    """Custom Unpickler method"""
+    """Custom Unpickler class"""
 
     def find_class(self, module, name):
         try:
@@ -21,7 +21,9 @@ class CustomUnpickler(pickle.Unpickler):
 
 class VSETextEncoder(BaseTorchEncoder):
     """
-    Encodes data from a ndarray of texts into a ndarray of `B x D`.
+    Encode an 1d array of string in size `B` into an ndarray in size `B x D`
+
+    The ndarray potentially is BatchSize x (Channel x Height x Width)
 
     Using VSE text_emb branch
 

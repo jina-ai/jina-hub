@@ -78,7 +78,9 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data into an ndarray.
+        Encode an array of string in size `B` into an ndarray in size `B x D`
+
+        The ndarray potentially is BatchSize x (Channel x Height x Width)
 
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`

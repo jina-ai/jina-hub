@@ -6,7 +6,9 @@ from jina.executors.decorators import batching, as_ndarray
 
 class TextPaddlehubEncoder(BasePaddleEncoder):
     """
-    Encode data from an array of string in size `B` into a ndarray in size `B x D`.
+    Encode an array of string in size `B` into an ndarray in size `B x D`
+
+    The ndarray potentially is BatchSize x (Channel x Height x Width)
 
     Internally, :class:`TextPaddlehubEncoder` wraps the Ernie module from paddlehub.
     https://github.com/PaddlePaddle/PaddleHub

@@ -9,7 +9,9 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class LaserEncoder(BaseTorchEncoder):
     """
-    Encode data from an 1d array of string in size `B` into an ndarray in size `B x D`.
+    Encode an array of string in size `B` into an ndarray in size `B x D`
+
+    The ndarray potentially is BatchSize x (Channel x Height x Width)
 
     :class:`LaserEncoder` is a encoder based on Facebook Research's LASER
     (Language-Agnostic SEntence Representations) to compute multilingual
@@ -57,9 +59,11 @@ class LaserEncoder(BaseTorchEncoder):
         """
          Encode data into an ndarray in size `B x D`.
 
+         B is the `Batch size` and `D` the dimension.
+
         :param data: a 1d array of string type in size `B`
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
-        :return: an ndarray in size `B x D`
+        :return: an ndarray in size `B x D`.
         """
         return self.model.embed_sentences(data, lang=self.language)

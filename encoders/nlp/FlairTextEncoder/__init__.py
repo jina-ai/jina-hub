@@ -6,7 +6,9 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class FlairTextEncoder(BaseTorchEncoder):
     """
-    Encode data from an array of string in size `B` into a ndarray in size `B x D`.
+    Encode an array of string in size `B` into an ndarray in size `B x D`
+
+    The ndarray potentially is BatchSize x (Channel x Height x Width)
 
     Internally, :class:`FlairTextEncoder` wraps the DocumentPoolEmbeddings from Flair.
 
