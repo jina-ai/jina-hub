@@ -1,12 +1,12 @@
 # ImageReader
 
-**ImageReader** is a crafter that loads an image from a given file path and save the `ndarray` of the image in the Document. It reads the image specified in `buffer` and save the `ndarray` of the image in the `blob` of the document.
+**ImageReader** is a crafter that loads an image, either from a given file path or directly from bytes and save the `ndarray` of the image in the Document. It reads the image specified in `buffer` and save the `ndarray` of the image in the `blob` of the document.
 
 The **ImageReader** executor needs only one parameter:
 
 | `param_name`  | `param_remarks` |
 | ------------- | ------------- |
-| `channel_axis`  |It's the desired audio signal to be normalized. |
+| `channel_axis`  |The axis id of the color channel. The **-1** is the color channel info at the last axis.|
 
 ## Usage
 
