@@ -52,7 +52,7 @@ Download model:
 wget http://www.cs.toronto.edu/~faghri/vsepp/runs.tar && tar -xvf runs.tar
 ```
 
-Encode an images:
+Encode a image:
 
 ```python
 import numpy as np
