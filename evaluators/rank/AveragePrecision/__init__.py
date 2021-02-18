@@ -13,9 +13,8 @@ class AveragePrecisionEvaluator(BaseRankingEvaluator):
 
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
-        :param actual: the matched document identifiers from the request as matched by jina indexers and rankers
-        :param desired: the expected documents matches ids sorted as they are expected. All documents in this list are
-            considered to be relevant
+        :param actual: the matched document identifiers from the request as matched by Indexers and Rankers
+        :param desired: A list of all the relevant IDs. All documents identified in this list are considered to be relevant
         :return the evaluation metric value for the request document
         """
 
@@ -28,7 +27,7 @@ class AveragePrecisionEvaluator(BaseRankingEvaluator):
             if actual[eval_at - 1] not in desired_set:
                 return 0.0
             actual_at_k = actual[:eval_at]
-            ret = len(set(actual_at_k).intersection(set(desired)))
+            ret = len(set(actual_at_k).intersection(desired_set))
             sub = len(actual_at_k)
             return ret / sub if sub != 0 else 0.
 
