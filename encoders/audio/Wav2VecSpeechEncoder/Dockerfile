@@ -15,6 +15,7 @@ RUN apt-get update && \
 
 # install the third-party requirements
 RUN pip install -r requirements.txt
+RUN pip uninstall dataclasses
 
 # for testing the image
 RUN pip install pytest && pytest
