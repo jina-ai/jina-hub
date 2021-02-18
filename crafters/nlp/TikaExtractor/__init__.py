@@ -11,6 +11,17 @@ TIKA_URL = 'http://0.0.0.0:9998'
 class TikaExtractor(BaseCrafter):
     """
     :class:`TikaExtractor` Extracts text from files.
+
+    :param tika_ocr_strategy: Type of ocr strategy. It can be:
+        1. ``no_ocr``: Extract text only. Don't run OCR
+        2. ``ocr_only``: Run OCR only. Don't extract text
+        3. ``ocr_and_text``: Extract text and run OCR
+
+    :param tika_extract_inline_images: Extract inline images or not
+    :param tika_ocr_language: The language model. English by default
+    :param tika_request_timeout: Timeout for server request
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self,
@@ -57,6 +68,15 @@ class TikaExtractor(BaseCrafter):
         self.tika_process.kill()
 
     def craft(self, uri: str, buffer: bytes, *args, **kwargs):
+        """
+        Craft PDF files. Extract data from them.
+
+        :param uri: File name of PDF
+        :param buffer: PDF file in bytes
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        :return: A dictionary with the extracted text
+        """
         from tika import parser
         headers = {
             'X-Tika-PDFOcrStrategy': self.tika_ocr_strategy,

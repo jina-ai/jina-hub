@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-
+import warnings
 from typing import Union, Tuple, Dict, Iterable
 
 import numpy as np
@@ -12,7 +12,16 @@ from .helper import _load_image, _move_channel_axis, _resize_short
 
 class ImageResizer(BaseCrafter):
     """
-    :class:`ImageResizer` resize the image to the given size.
+    Resize image to the given size.
+
+    :param target_size: Desired output size.
+        If size is a sequence like (h, w), the output size will
+        be matched to this. If size is an int, the smaller edge
+        of the image will be matched to this number maintain
+        the aspect ratio.
+    :param how: The interpolation method. Valid values include
+        `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`.
+        Default is `BILINEAR`. Please refer to `PIL.Image` for details.
     """
 
     def __init__(self,
@@ -20,14 +29,8 @@ class ImageResizer(BaseCrafter):
                  how: str = 'BILINEAR',
                  channel_axis: int = -1,
                  *args, **kwargs):
-        """
-
-        :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
-            this. If size is an int, the smaller edge of the image will be matched to this number maintain the aspect
-            ratio.
-        :param how: the interpolation method. Valid values include `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`.
-            Default is `BILINEAR`. Please refer to `PIL.Image` for detaisl.
-        """
+        """Set Constructor."""
+        warnings.warn(f'{self!r} will be retired soon, you can add `- !URI2Blob {{}}` to the driver', DeprecationWarning)
         super().__init__(*args, **kwargs)
         if isinstance(target_size, int):
             self.output_dim = target_size
@@ -42,10 +45,10 @@ class ImageResizer(BaseCrafter):
         """
         Resize the image array to the given size.
 
-        :param blob: the ndarray of the image
-        :return: a chunk dict with the cropped image
+        :param blob: The ndarray of the image
+        :return: A dict with the cropped image
         """
         raw_img = _load_image(blob, self.channel_axis)
         _img = _resize_short(raw_img, self.output_dim, self.how)
         img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img.astype('float32'))
+        return dict(offset=0, blob=img.astype('float32'))
