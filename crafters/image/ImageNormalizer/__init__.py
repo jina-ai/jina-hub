@@ -61,7 +61,7 @@ class ImageNormalizer(BaseCrafter):
         raw_img = _load_image(blob, self.channel_axis)
         _img = self._normalize(raw_img)
         img = _move_channel_axis(_img, -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img)
+        return dict(offset=0, blob=img)
 
     def _normalize(self, img):
         img = _resize_short(img, target_size=self.resize_dim)

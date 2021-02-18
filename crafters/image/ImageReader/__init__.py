@@ -43,4 +43,4 @@ class ImageReader(BaseCrafter):
         img = np.array(raw_img).astype('float32')
         if self.channel_axis != -1:
             img = np.moveaxis(img, -1, self.channel_axis)
-        return dict(weight=1., blob=img)
+        return dict(blob=img)

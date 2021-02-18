@@ -48,4 +48,4 @@ class CenterImageCropper(BaseCrafter):
         raw_img = _load_image(blob, self.channel_axis)
         _img, top, left = _crop_image(raw_img, self.target_size, how='center')
         img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
-        return dict(offset=0, weight=1., blob=img.astype('float32'), location=(top, left))
+        return dict(offset=0, blob=img.astype('float32'), location=(top, left))

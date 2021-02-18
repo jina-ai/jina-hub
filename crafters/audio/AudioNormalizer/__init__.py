@@ -21,4 +21,4 @@ class AudioNormalizer(BaseCrafter):
         import librosa
         signal_norm = librosa.util.normalize(blob)
 
-        return dict(offset=0, weight=1., blob=signal_norm)
+        return dict(offset=0, blob=signal_norm)
