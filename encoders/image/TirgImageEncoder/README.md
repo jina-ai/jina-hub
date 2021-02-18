@@ -7,7 +7,7 @@ During the indexing time, the **TIRG** model takes `TirgImageEncoder` and encode
 At query time, the **TIRG** model takes `TirgMultimodalEncoder` and encode images together with it's associated texts into embeddings.
 
 As a part of **TIRG** model,
-`TirgImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a B x d ndarray.
+`TirgImageEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a BatchSize x d ndarray.
 
 # Use encoder in the Flow
 

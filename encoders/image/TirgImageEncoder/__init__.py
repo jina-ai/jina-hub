@@ -12,7 +12,7 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 
 class TirgImageEncoder(BaseTorchEncoder):
     """
-    Encode B x (Channel x Height x Width) ndarray into B * d ndarray.
+    Encode BatchSize x (Channel x Height x Width) ndarray into BatchSize * d ndarray.
 
     :class:`TirgImageEncoder` is originally proposed in the paper *Composing Text and Image for Image Retrieval - An Empirical Odyssey*.
     It can been used for multimodal image retrieval purpose.
