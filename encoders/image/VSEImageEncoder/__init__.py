@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numpy as np
@@ -9,19 +9,25 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class VSEImageEncoder(BaseTorchEncoder):
     """
-    :class:`VSEImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
-        ndarray of `B x D`.
+    :class:`VSEImageEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a
+        ndarray of BatchSize * d.
 
-    Taken from the paper implementation of (VSE++: Improving Visual-Semantic Embeddings with Hard Negatives)
-    at https://github.com/fartashf/vsepp
+    The :clas:`VSEImageEncoder` was originally proposed in `VSE++: Improving Visual-Semantic Embeddings with Hard Negatives <https://github.com/fartashf/vsepp>`_.
 
+    :param path: The VSE model path.
+    :param pool_strategy: Pooling strategy for the encoder, default `mean`.
+    :param channel_axis: The axis of the channel, default -1, will move the axis of input data from -1 to 1.
+    :param args: additional positional arguments.
+    :param kwargs: additional positional arguments.
     """
 
-    def __init__(self, path: str = 'runs/f30k_vse++_vggfull/model_best.pth.tar',
-                 pool_strategy: str = 'mean', channel_axis: int = 1, *args, **kwargs):
-        """
-        :path : path where to find the model.pth file
-        """
+    def __init__(self,
+                 path: str = 'runs/f30k_vse++_vggfull/model_best.pth.tar',
+                 pool_strategy: str = 'mean',
+                 channel_axis: int = 1,
+                 *args,
+                 **kwargs):
+        """Class constructor."""
         super().__init__(*args, **kwargs)
         self.path = path
         self.pool_strategy = pool_strategy
@@ -29,6 +35,7 @@ class VSEImageEncoder(BaseTorchEncoder):
         self._default_channel_axis = 1
 
     def post_init(self):
+        """Load VSE++ model."""
         import torch
         from .model import VSE
 
@@ -62,6 +69,14 @@ class VSEImageEncoder(BaseTorchEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+        Encode input data into `np.ndarray`.
+
+        :param data: Image to be encoded, expected a `np.ndarray` of BatchSize x (Channel x Height x Width).
+        :param args: additional positional arguments.
+        :param kwargs: additional positional arguments.
+        :return: Encoded result as `np.ndarray`.
+        """
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
