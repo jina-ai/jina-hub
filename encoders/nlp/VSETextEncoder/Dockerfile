@@ -15,6 +15,9 @@ RUN pip install -r requirements.txt && \
 python -c "import torchvision.models as models; model = getattr(models, 'vgg19')(pretrained=True).eval()" && \
 python -c "import nltk; nltk.download('punkt')"
 
+# hotfix: upstream issues, https://github.com/google/flax/issues/269#issue-619773070
+RUN pip uninstall -y dataclasses
+
 RUN pip install pytest && pytest -v -s
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
