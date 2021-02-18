@@ -64,7 +64,7 @@ class TirgImageEncoder(BaseTorchEncoder):
         """
         Encode input data into `np.ndarray`.
 
-        :param data: Image to be encoded, expected a `np.ndarray` of B x (Channel x Height x Width).
+        :param data: Image to be encoded, expected a `np.ndarray` of BatchSize x (Channel x Height x Width).
         :param args: additional positional arguments.
         :param kwargs: additional positional arguments.
         :return feature: Encoded result as `np.ndarray`.
