@@ -8,7 +8,7 @@ The reciprocal rank of a query response is the multiplicative inverse of the ran
 - The second one is the groundtruth, a sequence of `Document` identifiers considered to be the expected ranking. Only the first element is 
 considered in the computation
  
- ## Usage example.
+ ## Usage Examples
 
 A simple example on how one would use it in Python.
 
@@ -43,12 +43,19 @@ And this is how Documents and GroundTruths can be provided to the Flow for being
 
 ```python
 from jina.flow import Flow
-index_docs = [Document({'text': 'some text to encode', 'tags': {'id': 1}}), 
-            Document({'text': 'some different text to encode', 'tags': {'id': 2}})]
+index_docs = [
+    Document({
+        'text': 'some text to encode',
+        'tags': {'id': 1}}), 
+    Document({
+        'text': 'some different text to encode',
+        'tags': {'id': 2}})
+]
 
 # index time
-f = Flow().add(name='encoder', uses='encoder.yml').\
-        add(name='indexer', uses='indexer.yml')
+f = (Flow()
+     .add(name='encoder', uses='encoder.yml')
+     .add(name='indexer', uses='indexer.yml'))
 with f:
     f.index(index_docs)
 
