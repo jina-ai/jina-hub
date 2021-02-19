@@ -46,8 +46,3 @@ Users can use Pod images in several ways:
    ```bash
     docker pull jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.1
     ```
-   
- Note:
- 
- One of the limitations with the Hub Executors currently is the tags - all Executor images should have the versions appended in the name i.e.
- if the version is `0.0.8-1.0.0`, the image name would be `jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.0` instead of `pod.crafter.imagenormalizer:0.0.13-1.0.1` as in the example.
