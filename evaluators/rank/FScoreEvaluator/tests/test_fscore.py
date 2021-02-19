@@ -1,6 +1,6 @@
 import pytest
 
-from .. import fScoreEvaluator
+from .. import FScoreEvaluator
 
 
 @pytest.mark.parametrize(
@@ -21,10 +21,10 @@ def test_fscore_evaluator(eval_at, beta, expected):
 
     desired_ids = ['1', '0', '20', '30', '40']
 
-    evaluator = fScoreEvaluator(eval_at=eval_at, beta=beta)
+    evaluator = FScoreEvaluator(eval_at=eval_at, beta=beta)
     assert evaluator.evaluate(actual=matches_ids, desired=desired_ids) == pytest.approx(expected, 0.001)
 
 
 def test_fscore_evaluator_invalid_beta():
     with pytest.raises(AssertionError):
-        fScoreEvaluator(beta=0)
+        FScoreEvaluator(beta=0)

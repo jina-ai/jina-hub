@@ -1,10 +1,10 @@
 # FScoreEvaluator
 
-`fScoreEvaluator` computes the [F-Score](https://en.wikipedia.org/wiki/F-score) for the ranking result of a search system.
+`FScoreEvaluator` computes the [F-Score](https://en.wikipedia.org/wiki/F-score) for the ranking result of a search system.
 
-`fScoreEvaluator` gives an evaluation measure which considers both `Precision` and `Recall` evaluation metrics.
+`FScoreEvaluator` gives an evaluation measure which considers both `Precision` and `Recall` evaluation metrics.
 
-`fScoreEvaluator` takes 2 parameters:
+`FScoreEvaluator` takes 2 parameters:
 - eval_at: The number of documents in each of the lists to consider in the `Precision` and `Recall` computation
 - beta: Parameter to weight differently precision and recall. When beta is 1, the fScore corresponds to the harmonic mean
         of precision and recall
@@ -16,7 +16,7 @@ A simple example on how one would use it in Python.
 ```python
 results = ['0', '1', '2', '3', '4']
 expected = ['1', '0', '20', '30', '40']
-evaluator = fScoreEvaluation(eval_at=None, beta=1)
+evaluator = FScoreEvaluator(eval_at=None, beta=1)
 evaluation = evaluator.evaluate(actual=results, desired=expected)
 assert evaluation == 0.4
 ```
@@ -24,7 +24,7 @@ assert evaluation == 0.4
 Example of a YAML configuration:
 
 ```yaml
-!fScoreEvaluator
+!FScoreEvaluator
 with:
   {}
 metas:
@@ -67,7 +67,7 @@ def print_evaluation_score(resp):
 #evaluate time
 f = Flow().add(name='encoder', uses='encoder.yml').\
         add(name='indexer', uses='indexer.yml').\
-        add(name='evaluator', uses='!fScoreEvaluator')
+        add(name='evaluator', uses='!FScoreEvaluator')
 with f:
     f.search(input_fn=[(evaluate_doc, evaluate_groundtruth)], on_done=print_evaluation_score)
 ```

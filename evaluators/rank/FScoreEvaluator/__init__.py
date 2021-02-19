@@ -3,9 +3,9 @@ from typing import Sequence, Any, Optional
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 
 
-class fScoreEvaluator(BaseRankingEvaluator):
+class FScoreEvaluator(BaseRankingEvaluator):
     """
-    :class:`fScoreEvaluator` Gives the f score of a search system result. (https://en.wikipedia.org/wiki/F-score)
+    :class:`FScoreEvaluator` Gives the f score of a search system result. (https://en.wikipedia.org/wiki/F-score)
     :param eval_at: the point at which precision and recall are computed, if None give, will consider all the input to evaluate
     :param beta: Parameter to weight differently precision and recall. When beta is 1, the fScore corresponds to the harmonic mean
         of precision and recall
