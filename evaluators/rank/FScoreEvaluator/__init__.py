@@ -6,9 +6,12 @@ from jina.executors.evaluators.rank import BaseRankingEvaluator
 class FScoreEvaluator(BaseRankingEvaluator):
     """
     :class:`FScoreEvaluator` Gives the f score of a search system result. (https://en.wikipedia.org/wiki/F-score)
+
     :param eval_at: the point at which precision and recall are computed, if None give, will consider all the input to evaluate
     :param beta: Parameter to weight differently precision and recall. When beta is 1, the fScore corresponds to the harmonic mean
         of precision and recall
+    :param args: Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self, eval_at: Optional[int] = None, beta: int = 1, *args, **kwargs):
@@ -21,6 +24,8 @@ class FScoreEvaluator(BaseRankingEvaluator):
         """"
         :param actual: the matched document identifiers from the request as matched by jina indexers and rankers
         :param desired: the expected documents matches
+        :param args: Additional positional arguments
+        :param kwargs: Additional keyword arguments
         :return the evaluation metric value for the request document
         """
         if not desired or self.eval_at == 0:
@@ -40,6 +45,7 @@ class FScoreEvaluator(BaseRankingEvaluator):
         if divisor != 0.0:
             precision = common_count / divisor
         else:
+            self.logger.warning('Divided by zero, the precison is set to 0')
             precision = 0
 
         if precision + recall == 0:
