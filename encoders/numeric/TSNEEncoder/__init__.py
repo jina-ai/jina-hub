@@ -15,8 +15,13 @@ class TSNEEncoder(BaseNumericEncoder):
     Where `B` is the batch's size and `T` and `D` are the dimensions pre (`T`)
     and after (`D`) the encoding.
 
-    See more details here:
-    https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
+    See more details
+    `here <https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html>`_
+
+    :param output_dim: Dimension of the embedded space
+    :param random_state: Used to seed the cost_function of TSNE
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
 
     .. note:
         Unlike other numeric encoders, TSNE does not inherit Transform encoder
@@ -38,7 +43,11 @@ class TSNEEncoder(BaseNumericEncoder):
     @batching
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
+        Encode data from an ndarray in size `B x T` into an ndarray in size `B x D`
+
         :param data: a `B x T` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         return self.model.fit_transform(data)

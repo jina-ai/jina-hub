@@ -16,9 +16,11 @@ class IncrementalPCAEncoder(TransformEncoder):
         is inferred from the data
     :param whiten: If whiten is false, the data is already considered to be whitened,
         and no whitening is performed.
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
 
-    More details can be found here:
-    https://scikit-learn.org/stable/auto_examples/decomposition/plot_incremental_pca.html
+    More details can be found
+    `here <https://scikit-learn.org/stable/auto_examples/decomposition/plot_incremental_pca.html>`_
 
     .. note::
         :class:`IncrementalPCAEncoder` must be trained before calling ``encode()``.
@@ -26,7 +28,6 @@ class IncrementalPCAEncoder(TransformEncoder):
     """
 
     def __init__(self, num_features: int = None, whiten: bool = False, *args, **kwargs):
-        """Constructor"""
         super().__init__(*args, **kwargs)
         self.whiten = whiten
         self.num_features = num_features

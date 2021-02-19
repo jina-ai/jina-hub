@@ -14,8 +14,7 @@ class FeatureAgglomerationEncoder(TransformEncoder):
     Where `B` is the batch's size and `T` and `D` are the dimensions pre (`T`)
     and after (`D`) the encoding.
 
-    See more at:
-    https://scikit-learn.org/stable/modules/generated/sklearn.cluster.FeatureAgglomeration.html
+    See more `at <https://scikit-learn.org/stable/modules/generated/sklearn.cluster.FeatureAgglomeration.html>`_
     """
 
     def post_init(self):

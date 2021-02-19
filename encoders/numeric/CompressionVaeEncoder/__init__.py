@@ -22,15 +22,16 @@ class CompressionVaeEncoder(TFDevice, BaseNumericEncoder):
     in size `B x D`. Where `B` is the batch's size and `T` and `D`
     are the dimensions pre (`T`) and after (`D`)the compression.
 
-    Full code and documentation can be found here:
-    https://github.com/maxfrenzel/CompressionVAE.
+    Full code and documentation can be found
+    `here <https://github.com/maxfrenzel/CompressionVAE>`_.
 
     :param model_path: Path to the pretrained model
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self, model_path: Optional[str] = 'model',
                  *args, **kwargs):
-        """Constructor."""
         super().__init__(*args, **kwargs)
         self.model_path = model_path
 
@@ -89,6 +90,8 @@ class CompressionVaeEncoder(TFDevice, BaseNumericEncoder):
 
         :param data: a `B x T` numpy ndarray
         :return: a `B x D` numpy ndarray
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         return self.sess.run([self.embeddings],
                              feed_dict={self.data_feature_placeholder: data})[0]

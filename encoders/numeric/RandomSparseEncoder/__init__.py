@@ -11,8 +11,8 @@ class RandomSparseEncoder(TransformEncoder):
     Where `B` is the batch's size and `T` and `D` are the dimensions pre (`T`)
     and after (`D`) the encoding.
 
-    More info can be found here:
-    https://scikit-learn.org/stable/modules/generated/sklearn.random_projection.SparseRandomProjection.html
+    More info can be found
+    `here <https://scikit-learn.org/stable/modules/generated/sklearn.random_projection.SparseRandomProjection.html>`_
     """
 
     def post_init(self):
