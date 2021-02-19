@@ -8,11 +8,7 @@ from .helper import _load_image, _move_channel_axis, _crop_image, _resize_short
 
 class ImageNormalizer(BaseCrafter):
     """
-    Normalize the image.
-
-    :class:`ImageNormalizer` works on doc-level,
-        it receives values of file names on the
-        doc-level and returns image matrix on the chunk-level
+    Normalize an image given certain parameters.
 
     :param target_size: Desired output size. If size is a sequence
         like (h, w), the output size will be matched to this.
@@ -56,7 +52,7 @@ class ImageNormalizer(BaseCrafter):
         Normalize the image.
 
         :param blob: the ndarray of the image with the color channel at the last axis
-        :return: a chunk dict with the normalized image
+        :return: a dict with the normalized image
         """
         raw_img = _load_image(blob, self.channel_axis)
         _img = self._normalize(raw_img)

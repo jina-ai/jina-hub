@@ -15,18 +15,23 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 
 class CompressionVaeEncoder(TFDevice, BaseNumericEncoder):
     """
-    :class:`CompressionVaeEncoder` is a dimensionality reduction tool based on the idea of
-    Variational Autoencoders. It encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
+    :class:`CompressionVaeEncoder` is a dimensionality reduction tool.
 
-    Full code and documentation can be found here: https://github.com/maxfrenzel/CompressionVAE..
+    It's based on the idea of Variational Autoencoders.
+    It encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
+
+    Full code and documentation can be found here:
+    https://github.com/maxfrenzel/CompressionVAE.
+
+    :param model_path: Path to pretrained model.
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
+
     """
 
     def __init__(self, model_path: Optional[str] = 'model',
                  *args, **kwargs):
-        """
-        :param model_path: specifies the path to the pretrained model
-
-        """
+        """Constructor method"""
         super().__init__(*args, **kwargs)
         self.model_path = model_path
 
@@ -80,6 +85,13 @@ class CompressionVaeEncoder(TFDevice, BaseNumericEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
+        Encode data from an ndarray in size `B x T` into an ndarray in size `B x D`.
+
+        Where `B` is the batch size.
+        T is
+        D is the dimension.
+
+
         :param data: a `B x T` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
         """
