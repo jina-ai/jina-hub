@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numpy as np
@@ -9,9 +9,18 @@ from jina.executors.encoders import BaseNumericEncoder
 
 class TSNEEncoder(BaseNumericEncoder):
     """
-    :class:`TSNEEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
+    Encode data using t-distributed Stochastic Neighbor Embedding.
+
+    Encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
+    Where `B` is the batch's size and `T` and `D` are the dimensions pre (`T`)
+    and after (`D`) the encoding.
+
+    See more details here:
     https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
-    TSNE does not inherit Transform encoder because it can't have a transform without fit.
+
+    .. note:
+        Unlike other numeric encoders, TSNE does not inherit Transform encoder
+        because it can't have a transform without fit.
     """
 
     def __init__(self, output_dim: int = 64,
