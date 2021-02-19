@@ -1,6 +1,6 @@
 # ImageNormalizer
 
-**ImageNormalizer** is a crafter that normalizes an input image. It receives values of file names on the document-level and returns image matrix on the subdocument-level 
+**ImageNormalizer** is a crafter that normalizes an input image.
 
 The **ImageNormalizer** executor needs the following parameters:
 
@@ -26,12 +26,12 @@ Users can use Pod images in several ways:
     from jina.flow import Flow
 
     f = (Flow()
-        .add(name='my-encoder', image='jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.1', port_in=55555, port_out=55556))
+        .add(name='my_crafter', uses='docker://jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.1'))
     ```
     
 3. Run with Jina CLI
    ```bash
-    jina pod --uses jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.1 --port-in 55555 --port-out 55556
+    jina pod --uses docker://jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.1 --port-in 55555 --port-out 55556
     ```
     
 4. Conventional local usage with `uses` argument
@@ -39,7 +39,7 @@ Users can use Pod images in several ways:
     jina pod --uses hub/example/imagenormalizer.yml --port-in 55555 --port-out 55556
     ```
     
-5. Docker command
+5. Docker command to download the image
 
    Specify the image name along with the version tag. The snippet below uses Jina version `1.0.1`
 
