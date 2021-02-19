@@ -1,4 +1,4 @@
-# fScoreEvaluator
+# FScoreEvaluator
 
 `fScoreEvaluator` computes the [F-Score](https://en.wikipedia.org/wiki/F-score) for the ranking result of a search system.
 
