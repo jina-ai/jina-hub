@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import pickle
@@ -21,21 +21,27 @@ class CustomUnpickler(pickle.Unpickler):
 class VSETextEncoder(BaseTorchEncoder):
     """
     :class:`VSETextEncoder` encodes data from a ndarray of texts into a
-        ndarray of `B x D`. using VSE text_emb branch
+        ndarray of `B x D`, where `B` represents for batch size, `D` refer
+        to the dimension of the embedding.
 
+    :param path: The vse model path.
+    :param vocab_path: Pickled vocabulary path.
+    :param args: Additional positional arguments.
+    :param kwargs: Additional positional arguments.
     """
 
-    def __init__(self, path: str = 'runs/f30k_vse++_vggfull/model_best.pth.tar',
-                 vocab_path: str = 'vocab/f30k_vocab.pkl', *args, **kwargs):
-        """
-        :path : path where to find the model.pth file
-        :vocab_path : path where to find the vocab.pkl file
-        """
+    def __init__(self,
+                 path: str = 'runs/f30k_vse++_vggfull/model_best.pth.tar',
+                 vocab_path: str = 'vocab/f30k_vocab.pkl',
+                 *args,
+                 **kwargs):
+        """Class constructor."""
         super().__init__(*args, **kwargs)
         self.path = path
         self.vocab_path = vocab_path
 
     def post_init(self):
+        """Load pre-trained vse++ model."""
         import nltk
         import torch
         from .model import VSE
@@ -56,6 +62,11 @@ class VSETextEncoder(BaseTorchEncoder):
 
     @batching
     def encode(self, text):
+        """
+        Encode input data as embeddings.
+
+        :param text:
+        """
         import torch
         import nltk
         from torch.autograd import Variable
