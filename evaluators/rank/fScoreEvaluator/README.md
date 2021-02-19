@@ -67,7 +67,7 @@ def print_evaluation_score(resp):
 #evaluate time
 f = Flow().add(name='encoder', uses='encoder.yml').\
         add(name='indexer', uses='indexer.yml').\
-        add(name='fscoreevaluator', uses='!fScoreEvaluator')
+        add(name='evaluator', uses='!fScoreEvaluator')
 with f:
     f.search(input_fn=[(evaluate_doc, evaluate_groundtruth)], on_done=print_evaluation_score)
 ```
