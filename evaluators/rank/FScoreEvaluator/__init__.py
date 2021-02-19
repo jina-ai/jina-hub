@@ -25,6 +25,10 @@ class FScoreEvaluator(BaseRankingEvaluator):
         """
         if not desired or self.eval_at == 0:
             """TODO: Agree on a behavior"""
+            if not desired:
+                self.logger.warning('`desired` is empty: ', f'{desired}')
+            if self.eval_at == 0:
+                self.logger.warning('`eval_at` is invalid: ', f'{self.eval_at}')
             return 0.0
 
         actual_at_k = actual[:self.eval_at] if self.eval_at else actual
