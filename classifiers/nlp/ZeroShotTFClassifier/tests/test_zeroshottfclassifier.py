@@ -42,10 +42,14 @@ def test_encoding_results(test_metas,
         "pooling_strategy": pooling_strategy,
         "layer_index": layer_index,
     }
-    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
 
     test_data = np.array(["it is a good day!",
                           "the dog sits on the floor."])
+    test_labels = ['bla', 'bleep', 'bloop']
+
+    classifier = ZeroShotTFClassifier(labels=test_labels,
+                                      metas=test_metas, **params)
+
     encoded_data = classifier._encode(test_data)
 
     hidden_dim_sizes = {
@@ -87,7 +91,10 @@ def test_embedding_consistency(test_metas,
     test_data = np.array(["it is a good day!",
                           "the dog sits on the floor."])
 
-    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
+    test_labels = ['bla', 'bleep', 'bloop']
+
+    classifier = ZeroShotTFClassifier(labels=test_labels,
+                                      metas=test_metas, **params)
     encoded_data = classifier._encode(test_data)
 
     encoded_data_file = \
@@ -113,8 +120,11 @@ def test_max_length_truncation(test_metas,
         "layer_index": layer_index,
         "max_length": 3,
     }
-    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
     test_data = np.array(["it is a very good day!", "it is a very sunny day!"])
+    test_labels = ['bla', 'bleep', 'bloop']
+
+    classifier = ZeroShotTFClassifier(labels=test_labels,
+                                      metas=test_metas, **params)
     encoded_data = classifier._encode(test_data)
 
     np.testing.assert_allclose(encoded_data[0],
@@ -136,8 +146,11 @@ def test_shape_single_document(test_metas,
         "layer_index": layer_index,
         "max_length": 3,
     }
-    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
     test_data = np.array(["it is a very good day!"])
+    test_labels = ['bla', 'bleep', 'bloop']
+
+    classifier = ZeroShotTFClassifier(labels=test_labels,
+                                      metas=test_metas, **params)
     encoded_data = classifier._encode(test_data)
     assert len(encoded_data.shape) == 2
     assert encoded_data.shape[0] == 1
@@ -152,7 +165,10 @@ def test_save_and_load(test_metas, model_name, pooling_strategy, layer_index):
         "pooling_strategy": pooling_strategy,
         "layer_index": layer_index,
     }
-    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
+    test_labels = ['bla', 'bleep', 'bloop']
+
+    classifier = ZeroShotTFClassifier(labels=test_labels,
+                                      metas=test_metas, **params)
 
     classifier.save_config()
     _assert_params_equal(params, classifier)
@@ -184,7 +200,10 @@ def test_save_and_load_config(test_metas,
         "pooling_strategy": pooling_strategy,
         "layer_index": layer_index,
     }
-    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
+    test_labels = ['bla', 'bleep', 'bloop']
+
+    classifier = ZeroShotTFClassifier(labels=test_labels,
+                                      metas=test_metas, **params)
 
     classifier.save_config()
     _assert_params_equal(params, classifier)
@@ -197,17 +216,22 @@ def test_save_and_load_config(test_metas,
 @pytest.mark.parametrize("layer_index", [-100, 100])
 def test_wrong_layer_index(test_metas, layer_index):
     params = {"layer_index": layer_index}
-    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
+    test_data = np.array(["it is a good day!", "the dog sits on the floor."])
+    test_labels = ['bla', 'bleep', 'bloop']
+
+    classifier = ZeroShotTFClassifier(labels=test_labels,
+                                      metas=test_metas, **params)
 
     classifier.layer_index = layer_index
-    test_data = np.array(["it is a good day!", "the dog sits on the floor."])
     with pytest.raises(ValueError):
         classifier._encode(test_data)
 
 
 def test_wrong_pooling_strategy():
+    test_labels = ['bla', 'bleep', 'bloop']
     with pytest.raises(NotImplementedError):
-        ZeroShotTFClassifier(pooling_strategy="wrong")
+        ZeroShotTFClassifier(labels=test_labels,
+                             pooling_strategy="wrong")
 
 
 @pytest.mark.parametrize(
@@ -215,19 +239,22 @@ def test_wrong_pooling_strategy():
     [{"pooling_strategy": "cls", "pretrained_model_name_or_path": "gpt2"}],
 )
 def test_no_cls_token(test_metas, params):
-    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
     test_data = np.array(["it is a good day!", "the dog sits on the floor."])
+    test_labels = ['bla', 'bleep', 'bloop']
+
+    classifier = ZeroShotTFClassifier(labels=test_labels,
+                                      metas=test_metas, **params)
     with pytest.raises(ValueError):
         classifier._encode(test_data)
 
 
 def test_classifier_prediction_type():
     test_data = np.array(["business", "politics", "food"])
-    test_labels = np.array(["business", "politics", "food"])
+    test_labels = ["business", "politics", "food"]
 
-    classifier = ZeroShotTFClassifier()
+    classifier = ZeroShotTFClassifier(labels=test_labels)
 
-    predictions = classifier.predict(test_data, target_labels=test_labels)
+    predictions = classifier.predict(test_data)
 
     assert isinstance(predictions, np.ndarray)
 
@@ -246,11 +273,12 @@ def test_classifier_prediction_results(test_metas,
     }
 
     test_data = np.array(["business", "politics", "food"])
-    test_labels = np.array(["business", "politics", "food"])
+    test_labels = ["business", "politics", "food"]
 
-    classifier = ZeroShotTFClassifier(metas=test_metas, **params)
+    classifier = ZeroShotTFClassifier(labels=test_labels,
+                                      metas=test_metas, **params)
 
-    predictions = classifier.predict(test_data, target_labels=test_labels)
+    predictions = classifier.predict(test_data)
 
     predictions_expected = np.array([[1, 0, 0],
                                      [0, 1, 0],
@@ -261,47 +289,39 @@ def test_classifier_prediction_results(test_metas,
 
 def test_classifier_predictions_shape():
     test_data = np.array(["it is a good day!", "the dog sits on the floor."])
-    test_labels = np.array(["business", "movie", "food"])
+    test_labels = ["business", "movie", "food"]
 
-    classifier = ZeroShotTFClassifier()
-    predictions = classifier.predict(test_data, target_labels=test_labels)
+    classifier = ZeroShotTFClassifier(labels=test_labels)
+    predictions = classifier.predict(test_data)
 
     assert test_data.shape[0] == predictions.shape[0]
-    assert test_labels.shape[0] == predictions.shape[1]
+    assert len(test_labels) == predictions.shape[1]
     assert predictions.sum() == test_data.shape[0]
 
 
 def test_classifier_evaluation():
-    classifier = ZeroShotTFClassifier()
+    test_labels = ['bla', 'bleep', 'bloop']
+
+    classifier = ZeroShotTFClassifier(labels=test_labels)
 
     assert classifier._evaluate([1, 1, 1], [1, 1, 1]) == 0
     assert classifier._evaluate([1, 0, 1], [0, 1, 0]) == 1
 
 
 def test_classifier_invalid_labels():
-    classifier = ZeroShotTFClassifier()
-
-    test_data = np.array(["it is a good day!", "the dog sits on the floor."])
-    test_labels = np.array(["business"])
+    test_labels = ["business"]
 
     with pytest.raises(ValueError):
-        classifier.predict(test_data, target_labels=test_labels)
+        ZeroShotTFClassifier(labels=test_labels)
 
 
 def test_classifier_missing_labels():
-    classifier = ZeroShotTFClassifier()
-
-    test_data = np.array(["it is a good day!", "the dog sits on the floor."])
-
-    with pytest.raises(ValueError):
-        classifier.predict(test_data)
+    with pytest.raises(TypeError):
+        ZeroShotTFClassifier()
 
 
 def test_classifier_duplicate_labels():
-    classifier = ZeroShotTFClassifier()
-
-    test_data = np.array(["it is a good day!", "the dog sits on the floor."])
-    test_labels = np.array(["business", "business", "business"])
+    test_labels = ["business", "business", "business"]
 
     with pytest.raises(ValueError):
-        classifier.predict(test_data, target_labels=test_labels)
+        ZeroShotTFClassifier(labels=test_labels)

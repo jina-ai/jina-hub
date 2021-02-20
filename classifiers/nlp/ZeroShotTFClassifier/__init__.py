@@ -1,6 +1,6 @@
 import numpy as np
 
-from typing import Optional
+from typing import List, Optional
 
 from jina.executors.classifiers import BaseClassifier
 from jina.executors.decorators import batching, as_ndarray
@@ -16,6 +16,7 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
 
     def __init__(
         self,
+        labels: List[str],
         pretrained_model_name_or_path: str = "distilbert-base-uncased",
         base_tokenizer_model: Optional[str] = None,
         pooling_strategy: str = "mean",
@@ -25,6 +26,8 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
         **kwargs,
     ):
         """
+        :param labels: the potential labels for the classification
+            task.
         :param pretrained_model_name_or_path: Either:
             - a string, the `model id` of a pretrained model hosted inside a
                 model repo on huggingface.co, e.g.: `bert-base-uncased`.
@@ -44,6 +47,7 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
         """
 
         super().__init__(*args, **kwargs)
+        self.labels = labels
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.base_tokenizer_model = (
             base_tokenizer_model or pretrained_model_name_or_path
@@ -67,6 +71,15 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
             )
             raise NotImplementedError
 
+        if len(self.labels) < 2:
+            raise ValueError("The number of target labels must be at least 2.")
+
+        if len(self.labels) != \
+                len(set(self.labels)):
+            raise ValueError(
+                "There are duplicate value in the target_label argument."
+            )
+
     def predict(self,
                 data: "np.ndarray",
                 *args,
@@ -82,27 +95,13 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
          :param data: the input textual data to be classified, a 1 d
             array of string type in size `B`
          :type data: np.ndarray
-         :keyword target_labels: the textual classification labels
          :return: zero/one one-hot predicted label of each sample
             in size `(B, L)`
          :rtype: np.ndarray
         """
 
         data_encoded = self._encode(data)
-
-        if 'target_labels' not in kwargs.keys():
-            raise ValueError("The target_labels argument is undefined.")
-
-        elif kwargs['target_labels'].shape[0] < 2:
-            raise ValueError("The number of target labels must be at least 2.")
-
-        elif kwargs['target_labels'].shape[0] != \
-                len(set(kwargs['target_labels'])):
-            raise ValueError(
-                "There are duplicate value in the target_label argument."
-            )
-
-        labels_encoded = self._encode(kwargs['target_labels'])
+        labels_encoded = self._encode(self.labels)
 
         distances = self._evaluate(data_encoded, labels_encoded)
 
