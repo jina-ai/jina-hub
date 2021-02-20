@@ -3,18 +3,25 @@
 `ImageKerasEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a ndarray of `B x D`. Internally, :class:`ImageKerasEncoder` wraps the models from `tensorflow.keras.applications`. https://keras.io/applications/
 
 
-
-
 ## Usage:
 
-Initialise this Executor specifying parameters.
+Initialise this Executor specifying parameters i.e.:
+
+| `param_name`  | `param_remarks` |
+| ------------- | ------------- |
+| `model_path`  | the directory path of the model in the `SavedModel` format  |
+| `model_name`  | includes `MobileNetV2`  |
+| `channel_axis`| axis id of the channel, etc.  |
+| `pool_strategy` | strategy like `avg` |
+
+The model is pre-trained on [MobileNetV2] data
 The pretrained default path is the result of downloading the models in `download.sh`
 
 ### Snippets:
 
-Initialise BigTransferEncoder:
+Initialise ImageKerasEncoder:
 
-`BigTransferEncoder(model_path='pretrained', channel_axis=1, metas=metas)`
+`ImageKerasEncoder(model_path='pretrained', channel_axis=1, metas=metas, model_name=MobileNetV2)`
 
 Users can use Pod images in several ways:
 
@@ -29,7 +36,6 @@ Users can use Pod images in several ways:
 
     f = (Flow()
         .add(name='my-encoder', image='jinahub/pod.encoder.imagekerasencoder:0.0.8-0.9.28', port_in=55555, port_out=55556)
-        .add(name='my-indexer', uses='indexer.yml'))
     ```
     
 - Jina CLI
@@ -39,7 +45,7 @@ Users can use Pod images in several ways:
     
 - Conventional local usage with `uses` argument
   - ```bash
-    jina pod --uses hub/example/imagekerasencoder.yml --port-in 55555 --port-out 55556
+    jina pod --uses hub/example/config.yml --port-in 55555 --port-out 55556
     ```
     
 - Docker command
@@ -49,9 +55,3 @@ Users can use Pod images in several ways:
   - ```bash
     docker pull jinahub/pod.encoder.imagekerasencoder:0.0.8-0.9.28
     ```
-   
- Note:
- 
- One of the limitations with the Hub Executors currently is the tags - all Executor images should have the versions appended in the name i.e.
- if the version is `0.0.8-0.9.28`, the image name would be `jinahub/pod.encoder.imagekerasencoder:0.0.8-0.9.28`.
-   
