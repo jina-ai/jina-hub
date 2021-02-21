@@ -1,6 +1,6 @@
 import numpy as np
 from jina.executors.rankers import Chunk2DocRanker
-
+from jina.helper import deprecated_alias
 
 class SimpleAggregateRanker(Chunk2DocRanker):
     """
@@ -20,6 +20,7 @@ class SimpleAggregateRanker(Chunk2DocRanker):
 
     AGGREGATE_FUNCTIONS = ['min', 'max', 'mean', 'median', 'sum', 'prod']
 
+    @deprecated_alias(is_reversed_score=('inverse_score', False))
     def __init__(self, aggregate_function: str, inverse_score: bool = False, *args, **kwargs):
         """Set constructor"""
         super().__init__(*args, **kwargs)
