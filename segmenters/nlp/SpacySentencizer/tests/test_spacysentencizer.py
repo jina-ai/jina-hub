@@ -5,31 +5,36 @@ from .. import SpacySentencizer
 
 
 def test_multilingual_sentencizer_with_en_lang():
-    sentencizer = SpacySentencizer()
+    # xx_sent_ud_sm does not have DependencyParser model, ignoring use_default_segmenter=True
+    sentencizer = SpacySentencizer("xx_sent_ud_sm", use_default_segmenter=False)
     text = "It is a sunny day!!!! When Andy comes back, we are going to the zoo."
     crafted_chunk_list = sentencizer.segment(text, 0)
     assert len(crafted_chunk_list) == 2
 
 
 def test_multilingual_sentencizer_with_id_lang():
-    sentencizer = SpacySentencizer()
+    # xx_sent_ud_sm does not have DependencyParser model, ignoring use_default_segmenter=True
+    sentencizer = SpacySentencizer("xx_sent_ud_sm", use_default_segmenter=False)
     text = "ini adalah sebuah kalimat. ini adalah sebuah kalimat lain."
     crafted_chunk_list = sentencizer.segment(text, 0)
     assert len(crafted_chunk_list) == 2
 
 
 def test_sentencier_cn():
-    sentencizer = SpacySentencizer()
+    # xx_sent_ud_sm does not have DependencyParser model, ignoring use_default_segmenter=True
+    sentencizer = SpacySentencizer("xx_sent_ud_sm", use_default_segmenter=False)
     text = "今天是个大晴天！安迪回来以后，我们准备去动物园。"
     crafted_chunk_list = sentencizer.segment(text, 0)
     assert len(crafted_chunk_list) == 1
 
 
-def test_unsupported_lang():
+def test_unsupported_lang(tmp_path):
     dummy1 = spacy.blank("xx")
-    dummy1.to_disk("/tmp/xx")
-    dummy2 = spacy.blank("ja")
-    dummy2.to_disk("/tmp/ja")
+    dummy1_dir_path = tmp_path / "xx1"
+    dummy1.to_disk(dummy1_dir_path)
+    dummy2 = spacy.blank("xx")
+    dummy2_dir_path = tmp_path / "xx2"
+    dummy2.to_disk(dummy2_dir_path)
     # No available language
     with pytest.raises(IOError):
         SpacySentencizer("abcd")
@@ -37,19 +42,19 @@ def test_unsupported_lang():
     # Language does not have DependencyParser should thrown an error
     # when try to use default segmenter
     with pytest.raises(ValueError):
-        SpacySentencizer("/tmp/xx", use_default_segmenter=True)
+        SpacySentencizer(dummy1_dir_path, use_default_segmenter=True)
 
     # And should be fine when "parser" pipeline is added
     dummy1.add_pipe("parser")
-    dummy1.to_disk("/tmp/xx")
-    SpacySentencizer("/tmp/xx", use_default_segmenter=True)
+    dummy1.to_disk(dummy1_dir_path)
+    SpacySentencizer(dummy1_dir_path, use_default_segmenter=True)
 
     # Language does not have SentenceRecognizer should thrown an error
     # when try to use non default segmenter
     with pytest.raises(ValueError):
-        SpacySentencizer("/tmp/ja", use_default_segmenter=False)
+        SpacySentencizer(dummy2_dir_path, use_default_segmenter=False)
 
     # And should be fine when "senter" pipeline is added
     dummy2.add_pipe("senter")
-    dummy2.to_disk("/tmp/ja")
-    SpacySentencizer("/tmp/ja", use_default_segmenter=False)
+    dummy2.to_disk(dummy2_dir_path)
+    SpacySentencizer(dummy2_dir_path, use_default_segmenter=False)
