@@ -26,8 +26,8 @@ def create_data():
             match_chunk_meta[c['id']] = {'length': c['length']}
             match_idx.append((
                 c['parent_id'],
-                int(c['id']),
-                int(query_chunk_id),
+                c['id'],
+                query_chunk_id,
                 c['score'],
             ))
 
