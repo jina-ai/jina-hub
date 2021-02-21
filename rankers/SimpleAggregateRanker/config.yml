@@ -1,7 +1,7 @@
 !SimpleAggregateRanker
 with:
-  aggregate_function: min
-  inverse_score: True
+  aggregate_function: 'min'
+  inverse_score: true
 metas:
   py_modules:
     # - you can put more dependencies here
