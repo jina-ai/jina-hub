@@ -37,8 +37,8 @@ Users can use Pod images in several ways:
     ```yaml
     !SpacySentencizer
     with:
-      window_size: 10
-      step_size: 5
+      lang: "xx_sent_ud_sm"
+      use_default_segmenter: false
     metas:
       py_modules:
         - __init__.py
