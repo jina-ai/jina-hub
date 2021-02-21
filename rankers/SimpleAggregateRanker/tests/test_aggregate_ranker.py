@@ -1,6 +1,6 @@
 import numpy as np
 
-from jina.executors.rankers import Chunk2DocRanker
+from jina.executors.rankers import Chunk2DocRanker, COL_STR_TYPE
 import pytest
 from .. import SimpleAggregateRanker
 
@@ -40,9 +40,9 @@ def chunk_scores(factor=1):
     match_idx_numpy = np.array(
         match_idx,
         dtype=[
-            (Chunk2DocRanker.COL_MATCH_PARENT_ID, np.int64),
-            (Chunk2DocRanker.COL_MATCH_ID, np.int64),
-            (Chunk2DocRanker.COL_DOC_CHUNK_ID, np.int64),
+            (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
+            (Chunk2DocRanker.COL_DOC_CHUNK_ID, COL_STR_TYPE),
+            (Chunk2DocRanker.COL_QUERY_CHUNK_ID, COL_STR_TYPE),
             (Chunk2DocRanker.COL_SCORE, np.float64)
         ]
     )
@@ -54,7 +54,7 @@ def assert_document_order(doc_idx):
         assert doc_idx[i][1] > doc_idx[i + 1][1]
 
 
-@pytest.mark.parametrize('chunk_scores, aggregate_function, is_reversed_score, doc_ids,doc_scores', [
+@pytest.mark.parametrize('chunk_scores, aggregate_function, inverse_score, doc_ids,doc_scores', [
     (
             chunk_scores(),
             'max',
@@ -139,28 +139,28 @@ def assert_document_order(doc_idx):
             [1 / (1 + 0.25 * 0.25 * 0.15 * 0.15), 1 / (1 + 0.2 * 0.4 * 0.5), 1 / (1 + 0.1)]
     ),
 ])
-def test_aggregate_functions(chunk_scores, aggregate_function, is_reversed_score, doc_ids, doc_scores):
-    ranker = SimpleAggregateRanker(aggregate_function=aggregate_function, is_reversed_score=is_reversed_score)
+def test_aggregate_functions(chunk_scores, aggregate_function, inverse_score, doc_ids, doc_scores):
+    ranker = SimpleAggregateRanker(aggregate_function=aggregate_function, inverse_score=inverse_score)
     doc_idx = ranker.score(*chunk_scores)
     assert_document_order(doc_idx)
     for i, (doc_id, score) in enumerate(zip(doc_ids, doc_scores)):
-        assert doc_idx[i][0] == doc_id
+        assert int(doc_idx[i][0]) == doc_id
         assert doc_idx[i][1] == score
     assert len(doc_idx) == len(doc_ids) == len(doc_scores)
 
 
 def test_invalid_aggregate_function():
     with pytest.raises(ValueError):
-        SimpleAggregateRanker(aggregate_function='invalid_name', is_reversed_score=True)
+        SimpleAggregateRanker(aggregate_function='invalid_name', inverse_score=True)
 
 
 def test_doc_score_of_minus_one_invalid():
-    ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=True)
+    ranker = SimpleAggregateRanker(aggregate_function='min', inverse_score=True)
     with pytest.raises(ValueError):
         ranker.score(*chunk_scores(factor=-10))
 
 
 @pytest.mark.parametrize("factor", [1, -1])
 def test_negative_values_allowed(factor):
-    ranker = SimpleAggregateRanker(aggregate_function='min', is_reversed_score=False)
+    ranker = SimpleAggregateRanker(aggregate_function='min', inverse_score=False)
     ranker.score(*chunk_scores(factor=factor))
