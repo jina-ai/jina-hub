@@ -3,9 +3,11 @@
 SpacySentencizer is one segmenter used in the NLP domain. It splits the text on the doc-level into sentences on the chunk-level with spaCy as the backend.
 
 ## Usage:
+**Users are expected to download spaCy model before using this segmenter. To download the model, please refer to this page https://spacy.io/usage/models**
 The splitting technique is divided into two different approaches:
 1) Default Segmenter: Utilizes dependency parsing to determine the rule for splitting the text. For more info please refer to https://spacy.io/api/sentencizer.
 2) Machine Learning-based Segmenter: Utilizes SentenceRecognizer model trained on a dedicated data created for sentence segmentation. For more info please refer to https://spacy.io/api/sentencerecognizer.
+
 The following code snippets show how to use it as a segmenter.
 
 Users can use Pod images in several ways:
@@ -30,10 +32,10 @@ Users can use Pod images in several ways:
     with f:
         f.index_lines(['It is a sunny day!!!! When Andy comes back, we are going to the zoo.'], on_done=print_chunks,  line_format='csv')
     ```
-    The `slidingwindowsegmenter.yml` can be created with following configurations:
+    The `spacysentencizer.yml` can be created with following configurations:
     
     ```yaml
-    !SlidingWindowSegmenter
+    !SpacySentencizer
     with:
       window_size: 10
       step_size: 5

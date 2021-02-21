@@ -14,8 +14,7 @@ class SpacySentencizer(BaseSegmenter):
         on a dedicated data created for sentence segmentation. For more info please
         refer to https://spacy.io/api/sentencerecognizer.
 
-    :param lang: pre-trained spaCy language pipeline,
-        by default "xx_sent_ud_sm".
+    :param lang: pre-trained spaCy language pipeline
     :param use_default_segmenter: boolean to determine which segmentation algorithm to use,
         by default False.
     :param args:  Additional positional arguments
@@ -37,7 +36,7 @@ class SpacySentencizer(BaseSegmenter):
         "attribute_ruler",
     ]
 
-    def __init__(self, lang: str = "xx_sent_ud_sm", use_default_segmenter: bool = False, *args, **kwargs):
+    def __init__(self, lang: str, use_default_segmenter: bool = False, *args, **kwargs):
         """Set constructor."""
         super().__init__(*args, **kwargs)
 
