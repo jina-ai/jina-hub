@@ -4,25 +4,30 @@ import spacy
 from .. import SpacySentencizer
 
 
-def test_multilingual_sentencizer_with_en_lang():
+@pytest.fixture
+def multilingual_model_name():
+    return "xx_sent_ud_sm"
+
+
+def test_multilingual_sentencizer_with_en_lang(multilingual_model_name):
     # xx_sent_ud_sm does not have DependencyParser model, ignoring use_default_segmenter=True
-    sentencizer = SpacySentencizer("xx_sent_ud_sm", use_default_segmenter=False)
+    sentencizer = SpacySentencizer(multilingual_model_name, use_default_segmenter=False)
     text = "It is a sunny day!!!! When Andy comes back, we are going to the zoo."
     crafted_chunk_list = sentencizer.segment(text, 0)
     assert len(crafted_chunk_list) == 2
 
 
-def test_multilingual_sentencizer_with_id_lang():
+def test_multilingual_sentencizer_with_id_lang(multilingual_model_name):
     # xx_sent_ud_sm does not have DependencyParser model, ignoring use_default_segmenter=True
-    sentencizer = SpacySentencizer("xx_sent_ud_sm", use_default_segmenter=False)
+    sentencizer = SpacySentencizer(multilingual_model_name, use_default_segmenter=False)
     text = "ini adalah sebuah kalimat. ini adalah sebuah kalimat lain."
     crafted_chunk_list = sentencizer.segment(text, 0)
     assert len(crafted_chunk_list) == 2
 
 
-def test_sentencier_cn():
+def test_sentencier_cn(multilingual_model_name):
     # xx_sent_ud_sm does not have DependencyParser model, ignoring use_default_segmenter=True
-    sentencizer = SpacySentencizer("xx_sent_ud_sm", use_default_segmenter=False)
+    sentencizer = SpacySentencizer(multilingual_model_name, use_default_segmenter=False)
     text = "今天是个大晴天！安迪回来以后，我们准备去动物园。"
     crafted_chunk_list = sentencizer.segment(text, 0)
     assert len(crafted_chunk_list) == 1
