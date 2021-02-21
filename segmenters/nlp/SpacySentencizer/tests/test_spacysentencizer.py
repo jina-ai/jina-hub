@@ -10,18 +10,18 @@ def multilingual_model_name():
 
 
 @pytest.mark.parametrize(
-    "multilingual_tests",
+    "multilingual_test_inputs,multilingual_test_expected",
     [
         ("It is a sunny day!!!! When Andy comes back, we are going to the zoo.", 2),
         ("ini adalah sebuah kalimat. ini adalah sebuah kalimat lain.", 2),
         ("今天是个大晴天！安迪回来以后，我们准备去动物园。", 1),
     ],
 )
-def test_multilingual_sentencizer(multilingual_model_name, multilingual_tests):
+def test_multilingual_sentencizer(multilingual_model_name, multilingual_test_inputs, multilingual_test_expected):
     # xx_sent_ud_sm does not have DependencyParser model, ignoring use_default_segmenter=True
     sentencizer = SpacySentencizer(multilingual_model_name, use_default_segmenter=False)
-    text = multilingual_tests[0]
-    expected_num_of_splits = multilingual_tests[1]
+    text = multilingual_test_inputs
+    expected_num_of_splits = multilingual_test_expected
     crafted_chunk_list = sentencizer.segment(text, 0)
     assert len(crafted_chunk_list) == expected_num_of_splits
 
