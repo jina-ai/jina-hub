@@ -34,9 +34,9 @@ def create_data():
     match_idx_numpy = np.array(
         match_idx,
         dtype=[
-            (Chunk2DocRanker.COL_MATCH_PARENT_ID, np.int64),
-            (Chunk2DocRanker.COL_MATCH_ID, np.int64),
+            (Chunk2DocRanker.COL_PARENT_ID, np.int64),
             (Chunk2DocRanker.COL_DOC_CHUNK_ID, np.int64),
+            (Chunk2DocRanker.COL_QUERY_CHUNK_ID, np.int64),
             (Chunk2DocRanker.COL_SCORE, np.float64)
         ]
     )
@@ -46,10 +46,11 @@ def create_data():
 def test_bimatchranker():
     ranker = BiMatchRanker()
     match_idx, query_chunk_meta, match_chunk_meta = create_data()
+    print(f' type {type(match_idx)}, {type(query_chunk_meta)}, {type(match_chunk_meta)}')
     doc_idx = ranker.score(match_idx, query_chunk_meta, match_chunk_meta)
     # check the matched docs are in descending order of the scores
     assert doc_idx[0][1] > doc_idx[1][1]
-    assert doc_idx[1][0] == 4294967294
-    assert doc_idx[0][0] == 1
+    assert doc_idx[1][0] == '4294967294'
+    assert doc_idx[0][0] == '1'
     # check the number of matched docs
     assert len(doc_idx) == 2
