@@ -8,6 +8,6 @@ author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.7
+version: 0.0.8
 license: apache-2.0
-keywords: [encoder, numeric, ica]
+keywords: [encoder, numeric, ica, fastica]

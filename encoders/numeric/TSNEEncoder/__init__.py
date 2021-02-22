@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numpy as np
@@ -9,9 +9,23 @@ from jina.executors.encoders import BaseNumericEncoder
 
 class TSNEEncoder(BaseNumericEncoder):
     """
-    :class:`TSNEEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
-    https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
-    TSNE does not inherit Transform encoder because it can't have a transform without fit.
+    Encode data using t-distributed Stochastic Neighbor Embedding.
+
+    Encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
+    Where `B` is the batch's size and `T` and `D` are the dimensions pre (`T`)
+    and after (`D`) the encoding.
+
+    See more details
+    `here <https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html>`_
+
+    :param output_dim: Dimension of the embedded space
+    :param random_state: Used to seed the cost_function of TSNE
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
+
+    .. note:
+        Unlike other numeric encoders, TSNE does not inherit Transform encoder
+        because it can't have a transform without fit.
     """
 
     def __init__(self, output_dim: int = 64,
@@ -22,6 +36,7 @@ class TSNEEncoder(BaseNumericEncoder):
         self.random_state = random_state
 
     def post_init(self):
+        """Load TSNE model"""
         super().post_init()
         from sklearn.manifold import TSNE
         self.model = TSNE(n_components=self.output_dim, random_state=self.random_state)
@@ -29,7 +44,11 @@ class TSNEEncoder(BaseNumericEncoder):
     @batching
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
+        Encode data from an ndarray in size `B x T` into an ndarray in size `B x D`
+
         :param data: a `B x T` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         return self.model.fit_transform(data)
