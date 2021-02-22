@@ -26,16 +26,14 @@ class LightGBMRanker(Match2DocRanker):
 
     def __init__(self,
                  model_path: Optional[str] = 'tmp/model.txt',
-                 query_feature_names: Tuple[str] = (
-                         'tags__feature-1', 'tags__feature-2', 'tags__feature-3', 'tags__feature-4', 'tags__feature-5'),
-                 match_feature_names: Tuple[str] = (
-                         'tags__feature-1', 'tags__feature-2', 'tags__feature-3', 'tags__feature-4', 'tags__feature-5'),
+                 query_feature_names: Tuple[str] = ['tags__query_length', 'tags__query_language'],
+                 match_feature_names: Tuple[str] = ['tags__document_length', 'tags__document_language', 'tags__document_pagerank'],
                  query_categorical_features: Optional[List[str]] = None,
                  match_categorical_features: Optional[List[str]] = None,
                  query_features_before: bool = True,
                  *args,
                  **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(query_required_keys=query_feature_names, match_required_keys=match_feature_names, *args, **kwargs)
         self.model_path = model_path
         self.query_feature_names = query_feature_names
         self.match_feature_names = match_feature_names
@@ -53,45 +51,28 @@ class LightGBMRanker(Match2DocRanker):
             if model_num_features != expected_num_features:
                 raise ValueError(f'The number of features expected by the LightGBM model {model_num_features} is different'
                                  f'than the ones provided in input {expected_num_features}')
-
         else:
             raise PretrainedModelFileDoesNotExist(f'model {self.model_path} does not exist')
 
-    @property
-    def required_keys(self):
-        return self.feature_names
-
     def _get_features_dataset(self, query_meta: Dict, match_meta: Dict) -> 'lightgbm.Dataset':
         import lightgbm
-
         query_features = np.array(
-            [[query_meta[query_id][feat] for feat in self.query_feature_names] for query_id in query_meta])
-        query_dataset = lightgbm.Dataset(data=query_features, feature_names=self.query_feature_names,
-                                         categorical_features=self.query_categorical_features)
+            [[query_meta[feat] for feat in self.query_feature_names] for _ in range(0, len(match_meta))])
+        query_dataset = lightgbm.Dataset(data=query_features, feature_name=self.query_feature_names,
+                                         categorical_feature=self.query_categorical_features, free_raw_data=False)
+
         match_features = np.array(
-            [[match_meta[match_id][feat] for feat in self.match_feature_names] for match_id in match_meta])
-        match_dataset = lightgbm.Dataset(data=match_features, feature_names=self.match_feature_names,
-                                         categorical_features=self.match_categorical_features)
+            [[meta[feat] for feat in self.match_feature_names] for meta in match_meta])
+        match_dataset = lightgbm.Dataset(data=match_features, feature_name=self.match_feature_names,
+                                         categorical_feature=self.match_categorical_features, free_raw_data=False)
         if self.query_features_before:
-            return query_dataset.add_features_from(match_dataset)
+            return query_dataset.construct().add_features_from(match_dataset.construct())
         else:
-            return match_dataset.add_features_from(query_dataset)
+            return match_dataset.construct().add_features_from(query_dataset.construct())
 
     def score(
             self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
     ) -> 'np.ndarray':
 
         dataset = self._get_features_dataset(query_meta=query_meta, match_meta=match_meta)
-        scores = self.booster.predict(dataset)
-        new_scores = [
-            (
-                match_id,
-                scores[id]
-            )
-            for id, match_id in enumerate(match_meta)
-        ]
-
-        return np.array(
-            new_scores,
-            dtype=[(self.COL_MATCH_ID, np.object), (self.COL_SCORE, np.float64)],
-        )
+        return self.booster.predict(dataset.get_data())

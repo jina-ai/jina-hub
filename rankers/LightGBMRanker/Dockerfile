@@ -10,6 +10,8 @@ WORKDIR /workspace
 RUN pip install -r requirements.txt
 
 # for testing the image
-RUN pip install pytest && pytest -v -s && python -c 'from tests.test_lightgbmranker import _pretrained_model; import os; os.mkdir("tmp"); model_path = os.path.join("tmp", "model.txt"); _pretrained_model(model_path)'
+RUN pip install pytest sklearn && pytest -v -s && \
+    python -c 'from tests.test_lightgbmranker import _pretrained_model; import os; os.mkdir("tmp"); model_path = os.path.join("tmp", "model.txt"); _pretrained_model(model_path)' && \
+    pip uninstall -y sklearn
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
