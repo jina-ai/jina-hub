@@ -18,6 +18,7 @@ class FeatureAgglomerationEncoder(TransformEncoder):
     """
 
     def post_init(self):
+        """Load FeatureAgglomeration model"""
         super().post_init()
         if not self.model:
             from sklearn.cluster import FeatureAgglomeration

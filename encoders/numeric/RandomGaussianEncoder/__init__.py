@@ -16,6 +16,7 @@ class RandomGaussianEncoder(TransformEncoder):
     """
 
     def post_init(self):
+        """Load GaussianRandomProjection model"""
         super().post_init()
         if not self.model:
             from sklearn.random_projection import GaussianRandomProjection

@@ -33,6 +33,7 @@ class FastICAEncoder(TransformEncoder):
         self.model = None
 
     def post_init(self):
+        """Load FastICA model"""
         super().post_init()
         if not self.model:
             from sklearn.decomposition import FastICA

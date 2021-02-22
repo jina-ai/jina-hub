@@ -36,6 +36,7 @@ class TSNEEncoder(BaseNumericEncoder):
         self.random_state = random_state
 
     def post_init(self):
+        """Load TSNE model"""
         super().post_init()
         from sklearn.manifold import TSNE
         self.model = TSNE(n_components=self.output_dim, random_state=self.random_state)

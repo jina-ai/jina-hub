@@ -35,6 +35,7 @@ class IncrementalPCAEncoder(TransformEncoder):
         self.model = None
 
     def post_init(self):
+        """Load IncrementalPCA model"""
         super().post_init()
         if not self.model:
             from sklearn.decomposition import IncrementalPCA

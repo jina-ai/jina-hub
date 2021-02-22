@@ -16,6 +16,7 @@ class RandomSparseEncoder(TransformEncoder):
     """
 
     def post_init(self):
+        """Load SparseRandomProjection model"""
         super().post_init()
         if not self.model:
             from sklearn.random_projection import SparseRandomProjection

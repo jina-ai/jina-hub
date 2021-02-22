@@ -36,6 +36,7 @@ class CompressionVaeEncoder(TFDevice, BaseNumericEncoder):
         self.model_path = model_path
 
     def post_init(self):
+        """Load VAE model"""
         super().post_init()
         from cvae import cvae
         import cvae.lib.model_iaf as model
