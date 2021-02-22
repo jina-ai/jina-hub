@@ -33,7 +33,6 @@ class FlairTextEncoder(BaseTorchEncoder):
                  pooling_strategy: str = 'mean',
                  *args,
                  **kwargs):
-        """Set Constructor."""
         super().__init__(*args, **kwargs)
         self.embeddings = embeddings
         self.pooling_strategy = pooling_strategy
@@ -41,6 +40,15 @@ class FlairTextEncoder(BaseTorchEncoder):
         self._post_set_device = False
 
     def post_init(self):
+        """
+        Load model.
+
+        Possible models are:
+        - flair
+        - pooledflair
+        - word
+        - byte-pair
+        """
         import flair
         flair.device = self.device
         embeddings_list = []

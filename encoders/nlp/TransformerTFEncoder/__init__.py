@@ -43,7 +43,6 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         *args,
         **kwargs,
     ):
-        """Set Constructor."""
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.base_tokenizer_model = base_tokenizer_model or pretrained_model_name_or_path
@@ -66,6 +65,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
             raise NotImplementedError
 
     def post_init(self):
+        """Load TF model"""
         from transformers import TFAutoModel, AutoTokenizer
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)

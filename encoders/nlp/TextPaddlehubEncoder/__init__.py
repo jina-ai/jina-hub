@@ -28,11 +28,11 @@ class TextPaddlehubEncoder(BasePaddleEncoder):
     """
 
     def __init__(self, model_name: str = None, *args, **kwargs):
-        """Set Constructor."""
         super().__init__(*args, **kwargs)
         self.model_name = model_name or 'ernie_tiny'
 
     def post_init(self):
+        """Load PaddleHub model"""
         import paddlehub as hub
         self.model = hub.Module(name=self.model_name)
 
