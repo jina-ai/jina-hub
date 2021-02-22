@@ -22,18 +22,18 @@ class SpacySentencizer(BaseSegmenter):
     """
 
     SPACY_COMPONENTS = [
-        "tagger",
-        "parser",
-        "ner",
-        "senter",
-        "entity_linker",
-        "textcat",
-        "entity_ruler",
-        "merge_noun_chunks",
-        "merge_entities",
-        "merge_subtokens",
-        "lemmatizer",
-        "attribute_ruler",
+        'tagger',
+        'parser',
+        'ner',
+        'senter',
+        'entity_linker',
+        'textcat',
+        'entity_ruler',
+        'merge_noun_chunks',
+        'merge_entities',
+        'merge_subtokens',
+        'lemmatizer',
+        'attribute_ruler',
     ]
 
     def __init__(self, lang: str, use_default_segmenter: bool = False, *args, **kwargs):
@@ -54,30 +54,30 @@ class SpacySentencizer(BaseSegmenter):
                     self.spacy_model.disable_pipe(comp)
                 except Exception:
                     ignored_components.append(comp)
-            self.logger.info(f"Ignoring {ignored_components} pipelines as it does not available on the model package.")
+            self.logger.info(f'Ignoring {ignored_components} pipelines as it does not available on the model package.')
         except IOError:
             self.logger.error(
-                f"spaCy model for language {self.lang} can't be found. Please install by referring to the "
-                "official page https://spacy.io/usage/models"
+                f'spaCy model for language {self.lang} can not be found. Please install by referring to the '
+                'official page https://spacy.io/usage/models.'
             )
             raise
 
         if self.use_default_segmenter:
             try:
-                self.spacy_model.enable_pipe("parser")
+                self.spacy_model.enable_pipe('parser')
             except ValueError:
                 self.logger.error(
-                    f"Parser for language {self.lang} can't be found. The default sentence segmenter requires "
-                    "DependencyParser to be trained. Please refer to https://spacy.io/api/sentencizer for more clarity."
+                    f'Parser for language {self.lang} can not be found. The default sentence segmenter requires' 
+                    'DependencyParser to be trained. Please refer to https://spacy.io/api/sentencizer for more clarity.'
                 )
                 raise
         else:
             try:
-                self.spacy_model.enable_pipe("senter")
+                self.spacy_model.enable_pipe('senter')
             except ValueError:
                 self.logger.error(
-                    f"SentenceRecognizer is not available for language {self.lang}. Please refer to "
-                    "https://github.com/explosion/spaCy/issues/6615 for training your own recognizer."
+                    f'SentenceRecognizer is not available for language {self.lang}. Please refer to' 
+                    'https://github.com/explosion/spaCy/issues/6615 for training your own recognizer.'
                 )
                 raise
 
@@ -92,5 +92,5 @@ class SpacySentencizer(BaseSegmenter):
 
         """
         sentences = self.spacy_model(text).sents
-        results = [dict(text=sent) for idx, sent in enumerate(sentences)]
+        results = [dict(text=sent) for sent in sentences]
         return results
