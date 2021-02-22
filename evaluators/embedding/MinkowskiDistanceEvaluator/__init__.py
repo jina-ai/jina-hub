@@ -25,7 +25,7 @@ class MinkowskiDistanceEvaluator(BaseEmbeddingEvaluator):
         :param actual: the embedding of the document
             (resulting from an Encoder)
         :param desired: the expected embedding of the document
-        :return: th eminkowski distance
+        :return: the minkowski distance
         """
         actual = expand_vector(actual)
         desired = expand_vector(desired)
