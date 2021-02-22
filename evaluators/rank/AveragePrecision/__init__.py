@@ -4,8 +4,12 @@ from jina.executors.evaluators.rank import BaseRankingEvaluator
 
 
 class AveragePrecisionEvaluator(BaseRankingEvaluator):
-    """A :class:`AveragePrecisionEvaluator` evaluates the Average Precision of the search.
-       https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Average_precision
+    """
+    Evaluates the Average Precision of the search.
+    https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Average_precision
+
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self, *args, **kwargs):
@@ -13,9 +17,15 @@ class AveragePrecisionEvaluator(BaseRankingEvaluator):
 
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
-        :param actual: the matched document identifiers from the request as matched by Indexers and Rankers
-        :param desired: A list of all the relevant IDs. All documents identified in this list are considered to be relevant
-        :return the evaluation metric value for the request document
+        Evaluate the Average Precision of the search.
+
+        :param actual: the matched document identifiers from the request
+            as matched by Indexers and Rankers
+        :param desired: A list of all the relevant IDs. All documents
+            identified in this list are considered to be relevant
+        :return: the evaluation metric value for the request document
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
 
         if len(desired) == 0 or len(actual) == 0:

@@ -5,10 +5,13 @@ from jina.executors.evaluators.rank import BaseRankingEvaluator
 
 class FScoreEvaluator(BaseRankingEvaluator):
     """
-    :class:`FScoreEvaluator` Gives the f score of a search system result. (https://en.wikipedia.org/wiki/F-score)
+    Gives the f-score of a search system result.
+    (https://en.wikipedia.org/wiki/F-score)
 
-    :param eval_at: the point at which precision and recall are computed, if None give, will consider all the input to evaluate
-    :param beta: Parameter to weight differently precision and recall. When beta is 1, the fScore corresponds to the harmonic mean
+    :param eval_at: The point at which precision and recall are computed,
+        if ``None`` is given, all input will be considered to evaluate.
+    :param beta: Parameter to weight differently precision and recall.
+        When ``beta` is 1, the fScore corresponds to the harmonic mean
         of precision and recall
     :param args: Additional positional arguments
     :param kwargs: Additional keyword arguments
@@ -22,11 +25,14 @@ class FScoreEvaluator(BaseRankingEvaluator):
 
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
-        :param actual: the matched document identifiers from the request as matched by jina indexers and rankers
-        :param desired: the expected documents matches
+        Evaluate the f-score of the search.
+
+        :param actual: The matched document identifiers from the request
+            as matched by jina indexers and rankers
+        :param desired: The expected documents matches
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
-        :return the evaluation metric value for the request document
+        :return: the evaluation metric value for the request document
         """
         if not desired or self.eval_at == 0:
             """TODO: Agree on a behavior"""
