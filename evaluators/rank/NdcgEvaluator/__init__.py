@@ -24,18 +24,27 @@ def _compute_idcg(gains, power_relevance):
 
 class NDCGEvaluator(BaseRankingEvaluator):
     """
-    From a list of sorted retrieved sorted scores and expected scores, evaluates normalized discounted cumulative gain for information retrieval.
-    :param eval_at: The number of documents in each of the lists to consider in the NDCG computation. If None. the complete lists are considered
-        for the evaluation computation
-    :param power_relevance: The power relevance places stronger emphasis on retrieving relevant documents.
-        For detailed information, please check https://en.wikipedia.org/wiki/Discounted_cumulative_gain
-    :param is_relevance_value: boolean indicating if the actual scores are to be considered relevance, meaning highest value is better.
-        If True, the information coming from the actual system results will be sorted in descending order, otherwise in ascending order.
-        Since the `input` of the `evaluate` method is sorted according to the `scores` of both actual and desired input, this parameter is
-        useful for instance when the `matches` come directly from a `VectorIndexer` where score is `distance` and therefore the `smaller` the `better`.
+    From a sorted list of retrieved, scores and scores,
+    evaluates normalized discounted cumulative gain for information retrieval.
+
+    :param eval_at: The number of documents in each of the lists to consider
+        in the NDCG computation. If ``None``is given, the complete lists are
+        considered for the evaluation.
+    :param power_relevance: The power relevance places stronger emphasis on
+        retrieving relevant documents. For detailed information, please check
+        https://en.wikipedia.org/wiki/Discounted_cumulative_gain
+    :param is_relevance_score: Boolean indicating if the actual scores are
+        to be considered relevance. Highest value is better.
+        If True, the information coming from the actual system results will
+        be sorted in descending order, otherwise in ascending order.
+        Since the input of the evaluate method is sorted according to the
+        `scores` of both actual and desired input, this parameter is
+        useful for instance when the ``matches` come directly from a ``VectorIndexer``
+        where score is `distance` and therefore the smaller the better.
 
     .. note:
-        All the IDs that are not found in the groundtruth will be considered to have relevance 0.
+        All the IDs that are not found in the ground truth will be considered to have
+        relevance 0.
     """
 
     def __init__(self,
@@ -54,9 +63,15 @@ class NDCGEvaluator(BaseRankingEvaluator):
             *args, **kwargs
     ) -> float:
         """"
-        :param actual: the tuple of Ids and Scores predicted by the search system. actual will be sorted in descending order
-        :param desired: the expected id, relevance tuples given by user as matching groundtruth.
-        :return the evaluation metric value for the request document.
+        Evaluate normalized discounted cumulative gain for information retrieval.
+
+        :param actual: The tuple of Ids and Scores predicted by the search system.
+            They will be sorted in descending order.
+        :param desired: The expected id and relevance tuples given by user as
+            matching round truth.
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        :return: The evaluation metric value for the request document.
         """
         relevances = dict(desired)
         actual_relevances = list(map(lambda x: relevances[x[0]] if x[0] in relevances else 0.,
