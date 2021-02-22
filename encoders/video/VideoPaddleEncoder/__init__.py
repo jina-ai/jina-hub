@@ -50,6 +50,7 @@ class VideoPaddleEncoder(BasePaddleEncoder):
             raise NotImplementedError(f'unknown pool_strategy: {pool_strategy}')
 
     def post_init(self):
+        """Load VideoPaddleEncoder model"""
         import paddlehub as hub
         module = hub.Module(name=self.model_name)
         inputs, outputs, self.model = module.context(trainable=False)
@@ -64,7 +65,7 @@ class VideoPaddleEncoder(BasePaddleEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encodes data from a ndarray.
+        Encode data from a ndarray.
 
         Potentially B x T x (Channel x Height x Width) into an ndarray of `B x D`.
 
@@ -88,7 +89,7 @@ class VideoPaddleEncoder(BasePaddleEncoder):
 
     def get_pooling(self, data: 'np.ndarray') -> 'np.ndarray':
         """
-        Get np.ndarray with pooling strategy
+        Get np.ndarray with pooling strategy.
 
         :param data: An np.ndarray of the ``feature_map``
         :return: A `B x D` numpy ``ndarray``, `D` is the output dimension
