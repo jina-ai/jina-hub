@@ -34,7 +34,6 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
                  channel_axis: int = 1,
                  pool_strategy: str = 'mean',
                  *args, **kwargs):
-        """Set Constructor."""
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
         self.model_name = model_name
@@ -44,6 +43,7 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
         self.pool_strategy = pool_strategy
 
     def post_init(self):
+        """Load Torch model"""
         super().post_init()
         import torchvision.models.video as models
         if self.pool_strategy is not None:
@@ -70,7 +70,7 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-         Encodes data from a ndarray.
+         Encode data from a ndarray.
 
          :param data: a `B x T x (Channel x Height x Width)` numpy ``ndarray``,
             `B` is the size of the batch, `T` is the number of frames
