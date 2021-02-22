@@ -7,11 +7,6 @@ Jina's one-stop registry for hosting Pods and enabling easy neural search on the
 <p align=center>
 </p>
 
-Jina Hub is a centralized registry, where you can share and discover custom and community driven Jina Pods and Apps tailored to specific use cases of neural search.
-
-View the existing collection of hub images on [hub.Jina.ai](https://hub.jina.ai/#/home)
-
----
 
 <p align="center">
 <a href="http://docs.jina.ai">Docs</a> • <a href="https://github.com/jina-ai/examples">Examples</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
