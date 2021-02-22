@@ -49,3 +49,8 @@ def test_save_and_load_config(encoder):
     encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
     assert encoder_loaded.channel_axis == encoder.channel_axis
     assert encoder_loaded.pool_strategy == encoder.pool_strategy
+
+
+def test_model_name():
+    encoder = ImageKerasEncoder(model_name='MobileNet')
+    assert encoder.model_name == 'MobileNet'

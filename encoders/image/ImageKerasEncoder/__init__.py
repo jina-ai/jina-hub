@@ -37,7 +37,7 @@ class ImageKerasEncoder(BaseTFEncoder):
                 If given other, then ``np.moveaxis(data, channel_axis, -1)`` is performed before :meth:`encode`.
         """
         super().__init__(*args, **kwargs)
-        self.model_name = 'MobileNetV2' or model_name
+        self.model_name = model_name or 'MobileNetV2'
         self.pool_strategy = pool_strategy
         self.img_shape = img_shape
         self.channel_axis = channel_axis
