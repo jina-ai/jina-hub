@@ -8,9 +8,6 @@ COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-RUN pip install -r requirements.txt
-
-# for testing the image
-#RUN pip install pytest && pytest -s -vv
+RUN pip install git+https://github.com/openai/CLIP.git
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
