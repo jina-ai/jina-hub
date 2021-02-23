@@ -1,6 +1,6 @@
 # ImageKerasEncoder
 
-`ImageKerasEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a ndarray of `B x D`. Internally, :class:`ImageKerasEncoder` wraps the models from `tensorflow.keras.applications`. https://keras.io/applications/
+`ImageKerasEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a ndarray of `BatchSize * d`. Internally, :class:`ImageKerasEncoder` wraps the models from `tensorflow.keras.applications`. https://keras.io/applications/
 
 
 ## Usage:
@@ -10,9 +10,9 @@ Initialise this Executor specifying parameters i.e.:
 | `param_name`  | `param_remarks` |
 | ------------- | ------------- |
 | `model_path`  | the directory path of the model in the `SavedModel` format  |
-| `model_name`  | includes `MobileNetV2`  |
-| `channel_axis`| axis id of the channel, etc.  |
-| `pool_strategy` | strategy like `avg` |
+| `model_name`  | includes `MobileNetV2`, `DenseNet121`, `ResNet50`, `VGG16`, `Xception`, `InceptionV3` |
+| `channel_axis`| axis of the color channel  |
+| `pool_strategy` | strategy of pooling operation |
 
 The model is pre-trained on [MobileNetV2] data
 The pretrained default path is the result of downloading the models in `download.sh`
