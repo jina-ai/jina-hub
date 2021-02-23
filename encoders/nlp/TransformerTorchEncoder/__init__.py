@@ -41,8 +41,9 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     :param kwargs: Additional keyword arguments
 
     ..note::
-        While acceleration methods can significantly speed up the encoding, they result in loss of precision.
-        Make sure that the tradeoff is worthwhile for your use case.
+        While acceleration methods can significantly speed up the encoding,
+        they result in loss of precision. Make sure that the tradeoff is
+        worthwhile for your use case.
     """
 
     def __init__(
@@ -56,7 +57,6 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             *args,
             **kwargs,
     ):
-        """Set Constructor"""
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.base_tokenizer_model = base_tokenizer_model or pretrained_model_name_or_path
@@ -87,6 +87,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             raise NotImplementedError
 
     def post_init(self):
+        """Load Torch model"""
         import torch
         from transformers import AutoModel, AutoTokenizer
 
@@ -102,6 +103,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             )
 
     def amp_accelerate(self):
+        """Check acceleration method """
         import torch
         from contextlib import nullcontext
 

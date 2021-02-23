@@ -8,7 +8,8 @@ class FarmTextEncoder(BaseTorchEncoder):
     Encode an array of string in size `B` into an ndarray in size `B x D`
 
     The ndarray potentially is BatchSize x (Channel x Height x Width)
-            into an ndarray in size `B x D`. Where `D` is the Dimension.
+    into an ndarray in size `B x D`. Where `B` is the batch size and
+    `D` is the Dimension.
 
     FARM-based text encoder: (Framework for Adapting Representation Models)
     https://github.com/deepset-ai/FARM
@@ -32,7 +33,6 @@ class FarmTextEncoder(BaseTorchEncoder):
                  extraction_layer: int = -1,
                  *args,
                  **kwargs):
-        """Set Constructor."""
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.num_processes = num_processes
@@ -40,6 +40,7 @@ class FarmTextEncoder(BaseTorchEncoder):
         self.extraction_layer = extraction_layer
 
     def post_init(self):
+        """Load FARM-based text model"""
         from farm.infer import Inferencer
         self.model = Inferencer.load(model_name_or_path=self.pretrained_model_name_or_path, task_type='embeddings',
                                      num_processes=self.num_processes)

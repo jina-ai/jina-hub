@@ -35,12 +35,12 @@ class VSETextEncoder(BaseTorchEncoder):
 
     def __init__(self, path: str = 'runs/f30k_vse++_vggfull/model_best.pth.tar',
                  vocab_path: str = 'vocab/f30k_vocab.pkl', *args, **kwargs):
-        """Set VSETextEncoder Constructor"""
         super().__init__(*args, **kwargs)
         self.path = path
         self.vocab_path = vocab_path
 
     def post_init(self):
+        """Load model"""
         import nltk
         import torch
         from .model import VSE

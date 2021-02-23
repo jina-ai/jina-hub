@@ -93,6 +93,7 @@ class UniversalSentenceEncoder(BaseTFEncoder):
         self.model_url = model_url
 
     def post_init(self):
+        """Load Sentence encoder model"""
         self.to_device()
 
         if self.model_url == MODEL_ENCODER_CMLM:
