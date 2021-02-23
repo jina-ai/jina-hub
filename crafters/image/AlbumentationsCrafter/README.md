@@ -8,14 +8,9 @@ This crafter provides access to any of the transforms from the [Albumentations](
 
 Here's a simple example of how to use this crafter. We'll be transforming this image:
 
-<center>
-
 | `rubi.png` |
 |:--:|
-| ![alt text](tests/rubi.png "rubi")
-|
-
-</center>
+| ![alt text](tests/rubi.png "rubi") |
 
 We first read in the image
 
@@ -35,14 +30,9 @@ flipped_img = crafter.craft('rubi.png')
 
 The result should look like this
 
-<center>
-
 | `rubi_flip.png` |
 |:--:|
-| ![alt text](tests/rubi_flip.png "rubi")
-|
-
-</center>
+| ![alt text](tests/rubi_flip.png "rubi") |
 
 Now let's do something more complicated - crop the center of the image. We are aiming for the equivalent of `A.CenterCrop(height=100, width=100)`. We can achieve this with
 
@@ -52,14 +42,9 @@ crafter = AlbumentationsCrafter([transform])
 center_crop_img = crafter.craft('rubi.png')
 ```
 
-<center>
-
 | `rubi_center_crop.png` |
 |:--:|
-| ![alt text](tests/rubi_center_crop.png "rubi")
-|
-
-</center>
+| ![alt text](tests/rubi_center_crop.png "rubi") |
 
 Here's a good time to show how the yaml definition of such a transformer would look like:
 
