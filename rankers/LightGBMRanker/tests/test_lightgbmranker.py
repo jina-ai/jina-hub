@@ -12,21 +12,22 @@ match_features = ['tags__document_length', 'tags__document_language', 'tags__doc
 def _pretrained_model(model_path):
     from sklearn.datasets import load_svmlight_file
     import lightgbm as lgb
-    train_group = np.repeat(5, 5)  # 100 matches per query (5 groups of 100 entries)
 
     X_train, y_train = load_svmlight_file(os.path.join(cur_dir, 'training_dataset.train'))
+    X_train = X_train.todense()
+    # randomize pagerank feature so that there is something to be trained
+    X_train[:, -1] = np.random.randint(2, size=(25, 1))
+
     q_train = np.loadtxt(os.path.join(cur_dir, 'training_dataset.train.query'))
-    lgb_train = lgb.Dataset(X_train, y_train, group=q_train, feature_name=query_features + match_features)
+    lgb_train = lgb.Dataset(np.asarray(X_train), y_train, group=q_train, free_raw_data=False,
+                            feature_name=query_features + match_features,
+                            params={'min_data_in_bin': 1, 'verbose': 1, 'max_bin': 2, 'min_data_in_leaf': 1})
 
-    X_validation, y_validation = load_svmlight_file(os.path.join(cur_dir, 'training_dataset.train'))
-    q_validation = np.loadtxt(os.path.join(cur_dir, 'training_dataset.train.query'))
-    lgb_validation = lgb.Dataset(X_validation, y_validation, group=q_validation,
-                                 feature_name=query_features + match_features)
-
-    param = {'num_leaves': 31, 'objective': 'lambdarank', 'metric': 'ndcg'}
-    booster = lgb.train(param, lgb_train, 2, valid_sets=[lgb_validation])
+    param = {'num_leaves': 2, 'objective': 'lambdarank', 'metric': 'ndcg', 'min_data_in_bin': 1, 'max_bin': 2,
+             'num_trees': 1,
+             'learning_rate': 0.05, 'min_data_in_leaf': 1}
+    booster = lgb.train(param, lgb_train, 2, valid_sets=[lgb_train])
     booster.save_model(model_path)
-
     return model_path
 
 
@@ -69,15 +70,20 @@ def test_lightgbmranker(pretrained_model):
             {
                 'tags__document_length': 0.0,
                 'tags__document_language': 0.0,
-                'tags__document_pagerank': 2.0,
+                'tags__document_pagerank': 1.0,
             },
             {
                 'tags__document_length': 0.0,
                 'tags__document_language': 0.0,
-                'tags__document_pagerank': 5.0,
+                'tags__document_pagerank': 0.0,
             }
         ],
         [
+            {
+                'tags__document_length': 0.0,
+                'tags__document_language': 0.0,
+                'tags__document_pagerank': 1.0,
+            },
             {
                 'tags__document_length': 0.0,
                 'tags__document_language': 0.0,
@@ -86,21 +92,16 @@ def test_lightgbmranker(pretrained_model):
             {
                 'tags__document_length': 0.0,
                 'tags__document_language': 0.0,
-                'tags__document_pagerank': 2.0,
-            },
-            {
-                'tags__document_length': 0.0,
-                'tags__document_language': 0.0,
-                'tags__document_pagerank': 5.0,
+                'tags__document_pagerank': 1.0,
             }
         ]
     ]
     scores = ranker.score(query_meta=query_meta, old_match_scores=None, match_meta=match_meta)
-    # it does not come sorted
+    # it does not come sorted, we know that the ones with the same `tags_document_pagerank` have the same score
+    # because the model did only split based on that feature
     assert scores.shape == (6,)
-    assert scores[0] == 0.0
-    assert scores[1] == 0.0
-    assert scores[2] == 0.0
-    assert scores[3] == 0.0
-    assert scores[4] == 0.0
-    assert scores[5] == 0.0
+    assert scores[0] == scores[2]
+    assert scores[0] == scores[4]
+    assert scores[1] == scores[3]
+    assert scores[1] == scores[5]
+    assert scores[0] != scores[1]
