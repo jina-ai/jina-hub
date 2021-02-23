@@ -46,32 +46,61 @@ def pretrained_model(tmpdir):
 def test_lightgbmranker(pretrained_model):
     from .. import LightGBMRanker
 
-    ranker = LightGBMRanker(model_path=pretrained_model, query_feature_names=query_features, match_feature_names=match_features)
+    ranker = LightGBMRanker(model_path=pretrained_model, query_feature_names=query_features,
+                            match_feature_names=match_features)
 
-    query_meta = {
-        'tags__query_length': 1.0,
-        'tags__query_language': 0.0,
-    }
-    match_meta = [
+    query_meta = [
         {
-            'tags__document_length': 0.0,
-            'tags__document_language': 0.0,
-            'tags__document_pagerank': 0.0,
+            'tags__query_length': 1.0,
+            'tags__query_language': 0.0,
         },
         {
-            'tags__document_length': 0.0,
-            'tags__document_language': 0.0,
-            'tags__document_pagerank': 2.0,
-        },
-        {
-            'tags__document_length': 0.0,
-            'tags__document_language': 0.0,
-            'tags__document_pagerank': 5.0,
+            'tags__query_length': 1.0,
+            'tags__query_language': 0.0,
         }
+    ]
+    match_meta = [
+        [
+            {
+                'tags__document_length': 0.0,
+                'tags__document_language': 0.0,
+                'tags__document_pagerank': 0.0,
+            },
+            {
+                'tags__document_length': 0.0,
+                'tags__document_language': 0.0,
+                'tags__document_pagerank': 2.0,
+            },
+            {
+                'tags__document_length': 0.0,
+                'tags__document_language': 0.0,
+                'tags__document_pagerank': 5.0,
+            }
+        ],
+        [
+            {
+                'tags__document_length': 0.0,
+                'tags__document_language': 0.0,
+                'tags__document_pagerank': 0.0,
+            },
+            {
+                'tags__document_length': 0.0,
+                'tags__document_language': 0.0,
+                'tags__document_pagerank': 2.0,
+            },
+            {
+                'tags__document_length': 0.0,
+                'tags__document_language': 0.0,
+                'tags__document_pagerank': 5.0,
+            }
+        ]
     ]
     scores = ranker.score(query_meta=query_meta, old_match_scores=None, match_meta=match_meta)
     # it does not come sorted
-    assert scores.shape == (3,)
+    assert scores.shape == (6,)
     assert scores[0] == 0.0
     assert scores[1] == 0.0
     assert scores[2] == 0.0
+    assert scores[3] == 0.0
+    assert scores[4] == 0.0
+    assert scores[5] == 0.0
