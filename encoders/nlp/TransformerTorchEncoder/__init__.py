@@ -87,7 +87,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             raise NotImplementedError
 
     def post_init(self):
-        """Load Torch model"""
+        """Load the transformer model and encoder"""
         import torch
         from transformers import AutoModel, AutoTokenizer
 
@@ -116,9 +116,8 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode an array of string in size `B` into an ndarray in size `B x D`
-
-        The ndarray potentially is BatchSize x (Channel x Height x Width)
+        Encode an array of string in size `B` into an ndarray in size `B x D`,
+        where `B` is the batch size and `D` is the dimensionality of the encoding.
 
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D` with the embeddings
