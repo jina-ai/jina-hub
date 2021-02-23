@@ -1,13 +1,12 @@
 manifest_version: 1
 name: MongoDBIndexer
 kind: indexer
-description: |
-  MongoDB based KV Indexer
+description: An indexer wrapper around the MongoDb database system
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.5
+version: 0.0.6
 license: apache-2.0
-keywords: [keyvalue, database, mongo, indexer]
+keywords: [keyvalue, database, mongo, indexer, nosql]
 type: pod

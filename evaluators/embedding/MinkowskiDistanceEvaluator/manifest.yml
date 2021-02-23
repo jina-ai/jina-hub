@@ -2,11 +2,11 @@ manifest_version: 1
 name: MinkowskiDistanceEvaluator
 kind: evaluator
 type: pod
-description: evaluates Minkowski distance with parameter order
+description: Evaluates Minkowski distance with parameter order
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.3
+version: 0.0.4
 license: apache-2.0
 keywords: [Minkowski, evaluator, embedding, information retrieval evaluation]

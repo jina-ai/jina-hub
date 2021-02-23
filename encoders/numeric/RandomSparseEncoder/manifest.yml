@@ -1,13 +1,12 @@
 manifest_version: 1
 name: RandomSparseEncoder
 kind: encoder
-description: RandomSparseEncoder encodes data from an ndarray in size `B x T` into
-  an ndarray in size `B x D`
+description: RandomSparseEncoder reduce dimensionality using sparse random projection
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.6
+version: 0.0.7
 license: apache-2.0
-keywords: [numeric, sklearn]
+keywords: [numeric, sklearn, encoder]
 type: pod

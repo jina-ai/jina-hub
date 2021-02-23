@@ -36,7 +36,6 @@ class LaserEncoder(BaseTorchEncoder):
             *args,
             **kwargs,
     ):
-        """Set Constructor."""
         super().__init__(*args, **kwargs)
         from laserembeddings import Laser
         self._path_to_bpe_codes = path_to_bpe_codes or Laser.DEFAULT_BPE_CODES_FILE
@@ -45,6 +44,7 @@ class LaserEncoder(BaseTorchEncoder):
         self.language = language.lower()
 
     def post_init(self):
+        """Load LaserEncoder model"""
         from laserembeddings import Laser
         self.model = Laser(
             bpe_codes=self._path_to_bpe_codes,

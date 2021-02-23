@@ -28,6 +28,7 @@ class OneHotTextEncoder(BaseTextEncoder):
         self.embeddings = None
 
     def post_init(self):
+        """Set embeddings"""
         self.embeddings = np.eye(self.dim) * self.on_value + \
                           (np.ones((self.dim, self.dim)) - np.eye(self.dim)) * self.off_value
 

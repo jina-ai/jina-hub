@@ -4,11 +4,17 @@ from jina.executors.evaluators.embedding import BaseEmbeddingEvaluator, expand_v
 
 
 class MinkowskiDistanceEvaluator(BaseEmbeddingEvaluator):
-    """A :class:`MinkowskiDistanceEvaluator` evaluates the distance between actual and desired 
-    embeddings computing the Minkowski distance ( p>0 ) between them, which can be considered 
-    as a generalization of both the Euclidean distance and the Manhattan distance.
+    """:class:`MinkowskiDistanceEvaluator` evaluates the distance between
+    actual and desired embeddings computing the Minkowski distance ( p>0 )
+    between them, which can be considered as a generalization of both the
+    Euclidean distance and the Manhattan distance.
 
         D(x, y) = ( sum_i |x_i - y_i|^p )^(1/p)
+
+    :param order: Desired order of Minkowski metric.
+        It must be at least 1
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
     def __init__(self, order=1, *args, **kwargs):
         super().__init__(self, *args, **kwargs)
@@ -16,9 +22,10 @@ class MinkowskiDistanceEvaluator(BaseEmbeddingEvaluator):
 
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
-        :param actual: the embedding of the document (resulting from an Encoder)
+        :param actual: the embedding of the document
+            (resulting from an Encoder)
         :param desired: the expected embedding of the document
-        :return the evaluation metric value for the request document
+        :return: the minkowski distance
         """
         actual = expand_vector(actual)
         desired = expand_vector(desired)
