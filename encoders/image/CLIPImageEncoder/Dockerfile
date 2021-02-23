@@ -8,11 +8,9 @@ COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-RUN pip install -r requirements.txt
+RUN pip install git+https://github.com/openai/CLIP.git
 
 # for testing the image
 RUN pip install pytest && pytest -s -vv
-# import clip before
-#RUN python -c 'import clip: clip.load('ViT-B/32')'
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
