@@ -15,7 +15,8 @@ class SpacySentencizer(BaseSegmenter):
         refer to https://spacy.io/api/sentencerecognizer.
 
     :param lang: pre-trained spaCy language pipeline
-    :param use_default_segmenter: boolean to determine which segmentation algorithm to use,
+    :param use_default_segmenter: if True will use dependency based sentence segmentation,
+        otherwise ml-based implementation will be chosen,
         by default False.
     :param args:  Additional positional arguments
     :param kwargs: Additional keyword arguments
@@ -67,7 +68,7 @@ class SpacySentencizer(BaseSegmenter):
                 self.spacy_model.enable_pipe('parser')
             except ValueError:
                 self.logger.error(
-                    f'Parser for language {self.lang} can not be found. The default sentence segmenter requires' 
+                    f'Parser for language {self.lang} can not be found. The default sentence segmenter requires'
                     'DependencyParser to be trained. Please refer to https://spacy.io/api/sentencizer for more clarity.'
                 )
                 raise
@@ -76,7 +77,7 @@ class SpacySentencizer(BaseSegmenter):
                 self.spacy_model.enable_pipe('senter')
             except ValueError:
                 self.logger.error(
-                    f'SentenceRecognizer is not available for language {self.lang}. Please refer to' 
+                    f'SentenceRecognizer is not available for language {self.lang}. Please refer to'
                     'https://github.com/explosion/spaCy/issues/6615 for training your own recognizer.'
                 )
                 raise
