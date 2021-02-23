@@ -11,13 +11,12 @@ class BiMatchRanker(Chunk2DocRanker):
 
     .. warning:: Here we suppose that the smaller chunk score means the more similar.
     """
-    query_required_keys = {'length'}
-    match_required_keys = {'length'}
+    required_keys = {'length'}
     D_MISS = 2000  # cost of a non-match chunk, used for normalization
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        s1 = self._directional_score(match_idx, match_chunk_meta, col=self.COL_DOC_CHUNK_ID)
-        s2 = self._directional_score(match_idx, query_chunk_meta, col=self.COL_QUERY_CHUNK_ID)
+        s1 = self._directional_score(match_idx, match_chunk_meta, col=self.COL_MATCH_ID)
+        s2 = self._directional_score(match_idx, query_chunk_meta, col=self.COL_DOC_CHUNK_ID)
         return self.get_doc_id(match_idx), (s1 + s2) / 2.
 
     def _directional_score(self, g, chunk_meta, col):

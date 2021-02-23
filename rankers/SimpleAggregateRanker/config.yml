@@ -1,6 +1,6 @@
 !SimpleAggregateRanker
 with:
-  aggregate_function: 'min'
+  aggregate_function: min
   inverse_score: true
 metas:
   py_modules:
