@@ -4,15 +4,17 @@ from jina.executors.evaluators.embedding import BaseEmbeddingEvaluator, expand_v
 
 
 class L1NormEvaluator(BaseEmbeddingEvaluator):
-    """A :class:`L1NormEvaluator` evaluates the distance between actual and desired embeddings computing
-    the L1 Norm between them
+    """
+    :class:`L1NormEvaluator` evaluates the distance between actual
+    and desired embeddings computing the L1 Norm between them
     """
 
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
-        :param actual: the embedding of the document (resulting from an Encoder)
+        :param actual: the embedding of the document
+            (resulting from an Encoder)
         :param desired: the expected embedding of the document
-        :return the evaluation metric value for the request document
+        :return: the evaluation metric value for the request document
         """
         actual = expand_vector(actual)
         desired = expand_vector(desired)
