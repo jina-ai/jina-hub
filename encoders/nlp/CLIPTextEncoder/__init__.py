@@ -11,11 +11,10 @@ from jina.executors.devices import TorchDevice
 
 class CLIPTextEncoder(BaseTorchEncoder):
     """
-    :class:`CLIPImageEncoder` encodes data from a `np.ndarray` (of strings) of shape `BatchSize` into
-    a `np.ndarray` of shape `Batchsize x EmbeddingDim`. 
+    Encodes data from a `np.ndarray` (of strings) of length `BatchSize` into
+    a `np.ndarray` of shape `Batchsize x EmbeddingDimension`. 
 
-    Internally, :class:`CLIPImageEncoder` wraps the `CLIP` model
-    https://github.com/openai/CLIP
+    Internally, :class:`CLIPImageEncoder` wraps the `CLIP` model from https://github.com/openai/CLIP
     """
     def __init__(self, model_name: str ='ViT-B/32',
                  *args, **kwargs):
@@ -29,7 +28,6 @@ class CLIPTextEncoder(BaseTorchEncoder):
         import clip
         model, _ = clip.load(self.model_name, self.device)
         self.model = model
-        #self.preprocess = preprocess
 
     @batching
     @as_ndarray
@@ -40,13 +38,8 @@ class CLIPTextEncoder(BaseTorchEncoder):
             input_torchtensor = input_torchtensor.cuda()
 
         with torch.no_grad():
-            #self.logger.warning(f'text data shape {data.shape}')
-            #self.logger.warning(f'text data encoded shape {self.model.encode_text(clip.tokenize(data))}')
             embedded_data = self.model.encode_text(input_torchtensor)
 
         embedded_data = embedded_data.numpy()
         return embedded_data
     
-
-
-

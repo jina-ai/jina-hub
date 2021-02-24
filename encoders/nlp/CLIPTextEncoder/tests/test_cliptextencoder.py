@@ -1,14 +1,11 @@
-
 import os
+
 import numpy as np
-import PIL
 import clip
-from PIL import Image
-import torch
+
 from .. import CLIPTextEncoder
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
 
 def print_array_info(x, x_varname):
     print('\n')
@@ -36,7 +33,7 @@ def test_clip_text_encoder():
 
     # Compare with ouptut 
     expected = np.load(os.path.join(cur_dir, 'expected.npy'))
-    np.testing.assert_almost_equal(embeddeding_np, expected)
+    np.testing.assert_almost_equal(embeddeding_np, expected, decimal=4)
 
 def test_clip_text_encoder_batch():
 
@@ -51,4 +48,4 @@ def test_clip_text_encoder_batch():
 
     # Compare with ouptut 
     expected_batch = np.load(os.path.join(cur_dir, 'expected_batch.npy'))
-    np.testing.assert_almost_equal(embeddeding_batch_np, expected_batch)
+    np.testing.assert_almost_equal(embeddeding_batch_np, expected_batch, decimal=4)
