@@ -12,10 +12,15 @@ Initialise RedisDBIndexer:
 
 Users can use Pod images in several ways:
 
+**NOTE**: 
+
+- `MODULE_VERSION` is the version of the RedisDBIndexer, in semver format. E.g. `0.0.6`.
+- `JINA_VERSION` is the version of the Jina core version with which the Docker image was built. E.g. `1.0.1` 
+
 - Run with Docker (`docker run`)
   
   ```bash
-    docker run jinahub/pod.indexer.redisdbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
+    docker run --network host docker://jinahub/pod.indexer.redisdbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
     ```
 
 - Flow API
@@ -23,13 +28,13 @@ Users can use Pod images in several ways:
   ```python
     from jina.flow import Flow
     f = (Flow()
-        .add(name='my-indexer', uses='docker://jinahub/pod.indexer.redisdbindexer:MODULE_VERSION-JINA_VERSION', port_in=55555, port_out=55556)
+        .add(name='my-indexer', uses='docker://jinahub/pod.indexer.redisdbindexer:MODULE_VERSION-JINA_VERSION')
     ```
 
 - Jina CLI
   
   ```bash
-  jina pod --uses jinahub/pod.indexer.redisdbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
+  jina pod --uses docker://jinahub/pod.indexer.redisdbindexer:MODULE_VERSION-JINA_VERSION
   ```
 
 - Conventional local usage with `uses` argument
@@ -44,4 +49,25 @@ Users can use Pod images in several ways:
 
   ```bash
   docker pull jinahub/pod.indexer.redisdbindexer:MODULE_VERSION-JINA_VERSION
+  ```
+  
+- YAML file
+
+  This is the only way to provide arguments to its parameters:
+  
+  ```yaml
+  pods:
+    - name: redis
+      uses: docker://jinahub/pod.indexer.redisdbindexer:MODULE_VERSION-JINA_VERSION 
+      uses_internal: redis.yml
+  ```
+  
+  and then in `redis.yml`:
+
+  ```yaml
+  !RedisDBIndexer
+  with:
+    hostname: yourdomain.com
+    port: 6379
+    db: 0
   ```
