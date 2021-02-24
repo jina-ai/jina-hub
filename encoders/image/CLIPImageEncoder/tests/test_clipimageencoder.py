@@ -1,4 +1,3 @@
-
 import os
 
 import numpy as np
@@ -18,7 +17,6 @@ def print_array_info(x, x_varname):
     print(f'len({x_varname})={len(x)}')
     print(f'{x_varname}.shape={x.shape}')
 
-
 def test_clip_available_models():
 
     models = ['ViT-B/32', 'RN50']
@@ -29,7 +27,6 @@ def test_clip_available_models():
 def test_inexistant_model():
     with pytest.raises(AssertionError):
        encoder = CLIPImageEncoder(model_name='model_name_inexistant')
-
 
 def test_clip_image_encoder():
 
@@ -70,5 +67,3 @@ def test_clip_image_encoder_batch():
     # Compare with ouptut 
     expected = np.load(os.path.join(cur_dir, 'expected_batch.npy'))
     np.testing.assert_almost_equal(embeddeding_batch_np, expected, decimal=3)
-
-

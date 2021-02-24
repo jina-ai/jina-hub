@@ -10,14 +10,10 @@ from jina.executors.devices import TorchDevice
 
 class CLIPImageEncoder(BaseTorchEncoder):
     """
-    Encode data from a `np.ndarray` of shape `BatchSize x (Channel x Height x Width)` into
-    a `np.ndarray` of shape `Batchsize x EmbeddingDim`.
+    Encodes data from a `np.ndarray` of shape `BatchSize x (Channel x Height x Width)` into
+    a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
 
-    Internally, :class:`CLIPImageEncoder` wraps the `CLIP` model
-    https://github.com/openai/CLIP
-
-    :param model_name: the name of the model. Supported models include ``ViT-B/32`` and ``RN50``.
- 
+    Internally, :class:`CLIPImageEncoder` wraps the `CLIP` modeL from https://github.com/openai/CLIP
     """
     def __init__(self, model_name: str ='ViT-B/32',
                  *args, **kwargs):
@@ -25,6 +21,9 @@ class CLIPImageEncoder(BaseTorchEncoder):
         self.model_name = model_name
 
     def post_init(self):
+        """
+        :param model_name: the name of the model. Supported models include ``ViT-B/32`` and ``RN50``.
+        """
         import clip
 
         assert self.model_name in clip.available_models(),\
@@ -32,7 +31,6 @@ class CLIPImageEncoder(BaseTorchEncoder):
 
         model, _ = clip.load(self.model_name, self.device)
         self.model = model
-        #self.preprocess = preprocess
 
     @batching
     @as_ndarray
@@ -43,11 +41,8 @@ class CLIPImageEncoder(BaseTorchEncoder):
             input_torchtensor = input_torchtensor.cuda()
 
         with torch.no_grad():
-            #self.logger.warning(f'data shape {data.shape}')
-            #self.logger.warning(f'data encoded shape {self.model.encode_image(input_torchtensor)}')
             embedded_data = self.model.encode_image(input_torchtensor)   
 
         embedded_data = embedded_data.numpy()
         return embedded_data
     
-
