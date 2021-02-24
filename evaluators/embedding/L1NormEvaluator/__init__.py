@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import numpy as np
 
 from jina.executors.evaluators.embedding import BaseEmbeddingEvaluator, expand_vector
@@ -7,15 +10,16 @@ class L1NormEvaluator(BaseEmbeddingEvaluator):
     """
     :class:`L1NormEvaluator` evaluates the distance between actual
     and desired embeddings computing the L1 Norm between them
+
+    :param actual: the embedding of the document
+        (resulting from an Encoder)
+    :param desired: the expected embedding of the document
+    :param args: additional positional arguments.
+    :param kwargs: additional positional arguments.
+    :return: the evaluation metric value for the request document
     """
 
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
-        """"
-        :param actual: the embedding of the document
-            (resulting from an Encoder)
-        :param desired: the expected embedding of the document
-        :return: the evaluation metric value for the request document
-        """
         actual = expand_vector(actual)
         desired = expand_vector(desired)
         return _l1norm(actual, desired)
