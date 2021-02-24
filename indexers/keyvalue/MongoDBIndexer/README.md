@@ -18,6 +18,24 @@ Users can use Pod images in several ways:
 - `MODULE_VERSION` is the version of the MongoDBIndexer, in semver format. E.g. `0.0.6`.
 - `JINA_VERSION` is the version of the Jina core version with which the Docker image was built. E.g. `1.0.1` 
 
+- YAML file
+  
+  This is the only way to provide arguments to its parameters:
+  
+  ```yaml
+  pods:
+    - name: mongodb
+      uses: docker://jinahub/pod.indexer.mongodbindexer:MODULE_VERSION-JINA_VERSION 
+      uses_internal: mongodb.yml
+  ```
+  
+  and then in `mongodb.yml`:
+  ```yaml
+  !MongoDBIndexer
+  with:
+    hostname: host.com
+    # key-value arguments go here 
+  ```
 
 - Run with Docker (`docker run`)
   
