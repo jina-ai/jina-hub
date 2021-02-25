@@ -9,11 +9,14 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 from jina.executors.devices import TorchDevice
 
 class CLIPImageEncoder(BaseTorchEncoder):
-    """
-    Encodes data from a `np.ndarray` of shape `BatchSize x (Channel x Height x Width)` into
+    """Encode data from a `np.ndarray` of shape `BatchSize x (Channel x Height x Width)` into
     a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
 
     Internally, :class:`CLIPImageEncoder` wraps the `CLIP` modeL from https://github.com/openai/CLIP
+
+    :param model_name: The name of the model. Supported models include ``ViT-B/32`` and ``RN50``.
+    :param args: Additional positional arguments.
+    :param kwargs: Additional positional arguments.
     """
     def __init__(self, model_name: str ='ViT-B/32',
                  *args, **kwargs):
@@ -21,9 +24,7 @@ class CLIPImageEncoder(BaseTorchEncoder):
         self.model_name = model_name
 
     def post_init(self):
-        """
-        :param model_name: the name of the model. Supported models include ``ViT-B/32`` and ``RN50``.
-        """
+        """Load a model from clip specified in `model_name`."""
         import clip
 
         assert self.model_name in clip.available_models(),\
@@ -35,7 +36,13 @@ class CLIPImageEncoder(BaseTorchEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """Transform a `np.ndarray` of shape `BatchSize x (Channel x Height x Width)` 
+        into a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
 
+        :param data: A `np.ndarray` of strings.
+        :param args: Additional positional arguments.
+        :param kwargs: Additional positional arguments.
+        """
         input_torchtensor = torch.from_numpy(data.astype('float32'))
         if self.on_gpu:
             input_torchtensor = input_torchtensor.cuda()
