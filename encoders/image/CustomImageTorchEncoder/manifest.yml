@@ -10,4 +10,4 @@ vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.11
 license: apache-2.0
-keywords: [CNN, Computer Vision]
+keywords: [CNN, Computer Vision, image, encoder, torch]
