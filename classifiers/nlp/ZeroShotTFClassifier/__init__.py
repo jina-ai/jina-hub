@@ -80,6 +80,8 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
                 "There are duplicate value in the target_label argument."
             )
 
+    @batching
+    @as_ndarray
     def predict(self,
                 data: "np.ndarray",
                 *args,
@@ -129,8 +131,6 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
 
         return _cosine(_ext_A(_norm(actual)), _ext_B(_norm(desired)))
 
-    @batching
-    @as_ndarray
     def _encode(self, data: "np.ndarray", *args, **kwargs) -> "np.ndarray":
 
         import tensorflow as tf
