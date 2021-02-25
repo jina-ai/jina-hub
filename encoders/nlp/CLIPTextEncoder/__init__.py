@@ -15,9 +15,9 @@ class CLIPTextEncoder(BaseTorchEncoder):
 
     Internally, :class:`CLIPImageEncoder` wraps the `CLIP` model from `https://github.com/openai/CLIP`.
 
-    :param model_name: the name of the model. Supported models include ``ViT-B/32`` and ``RN50``.
-    :param args: additional positional arguments.
-    :param kwargs: additional positional arguments.
+    :param model_name: The name of the model. Supported models include ``ViT-B/32`` and ``RN50``.
+    :param args: Additional positional arguments.
+    :param kwargs: Additional positional arguments.
     """
     def __init__(self, model_name: str ='ViT-B/32',
                  *args, **kwargs):
@@ -35,6 +35,10 @@ class CLIPTextEncoder(BaseTorchEncoder):
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """Transform a `np.ndarray` of strings of length `BatchSize` into
         a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
+
+        :param data: A `np.ndarray` of strings.
+        :param args: Additional positional arguments.
+        :param kwargs: Additional positional arguments.
         """
         input_torchtensor = clip.tokenize(data)
         if self.on_gpu:
