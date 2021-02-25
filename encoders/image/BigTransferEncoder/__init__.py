@@ -53,12 +53,12 @@ class BigTransferEncoder(BaseTFEncoder):
                  model_path: Optional[str] = '/workspace/pretrained',
                  channel_axis: int = 1,
                  *args, **kwargs):
-        """ Constructor """
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
         self.model_path = model_path
 
     def post_init(self):
+        """Load model. Raise exception if model doesn't exist"""
         super().post_init()
         if self.model_path and os.path.exists(self.model_path):
             self.to_device()
@@ -73,6 +73,13 @@ class BigTransferEncoder(BaseTFEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+        Encode data into a ndarray of `B x D`.
+        Where `B` is the batch size and `D` is the Dimension.
+
+        :param data: an array in size `B`
+        :return: an ndarray in size `B x D`.
+        """
         if self.channel_axis != -1:
             data = np.moveaxis(data, self.channel_axis, -1)
         _output = self.model(self._get_input(data.astype(np.float32)))
