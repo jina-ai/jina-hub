@@ -4,7 +4,7 @@ kind: classifier
 type: pod
 description: :class:`ZeroShotTFClassifier` wraps tensorflow transformers from huggingface,
   and performs zero shot learning classification for nlp data.
-author: Jina AI Dev-Team (dev-team@jina.ai)
+author: julianpetrich
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
