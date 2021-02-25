@@ -35,12 +35,12 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
                  input_sample_rate: int = 22050,
                  *args,
                  **kwargs):
-        """Set Constructor"""
         super().__init__(*args, **kwargs)
         self.model_path = model_path
         self.input_sample_rate = input_sample_rate
 
     def post_init(self):
+        """Load Wav2Vec model"""
         super().post_init()
         if self.model_path and os.path.exists(self.model_path):
             import torch
@@ -84,10 +84,12 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
         return embeds
 
     def array2tensor(self, array):
+        """Transform array into tensor"""
         tensor = self._tensor_func(array)
         return tensor.cuda() if self.on_gpu else tensor
 
     def tensor2array(self, tensor):
+        """Transform tensor into array"""
         return tensor.cuda().numpy() if self.on_gpu else tensor.numpy()
 
     @cached_property
@@ -95,5 +97,6 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
         return self.get_session()
 
     def get_session(self):
+        """Get no_grad from torch"""
         from torch import no_grad
         return no_grad
