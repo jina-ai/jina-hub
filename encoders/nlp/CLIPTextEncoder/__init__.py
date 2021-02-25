@@ -10,11 +10,10 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 from jina.executors.devices import TorchDevice
 
 class CLIPTextEncoder(BaseTorchEncoder):
-    """
-    Encodes data from a `np.ndarray` (of strings) of length `BatchSize` into
+    """Encode data from a `np.ndarray` (of strings) of length `BatchSize` into
     a `np.ndarray` of shape `Batchsize x EmbeddingDimension`. 
 
-    Internally, :class:`CLIPImageEncoder` wraps the `CLIP` model from https://github.com/openai/CLIP
+    Internally, :class:`CLIPImageEncoder` wraps the `CLIP` model from `https://github.com/openai/CLIP`.
 
     :param model_name: the name of the model. Supported models include ``ViT-B/32`` and ``RN50``.
     :param args: additional positional arguments.
@@ -26,9 +25,7 @@ class CLIPTextEncoder(BaseTorchEncoder):
         self.model_name = model_name
 
     def post_init(self):
-        """
-        Loads a model from clip specified in `model_name`. 
-        """
+        """Load a model from clip specified in `model_name`. """
         import clip
         model, _ = clip.load(self.model_name, self.device)
         self.model = model
@@ -36,8 +33,7 @@ class CLIPTextEncoder(BaseTorchEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        """
-        Transforms a `np.ndarray` of strings of length `BatchSize` into
+        """Transform a `np.ndarray` of strings of length `BatchSize` into
         a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
         """
         input_torchtensor = clip.tokenize(data)
