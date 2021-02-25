@@ -39,6 +39,7 @@ class CLIPTextEncoder(BaseTorchEncoder):
         :param data: A `np.ndarray` of strings.
         :param args: Additional positional arguments.
         :param kwargs: Additional positional arguments.
+        :return: A `BachSize x EmbeddingSize` numpy `ndarray`.
         """
         input_torchtensor = clip.tokenize(data)
         if self.on_gpu:
