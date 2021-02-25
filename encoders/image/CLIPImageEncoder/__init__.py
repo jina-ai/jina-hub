@@ -9,8 +9,8 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 from jina.executors.devices import TorchDevice
 
 class CLIPImageEncoder(BaseTorchEncoder):
-    """Encode data from a `np.ndarray` of shape `BatchSize x (Channel x Height x Width)` into
-    a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
+    """Encode data from a numpy `ndarray` of shape `BatchSize x (Channel x Height x Width)` into
+    a numpy `ndarray` of shape `Batchsize x EmbeddingDimension`.
 
     Internally, :class:`CLIPImageEncoder` wraps the `CLIP` modeL from https://github.com/openai/CLIP
 
@@ -36,12 +36,13 @@ class CLIPImageEncoder(BaseTorchEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        """Transform a `np.ndarray` of shape `BatchSize x (Channel x Height x Width)` 
-        into a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
+        """Transform a numpy `ndarray` of shape `BatchSize x (Channel x Height x Width)` 
+        into a numpy `ndarray` of shape `Batchsize x EmbeddingDimension`.
 
-        :param data: A `np.ndarray` of strings.
+        :param data: A numpy `ndarray` of strings.
         :param args: Additional positional arguments.
         :param kwargs: Additional positional arguments.
+        :return: A `BatchSize x EmbeddingDimension` numpy array.
         """
         input_torchtensor = torch.from_numpy(data.astype('float32'))
         if self.on_gpu:
