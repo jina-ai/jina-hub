@@ -2,12 +2,12 @@ manifest_version: 1
 name: CustomKerasImageEncoder
 kind: encoder
 description: |
-  `CustomKerasImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a ndarray of `B x D`.Internally, :class:`CustomKerasImageEncoder` wraps any custom tf.keras model not part of models from `tensorflow.keras.applications`. https://www.tensorflow.org/api_docs/python/tf/keras/applications
+  `CustomKerasImageEncoder` encodes data from a  `BatchSize x (Channel x Height x Width)` dimensional `ndarray` of into a `ndarray` of `BatchSize x EmbeddingDimension`. Internally, :class:`CustomKerasImageEncoder` wraps any custom tf.keras model not part of models from `tensorflow.keras.applications`. https://www.tensorflow.org/api_docs/python/tf/keras/applications
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.8
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/image/CustomKerasImageEncoder/README.md
+version: 0.0.9
 license: apache-2.0
-keywords: [Tensorflow, Computer Vision]
+keywords: [Tensorflow, Computer Vision, image]
 type: pod
