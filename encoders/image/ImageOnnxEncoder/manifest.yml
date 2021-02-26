@@ -7,7 +7,7 @@ author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.8
+version: 0.0.9
 license: apache-2.0
-keywords: [Computer Vision]
+keywords: [Computer Vision, image, computer vision, Onnx, encoder]
 type: pod
