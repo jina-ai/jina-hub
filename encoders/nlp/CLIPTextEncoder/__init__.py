@@ -48,6 +48,6 @@ class CLIPTextEncoder(BaseTorchEncoder):
         with torch.no_grad():
             embedded_data = self.model.encode_text(input_torchtensor)
 
-        embedded_data = embedded_data.numpy()
+        embedded_data = embedded_data.cpu().numpy()
         return embedded_data
     
