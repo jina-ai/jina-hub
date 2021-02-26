@@ -8,8 +8,6 @@
 
 - Output shape: `BatchSize x EmbeddingDimension`
 
-    
-
 ## Usage
 
 Users can use Pod images in several ways:
@@ -46,5 +44,3 @@ jina pod --uses custom_folder/customimagetorchencoder.yml --port-in 55555 --port
 ```
  docker pull jinahub/pod.encoder.customimagetorchencoder:0.0.11-1.0.4
 ```
-
-## 
