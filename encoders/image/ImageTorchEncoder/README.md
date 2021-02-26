@@ -27,19 +27,19 @@ Users can use Pod images in several ways:
 
 - Run with Docker (`docker run`)
   - ```bash
-    docker run jinahub/pod.encoder.imagetorchencoder:0.0.8-0.9.28 --port-in 55555 --port-out 55556
+    docker run jinahub/pod.encoder.imagetorchencoder:0.0.8-1.0.4 --port-in 55555 --port-out 55556
     ```
 
 - Flow API
   - ```python
     from jina.flow import Flow
     f = (Flow()
-        .add(name='my-encoder', image='jinahub/pod.encoder.imagetorchencoder:0.0.8-0.9.28', port_in=55555, port_out=55556)
+        .add(name='my_encoder', uses='jinahub/pod.encoder.imagetorchencoder:0.0.8-1.0.4', port_in=55555, port_out=55556)
     ```
 
 - Jina CLI
   - ```bash
-    jina pod --uses jinahub/pod.encoder.imagetorchencoder:0.0.8-0.9.28 --port-in 55555 --port-out 55556
+    jina pod --uses docker://jinahub/pod.encoder.imagetorchencoder:0.0.8-1.0.4 --port-in 55555 --port-out 55556
     ```
 
 - Conventional local usage with `uses` argument
@@ -49,8 +49,8 @@ Users can use Pod images in several ways:
 
 - Docker command
 
-  - Specify the image name along with the version tag. The snippet below uses Jina version `0.9.20`
+  - Specify the image name along with the version tag. The snippet below uses Jina version `1.0.4`
 
   - ```bash
-    docker pull jinahub/pod.encoder.imagetorchencoder:0.0.8-0.9.28
+    docker pull jinahub/pod.encoder.imagetorchencoder:0.0.8-1.0.4
     ```
