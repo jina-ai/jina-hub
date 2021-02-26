@@ -9,10 +9,35 @@ from jina.executors.encoders.frameworks import BasePaddleEncoder
 
 class ImagePaddlehubEncoder(BasePaddleEncoder):
     """
-    :class:`ImagePaddlehubEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
-        ndarray of `B x D`.
+    :class:`ImagePaddlehubEncoder` encodes data from a ndarray,
+    potentially B x (Channel x Height x Width) into a ndarray of `B x D`.
+
     Internally, :class:`ImagePaddlehubEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
+
+    :param model_name: the name of the model. Supported models include
+        ``xception71_imagenet``, ``xception65_imagenet``, ``xception41_imagenet``,
+        ``vgg19_imagenet``, ``vgg16_imagenet``, ``vgg13_imagenet``, ``vgg11_imagenet``,
+        ``shufflenet_v2_imagenet``,``se_resnext50_32x4d_imagenet``,
+        ``se_resnext101_32x4d_imagenet``,  ``resnext50_vd_64x4d_imagenet``,
+        ``resnext50_vd_32x4d_imagenet``, `resnext50_64x4d_imagenet``,
+        ``resnext50_32x4d_imagenet``, ``resnext152_vd_64x4d_imagenet``,
+        ``resnext152_64x4d_imagenet``, ``resnext152_32x4d_imagenet``,
+        ``resnext101_vd_64x4d_imagenet``, ``resnext101_vd_32x4d_imagenet``,
+        ``resnext101_32x8d_wsl``, ``resnext101_32x48d_wsl``, ``resnext101_32x32d_wsl``,
+        ``resnext101_32x16d_wsl``, ``resnet_v2_50_imagenet``, ``resnet_v2_34_imagenet``,
+        ``resnet_v2_18_imagenet``, ``resnet_v2_152_imagenet``, ``resnet_v2_101_imagenet``,
+        ``mobilenet_v2_imagenet``, ``inception_v4_imagenet``, ``googlenet_imagenet``,
+        ``efficientnetb7_imagenet``, ``efficientnetb6_imagenet``, ``efficientnetb5_imagenet``,
+        ``efficientnetb4_imagenet``, ``efficientnetb3_imagenet``, ``efficientnetb2_imagenet``,
+        ``efficientnetb1_imagenet``, ``efficientnetb0_imagenet``, ``dpn68_imagenet``,
+        ``dpn131_imagenet``, ``dpn107_imagenet``, ``densenet264_imagenet``,
+        ``densenet201_imagenet``, ``densenet169_imagenet``, ``densenet161_imagenet``,
+        ``densenet121_imagenet``, ``darknet53_imagenet``, ``alexnet_imagenet``,
+    :param pool_strategy: the pooling strategy. Default is `None`.
+    :param channel_axis: The axis of the color channel, default is -3
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self,
@@ -21,33 +46,6 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
                  channel_axis: int = -3,
                  *args,
                  **kwargs):
-        """
-
-        :param model_name: the name of the model. Supported models include
-        ``xception71_imagenet``, ``xception65_imagenet``, ``xception41_imagenet``,
-        ``vgg19_imagenet``, ``vgg16_imagenet``, ``vgg13_imagenet``, ``vgg11_imagenet``,
-        ``shufflenet_v2_imagenet``,
-        ``se_resnext50_32x4d_imagenet``, ``se_resnext101_32x4d_imagenet``,
-            ``resnext50_vd_64x4d_imagenet``, ``resnext50_vd_32x4d_imagenet``,
-            ``resnext50_64x4d_imagenet``, ``resnext50_32x4d_imagenet``,
-            ``resnext152_vd_64x4d_imagenet``, ``resnext152_64x4d_imagenet``, ``resnext152_32x4d_imagenet``,
-            ``resnext101_vd_64x4d_imagenet``, ``resnext101_vd_32x4d_imagenet``,
-            ``resnext101_64x4d_imagenet``, ``resnext101_32x4d_imagenet``,
-            ``resnext101_32x8d_wsl``, ``resnext101_32x48d_wsl``, ``resnext101_32x32d_wsl``, ``resnext101_32x16d_wsl``,
-        ``resnet_v2_50_imagenet``, ``resnet_v2_34_imagenet``, ``resnet_v2_18_imagenet``, ``resnet_v2_152_imagenet``,
-            ``resnet_v2_101_imagenet``,
-        ``mobilenet_v2_imagenet``,
-        ``inception_v4_imagenet``,
-        ``googlenet_imagenet``,
-        ``efficientnetb7_imagenet``, ``efficientnetb6_imagenet``, ``efficientnetb5_imagenet``,
-            ``efficientnetb4_imagenet``, ``efficientnetb3_imagenet``, ``efficientnetb2_imagenet``,
-            ``efficientnetb1_imagenet``, ``efficientnetb0_imagenet``,
-        ``dpn68_imagenet``, ``dpn131_imagenet``, ``dpn107_imagenet``,
-        ``densenet264_imagenet``, ``densenet201_imagenet``, ``densenet169_imagenet``, ``densenet161_imagenet``,
-            ``densenet121_imagenet``, ``darknet53_imagenet``,
-        ``alexnet_imagenet``,
-
-        """
         super().__init__(*args, **kwargs)
         self.pool_strategy = pool_strategy
         self.channel_axis = channel_axis
@@ -58,6 +56,7 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
         self.outputs_name = None
 
     def post_init(self):
+        """Load model."""
         super().post_init()
         import paddlehub as hub
         module = hub.Module(name=self.model_name)
@@ -70,6 +69,7 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
         super().close()
 
     def get_inputs_and_outputs_name(self, input_dict, output_dict):
+        """Get inputs_name (image name) and outputs_name (feature map)."""
         self.inputs_name = input_dict['image'].name
         self.outputs_name = output_dict['feature_map'].name
         if self.model_name.startswith('vgg') or self.model_name.startswith('alexnet'):
@@ -79,9 +79,11 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
+        Encode data into a ndarray of `B x D`. `
+        B` is the batch size and `D` is the Dimension.
 
-        :param data: a `B x T x (Channel x Height x Width)` numpy ``ndarray``, `B` is the size of the batch, `T` is the
-            number of frames
+        :param data: a `B x T x (Channel x Height x Width)` numpy ``ndarray``,
+            `B` is the size of the batch, `T` is the number of frames
         :return: a `B x D` numpy ``ndarray``, `D` is the output dimension
         """
         if self.channel_axis != self._default_channel_axis:
@@ -97,5 +99,6 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
         return self.get_pooling(feature_map)
 
     def get_pooling(self, data: 'np.ndarray') -> 'np.ndarray':
+        """Get ndarray with selected pooling strategy"""
         _reduce_axis = tuple((i for i in range(len(data.shape)) if i > 1))
         return getattr(np, self.pool_strategy)(data, axis=_reduce_axis)
