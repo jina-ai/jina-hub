@@ -1,3 +1,14 @@
 # CustomImageTorchEncoder
 
-`CustomImageTorchEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a 
+**`CustomImageTorchEncoder`** encodes images using a custom encoder based on pytorch.
+
+`CustomImageTorchEncoder` encodes data from a `np.ndarray` containing images and returns a `np.ndarray` with embeddings.
+
+- Input shape: `BatchSize x (Channel x Height x Width)`
+
+- Output shape: `BatchSize x EmbeddingDimension`
+
+    
+
+## Uses (todo)
+
