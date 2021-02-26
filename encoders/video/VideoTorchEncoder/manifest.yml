@@ -6,8 +6,8 @@ description: |
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.9
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/video/VideoTorchEncoder/README.md
+version: 0.0.10
 license: apache-2.0
 keywords: [torch, video, encoder]
 type: pod
