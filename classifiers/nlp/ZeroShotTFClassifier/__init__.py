@@ -17,9 +17,9 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
     def __init__(
         self,
         labels: List[str],
-        pretrained_model_name_or_path: str = "distilbert-base-uncased",
+        pretrained_model_name_or_path: str = 'distilbert-base-uncased',
         base_tokenizer_model: Optional[str] = None,
-        pooling_strategy: str = "mean",
+        pooling_strategy: str = 'mean',
         layer_index: int = -1,
         max_length: Optional[int] = None,
         *args,
@@ -56,36 +56,36 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
         self.layer_index = layer_index
         self.max_length = max_length
 
-        if self.pooling_strategy == "auto":
-            self.pooling_strategy = "cls"
+        if self.pooling_strategy == 'auto':
+            self.pooling_strategy = 'cls'
             self.logger.warning(
-                '"auto" pooling_strategy is deprecated, Defaulting to '
-                ' "cls" to maintain the old default behavior.'
+                '`auto` pooling_strategy is deprecated, Defaulting to '
+                ' `cls` to maintain the old default behavior.'
             )
 
-        if self.pooling_strategy not in ["cls", "mean", "max", "min"]:
+        if self.pooling_strategy not in ['cls', 'mean', 'max', 'min']:
             self.logger.error(
-                f"pooling strategy not found: {self.pooling_strategy}."
+                f'pooling strategy not found: {self.pooling_strategy}.'
                 ' The allowed pooling strategies are'
-                '"cls", "mean", "max", "min".'
+                ' `cls`, `mean`, `max`, `min`.'
             )
             raise NotImplementedError
 
         if len(self.labels) < 2:
-            raise ValueError("The number of target labels must be at least 2.")
+            raise ValueError('The number of target labels must be at least 2.')
 
         if len(self.labels) != \
                 len(set(self.labels)):
             raise ValueError(
-                "There are duplicate value in the target_label argument."
+                'There are duplicate value in the target_label argument.'
             )
 
     @batching
     @as_ndarray
     def predict(self,
-                data: "np.ndarray",
+                data: 'np.ndarray',
                 *args,
-                **kwargs) -> "np.ndarray":
+                **kwargs) -> 'np.ndarray':
         """
          Perform zero shot classification on 'data', the predicted label
          for each sample in X is returned.
@@ -152,7 +152,7 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
         n_layers = len(outputs.hidden_states)
         if self.layer_index not in list(range(-n_layers, n_layers)):
             self.logger.error(
-                f'Invalid value {self.layer_index} for `layer_index,'
+                f'Invalid value {self.layer_index} for `layer_index`,'
                 f' for the model {self.pretrained_model_name_or_path}'
                 f' valid values are integers from {-n_layers} '
                 f' to {n_layers - 1}.'
