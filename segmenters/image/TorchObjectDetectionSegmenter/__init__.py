@@ -116,5 +116,5 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
                     f'detected {label_name} with confidence {score} at position {(top, left)} and size {target_size}')
                 result.append(
                     dict(offset=0, weight=1., blob=_img,
-                         location=(top, left), meta_info=label_name.encode()))
+                         location=(top, left)))
         return result
