@@ -9,7 +9,7 @@ from jina.executors.devices import TFDevice
 
 class ZeroShotTFClassifier(TFDevice, BaseClassifier):
     """
-    :class: `ZeroShotTFClassifier` wraps tensorflow transformers from
+    :class: 'ZeroShotTFClassifier' wraps tensorflow transformers from
         huggingface, and performs zero shot learning classification
         for nlp data.
     """
@@ -29,14 +29,14 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
         :param labels: the potential labels for the classification
             task.
         :param pretrained_model_name_or_path: Either:
-            - a string, the `model id` of a pretrained model hosted inside a
-                model repo on huggingface.co, e.g.: `bert-base-uncased`.
-            - a path to a `directory` containing model weights saved using
-                :func: `~transformers.PreTrainedModel.save_pretrained`,
-                e.g.: `./my_model_directory/`.
+            - a string, the 'model id' of a pretrained model hosted inside a
+                model repo on huggingface.co, e.g.: 'bert-base-uncased'.
+            - a path to a 'directory' containing model weights saved using
+                :func: '~transformers.PreTrainedModel.save_pretrained',
+                e.g.: './my_model_directory/'.
         :param base_tokenizer_model: The name of the base model to use for
             creating the tokenizer. If None, will be equal to
-            `pretrained_model_name_or_path`.
+            'pretrained_model_name_or_path'.
         :param pooling_strategy: the strategy to merge the word embeddings
             into the chunk embedding. Supported strategies include 'cls',
             'mean', 'max', 'min'.
@@ -87,18 +87,18 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
                 *args,
                 **kwargs) -> "np.ndarray":
         """
-         Perform zero shot classification on `data`, the predicted label
+         Perform zero shot classification on 'data', the predicted label
          for each sample in X is returned.
 
          The output is a zero/one one-hot label for L-class multi-class
-         classification of size (B, L) with `B` being `data.shape[0]`
-         and `L` being the number of potential classification labels.
+         classification of size (B, L) with 'B' being 'data.shape[0]'
+         and 'L' being the number of potential classification labels.
 
          :param data: the input textual data to be classified, a 1 d
-            array of string type in size `B`
+            array of string type in size 'B'
          :type data: np.ndarray
          :return: zero/one one-hot predicted label of each sample
-            in size `(B, L)`
+            in size '(B, L)'
          :rtype: np.ndarray
         """
 
@@ -123,28 +123,28 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
         self.to_device()
 
     def _evaluate(self,
-                  actual: "np.ndarray",
-                  desired: "np.ndarray") -> "np.ndarray":
+                  actual: 'np.ndarray',
+                  desired: 'np.ndarray') -> 'np.ndarray':
 
         actual = _expand_vector(actual)
         desired = _expand_vector(desired)
 
         return _cosine(_ext_A(_norm(actual)), _ext_B(_norm(desired)))
 
-    def _encode(self, data: "np.ndarray", *args, **kwargs) -> "np.ndarray":
+    def _encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
 
         import tensorflow as tf
 
         if not self.tokenizer.pad_token:
-            self.tokenizer.add_special_tokens({"pad_token": "[PAD]"})
+            self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
             self.model.resize_token_embeddings(len(self.tokenizer.vocab))
 
         input_tokens = self.tokenizer(
             list(data),
             max_length=self.max_length,
-            padding="longest",
+            padding='longest',
             truncation=True,
-            return_tensors="tf",
+            return_tensors='tf',
         )
 
         outputs = self.model(**input_tokens)
@@ -152,42 +152,42 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
         n_layers = len(outputs.hidden_states)
         if self.layer_index not in list(range(-n_layers, n_layers)):
             self.logger.error(
-                f"Invalid value {self.layer_index} for `layer_index`,"
-                f" for the model {self.pretrained_model_name_or_path}"
-                f" valid values are integers from {-n_layers} "
-                f" to {n_layers - 1}."
+                f'Invalid value {self.layer_index} for `layer_index,'
+                f' for the model {self.pretrained_model_name_or_path}'
+                f' valid values are integers from {-n_layers} '
+                f' to {n_layers - 1}.'
             )
             raise ValueError
 
-        if self.pooling_strategy == "cls" and not self.tokenizer.cls_token:
+        if self.pooling_strategy == 'cls' and not self.tokenizer.cls_token:
             self.logger.error(
-                f'You have set pooling_strategy to "cls", but the tokenizer'
-                f" for the model {self.pretrained_model_name_or_path}"
-                f" does not have a cls token set."
+                f'You have set pooling_strategy to `cls`, but the tokenizer'
+                f' for the model {self.pretrained_model_name_or_path}'
+                f' does not have a cls token set.'
             )
             raise ValueError
 
-        fill_vals = {"cls": 0.0, "mean": 0.0, "max": -np.inf, "min": np.inf}
+        fill_vals = {'cls': 0.0, 'mean': 0.0, 'max': -np.inf, 'min': np.inf}
         fill_val = tf.constant(fill_vals[self.pooling_strategy])
 
         layer = outputs.hidden_states[self.layer_index]
-        attn_mask = tf.expand_dims(input_tokens["attention_mask"], -1)
+        attn_mask = tf.expand_dims(input_tokens['attention_mask'], -1)
         attn_mask = tf.broadcast_to(attn_mask, layer.shape)
         layer = tf.where(attn_mask == 1, layer, fill_val)
 
-        if self.pooling_strategy == "cls":
+        if self.pooling_strategy == 'cls':
             CLS = self.tokenizer.cls_token_id
             ind = tf.experimental.numpy.nonzero(
-                input_tokens["input_ids"] == CLS
+                input_tokens['input_ids'] == CLS
             )
             output = tf.gather_nd(layer, tf.stack(ind, axis=1))
-        elif self.pooling_strategy == "mean":
+        elif self.pooling_strategy == 'mean':
             output = tf.reduce_sum(layer, 1) / tf.reduce_sum(
                 tf.cast(attn_mask, tf.float32), 1
             )
-        elif self.pooling_strategy == "max":
+        elif self.pooling_strategy == 'max':
             output = tf.reduce_max(layer, 1)
-        elif self.pooling_strategy == "min":
+        elif self.pooling_strategy == 'min':
             output = tf.reduce_min(layer, 1)
 
         return output.numpy()

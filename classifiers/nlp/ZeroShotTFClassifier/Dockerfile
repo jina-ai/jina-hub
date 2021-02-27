@@ -12,4 +12,4 @@ FROM base as test
 RUN pip install pytest && pytest
 
 FROM base as final
-ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
+ENTRYPOINT ['jina', 'pod', '--uses', 'config.yml']
