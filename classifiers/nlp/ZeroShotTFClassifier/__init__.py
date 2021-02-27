@@ -12,6 +12,25 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
     :class: 'ZeroShotTFClassifier' wraps tensorflow transformers from
         huggingface, and performs zero shot learning classification
         for nlp data.
+
+    :param labels: the potential labels for the classification
+        task.
+    :param pretrained_model_name_or_path: Either:
+        - a string, the 'model id' of a pretrained model hosted inside a
+            model repo on huggingface.co, e.g.: 'bert-base-uncased'.
+        - a path to a 'directory' containing model weights saved using
+            :func: '~transformers.PreTrainedModel.save_pretrained',
+            e.g.: './my_model_directory/'.
+    :param base_tokenizer_model: The name of the base model to use for
+        creating the tokenizer. If None, will be equal to
+        'pretrained_model_name_or_path'.
+    :param pooling_strategy: the strategy to merge the word embeddings
+        into the chunk embedding. Supported strategies include 'cls',
+        'mean', 'max', 'min'.
+    :param layer_index: index of the transformer layer that is used
+        to create encodings. Layer 0 corresponds to the embeddings layer
+    :param max_length: the max length to truncate the tokenized
+        sequences to.
     """
 
     def __init__(
@@ -25,27 +44,6 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
         *args,
         **kwargs,
     ):
-        """
-        :param labels: the potential labels for the classification
-            task.
-        :param pretrained_model_name_or_path: Either:
-            - a string, the 'model id' of a pretrained model hosted inside a
-                model repo on huggingface.co, e.g.: 'bert-base-uncased'.
-            - a path to a 'directory' containing model weights saved using
-                :func: '~transformers.PreTrainedModel.save_pretrained',
-                e.g.: './my_model_directory/'.
-        :param base_tokenizer_model: The name of the base model to use for
-            creating the tokenizer. If None, will be equal to
-            'pretrained_model_name_or_path'.
-        :param pooling_strategy: the strategy to merge the word embeddings
-            into the chunk embedding. Supported strategies include 'cls',
-            'mean', 'max', 'min'.
-        :param layer_index: index of the transformer layer that is used
-            to create encodings. Layer 0 corresponds to the embeddings layer
-        :param max_length: the max length to truncate the tokenized
-            sequences to.
-        """
-
         super().__init__(*args, **kwargs)
         self.labels = labels
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
