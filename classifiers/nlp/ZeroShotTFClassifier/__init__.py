@@ -101,9 +101,8 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
         """
 
         data_encoded = self._encode(data)
-        labels_encoded = self._encode(self.labels)
 
-        distances = self._evaluate(data_encoded, labels_encoded)
+        distances = self._evaluate(data_encoded, self.labels_encoded)
 
         labels_pred = (distances == distances.min(axis=1)[:, None]).astype(int)
 
@@ -119,6 +118,8 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
             self.pretrained_model_name_or_path, output_hidden_states=True
         )
         self.to_device()
+
+        self.labels_encoded = self._encode(self.labels)
 
     def _evaluate(self,
                   actual: 'np.ndarray',

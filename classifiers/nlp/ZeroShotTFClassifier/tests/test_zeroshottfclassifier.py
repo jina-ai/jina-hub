@@ -216,15 +216,11 @@ def test_save_and_load_config(test_metas,
 @pytest.mark.parametrize('layer_index', [-100, 100])
 def test_wrong_layer_index(test_metas, layer_index):
     params = {'layer_index': layer_index}
-    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     test_labels = ['bla', 'bleep', 'bloop']
 
-    classifier = ZeroShotTFClassifier(labels=test_labels,
-                                      metas=test_metas, **params)
-
-    classifier.layer_index = layer_index
     with pytest.raises(ValueError):
-        classifier._encode(test_data)
+        ZeroShotTFClassifier(labels=test_labels,
+                             metas=test_metas, **params)
 
 
 def test_wrong_pooling_strategy():
@@ -239,13 +235,11 @@ def test_wrong_pooling_strategy():
     [{'pooling_strategy': 'cls', 'pretrained_model_name_or_path': 'gpt2'}],
 )
 def test_no_cls_token(test_metas, params):
-    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     test_labels = ['bla', 'bleep', 'bloop']
 
-    classifier = ZeroShotTFClassifier(labels=test_labels,
-                                      metas=test_metas, **params)
     with pytest.raises(ValueError):
-        classifier._encode(test_data)
+        ZeroShotTFClassifier(labels=test_labels,
+                             metas=test_metas, **params)
 
 
 def test_classifier_prediction_type():
