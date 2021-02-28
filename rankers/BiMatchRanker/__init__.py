@@ -51,6 +51,8 @@ class BiMatchRanker(Chunk2DocRanker):
 
     So for every `Document`, a score is computed adding some penalty to the `missing` in both perspectives.
 
+    :param query_required_keys: requested fields for query
+    :param match_required_keys: requested fields for match
     :param d_miss: Cost associated to a miss chunk
     :param args:  Additional positional arguments
     :param kwargs: Additional keyword arguments
