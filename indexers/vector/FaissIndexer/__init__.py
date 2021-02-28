@@ -130,6 +130,9 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
             from faiss import normalize_L2
             normalize_L2(vecs)
         dist, ids = self.query_handler.search(vecs, top_k)
+        if self.distance == 'inner_product':
+            self.logger.warning('inner_product will be output as distance.')
+            dist = np.abs(dist - 1)
         keys = self._int2ext_id[self.valid_indices][ids]
         return keys, dist
 

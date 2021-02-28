@@ -252,5 +252,4 @@ def test_faiss_normalization(metas, distance):
         query = np.zeros((1, num_dims))
         query[0, 0] = 5
         idx, dist = indexer.query(query.astype('float32'), top_k=2)
-        expected_dist = 1 if distance == 'inner_product' else 0
-        assert dist[0, 0] == expected_dist
+        assert dist[0, 0] == 0
