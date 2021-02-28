@@ -63,9 +63,11 @@ def test_encoding_mock_model_results():
         assert len(chunks) == 2
         assert chunks[0]['blob'].shape == (25, 20, 3)
         assert chunks[0]['location'] == (15, 10)
+        assert chunks[0]['tags']['label'] == 'one'
 
         assert chunks[1]['blob'].shape == (30, 10, 3)
         assert chunks[1]['location'] == (10, 20)
+        assert chunks[1]['tags']['label'] == 'three'
 
 
 def test_encoding_fasterrcnn_results():
@@ -99,6 +101,7 @@ def test_encoding_fasterrcnn_results_real_image():
     crafter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.9)
     chunks = crafter.segment(img_array)
     assert len(chunks) == 10
+    assert chunks[0]['tags']['label'] == 'person'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-0.png'))
     assert chunks[0]['location'] == (541, 992)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -108,6 +111,7 @@ def test_encoding_fasterrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[1]['tags']['label'] == 'car'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-1.png'))
     assert chunks[1]['location'] == (496, 201)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -117,6 +121,7 @@ def test_encoding_fasterrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[2]['tags']['label'] == 'car'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-2.png'))
     assert chunks[2]['location'] == (524, 574)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -126,6 +131,7 @@ def test_encoding_fasterrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[3]['tags']['label'] == 'person'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-3.png'))
     assert chunks[3]['location'] == (539, 969)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -135,6 +141,7 @@ def test_encoding_fasterrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[4]['tags']['label'] == 'person'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-4.png'))
     assert chunks[4]['location'] == (530, 934)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -144,6 +151,7 @@ def test_encoding_fasterrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[5]['tags']['label'] == 'car'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-5.png'))
     assert chunks[5]['location'] == (517, 377)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -153,6 +161,7 @@ def test_encoding_fasterrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[6]['tags']['label'] == 'person'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-6.png'))
     assert chunks[6]['location'] == (532, 919)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -163,6 +172,7 @@ def test_encoding_fasterrcnn_results_real_image():
     np.testing.assert_array_almost_equal(blob, array)
 
     # it missclassifies as truck (but is a fairly big car)
+    assert chunks[7]['tags']['label'] == 'truck'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-7.png'))
     assert chunks[7]['location'] == (498, 702)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -172,6 +182,7 @@ def test_encoding_fasterrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[8]['tags']['label'] == 'car'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-8.png'))
     assert chunks[8]['location'] == (522, 1046)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -181,6 +192,7 @@ def test_encoding_fasterrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[9]['tags']['label'] == 'person'
     img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-9.png'))
     assert chunks[9]['location'] == (536, 962)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -226,6 +238,7 @@ def test_encoding_maskrcnn_results_real_image():
     chunks = crafter.segment(img_array)
 
     assert len(chunks) == 10
+    assert chunks[0]['tags']['label'] == 'car'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-0.png'))
     assert chunks[0]['location'] == (518, 379)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -235,6 +248,7 @@ def test_encoding_maskrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[1]['tags']['label'] == 'car'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-1.png'))
     assert chunks[1]['location'] == (527, 572)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -244,6 +258,7 @@ def test_encoding_maskrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[2]['tags']['label'] == 'person'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-2.png'))
     assert chunks[2]['location'] == (541, 993)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -253,6 +268,7 @@ def test_encoding_maskrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[3]['tags']['label'] == 'person'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-3.png'))
     assert chunks[3]['location'] == (531, 934)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -262,6 +278,7 @@ def test_encoding_maskrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[4]['tags']['label'] == 'car'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-4.png'))
     assert chunks[4]['location'] == (499, 196)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -271,6 +288,7 @@ def test_encoding_maskrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[5]['tags']['label'] == 'person'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-5.png'))
     assert chunks[5]['location'] == (532, 917)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -280,6 +298,7 @@ def test_encoding_maskrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[6]['tags']['label'] == 'person'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-6.png'))
     assert chunks[6]['location'] == (539, 968)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -290,6 +309,7 @@ def test_encoding_maskrcnn_results_real_image():
     np.testing.assert_array_almost_equal(blob, array)
 
     # it missclassifies as truck (but is a fairly big car)
+    assert chunks[7]['tags']['label'] == 'truck'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-7.png'))
     assert chunks[7]['location'] == (499, 700)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -299,6 +319,7 @@ def test_encoding_maskrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[8]['tags']['label'] == 'car'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-8.png'))
     assert chunks[8]['location'] == (534, 142)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
@@ -308,6 +329,7 @@ def test_encoding_maskrcnn_results_real_image():
     array = np.array(img)
     np.testing.assert_array_almost_equal(blob, array)
 
+    assert chunks[9]['tags']['label'] == 'car'
     img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-9.png'))
     assert chunks[9]['location'] == (521, 1037)
     # check that the shape of retrieved is the same as the expected image (was computed and stored once)
