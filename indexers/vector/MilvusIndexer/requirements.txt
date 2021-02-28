@@ -1,2 +1,2 @@
 pymilvus
-jina
+jina==1.0.6
