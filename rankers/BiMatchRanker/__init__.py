@@ -59,7 +59,7 @@ class BiMatchRanker(Chunk2DocRanker):
     """
 
     def __init__(self, d_miss: Optional[Union[int, float]] = None, *args, **kwargs):
-        super().__init__(('length', ), ('length', ), *args, **kwargs)
+        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
         self.d_miss = d_miss or 2000
 
     def _get_score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict, *args, **kwargs):
