@@ -58,9 +58,6 @@ class BiMatchRanker(Chunk2DocRanker):
     .. warning:: Here we suppose that the smaller chunk score means the more similar.
     """
 
-    # query_required_keys = ('length', )
-    # match_required_keys = ('length', )
-
     def __init__(self, query_required_keys: Optional = ('length',), match_required_keys: Optional = ('length',),
                  d_miss: Optional[Union[int, float]] = None, *args, **kwargs):
         super().__init__(query_required_keys, match_required_keys, *args, **kwargs)
