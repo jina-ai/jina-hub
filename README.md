@@ -35,7 +35,7 @@ with Flow().add(uses='docker://' + my_image_tag):
 ### Prerequisites
 
 - Install [Docker](https://docs.docker.com/get-docker/).
-- `pip install "jina[hub]"`
+- `pip install "jina[devel]"`
 
 ### 📦 Create a new Executor
 
