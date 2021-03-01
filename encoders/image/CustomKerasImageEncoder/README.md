@@ -14,7 +14,7 @@ Users can use Pod images in several ways:
 docker run jinahub/pod.encoder.customkerasimageencoder:0.0.8-1.0.4
 ```
 
-1. Run the Flow API:
+2. Run the Flow API:
 
 ```
  from jina.flow import Flow
@@ -23,23 +23,20 @@ docker run jinahub/pod.encoder.customkerasimageencoder:0.0.8-1.0.4
      .add(name='vse_encoder', uses='docker://jinahub/pod.encoder.customkerasimageencoder:0.0.8-1.0.4', port_in=55555, port_out=55556))
 ```
 
-1. Run with Jina CLI
+3. Run with Jina CLI
 
 ```
  jina pod --uses docker://jinahub/pod.encoder.customkerasimageencoder:0.0.8-1.0.4 --port-in 55555 --port-out 55556
 ```
 
-1. Conventional local usage with `uses` argument
+4. Conventional local usage with `uses` argument
 
 ```
 jina pod --uses custom_folder/customkerasimageencoder.yml --port-in 55555 --port-out 55556
 ```
 
-1. Docker command, Specify the image name along with the version tag. The snippet below uses Jina version 1.0.1
+5. Docker command, Specify the image name along with the version tag. The snippet below uses Jina version 1.0.1
 
 ```
  docker pull jinahub/pod.encoder.customkerasimageencoder:0.0.8-1.0.4
 ```
-
-## 
-
