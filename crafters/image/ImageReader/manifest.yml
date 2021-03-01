@@ -2,7 +2,8 @@ manifest_version: 1
 name: ImageReader
 kind: crafter
 type: pod
-description: Loads image from a file pat or directly from bytes and save the `ndarray` of the image in the Document.
+description: Loads image from a file pat or directly from bytes and save the `ndarray`
+  of the image in the Document.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
@@ -10,3 +11,4 @@ documentation: https://github.com/jina-ai/jina-hub/blob/master/crafters/image/Im
 version: 0.0.14
 license: apache-2.0
 keywords: [image, crafter]
+timestamp: 1614560076.9220989
