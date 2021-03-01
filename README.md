@@ -49,6 +49,7 @@ It will start a wizard in CLI to guide you create your first executor. The resul
 MyAwesomeExecutor/
 ├── Dockerfile
 ├── manifest.yml
+├── config.yml
 ├── README.md
 ├── requirements.txt
 ├── __init__.py
