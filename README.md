@@ -35,7 +35,7 @@ with Flow().add(uses='docker://' + my_image_tag):
 ### Prerequisites
 
 - Install [Docker](https://docs.docker.com/get-docker/).
-- `pip install "jina[hub]"`
+- `pip install "jina[devel]"`
 
 ### 📦 Create a new Executor
 
@@ -49,6 +49,7 @@ It will start a wizard in CLI to guide you create your first executor. The resul
 MyAwesomeExecutor/
 ├── Dockerfile
 ├── manifest.yml
+├── config.yml
 ├── README.md
 ├── requirements.txt
 ├── __init__.py
