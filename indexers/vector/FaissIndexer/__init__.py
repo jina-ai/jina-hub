@@ -82,6 +82,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
 
         metric = faiss.METRIC_L2
         if self.distance == 'inner_product':
+            self.logger.warning('inner_product will be output as distance instead of similarity.')
             metric = faiss.METRIC_INNER_PRODUCT
         if self.distance not in {'inner_product', 'l2'}:
             self.logger.warning('Invalid distance metric for Faiss index construction. Defaulting to l2 distance')
@@ -131,8 +132,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
             normalize_L2(vecs)
         dist, ids = self.query_handler.search(vecs, top_k)
         if self.distance == 'inner_product':
-            self.logger.warning('inner_product will be output as distance.')
-            dist = np.abs(dist - 1)
+            dist = 1 - dist
         keys = self._int2ext_id[self.valid_indices][ids]
         return keys, dist
 
