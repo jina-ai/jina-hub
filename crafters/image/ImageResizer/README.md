@@ -14,7 +14,6 @@ The **ImageResizer** executor needs below parameters:
 
 Users can use Pod images in several ways:
 
-jinahub/pod.crafter.imageresizer:0.0.15-1.0.7
 1. Run with Docker (`docker run`)
    ```bash
     docker run jinahub/pod.crafter.imageresizer:0.0.15-1.0.7 --port-in 55555 --port-out 55556
@@ -25,7 +24,7 @@ jinahub/pod.crafter.imageresizer:0.0.15-1.0.7
     from jina.flow import Flow
 
     f = (Flow()
-        .add(name='my_encoder', uses='docker://jinahub/pod.crafter.imageresizer:0.0.15-1.0.7', port_in=55555, port_out=55556))
+        .add(name='my_crafter', uses='docker://jinahub/pod.crafter.imageresizer:0.0.15-1.0.7', port_in=55555, port_out=55556))
     ```
     
 3. Run with Jina CLI
