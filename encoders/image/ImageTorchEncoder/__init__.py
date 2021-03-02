@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numpy as np
@@ -10,9 +10,31 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 class ImageTorchEncoder(BaseTorchEncoder):
     """
     :class:`ImageTorchEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
-        ndarray of `B x D`.
+        ndarray of `BatchSize x D`.
     Internally, :class:`ImageTorchEncoder` wraps the models from `torchvision.models`.
     https://pytorch.org/docs/stable/torchvision/models.html
+
+    :param model_name: the name of the model. Supported models include
+        ``resnet18``,
+        ``alexnet``,
+        ``squeezenet1_0``,
+        ``vgg16``,
+        ``densenet161``,
+        ``inception_v3``,
+        ``googlenet``,
+        ``shufflenet_v2_x1_0``,
+        ``mobilenet_v2``,
+        ``resnext50_32x4d``,
+        ``wide_resnet50_2``,
+        ``mnasnet1_0``
+    :param pool_strategy: the pooling strategy
+        - `None` means that the output of the model will be the 4D tensor output of the last convolutional block.
+        - `mean` means that global average pooling will be applied to the output of the last convolutional block, and
+             thus the output of the model will be a 2D tensor.
+        - `max` means that global max pooling will be applied.
+    :param channel_axis: the axis id of the channel
+    :param args: additional positional arguments.
+    :param kwargs: additional positional arguments.
     """
 
     def __init__(
@@ -23,27 +45,7 @@ class ImageTorchEncoder(BaseTorchEncoder):
         *args,
         **kwargs,
     ):
-        """
-
-        :param model_name: the name of the model. Supported models include
-            ``resnet18``,
-            ``alexnet``,
-            ``squeezenet1_0``,
-            ``vgg16``,
-            ``densenet161``,
-            ``inception_v3``,
-            ``googlenet``,
-            ``shufflenet_v2_x1_0``,
-            ``mobilenet_v2``,
-            ``resnext50_32x4d``,
-            ``wide_resnet50_2``,
-            ``mnasnet1_0``
-        :param pool_strategy: the pooling strategy
-            - `None` means that the output of the model will be the 4D tensor output of the last convolutional block.
-            - `mean` means that global average pooling will be applied to the output of the last convolutional block, and
-                 thus the output of the model will be a 2D tensor.
-            - `max` means that global max pooling will be applied.
-        """
+        """Class constructor."""
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
         # axis 0 is the batch
@@ -74,6 +76,15 @@ class ImageTorchEncoder(BaseTorchEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+        Encode input data into `np.ndarray`.
+
+        :param data: Image to be encoded, expected a `np.ndarray` of shape BatchSize x (Channel x Height x Width).
+        :param args: additional positional arguments.
+        :param kwargs: additional positional arguments.
+        :return: Encoded result as a `BatchSize x D` numpy ``ndarray``, `D` is the output dimension
+        """
+
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
