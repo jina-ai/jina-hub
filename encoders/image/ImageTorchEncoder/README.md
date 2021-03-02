@@ -1,6 +1,6 @@
 # ImageTorchEncoder
 
-`ImageTorchEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a ndarray of `BatchSize * d`. Internally, :class:`ImageTorchEncoder` wraps the models from `tensorflow.keras.applications`. https://keras.io/applications/
+`ImageTorchEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a ndarray of `BatchSize * d`. Internally, :class:`ImageTorchEncoder` wraps the models from [`tensorflow.keras.applications`](https://keras.io/applications/)
 
 
 ## Usage:
@@ -14,7 +14,7 @@ Initialise this Executor specifying parameters i.e.:
 | `channel_axis`| axis of the color channel  |
 | `pool_strategy` | strategy of pooling operation |
 
-The model is pre-trained on [MobileNetV2] data
+Datasets `resnet18`, `alexnet`, `squeezenet1_0`, `vgg16`, `densenet161`, `inception_v3` can be used for pretraining the model.
 The pretrained default path is the result of downloading the models in `download.sh`
 
 ### Snippets:
