@@ -2,9 +2,8 @@ manifest_version: 1
 name: SpacySentencizer
 kind: segmenter
 type: pod
-description:
-  SpacySentencizer is one segmenter used in the NLP domain. It splits the text on the doc-level into sentences on the chunk-level with
-  spaCy as the backend.
+description: SpacySentencizer is one segmenter used in the NLP domain. It splits the
+  text on the doc-level into sentences on the chunk-level with spaCy as the backend.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
@@ -12,3 +11,4 @@ documentation: https://github.com/jina-ai/jina-hub/blob/master/segmenters/nlp/Sp
 version: 0.0.1
 license: apache-2.0
 keywords: [text, nlp, segment]
+timestamp: 1614648243.3152902
