@@ -27,9 +27,7 @@ Users can use Pod images in several ways:
 
 4. Conventional local usage with `uses` argument
     ```bash
-    jina pod --uses hub/example/image_crafter_config.yml
-   
-   .yml --port-in 55555 --port-out 55556
+    jina pod --uses hub/example/image_crafter_config.yml --port-in 55555 --port-out 55556
     ```
 
 ## Simple example
