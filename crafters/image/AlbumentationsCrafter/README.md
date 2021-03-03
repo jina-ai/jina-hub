@@ -10,7 +10,7 @@ Users can use Pod images in several ways:
 
 1. Run with Docker (`docker run`)
    ```bash
-    docker run jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7 --port-in 55555 --port-out 55556
+    docker run --rm -p 55555:55555 -p 55556:55556 jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7 --port-in 55555 --port-out 55556
     ```
 
 2. Run with Flow API
@@ -22,20 +22,14 @@ Users can use Pod images in several ways:
 
 3. Run with Jina CLI
    ```bash
-    jina pod --uses docker://jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7 --port-out 55556
+    jina pod --uses docker://jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7 --port-in=55555 --port-out 55556
     ```
 
 4. Conventional local usage with `uses` argument
     ```bash
-    jina pod --uses hub/example/imagecrafter.yml --port-in 55555 --port-out 55556
-    ```
-
-5. Docker command
-
-   Specify the image name along with the version tag. The snippet below uses Jina version `1.0.7`
-
-   ```bash
-    docker pull jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7
+    jina pod --uses hub/example/image_crafter_config.yml
+   
+   .yml --port-in 55555 --port-out 55556
     ```
 
 ## Simple example
