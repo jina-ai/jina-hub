@@ -11,7 +11,12 @@ def test_audiomonophoner():
     signal_orig = np.random.randn(2, 31337)
 
     crafter = AudioMonophoner()
-    crafted_doc = crafter.craft(signal_orig, 0)
+    crafted_docs = crafter.craft([signal_orig, signal_orig])
 
-    signal_mono = crafted_doc["blob"]
+    assert len(crafted_docs) == 2
+
+    signal_mono = crafted_docs[0]['blob']
+    assert signal_mono.shape[0] == signal_orig.shape[1]
+
+    signal_mono = crafted_docs[1]['blob']
     assert signal_mono.shape[0] == signal_orig.shape[1]

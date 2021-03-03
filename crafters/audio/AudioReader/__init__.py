@@ -1,6 +1,7 @@
 from typing import Dict
 
 from jina.executors.crafters import BaseCrafter
+from jina.executors.decorators import single
 
 
 class AudioReader(BaseCrafter):
@@ -20,6 +21,7 @@ class AudioReader(BaseCrafter):
         super().__init__(*args, **kwargs)
         self.sample_rate = target_sample_rate
 
+    @single
     def craft(self, uri: str, *args, **kwargs) -> Dict:
         """
         Decode given audio file and resample signal.
