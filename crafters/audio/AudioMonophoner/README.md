@@ -7,13 +7,13 @@ WAV, MP3, OGG, AU,FLAC, RAW, AIFF, AIFF-C, PAF, SVX, NIST, VOC, IRCAM, W64, MAT4
 
 ## Usage
 
-The **AudioMonophoner** executor uses the `librosa` library to convert the input `blob` (`ndarray` representation of the audio signal) to a dictionary of `monophonic` audio signal. 
+The **AudioMonophoner** executor uses the [`librosa`](https://github.com/librosa/librosa)  library to convert the input `blob` (`ndarray` representation of the audio signal) to a dictionary of `monophonic` audio signal. 
 
 We use Pod images in several ways:
 
 1. Run with Docker: `docker run`
    ```bash
-    docker run jinahub/pod.crafter.audiomonophoner:0.0.9-1.0.1 --port-in 55555 --port-out 55556
+    docker run --rm -p 55555:55555 -p 55556:55556 jinahub/pod.crafter.audiomonophoner:0.0.9-1.0.1 --port-in 55555 --port-out 55556
     ```
     
 2. Run with Flow API
@@ -33,11 +33,3 @@ We use Pod images in several ways:
    ```bash
     jina pod --uses hub/example/audiomonophoner.yml --port-in 55555 --port-out 55556
    ```
-    
-5. Docker command
-
-   Specify the image name along with the version tag. In this example we use Jina version `1.0.1`
-
-   ```bash
-    docker pull jinahub/pod.crafter.audiomonophoner:0.0.9-1.0.1
-    ```
