@@ -1,8 +1,7 @@
 manifest_version: 1
 name: HammingDistanceEvaluator
 kind: evaluator
-description:
-  |
+description: |
   Gives the Hamming distance between result and groundtruth texts.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
@@ -12,3 +11,4 @@ version: 0.0.3
 license: apache-2.0
 keywords: [evaluator, Hamming distance]
 type: pod
+timestamp: 1614732963.2979014
