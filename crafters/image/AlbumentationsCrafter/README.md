@@ -22,8 +22,6 @@ Users can use Pod images in several ways:
   pods:
     - name: albumentationscrafter
       uses: crafters/image/AlbumentationsCrafter/config.yml
-      uses_internal: albumentation.yml
-
   ```
   
   and then in `albumentation.yml`:
