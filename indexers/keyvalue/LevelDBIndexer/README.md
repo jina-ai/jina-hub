@@ -17,12 +17,6 @@ Users can use Pod images in several ways:
 - `MODULE_VERSION` is the version of the LevelDBIndexer, in semver format. E.g. `0.0.15`.
 - `JINA_VERSION` is the version of the Jina core version with which the Docker image was built. E.g. `1.0.2` 
 
-- Run with Docker (`docker run`)
-  
-  ```bash
-    docker run --network host docker://jinahub/pod.indexer.leveldbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
-    ```
-
 - Flow API
   
   ```python
@@ -30,6 +24,27 @@ Users can use Pod images in several ways:
     f = (Flow()
         .add(name='my-indexer', uses='docker://jinahub/pod.indexer.leveldbindexer:MODULE_VERSION-JINA_VERSION')
     ```
+
+- Flow YAML file
+
+  This is the only way to provide arguments to its parameters:
+  
+  ```yaml
+  pods:
+    - name: leveldb
+      uses: indexers/keyvalue/LevelDBIndexer/config.yml
+      uses_internal: leveldb.yml
+  ```
+  
+  and then in `leveldb.yml`:
+
+  ```yaml
+  !LevelDBIndexer
+  with:
+    hostname: yourdomain.com
+    port: 6379
+    db: 0
+  ```
 
 - Jina CLI
   
@@ -43,31 +58,10 @@ Users can use Pod images in several ways:
   jina pod --uses hub/example/config.yml --port-in 55555 --port-out 55556
   ```
 
-- Docker command
-
+- Run with Docker (`docker run`)
+ 
   Specify the image name along with the version tag. The snippet below uses Jina version as `JINA_VERSION`.
 
   ```bash
-  docker pull jinahub/pod.indexer.leveldbindexer:MODULE_VERSION-JINA_VERSION
-  ```
-  
-- YAML file
-
-  This is the only way to provide arguments to its parameters:
-  
-  ```yaml
-  pods:
-    - name: leveldb
-      uses: docker://jinahub/pod.indexer.leveldbindexer:MODULE_VERSION-JINA_VERSION 
-      uses_internal: leveldb.yml
-  ```
-  
-  and then in `leveldb.yml`:
-
-  ```yaml
-  !LevelDBIndexer
-  with:
-    hostname: yourdomain.com
-    port: 6379
-    db: 0
-  ```
+    docker run --network host docker://jinahub/pod.indexer.leveldbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
+    ```
