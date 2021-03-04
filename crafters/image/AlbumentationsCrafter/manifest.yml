@@ -5,7 +5,7 @@ description: Apply transformations from the Albumentations package to the image.
 author: Tadej Svetina (@tadejsv)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
+documentation: https://github.com/jina-ai/jina-hub/blob/albumencrafter/crafters/image/AlbumentationsCrafter
 version: 0.0.4
 license: apache-2.0
 keywords: [image, transform, augmentation, albumentations]
