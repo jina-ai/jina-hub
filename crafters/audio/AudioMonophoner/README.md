@@ -26,7 +26,6 @@ We use Pod images in several ways:
   pods:
     - name: audiomonophoner
       uses: crafters/audio/AudioMonophoner/config.yml
-      uses_internal: audiomonophoner.yml
   ```
 
   and then in `audiomonophoner.yml`:
