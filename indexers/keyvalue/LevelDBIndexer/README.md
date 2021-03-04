@@ -33,7 +33,6 @@ Users can use Pod images in several ways:
   pods:
     - name: leveldb
       uses: indexers/keyvalue/LevelDBIndexer/config.yml
-      uses_internal: leveldb.yml
   ```
   
   and then in `leveldb.yml`:
