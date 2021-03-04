@@ -8,27 +8,49 @@ This crafter provides access to any of the transforms from the [Albumentations](
 
 Users can use Pod images in several ways:
 
-1. Run with Docker (`docker run`)
-   ```bash
-    docker run --rm -p 55555:55555 -p 55556:55556 jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7 --port-in 55555 --port-out 55556
-    ```
-
-2. Run with Flow API
+1. Run with Flow API
    ```python
     from jina.flow import Flow
     f = (Flow()
         .add(name='my_crafter', uses='docker://jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7', port_in=55555, port_out=55556))
     ```
 
+2. Flow YAML file
+  This is the only way to provide arguments to its parameters:
+  
+  ```yaml
+  pods:
+    - name: albumentationscrafter
+      uses: crafters/image/AlbumentationsCrafter/config.yml
+      uses_internal: albumentation.yml
+
+  ```
+  
+  and then in `albumentation.yml`:
+  ```yaml
+  !AlbumentationsCrafter
+  with:
+    hostname: yourdomain.com
+    port: 6379
+    db: 0
+  ```
+
+
 3. Run with Jina CLI
    ```bash
     jina pod --uses docker://jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7 --port-in=55555 --port-out 55556
     ```
 
-4. Conventional local usage with `uses` argument
+   Conventional local usage with `uses` argument
     ```bash
-    jina pod --uses hub/example/image_crafter_config.yml --port-in 55555 --port-out 55556
+    jina pod --uses crafters/image/AlbumentationsCrafter/config.yml --port-in 55555 --port-out 55556
     ```
+    
+ 4. Run with Docker (`docker run`)
+   ```bash
+    docker run --rm -p 55555:55555 -p 55556:55556 jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7 --port-in 55555 --port-out 55556
+    ```
+
 
 ## Simple example
 
