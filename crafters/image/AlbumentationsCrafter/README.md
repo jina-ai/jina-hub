@@ -4,6 +4,52 @@ This crafter provides access to any of the transforms from the [Albumentations](
 
 > Note that Albumentation's transform are meant to be random, which is usually not what you want in indexing/search context. The crafter automatically adds `always_apply=True` to all transforms, but you should watch out for other sources of "randomness" (see AlbumentationsCrafter documentation for more detail)
 
+## Usage
+
+Users can use Pod images in several ways:
+
+1. Run with Flow API
+   ```python
+    from jina.flow import Flow
+    f = (Flow()
+        .add(name='my_crafter', uses='docker://jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7', port_in=55555, port_out=55556))
+    ```
+
+2. Flow YAML file
+  This is the only way to provide arguments to its parameters:
+  
+  ```yaml
+  pods:
+    - name: albumentationscrafter
+      uses: crafters/image/AlbumentationsCrafter/config.yml
+  ```
+  
+  and then in `albumentation.yml`:
+  ```yaml
+  !AlbumentationsCrafter
+  with:
+    hostname: yourdomain.com
+    port: 6379
+    db: 0
+  ```
+
+
+3. Run with Jina CLI
+   ```bash
+    jina pod --uses docker://jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7 --port-in=55555 --port-out 55556
+    ```
+
+   Conventional local usage with `uses` argument
+    ```bash
+    jina pod --uses crafters/image/AlbumentationsCrafter/config.yml --port-in 55555 --port-out 55556
+    ```
+    
+ 4. Run with Docker (`docker run`)
+   ```bash
+    docker run --rm -p 55555:55555 -p 55556:55556 jinahub/pod.crafter.albumentationscrafter:0.0.3-1.0.7 --port-in 55555 --port-out 55556
+    ```
+
+
 ## Simple example
 
 Here's a simple example of how to use this crafter. We'll be transforming this image:
