@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numpy as np
@@ -84,6 +84,7 @@ class ImageTorchEncoder(BaseTorchEncoder):
         :param kwargs: Additional keyword arguments
         :return: a `B x D` numpy ``ndarray``, `D` is the output dimension
         """
+
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
