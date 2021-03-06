@@ -1,0 +1,20 @@
+FROM jinaai/jina AS base
+
+# install git
+RUN apt-get -y update && apt-get install -y git
+
+# setup the workspace
+COPY . /workspace
+WORKDIR /workspace
+
+# install the third-party requirements
+#UN pip install -r requirements.txt
+RUN pip install git+https://github.com/openai/CLIP.git
+
+# for testing the image
+FROM base
+RUN pip install pytest && pytest
+
+
+FROM base
+ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
