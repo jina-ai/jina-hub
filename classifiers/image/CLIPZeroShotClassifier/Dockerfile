@@ -8,7 +8,6 @@ COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-#UN pip install -r requirements.txt
 RUN pip install git+https://github.com/openai/CLIP.git
 
 # for testing the image
