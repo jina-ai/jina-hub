@@ -1,13 +1,24 @@
 from typing import List
+
 import torch
 from jina.executors.classifiers import BaseClassifier
+from jina.executors.decorators import as_ndarray, batching
 from jina.executors.devices import TorchDevice
-from jina.executors.decorators import batching, as_ndarray
 from PIL import Image
+
 
 class CLIPZeroShotClassifier(TorchDevice, BaseClassifier):
     """
     :class:`ClipZeroShotClassifier` Zero Shot classification for images using OpenAI Clip.
+
+    Internally, :class:`ClipZeroShotClassifier` wraps the `CLIP` modeL from https://github.com/openai/CLIP
+    :param labels: labels for the classification task. 
+    :param model_name: The name of the model. Supported models include ``ViT-B/32`` and ``RN50``.
+    :param hypothesis_template: The template used to turn each label into an NLI-style hypothesis. This template must 
+       include a {} or similar syntax for the candidate label to be inserted into the template. For example, the default
+       template is :obj:`"a photo of {}."
+    :param args: Additional positional arguments.
+    :param kwargs: Additional positional arguments.
     """
 
     def __init__(self, labels: List[str], model_name: str ='ViT-B/32', hypothesis_template: str = "a photo of {}",

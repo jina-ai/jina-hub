@@ -1,15 +1,16 @@
-from .. import CLIPZeroShotClassifier
-import numpy as np
-from PIL import Image
-import clip
 import os
 
+import clip
+import numpy as np
+from PIL import Image
+
+from .. import CLIPZeroShotClassifier
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def test_clipzeroshotclassifier():
     dog_image = os.path.join(cur_dir, '../imgs/dog.jpg')
-    labels = ["cat","dog","human"]
+    labels = ['cat','dog','human']
     executor = CLIPZeroShotClassifier(labels)
     _, preprocess = clip.load('ViT-B/32')
     im = Image.open(dog_image)
@@ -20,5 +21,5 @@ def test_clipzeroshotclassifier():
     assert output.shape == (len(batch), len(labels))
     for res in output:
         assert len(res) == len(labels)
-        assert res[labels.index("dog")] == 1
+        assert res[labels.index('dog')] == 1
     
