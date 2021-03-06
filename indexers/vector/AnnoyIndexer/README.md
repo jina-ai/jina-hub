@@ -8,7 +8,7 @@ For more information, refer to the GitHub repo for [Spotify's Annoy](https://git
 
 Initialise AnnoyIndexer:
 
-`AnnoyIndexer(hostname=host_ip, port=host_port, db=db_int)`
+`AnnoyIndexer(metric='euclidean', n_trees=trees_int, search_k=search_int)`
 
 Users can use Pod images in several ways:
 
@@ -32,7 +32,7 @@ Users can use Pod images in several ways:
   ```yaml
   pods:
     - name: annoy
-      uses: indexers/keyvalue/AnnoyIndexer/config.yml
+      uses: indexers/vector/AnnoyIndexer/config.yml
   ```
   
   and then in `leveldb.yml`:
