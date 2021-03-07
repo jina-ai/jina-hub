@@ -14,19 +14,15 @@ class CLIPZeroShotClassifier(TorchDevice, BaseClassifier):
     Internally, :class:`ClipZeroShotClassifier` wraps the `CLIP` modeL from https://github.com/openai/CLIP
     :param labels: labels for the classification task. 
     :param model_name: The name of the model. Supported models include ``ViT-B/32`` and ``RN50``.
-    :param hypothesis_template: The template used to turn each label into an NLI-style hypothesis. This template must 
-       include a {} or similar syntax for the candidate label to be inserted into the template. For example, the default
-       template is :obj:`"a photo of {}."
     :param args: Additional positional arguments.
     :param kwargs: Additional positional arguments.
     """
 
-    def __init__(self, labels: List[str], model_name: str ='ViT-B/32', hypothesis_template: str = "a photo of {}",
+    def __init__(self, labels: List[str], model_name: str ='ViT-B/32',
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.labels = labels
         self.model_name = model_name
-        self.hypothesis_template = hypothesis_template
 
     def post_init(self):
         """Load a model from clip specified in `model_name`."""
@@ -43,8 +39,7 @@ class CLIPZeroShotClassifier(TorchDevice, BaseClassifier):
     
     def encode_labels(self):
         import clip
-        labels = [self.hypothesis_template.format(label) for label in self.labels]
-        tokenized_labels = clip.tokenize(labels).to(self.device)
+        tokenized_labels = clip.tokenize(self.labels).to(self.device)
         label_features = self.model.encode_text(tokenized_labels)
         label_features /= label_features.norm(dim=-1, keepdim=True)
         self._label_features = label_features
