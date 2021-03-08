@@ -56,9 +56,41 @@ def test_sentencier_en_trim_spaces():
         f.index_lines(['  This ,  text is...  . Amazing !!'], on_done=validate, callback_on_body=True, line_format='csv')
 
 
+def test_sentencier_en_filter():
+    """
+    Filter should still work for English
+    """
+    sentencizer = Sentencizer(lang='en')
+    text = 'It is a sunny day!!!! When müller comes back, we are going to the zoo. 😁'
+    crafted_chunk_list = sentencizer.segment(text, 0)
+    assert len(crafted_chunk_list) == 2
+
+
 def test_sentencier_cn():
-    sentencizer = Sentencizer()
+    """
+    Test for chinese
+    """
+    sentencizer = Sentencizer(lang='cn')
     text = '今天是个大晴天！安迪回来以后，我们准备去动物园。'
     crafted_chunk_list = sentencizer.segment(text, 0)
-    # Sentencizer does not work for chinese because string.printable does not contain Chinese characters
-    assert len(crafted_chunk_list) == 0
+    assert len(crafted_chunk_list) == 2
+
+
+def test_sentencier_de():
+    """
+    Test for German
+    """
+    sentencizer = Sentencizer(lang='de')
+    text = "Es ist ein sonniger Tag!!!! Wenn Andy zurückkommt, gehen wir in den Zoo."
+    crafted_chunk_list = sentencizer.segment(text, 0)
+    assert len(crafted_chunk_list) == 2
+
+
+def test_sentencier_fr():
+    """
+    Test for French
+    """
+    sentencizer = Sentencizer(lang='fr')
+    text = "C'est une journée ensoleillée !!!! Quand Andy revient, nous allons au zoo."
+    crafted_chunk_list = sentencizer.segment(text, 0, lang = 'fr')
+    assert len(crafted_chunk_list) == 2
