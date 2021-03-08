@@ -1,3 +1,5 @@
+import numpy as np
+
 from .. import AudioReader
 
 
@@ -6,7 +8,7 @@ def test_audioreader():
     audio_file_path = librosa.util.example_audio_file()
 
     crafter = AudioReader()
-    crafted_docs = crafter.craft([audio_file_path, audio_file_path])
+    crafted_docs = crafter.craft(np.stack([audio_file_path, audio_file_path]))
 
     assert len(crafted_docs) == 2
     signal = crafted_docs[0]['blob']
