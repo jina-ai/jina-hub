@@ -60,7 +60,7 @@ def test_sentencier_en_filter():
     """
     Filter should still work for English
     """
-    sentencizer = Sentencizer(lang='en')
+    sentencizer = Sentencizer()
     text = 'It is a sunny day!!!! When müller comes back, we are going to the zoo. 😁'
     crafted_chunk_list = sentencizer.segment(text, 0)
     assert len(crafted_chunk_list) == 2

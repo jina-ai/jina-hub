@@ -12,8 +12,7 @@ class Sentencizer(BaseSegmenter):
     The text is split by the punctuation characters listed in ``punct_chars``.
     The sentences that are shorter than the ``min_sent_len``
     or longer than the ``max_sent_len`` after stripping will be discarded.
-    
-    :param lang: language of the input text, by default "en".
+
     :param min_sent_len: the minimal number of characters,
         (including white spaces) of the sentence, by default 1.
     :param max_sent_len: the maximal number of characters,
@@ -29,7 +28,6 @@ class Sentencizer(BaseSegmenter):
     """
 
     def __init__(self,
-                 lang: str = "en",
                  min_sent_len: int = 1,
                  max_sent_len: int = 512,
                  punct_chars: Optional[List[str]] = None,
@@ -37,7 +35,6 @@ class Sentencizer(BaseSegmenter):
                  *args, **kwargs):
         """Set constructor."""
         super().__init__(*args, **kwargs)
-        self.lang = lang
         self.min_sent_len = min_sent_len
         self.max_sent_len = max_sent_len
         self.punct_chars = punct_chars
@@ -66,8 +63,6 @@ class Sentencizer(BaseSegmenter):
         if not ret:
             ret = [(text, 0, len(text))]
         for ci, (r, s, e) in enumerate(ret):
-            # Filter on english characters if lang is set to "en"
-            f = ''.join(filter(lambda x: x in string.printable, r)) if self.lang == 'en' else r
             f = re.sub('\n+', ' ', r).strip()
             f = f[:self.max_sent_len]
             if len(f) > self.min_sent_len:
