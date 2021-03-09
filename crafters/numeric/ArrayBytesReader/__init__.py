@@ -1,6 +1,8 @@
 from typing import Dict
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 
 
@@ -21,6 +23,7 @@ class ArrayBytesReader(BaseCrafter):
         super().__init__(*args, **kwargs)
         self.as_type = as_type
 
+    @single
     def craft(self, buffer: bytes, *args, **kwargs) -> Dict:
         """
         Split string into numbers and convert to numpy array.
