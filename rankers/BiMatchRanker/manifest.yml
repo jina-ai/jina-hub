@@ -1,7 +1,8 @@
 manifest_version: 1
 name: BiMatchRanker
 kind: ranker
-description: Computes document relevance givena a query taking into account the best chunk-hit from both query and doc perspective.
+description: Computes document relevance givena a query taking into account the best
+  chunk-hit from both query and doc perspective.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
@@ -10,3 +11,4 @@ version: 0.0.11
 license: apache-2.0
 keywords: [rank, bi-match, naive]
 type: pod
+timestamp: 1615251929.1869347
