@@ -5,8 +5,8 @@ description: Scann powered vector indexer
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.11
+documentation: https://github.com/jina-ai/jina-hub/tree/master/indexers/vector/ScannIndexer/README.md
+version: 0.0.12
 license: apache-2.0
 keywords: [indexer, vector, scann, ANN]
 type: pod
