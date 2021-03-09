@@ -16,12 +16,14 @@ def test_center_crop():
     height = 20
     output_dim = (height, width)
     crafter = CenterImageCropper(output_dim)
-    crafted_doc = crafter.craft(img_array)
-    assert crafted_doc['blob'].shape == (height, width, 3)
-    # int((img_size - output_dim) / 2)
-    crop = Image.fromarray(np.uint8(crafted_doc['blob']))
-    crop_width, crop_height = crop.size
-    assert crop_width == width
-    assert crop_height == height
-    (top, left) = (98, 93)
-    assert crafted_doc['location'] == (top, left)
+    crafted_docs = crafter.craft([img_array, img_array])
+    assert len(crafted_docs) == 2
+    for crafted_doc in crafted_docs:
+        assert crafted_doc['blob'].shape == (height, width, 3)
+        # int((img_size - output_dim) / 2)
+        crop = Image.fromarray(np.uint8(crafted_doc['blob']))
+        crop_width, crop_height = crop.size
+        assert crop_width == width
+        assert crop_height == height
+        (top, left) = (98, 93)
+        assert crafted_doc['location'] == (top, left)

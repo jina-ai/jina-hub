@@ -13,11 +13,14 @@ def test_horizontal_flip():
     crafter = ImageFlipper()
     # generates a random image array of size (217, 217)
     img_array = create_random_img_array(img_size, img_size)
-    crafted_chunk = crafter.craft(img_array)
-    # image flips along the second axis (horizontal flip)
+    crafted_docs = crafter.craft([img_array, img_array])
+    assert len(crafted_docs) == 2
     flip_img_array = np.fliplr(img_array)
-    # assert flipped image using numpy's fliplr method
-    np.testing.assert_equal(crafted_chunk['blob'], flip_img_array)
+
+    for crafted_doc in crafted_docs:
+        # image flips along the second axis (horizontal flip)
+        # assert flipped image using numpy's fliplr method
+        np.testing.assert_equal(crafted_doc['blob'], flip_img_array)
 
 
 def test_vertical_flip():
@@ -25,8 +28,11 @@ def test_vertical_flip():
     crafter = ImageFlipper(vertical=True)
     # generates a random image array of size (217, 217)
     img_array = create_random_img_array(img_size, img_size)
-    crafted_chunk = crafter.craft(img_array)
-    # image flips along the first axis (vertical flip)
+    crafted_docs = crafter.craft([img_array, img_array])
+    assert len(crafted_docs) == 2
     flip_img_array = np.flipud(img_array)
-    # assert flipped image using numpy's flipud method
-    np.testing.assert_equal(crafted_chunk['blob'], flip_img_array)
+
+    for crafted_doc in crafted_docs:
+        # image flips along the second axis (horizontal flip)
+        # assert flipped image using numpy's fliplr method
+        np.testing.assert_equal(crafted_doc['blob'], flip_img_array)

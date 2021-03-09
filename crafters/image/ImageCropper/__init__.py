@@ -4,6 +4,8 @@ __license__ = "Apache-2.0"
 from typing import Dict
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 
 from .helper import _crop_image, _move_channel_axis, _load_image
@@ -36,6 +38,7 @@ class ImageCropper(BaseCrafter):
         self.width = width
         self.channel_axis = channel_axis
 
+    @single
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
         Crop the input image array.
