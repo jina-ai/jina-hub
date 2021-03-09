@@ -7,7 +7,7 @@ import pytest
 def test_sentencizer_en():
     sentencizer = Sentencizer()
     text = 'It is a sunny day!!!! When Andy comes back, we are going to the zoo.'
-    crafted_chunk_list = sentencizer.segment(text, 0)
+    crafted_chunk_list = sentencizer.segment(text)
     assert len(crafted_chunk_list) == 2
 
 
@@ -18,7 +18,7 @@ def test_sentencizer_en_new_lines():
     sentencizer = Sentencizer()
     text = 'It is a sunny day!!!! When Andy comes back,\n' \
            'we are going to the zoo.'
-    crafted_chunk_list = sentencizer.segment(text, 0)
+    crafted_chunk_list = sentencizer.segment(text)
     assert len(crafted_chunk_list) == 3
 
 
@@ -30,7 +30,7 @@ def test_sentencizer_en_float_numbers():
     sentencizer = Sentencizer()
     text = 'With a 0.99 probability this sentence will be ' \
            'tokenized in 2 sentences.'
-    crafted_chunk_list = sentencizer.segment(text, 0)
+    crafted_chunk_list = sentencizer.segment(text)
     assert len(crafted_chunk_list) == 2
 
 
@@ -42,8 +42,8 @@ def test_sentencizer_en_trim_spaces():
     """
     sentencizer = Sentencizer()
     text = '  This ,  text is...  . Amazing !!'
-    chunks = [i['text'] for i in sentencizer.segment(text, 0)]
-    locs = [i['location'] for i in sentencizer.segment(text, 0)]
+    chunks = [i['text'] for i in sentencizer.segment(text)]
+    locs = [i['location'] for i in sentencizer.segment(text)]
     assert chunks, ["This ,  text is..." == "Amazing"]
     assert text[locs[0][0]:locs[0][1]], '  This  ==   text is...'
     assert text[locs[1][0]:locs[1][1]] == ' Amazing'
@@ -57,23 +57,39 @@ def test_sentencizer_en_trim_spaces():
         f.index_lines(['  This ,  text is...  . Amazing !!'], on_done=validate, callback_on_body=True, line_format='csv')
 
 
-chinese_sentence = '今天是个大晴天！安迪回来以后，我们准备去动物园。'
-mixed_sentence = 'It is a sunny day again Ää!!!! When Andy comes back, we are going to the 动物园 one more time!'
+arabic_sentence = 'إنه يوم مشمس!!!! عندما يعود آندي ، سنذهب إلى حديقة الحيوانات.'
+chinese_sentence = '今天是个大晴天！！！！安迪回来以后，我们准备去动物园。'
+dutch_sentence = 'Het is een zonnige dag!!!! Als Andy terugkomt, gaan we naar de dierentuin.'
+french_sentence = "C'est une journée ensoleillée!!!! Quand Andy revient, nous allons au zoo."
+german_sentence = 'Es ist ein sonniger Tag!!!! Wenn Andy zurückkommt, gehen wir in den Zoo.'
+hindi_sentence = 'यह एक धूपवाला दिन है!!!! जब एंडी वापस आता है, हम चिड़ियाघर जा रहे हैं।'
+japanese_sentence = '晴れた日です!!!!アンディが戻ってきたら、動物園に行きます。'
+korean_sentence = '화창한 날입니다!!!! Andy가 돌아 오면 우리는 동물원에갑니다.'
+portuguese_sentence = 'É um dia ensolarado!!!! Quando Andy voltar, vamos ao zoológico.'
+russian_sentence = 'Это солнечный день!!!! Когда Энди вернется, мы идем в зоопарк.'
+spanish_sentence = '¡¡¡¡Es un día soleado!!!! Cuando Andy regrese, iremos al zoológico.'
+mixed_sentence = 'It is ä suñny dáy!!!! When Andy comes back, we are going to the 动物园!'
 
 @pytest.mark.parametrize(
-    'expected_len, expected_text, sentence, language',
-    [(0, '', chinese_sentence, 'en'),
-     (2, '今天是个大晴天！', chinese_sentence, 'cn'),
-     (2, 'It is a sunny day again !!!!', mixed_sentence, 'en'),
-     (2, 'It is a sunny day again Ää!!!!', mixed_sentence, 'other')],
+    'expected_len, expected_text, sentence',
+    [(2, 'إنه يوم مشمس!!!!', arabic_sentence),
+     (2, '今天是个大晴天！！！！', chinese_sentence),
+     (2, 'Het is een zonnige dag!!!!', dutch_sentence),
+     (2, "C'est une journée ensoleillée!!!!", french_sentence),
+     (2, 'Es ist ein sonniger Tag!!!!', german_sentence),
+     (2, 'यह एक धूपवाला दिन है!!!!', hindi_sentence),
+     (2, '晴れた日です!!!!', japanese_sentence),
+     (2, '화창한 날입니다!!!!', korean_sentence),
+     (2, 'É um dia ensolarado!!!!', portuguese_sentence),
+     (2, 'Это солнечный день!!!!', russian_sentence),
+     (2, '¡¡¡¡Es un día soleado!!!!', spanish_sentence),
+     (2, 'It is ä suñny dáy!!!!', mixed_sentence)],
 )
-def test_sentencizer_lang(expected_len, expected_text, sentence, language):
+def test_sentencizer_multi_lang(expected_len, expected_text, sentence):
     """
-    Test multiple scenarios with various languages and text
-    When language is set to 'en', filter is applied in segment
-    When language is set to something other than 'en', skip filter
+    Test multiple scenarios with various languages
     """
-    sentencizer = Sentencizer(lang = language)
+    sentencizer = Sentencizer()
     segmented = sentencizer.segment(sentence)
     chunks = [i['text'] for i in segmented]
     assert len(segmented) == expected_len
