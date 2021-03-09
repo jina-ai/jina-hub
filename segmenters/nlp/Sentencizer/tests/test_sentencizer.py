@@ -57,21 +57,33 @@ def test_sentencizer_en_trim_spaces():
         f.index_lines(['  This ,  text is...  . Amazing !!'], on_done=validate, callback_on_body=True, line_format='csv')
 
 @pytest.mark.parametrize(
-    'expected_len, expected_text, sentence',
-    [(2, 'إنه يوم مشمس!!!!', 'إنه يوم مشمس!!!! عندما يعود آندي ، سنذهب إلى حديقة الحيوانات.'),
-     (2, '今天是个大晴天！！！！', '今天是个大晴天！！！！安迪回来以后，我们准备去动物园。'),
-     (2, 'Het is een zonnige dag!!!!', 'Het is een zonnige dag!!!! Als Andy terugkomt, gaan we naar de dierentuin.'),
-     (2, "C'est une journée ensoleillée!!!!", "C'est une journée ensoleillée!!!! Quand Andy revient, nous allons au zoo."),
-     (2, 'Es ist ein sonniger Tag!!!!', 'Es ist ein sonniger Tag!!!! Wenn Andy zurückkommt, gehen wir in den Zoo.'),
-     (2, 'यह एक धूपवाला दिन है!!!!', 'यह एक धूपवाला दिन है!!!! जब एंडी वापस आता है, हम चिड़ियाघर जा रहे हैं।'),
-     (2, '晴れた日です!!!!', '晴れた日です!!!!アンディが戻ってきたら、動物園に行きます。'),
-     (2, '화창한 날입니다!!!!', '화창한 날입니다!!!! Andy가 돌아 오면 우리는 동물원에갑니다.'),
-     (2, 'É um dia ensolarado!!!!', 'É um dia ensolarado!!!! Quando Andy voltar, vamos ao zoológico.'),
-     (2, 'Это солнечный день!!!!', 'Это солнечный день!!!! Когда Энди вернется, мы идем в зоопарк.'),
-     (2, '¡¡¡¡Es un día soleado!!!!', '¡¡¡¡Es un día soleado!!!! Cuando Andy regrese, iremos al zoológico.'),
-     (2, 'It is ä suñny dáy!!!!', 'It is ä suñny dáy!!!! When Andy comes back, we are going to the 动物园!')],
+    'expected_len, expected_first_chunk, expected_second_chunk, sentence',
+    [(2, 'إنه يوم مشمس!!!!', 'عندما يعود آندي ، سنذهب إلى حديقة الحيوانات.',
+         'إنه يوم مشمس!!!! عندما يعود آندي ، سنذهب إلى حديقة الحيوانات.'),
+     (2, '今天是个大晴天！！！！', '安迪回来以后，我们准备去动物园。',
+         '今天是个大晴天！！！！安迪回来以后，我们准备去动物园。'),
+     (2, 'Het is een zonnige dag!!!!', 'Als Andy terugkomt, gaan we naar de dierentuin.',
+         'Het is een zonnige dag!!!! Als Andy terugkomt, gaan we naar de dierentuin.'),
+     (2, "C'est une journée ensoleillée!!!!", "Quand Andy revient, nous allons au zoo.",
+         "C'est une journée ensoleillée!!!! Quand Andy revient, nous allons au zoo."),
+     (2, 'Es ist ein sonniger Tag!!!!', 'Wenn Andy zurückkommt, gehen wir in den Zoo.',
+         'Es ist ein sonniger Tag!!!! Wenn Andy zurückkommt, gehen wir in den Zoo.'),
+     (2, 'यह एक धूपवाला दिन है!!!!', 'जब एंडी वापस आता है, हम चिड़ियाघर जा रहे हैं।',
+         'यह एक धूपवाला दिन है!!!! जब एंडी वापस आता है, हम चिड़ियाघर जा रहे हैं।'),
+     (2, '晴れた日です!!!!', 'アンディが戻ってきたら、動物園に行きます。',
+         '晴れた日です!!!!アンディが戻ってきたら、動物園に行きます。'),
+     (2, '화창한 날입니다!!!!', 'Andy가 돌아 오면 우리는 동물원에갑니다.',
+         '화창한 날입니다!!!! Andy가 돌아 오면 우리는 동물원에갑니다.'),
+     (2, 'É um dia ensolarado!!!!', 'Quando Andy voltar, vamos ao zoológico.',
+         'É um dia ensolarado!!!! Quando Andy voltar, vamos ao zoológico.'),
+     (2, 'Это солнечный день!!!!', 'Когда Энди вернется, мы идем в зоопарк.',
+         'Это солнечный день!!!! Когда Энди вернется, мы идем в зоопарк.'),
+     (2, '¡¡¡¡Es un día soleado!!!!', 'Cuando Andy regrese, iremos al zoológico.',
+         '¡¡¡¡Es un día soleado!!!! Cuando Andy regrese, iremos al zoológico.'),
+     (2, 'It is ä suñny dáy!!!!', 'When Andy comes back, we are going to the 动物园!',
+         'It is ä suñny dáy!!!! When Andy comes back, we are going to the 动物园!')],
 )
-def test_sentencizer_multi_lang(expected_len, expected_text, sentence):
+def test_sentencizer_multi_lang(expected_len, expected_first_chunk, expected_second_chunk, sentence):
     """
     Test multiple scenarios with various languages
     """
@@ -79,5 +91,5 @@ def test_sentencizer_multi_lang(expected_len, expected_text, sentence):
     segmented = sentencizer.segment(sentence)
     chunks = [i['text'] for i in segmented]
     assert len(segmented) == expected_len
-    if (expected_len != 0):
-        assert chunks[0] == expected_text
+    assert chunks[0] == expected_first_chunk
+    assert chunks[1] == expected_second_chunk
