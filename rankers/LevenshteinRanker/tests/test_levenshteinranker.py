@@ -1,12 +1,6 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import copy
-import json
-import numpy as np
-
-from jina.executors.rankers import Match2DocRanker
-
 from .. import LevenshteinRanker
 
 
@@ -22,6 +16,6 @@ def test_levenshteinranker():
         match_meta
     )
 
-    assert len(new_scores) == 1
+    assert len(new_scores) == 2
     assert new_scores[0] == 0
     assert new_scores[1] == -3
