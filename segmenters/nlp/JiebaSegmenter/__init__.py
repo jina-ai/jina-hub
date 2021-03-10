@@ -14,10 +14,6 @@ class JiebaSegmenter(BaseSegmenter):
      - all
 
     :type mode: str
-    :param pool_size: Number of parallel processes to use.
-        The default is no parallel execution.
-        None will set this value to the number of CPUs.
-    :type pool_size: int
     :param user_dict_file: Path to a custom dictionary.
         This custom dictionary extends the default dictionary.
         `See here for the format of the dict https://github.com/fxsjy/jieba#load-dictionary`_
@@ -30,9 +26,8 @@ class JiebaSegmenter(BaseSegmenter):
 
     """
 
-    def __init__(self, mode: str = 'accurate', pool_size: int = 1, user_dict_file: str = None, *args, **kwargs):
+    def __init__(self, mode: str = 'accurate', user_dict_file: str = None, *args, **kwargs):
         """Set Constructor."""
-        from multiprocessing import cpu_count
         import jieba
         import os
 
@@ -44,12 +39,7 @@ class JiebaSegmenter(BaseSegmenter):
         if user_dict_file is not None:
             if not os.path.exists(user_dict_file):
                 raise FileNotFoundError(f'User dictionary can not be found at {user_dict_file}')
-            jieba.load_userdict(user_dict_file)
-
-        if pool_size is None:
-            jieba.enable_parallel()
-        elif pool_size > 1:
-            jieba.enable_parallel(min(pool_size, cpu_count()))
+        self.user_dict_file = user_dict_file
 
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
@@ -63,6 +53,10 @@ class JiebaSegmenter(BaseSegmenter):
         :rtype: List[Dict]
         """
         import jieba
+
+        if self.user_dict_file is not None:
+            jieba.load_userdict(self.user_dict_file)
+
         if self.mode == 'search':
             words = jieba.cut_for_search(text)
         elif self.mode == 'all':
