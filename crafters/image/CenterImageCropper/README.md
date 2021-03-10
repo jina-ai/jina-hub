@@ -6,7 +6,7 @@ CenterImageCropper crops the image with the center crop box. The coordinate is t
 
 Initialise CenterImageCropper:
 
-`SptagIndexer(method, samples, tpt_number, tpt_leaf_size, neighborhood_size, graph_neighborhood_size, cef, max_check_for_refined_graph, num_threads, max_ckeck, dist_calc_method, bkt_number, bkt_meansk, kdt_number)`
+`CenterImageCropper(target_size, channel_axis)`
 | File                            | Descriptions     |
 |---------------------------------|------------------|
 | `target_size`                   | Desired output   |
@@ -22,7 +22,7 @@ Initialise CenterImageCropper:
   ```python
     from jina.flow import Flow
     f = (Flow()
-        .add(name='my-indexer', uses='docker://jinahub/pod.crafter.centerimagecropper:MODULE_VERSION-JINA_VERSION')
+        .add(name='my-crafter', uses='docker://jinahub/pod.crafter.centerimagecropper:MODULE_VERSION-JINA_VERSION')
     ```
 - Flow YAML file
   This is the only way to provide arguments to its parameters:
@@ -30,16 +30,15 @@ Initialise CenterImageCropper:
   ```yaml
   pods:
     - name: ngt
-      uses: indexers/vector/CenterImageCropper/config.yml
+      uses: crafters/image/CenterImageCropper/config.yml
   ```
   
   and then in `imagecropper.yml`:
   ```yaml
   !CenterImageCropper
-  with:
-    hostname: yourdomain.com
-    port: 6379
-    db: 0
+  metas:
+    - py_modules:
+        - __init__.py
   ```
 - Jina CLI
   
@@ -49,7 +48,7 @@ Initialise CenterImageCropper:
 - Conventional local usage with `uses` argument
   
   ```bash
-  jina pod --uses indexers/vector/CenterImageCropper/config.yml --port-in 55555 --port-out 55556
+  jina pod --uses crafters/image/CenterImageCropper/config.yml --port-in 55555 --port-out 55556
   ```
 - Run with Docker (`docker run`)
  
