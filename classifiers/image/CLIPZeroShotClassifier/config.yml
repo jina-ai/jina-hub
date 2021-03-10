@@ -1,6 +1,6 @@
 !CLIPZeroShotClassifier
 with:
-  {}
+  labels: ["dog","cat","human"]
 metas:
   py_modules: 
     - __init__.py
