@@ -1,49 +1,12 @@
+import numpy as np
 import pytest
-from jina import Document
-from jina.drivers.rank.aggregate import Chunk2DocRankDriver
-from jina.types.score import NamedScore
-from jina.types.sets import DocumentSet
 
 from .. import BiMatchRanker
 
 
-class SimpleChunk2DocRankDriver(Chunk2DocRankDriver):
-    def __init__(self, docs, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._docs = docs
-
-    @property
-    def exec_fn(self):
-        return self._exec_fn
-
-    @property
-    def docs(self):
-        return self._docs
-
-
-def create_data(query_chunk2match_chunk):
-    doc = Document()
-    doc.id = '1'
-    doc.granularity = 0
-    num_query_chunks = len(query_chunk2match_chunk)
-    for query_chunk_id, matches in query_chunk2match_chunk.items():
-        chunk = Document()
-        chunk.id = str(query_chunk_id)
-        chunk.granularity = doc.granularity + 1
-        chunk.length = num_query_chunks
-        for match_data in matches:
-            match = Document()
-            match.granularity = chunk.granularity
-            match.parent_id = match_data['parent_id']
-            match.score = NamedScore(value=match_data['score'], ref_id=chunk.id)
-            match.id = match_data['id']
-            match.length = match_data['length']
-            chunk.matches.append(match)
-        doc.chunks.append(chunk)
-    return doc
-
-
 def test_bimatchranker():
+    """
+    Before grouping:
     query_chunk2match_chunk = {
         100: [
             {'parent_id': 1, 'id': 10, 'score': 0.4, 'length': 200},
@@ -54,64 +17,62 @@ def test_bimatchranker():
             {'parent_id': 4294967294, 'id': 20, 'score': 0.1, 'length': 300},
         ]
     }
+    """
+    ranker = BiMatchRanker()
+    query_chunk_meta = {'100': {'length': 2}, '110': {'length': 2}}
+    match_chunk_meta = {'10': {'length': 200}, '11': {'length': 200}, '20': {'length': 300}}
 
-    doc = create_data(query_chunk2match_chunk)
-    driver = SimpleChunk2DocRankDriver(
-        docs=DocumentSet([doc]),
-    )
-    executor = BiMatchRanker()
-    driver.attach(executor=executor, runtime=None)
-    driver()
-
-    match_score_1 = doc.matches[0].score.value
-    match_score_2 = doc.matches[1].score.value
-
-    assert match_score_1 > match_score_2
-    assert doc.matches[0].id == '1'
+    # test score() with fake grouped data
+    match_idx_1 = np.array([('1', '10', '100', 0.40000001), ('1', '10', '110', 0.30000001),
+                            ('1', '11', '110', 0.2)],
+                           dtype=[('match_parent_id', '<U64'), ('match_doc_chunk_id', '<U64'),
+                                  ('match_query_chunk_id', '<U64'), ('score', '<f8')])
+    match_score_1 = ranker.score(match_idx_1, query_chunk_meta, match_chunk_meta)
     assert match_score_1 == pytest.approx(0.5048, 0.001)
-    assert doc.matches[1].id == '4294967294'
+
+    match_idx_2 = np.array([('4294967294', '20', '110', 0.1)],
+                           dtype=[('match_parent_id', '<U64'), ('match_doc_chunk_id', '<U64'),
+                                  ('match_query_chunk_id', '<U64'), ('score', '<f8')])
+    match_score_2 = ranker.score(match_idx_2, query_chunk_meta, match_chunk_meta)
     assert match_score_2 == pytest.approx(0.2516, 0.001)
-    # check the number of matched docs
-    assert len(doc.matches) == 2
 
 
 def test_bimatchranker_readme():
+    """
     query_chunk2match_chunk = {
-        1: [
-            {'parent_id': 1, 'id': 11, 'score': 0.1, 'length': 4},
-            {'parent_id': 2, 'id': 22, 'score': 0.5, 'length': 3},
-            {'parent_id': 2, 'id': 21, 'score': 0.7, 'length': 3},
-        ],
-        2: [
-            {'parent_id': 2, 'id': 21, 'score': 0.1, 'length': 3},
-            {'parent_id': 1, 'id': 11, 'score': 0.5, 'length': 4},
-            {'parent_id': 2, 'id': 22, 'score': 0.7, 'length': 3},
-        ],
-        3: [
-            {'parent_id': 2, 'id': 21, 'score': 0.1, 'length': 3},
-            {'parent_id': 2, 'id': 22, 'score': 0.5, 'length': 3},
-            {'parent_id': 2, 'id': 23, 'score': 0.7, 'length': 3},
-        ]
+    1: [
+        {'parent_id': 1, 'id': 11, 'score': 0.1, 'length': 4},
+        {'parent_id': 2, 'id': 22, 'score': 0.5, 'length': 3},
+        {'parent_id': 2, 'id': 21, 'score': 0.7, 'length': 3},
+    ],
+    2: [
+        {'parent_id': 2, 'id': 21, 'score': 0.1, 'length': 3},
+        {'parent_id': 1, 'id': 11, 'score': 0.5, 'length': 4},
+        {'parent_id': 2, 'id': 22, 'score': 0.7, 'length': 3},
+    ],
+    3: [
+        {'parent_id': 2, 'id': 21, 'score': 0.1, 'length': 3},
+        {'parent_id': 2, 'id': 22, 'score': 0.5, 'length': 3},
+        {'parent_id': 2, 'id': 23, 'score': 0.7, 'length': 3},
+    ]
     }
-    doc = create_data(query_chunk2match_chunk)
-    driver = SimpleChunk2DocRankDriver(
-        docs=DocumentSet([doc]),
-    )
-    executor = BiMatchRanker(d_miss=1)
-    driver.attach(executor=executor, runtime=None)
-    driver()
+    """
+    ranker = BiMatchRanker(d_miss=1)
+    query_chunk_meta = {'1': {'length': 3}, '2': {'length': 3}, '3': {'length': 3}}
+    match_chunk_meta = {'11': {'length': 4}, '22': {'length': 3}, '21': {'length': 3}, '23': {'length': 3}}
+    # test score() with fake grouped data
 
-    # check the matched docs are in descending order of the scores
-    match_score_1 = doc.matches[0].score.value
-    match_score_2 = doc.matches[1].score.value
+    match_idx_1 = np.array([('1', '11', '1', 0.1), ('1', '11', '2', 0.5)],
+                           dtype=[('match_parent_id', '<U64'), ('match_doc_chunk_id', '<U64'),
+                                  ('match_query_chunk_id', '<U64'), ('score', '<f8')])
+    match_score_1 = ranker.score(match_idx_1, query_chunk_meta, match_chunk_meta)
+    assert match_score_1 == pytest.approx(0.3458, 0.001)
 
-    assert match_score_1 > match_score_2
-    assert doc.matches[0].id == '2'
-    assert match_score_1 == pytest.approx(0.5333, 0.001)
-    assert doc.matches[1].id == '1'
-    assert match_score_2 == pytest.approx(0.3458, 0.001)
-    # check the number of matched docs
-    assert len(doc.matches) == 2
-
-
-
+    match_idx_2 = np.array([('2', '21', '1', 0.69999999), ('2', '21', '2', 0.1),
+                            ('2', '21', '3', 0.1), ('2', '22', '1', 0.5),
+                            ('2', '22', '2', 0.69999999), ('2', '22', '3', 0.5),
+                            ('2', '23', '3', 0.69999999)],
+                           dtype=[('match_parent_id', '<U64'), ('match_doc_chunk_id', '<U64'),
+                                  ('match_query_chunk_id', '<U64'), ('score', '<f8')])
+    match_score_2 = ranker.score(match_idx_2, query_chunk_meta, match_chunk_meta)
+    assert match_score_2 == pytest.approx(0.5333, 0.001)
