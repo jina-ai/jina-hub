@@ -30,7 +30,7 @@ class SimpleAggregateRanker(Chunk2DocRanker):
         else:
             raise ValueError(f'The aggregate function "{aggregate_function}" is not in "{self.AGGREGATE_FUNCTIONS}".')
 
-    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         scores = match_idx[self.COL_SCORE]
         aggregated_score = self.np_aggregate_function(scores)
         if self.inverse_score:
