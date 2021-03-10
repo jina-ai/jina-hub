@@ -14,6 +14,7 @@ def test_levenshteinranker():
     query_meta = {"text": "cool stuff"}
     old_match_scores = [5, 4]
     match_meta = [{"text": "cool stuff"}, {"text": "kewl stuff"}]
+
     ranker = LevenshteinRanker()
     new_scores = ranker.score(
         old_match_scores,
@@ -22,3 +23,6 @@ def test_levenshteinranker():
     )
 
     assert len(new_scores) == 1
+    assert new_scores[0] == 0
+    assert new_scores[1] == -3
+
