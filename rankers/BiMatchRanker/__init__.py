@@ -69,17 +69,27 @@ class BiMatchRanker(Chunk2DocRanker):
         s2 = self._directional_score(match_idx, query_chunk_meta, col=self.COL_QUERY_CHUNK_ID)
         return (s1 + s2) / 2.
 
+    def _group_by(self, match_idx, col_name):
+        # sort by ``col
+        _sorted_m = np.sort(match_idx, order=col_name)
+        _, _doc_counts = np.unique(_sorted_m[col_name], return_counts=True)
+        # group by ``col``
+        return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
+
     def _directional_score(self, g: Dict, chunk_meta: Dict, col: str):
         # g [parent_match_id, match_id, query_id, score]
         # col = self.COL_DOC_CHUNK_ID, from matched_chunk aspect
         # col = self.COL_QUERY_CHUNK_ID, from query chunk aspect
         # group by "match_id" or "query_chunk_id". So here groups have in common 1st (match_parent_id) and `n` column
-
+        _groups = self._group_by(g, col)
+        # take the best match from each group
+        _groups_best = np.stack([np.sort(gg, order=col)[0] for gg in _groups])
+        # doc total length
         # how many chunks in the document (match or query)
-        _c = chunk_meta[g[0][col]]['length']
+        _c = chunk_meta[_groups_best[0][col]]['length']
         # how many chunks hit
-        _h = len(np.unique(g[col]))
+        _h = _groups_best.shape[0]
         # hit distance
-        sum_d_hit = np.sum(g[self.COL_SCORE])
-        # return score: all hit => 1, all_miss => 0
+        sum_d_hit = np.sum(_groups_best[self.COL_SCORE])
+        # all hit => 0, all_miss => 1
         return 1 - (sum_d_hit + self.d_miss * (_c - _h)) / (self.d_miss * _c)

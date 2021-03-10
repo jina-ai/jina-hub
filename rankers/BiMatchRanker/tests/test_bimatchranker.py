@@ -127,7 +127,7 @@ def test_bimatchranker_readme():
     driver = SimpleChunk2DocRankDriver(
         docs=DocumentSet([doc]),
     )
-    executor = BiMatchRanker()
+    executor = BiMatchRanker(d_miss=1)
     driver.attach(executor=executor, runtime=None)
     driver()
 
@@ -137,9 +137,9 @@ def test_bimatchranker_readme():
 
     assert match_score_1 > match_score_2
     assert doc.matches[0].id == '2'
-    assert match_score_1 == pytest.approx(0.9994, 0.001)
+    assert match_score_1 == pytest.approx(0.5333, 0.001)
     assert doc.matches[1].id == '1'
-    assert match_score_2 == pytest.approx(0.4582, 0.001)
+    assert match_score_2 == pytest.approx(0.3458, 0.001)
     # check the number of matched docs
     assert len(doc.matches) == 2
 
