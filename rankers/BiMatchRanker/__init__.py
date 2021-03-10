@@ -74,15 +74,12 @@ class BiMatchRanker(Chunk2DocRanker):
         # col = self.COL_MATCH_ID, from matched_chunk aspect
         # col = self.COL_DOC_CHUNK_ID, from query chunk aspect
         # group by "match_id" or "query_chunk_id". So here groups have in common 1st (match_parent_id) and `n` column
-        _groups = self._group_by(g, col)
-        # take the best match from each group
-        _groups_best = np.stack([np.sort(gg, order=col)[0] for gg in _groups])
-        # doc total length
+
         # how many chunks in the document (match or query)
-        _c = chunk_meta[_groups_best[0][col]]['length']
+        _c = chunk_meta[g[0][col]]['length']
         # how many chunks hit
-        _h = _groups_best.shape[0]
+        _h = len(np.unique(g[col]))
         # hit distance
-        sum_d_hit = np.sum(_groups_best[self.COL_SCORE])
-        # all hit => 0, all_miss => 1
+        sum_d_hit = np.sum(g[self.COL_SCORE])
+        # return score: all hit => 1, all_miss => 0
         return 1 - (sum_d_hit + self.d_miss * (_c - _h)) / (self.d_miss * _c)
