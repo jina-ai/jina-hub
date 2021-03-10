@@ -24,7 +24,6 @@ def test_levenshteinranker():
         copy.deepcopy(match_meta)
     )
 
-
     assert new_scores == [0, -3]
 
     # Guarantee no side-effects happen
