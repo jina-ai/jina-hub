@@ -25,4 +25,3 @@ def test_levenshteinranker():
     assert len(new_scores) == 1
     assert new_scores[0] == 0
     assert new_scores[1] == -3
-
