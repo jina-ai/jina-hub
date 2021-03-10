@@ -38,4 +38,4 @@ class SimpleAggregateRanker(Chunk2DocRanker):
                 raise ValueError(f'Setting "is_reversed_score" to True does not allow to have an aggregated document '
                                  f'negative score')
             aggregated_score = 1. / (1. + aggregated_score)
-        return aggregated_score
+        return self.get_doc_id(match_idx), aggregated_score
