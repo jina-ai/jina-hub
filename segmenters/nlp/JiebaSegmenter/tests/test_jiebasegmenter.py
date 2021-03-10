@@ -10,20 +10,20 @@ path_dict_file = os.path.join(cur_dir, 'dict.txt')
 def test_jieba_crafter():
     jieba_crafter = JiebaSegmenter(mode='accurate')
     text = '今天是个大晴天！安迪回来以后，我们准备去动物园。'
-    crafted_chunk_list = jieba_crafter.segment(text, 0)
+    crafted_chunk_list = jieba_crafter.segment(text)
     assert len(crafted_chunk_list) == 14
 
 
 def test_jieba_user_dir():
     jieba_segmenter = JiebaSegmenter()
     text = '今天是个大晴天！安迪回来以后，我们准备去动物园。thisisnotachineseword'
-    crafted_chunk_list = jieba_segmenter.segment(text, 0)
+    crafted_chunk_list = jieba_segmenter.segment(text)
 
     assert len(crafted_chunk_list) == 15
 
     jieba_segmenter = JiebaSegmenter(user_dict_file=path_dict_file)
     text = '今天是个大晴天！安迪回来以后，我们准备去动物园。thisisnotachineseword'
-    crafted_chunk_list = jieba_segmenter.segment(text, 0)
+    crafted_chunk_list = jieba_segmenter.segment(text)
 
     assert len(crafted_chunk_list) == 20
 
