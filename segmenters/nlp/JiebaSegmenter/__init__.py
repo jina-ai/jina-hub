@@ -56,7 +56,6 @@ class JiebaSegmenter(BaseSegmenter):
         :rtype: List[Dict]
         """
         import jieba
-
         if self.mode == 'search':
             words = jieba.cut_for_search(text)
         elif self.mode == 'all':
