@@ -9,7 +9,7 @@ from .. import CLIPZeroShotClassifier
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def test_clipzeroshotclassifier():
-    dog_image = os.path.join(cur_dir, '../imgs/dog.jpg')
+    dog_image = os.path.join(cur_dir, 'imgs/dog.jpg')
     labels = ['cat','dog','human']
     executor = CLIPZeroShotClassifier(labels)
     _, preprocess = clip.load('ViT-B/32')
