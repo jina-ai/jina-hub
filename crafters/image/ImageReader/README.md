@@ -4,46 +4,53 @@
 
 The **ImageReader** executor needs only one parameter:
 
+## Snippets:
+
 | `param_name`  | `param_remarks` |
 | ------------- | ------------- |
 | `channel_axis`  |The axis id of the color channel. The **-1** is the color channel info at the last axis.|
 
-## Usage
+**NOTE**: 
 
-Users can use Pod images in several ways:
+- `MODULE_VERSION` is the version of the ImageReader, in semver format. E.g. `0.0.13`.
+- `JINA_VERSION` is the version of the Jina core version with which the Docker image was built. E.g. `1.0.1` 
 
-1. Run with Docker (`docker run`)
-   ```bash
-    docker run jinahub/pod.crafter.imagereader:0.0.13-1.0.1 --port-in 55555 --port-out 55556
-    ```
-    
-2. Run with Flow API
-   ```python
+- Flow API
+
+  ```python
     from jina.flow import Flow
-
     f = (Flow()
-        .add(name='my_encoder', uses='docker://jinahub/pod.crafter.imagereader:0.0.13-1.0.1', port_in=55555, port_out=55556))
+        .add(name='my-crafter', uses='docker://jinahub/pod.crafter.imagereader:MODULE_VERSION-JINA_VERSION')
     ```
-    
-3. Run with Jina CLI
-   ```bash
-    jina pod --uses docker://jinahub/pod.crafter.imagereader:0.0.13-1.0.1 --port-out 55556
-    ```
-    
-4. Conventional local usage with `uses` argument
-    ```bash
-    jina pod --uses hub/example/imagereader.yml --port-in 55555 --port-out 55556
-    ```
-    
-5. Docker command
-
-   Specify the image name along with the version tag. The snippet below uses Jina version `1.0.1`
-
-   ```bash
-    docker pull jinahub/pod.crafter.imagereader:0.0.13-1.0.1
-    ```
-   
- Note:
+- Flow YAML file
+  This is the only way to provide arguments to its parameters:
+  
+  ```yaml
+  pods:
+    - name: imgreader
+      uses: crafters/image/ImageReader/config.yml
+  ```
+  
+  and then in `imagereader.yml`:
+  ```yaml
+  !ImageReader
+  metas:
+    - py_modules:
+        - __init__.py
+  ```
+- Jina CLI
+  
+  ```bash
+  jina pod --uses docker://jinahub/pod.crafter.imagereader:MODULE_VERSION-JINA_VERSION
+  ```
+- Conventional local usage with `uses` argument
+  
+  ```bash
+  jina pod --uses crafters/image/ImageReader/config.yml --port-in 55555 --port-out 55556
+  ```
+- Run with Docker (`docker run`)
  
- One of the limitations with the Hub Executors currently is the tags - all Executor images should have the versions appended in the name i.e.
- if the version is `0.0.8-1.0.0`, the image name would be `pod.crafter.imagereader:0.0.13-1.0.0` instead of `pod.crafter.imagereader:0.0.13-1.0.1` as in the example.
+  Specify the image name along with the version tag. The snippet below uses Jina version as `JINA_VERSION`.
+  ```bash
+    docker run --network host docker://jinahub/pod.crafter.imagereader:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
+    ```
