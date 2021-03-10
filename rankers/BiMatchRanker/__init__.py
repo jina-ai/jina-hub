@@ -71,8 +71,8 @@ class BiMatchRanker(Chunk2DocRanker):
 
     def _directional_score(self, g: Dict, chunk_meta: Dict, col: str):
         # g [parent_match_id, match_id, query_id, score]
-        # col = self.COL_MATCH_ID, from matched_chunk aspect
-        # col = self.COL_DOC_CHUNK_ID, from query chunk aspect
+        # col = self.COL_DOC_CHUNK_ID, from matched_chunk aspect
+        # col = self.COL_QUERY_CHUNK_ID, from query chunk aspect
         # group by "match_id" or "query_chunk_id". So here groups have in common 1st (match_parent_id) and `n` column
 
         # how many chunks in the document (match or query)
