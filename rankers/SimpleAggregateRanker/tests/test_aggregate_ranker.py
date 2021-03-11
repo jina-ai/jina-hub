@@ -178,7 +178,6 @@ def assert_document_order(doc_idx):
 ])
 def test_aggregate_functions(chunk_scores, aggregate_function, inverse_score, doc_ids, doc_scores):
     ranker = SimpleAggregateRanker(aggregate_function=aggregate_function, inverse_score=inverse_score)
-
     doc_idx = fake_group_and_score(ranker,*chunk_scores)
     assert_document_order(doc_idx)
     for i, (doc_id, score) in enumerate(zip(doc_ids, doc_scores)):
