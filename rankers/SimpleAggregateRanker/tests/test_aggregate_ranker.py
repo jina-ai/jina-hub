@@ -1,8 +1,45 @@
 import numpy as np
 
-from jina.executors.rankers import Chunk2DocRanker, COL_STR_TYPE
+from jina.executors.rankers import Chunk2DocRanker
 import pytest
 from .. import SimpleAggregateRanker
+
+COL_STR_TYPE = 'U64'
+
+
+def group_by(match_idx, col_name):
+    """
+    fake the group function in Driver
+    """
+    # sort by ``col
+    _sorted_m = np.sort(match_idx, order=col_name)
+    _, _doc_counts = np.unique(_sorted_m[col_name], return_counts=True)
+    # group by ``col``
+    return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
+
+
+def sort_doc_by_score(r):
+    """
+    fake the sort function in Driver
+    """
+    r = np.array(
+        r,
+        dtype=[
+            (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
+            (Chunk2DocRanker.COL_SCORE, np.float64),
+        ],
+    )
+    return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
+
+
+def fake_group_and_score(ranker, match_idx,query_chunk_meta,match_chunk_meta):
+    _groups = group_by(match_idx, Chunk2DocRanker.COL_PARENT_ID)
+    r = []
+    for _g in _groups:
+        match_id = _g[0][Chunk2DocRanker.COL_PARENT_ID]
+        score = ranker.score(_g, query_chunk_meta, match_chunk_meta)
+        r.append((match_id, score))
+    return sort_doc_by_score(r)
 
 
 def chunk_scores(factor=1):
@@ -143,12 +180,14 @@ def assert_document_order(doc_idx):
 ])
 def test_aggregate_functions(chunk_scores, aggregate_function, inverse_score, doc_ids, doc_scores):
     ranker = SimpleAggregateRanker(aggregate_function=aggregate_function, inverse_score=inverse_score)
-    doc_idx = ranker.score(*chunk_scores)
+
+    doc_idx = fake_group_and_score(ranker,*chunk_scores)
     for i, (doc_id, score) in enumerate(zip(doc_ids, doc_scores)):
-        assert doc_idx == score
+        assert doc_idx[i][0] == str(doc_id)
+        assert doc_idx[i][1] == score
 
     ranker_deprecated = SimpleAggregateRanker(aggregate_function=aggregate_function, is_reversed_score=inverse_score)
-    doc_idx = ranker_deprecated.score(*chunk_scores)
+    doc_idx = fake_group_and_score(ranker_deprecated, *chunk_scores)
     assert_document_order(doc_idx)
     for i, (doc_id, score) in enumerate(zip(doc_ids, doc_scores)):
         assert int(doc_idx[i][0]) == doc_id
