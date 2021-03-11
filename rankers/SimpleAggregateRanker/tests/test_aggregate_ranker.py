@@ -180,9 +180,11 @@ def test_aggregate_functions(chunk_scores, aggregate_function, inverse_score, do
     ranker = SimpleAggregateRanker(aggregate_function=aggregate_function, inverse_score=inverse_score)
 
     doc_idx = fake_group_and_score(ranker,*chunk_scores)
+    assert_document_order(doc_idx)
     for i, (doc_id, score) in enumerate(zip(doc_ids, doc_scores)):
-        assert doc_idx[i][0] == str(doc_id)
+        assert int(doc_idx[i][0]) == doc_id
         assert doc_idx[i][1] == score
+    assert len(doc_idx) == len(doc_ids) == len(doc_scores)
 
     ranker_deprecated = SimpleAggregateRanker(aggregate_function=aggregate_function, is_reversed_score=inverse_score)
     doc_idx = fake_group_and_score(ranker_deprecated, *chunk_scores)
