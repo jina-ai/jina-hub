@@ -1,0 +1,14 @@
+manifest_version: 1
+name: UMAPEncoder
+kind: encoder
+description:
+  |
+  Encodes data using Uniform Manifold Approximation and Projection Embedding.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [numeric, encoder, umap]
+type: pod
