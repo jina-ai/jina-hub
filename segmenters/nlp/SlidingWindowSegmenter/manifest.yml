@@ -2,11 +2,11 @@ manifest_version: 1
 name: SlidingWindowSegmenter
 kind: segmenter
 type: pod
-description: split the text on the doc-level into overlapping substrings on the chunk-level.
+description: SlidingWindowSegmenter is one segmenter used in the NLP domain. It splits the text on the doc-level into overlapping substrings on the chunk-level.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.8
+documentation: https://github.com/jina-ai/jina-hub/blob/master/segmenters/nlp/SlidingWindowSegmenter/README.md
+version: 0.0.9
 license: apache-2.0
-keywords: [Some keywords to describe the executor, separated by commas]
+keywords: [text, nlp, segment]

@@ -1,0 +1,14 @@
+manifest_version: 1
+name: CLIPImageEncoder
+kind: encoder
+description: |
+    `CLIPImageEncoder` encodes data from an image into ndarray of size `BatchSize x EmbeddingDimension`.
+    Model taken from the paper implementation of (Learning Transferable Visual Models From Natural Language Supervision)
+    from https://github.com/openai/CLIP: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [Cross-Modal, image, CLIP, computer vision]
+type: pod

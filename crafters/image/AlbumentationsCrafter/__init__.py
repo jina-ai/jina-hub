@@ -1,18 +1,22 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from typing import Dict, List, Union
 
 import numpy as np
 
+from jina.executors.decorators import single, as_ndarray
 from jina.executors.crafters import BaseCrafter
 
 
 class AlbumentationsCrafter(BaseCrafter):
-    """Applies image transforms from the Albumentations package to the image.
+    """Apply transforms from the Albumentations package to the image.
 
     This crafter allows you to apply any of the Albumenation's transforms to
     an image. You can also compose as many transforms as you would like inside
     a single object. For a full list of available transforms, visit
-    `Albumentations's GitHub page <https://github.com/albumentations-team/albumentations/#list-of-augmentations>`__
-    or see `the documentation <https://albumentations.ai/docs/api_reference/augmentations/transforms/>`__.
+    `Albumentations's GitHub page <https://github.com/albumentations-team/albumentations/#list-of-augmentations>`_
+    or see `the documentation <https://albumentations.ai/docs/api_reference/augmentations/transforms/>`_.
 
     .. attention::
         Albumentations' transforms were created for the purpose of image augmentation,
@@ -53,23 +57,24 @@ class AlbumentationsCrafter(BaseCrafter):
                 A.Rotate(limit=[45,45], always_apply=True)
             ])
 
-    Args:
-        transforms: A list of transformations that should be applied. Each item in
-            the list should be of the form ``{'TransformClass': kwargs}`` or
-            ``'TransformClass'``, where ``kwargs`` is a dictionary with keyword
-            arguments that will be passed to ``TransformClass`` at initialization
-            (or an empty dict if there are no such arguments).
-
-            The argument ``always_apply=True`` will be added to all kwargs
-            automatically.
+    :param transforms: A list of transformations that should be applied.
+        Each item in the list should be of the form
+        ``{'TransformClass': kwargs}`` or ``'TransformClass'``.
+    :param args:  Additional positional arguments
+    :param kwargs: A dictionary with keyword arguments that will
+        be passed to ``TransformClass`` at initialization
+        (or an empty dict if there are no such arguments).
+        The argument ``always_apply=True`` will be added to all kwargs
+        automatically.
     """
 
     def __init__(
-        self,
-        transforms: List[Union[str, Dict[str, Dict]]] = ['HorizontalFlip'],
-        *args,
-        **kwargs
+            self,
+            transforms: List[Union[str, Dict[str, Dict]]] = ['HorizontalFlip'],
+            *args,
+            **kwargs
     ):
+        """Set constructor."""
         super().__init__(*args, **kwargs)
 
         if not isinstance(transforms, list):
@@ -119,13 +124,13 @@ class AlbumentationsCrafter(BaseCrafter):
 
         self.transforms = A.Compose(transforms_list)
 
+    @single
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        """Applies the transformations to the image.
+        """Apply transformations to the image.
 
-        Args:
-            blob: The image to transform, should be in ``[H, W, C]`` format, where
-                ``C`` is the color channel, which is either RGB (siz 3), or BW
-                (size 1).
+        :param blob: The image to transform, should be in ``[H, W, C]`` format,
+            where ``C`` is the color channel, which is either RGB (siz 3), or BW
+            (size 1).
+        :return: The transformed image
         """
-
-        return self.transforms(image=blob)['image']
+        return {'blob': self.transforms(image=blob)['image']}

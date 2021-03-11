@@ -1,0 +1,12 @@
+manifest_version: 1
+name: NDCGEvaluator
+kind: evaluator
+type: pod
+description: Evaluates normalized discounted cumulative gain for information retrieval.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub/blob/master/evaluators/rank/NdcgEvaluator/README.md
+version: 0.0.6
+license: apache-2.0
+keywords: [ndcg, evaluator, normalized discounted cumulative gain, information retrieval evaluation]

@@ -2,25 +2,31 @@ import io
 from typing import Dict
 
 import numpy as np
+
+from jina.executors.decorators import single_multi_input
 from jina.executors.crafters import BaseCrafter
 
 
 class ImageReader(BaseCrafter):
     """
-    :class:`ImageReader` loads the image from the given file path and save the `ndarray` of the image in the Document.
+    Load image file and craft it into image matrix.
+
+    :class:`ImageReader` loads the image from the given file
+        path and save the `ndarray` of the image in the Document.
+
+    :param channel_axis: the axis id of the color channel.
+        The ``-1`` indicates the color channel info at the last axis
     """
 
     def __init__(self, channel_axis: int = -1, *args, **kwargs):
-        """
-        :class:`ImageReader` load an image file and craft into image matrix.
-
-        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
 
+    @single_multi_input(num_data=2)
     def craft(self, buffer: bytes, uri: str, *args, **kwargs) -> Dict:
         """
+        Read image file and craft it into image matrix.
+
         Read the image from the given file path that specified in `buffer` and save the `ndarray` of the image in
             the `blob` of the document.
 
@@ -39,4 +45,4 @@ class ImageReader(BaseCrafter):
         img = np.array(raw_img).astype('float32')
         if self.channel_axis != -1:
             img = np.moveaxis(img, -1, self.channel_axis)
-        return dict(weight=1., blob=img)
+        return dict(blob=img)

@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from typing import Tuple
@@ -91,5 +91,5 @@ class ScannIndexer(BaseNumpyIndexer):
             self.logger.warning('The number of reordering_num_neighbors should be the same or higher than top_k')
 
         neighbors, dist = self.query_handler.search_batched(keys, top_k)
-        return self.int2ext_id[np.array(neighbors)], np.array(dist)
+        return self._int2ext_id[np.array(neighbors)], np.array(dist)
 

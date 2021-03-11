@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import cv2
 import numpy as np
 import pytest
@@ -37,40 +40,50 @@ def test_normalize_transform(test_img):
         'Normalize': dict(mean=(0, 0, 0), std=(1, 1, 1), max_pixel_value=255)
     }
     crafter = AC([transform])
-    crafted_img = crafter.craft(test_img)
+    crafted_imgs = crafter.craft([test_img, test_img])
 
-    np.testing.assert_almost_equal(test_img / 255, crafted_img)
+    assert len(crafted_imgs) == 2
+    np.testing.assert_almost_equal(test_img / 255, crafted_imgs[0]['blob'])
+    np.testing.assert_almost_equal(test_img / 255, crafted_imgs[1]['blob'])
 
 
 def test_flip_transform(test_img, flip_img):
     crafter = AC(['VerticalFlip'])
-    crafted_img = crafter.craft(test_img)
+    crafted_imgs = crafter.craft([test_img, test_img])
 
-    np.testing.assert_almost_equal(flip_img, crafted_img)
+    assert len(crafted_imgs) == 2
+    np.testing.assert_almost_equal(flip_img, crafted_imgs[0]['blob'])
+    np.testing.assert_almost_equal(flip_img, crafted_imgs[1]['blob'])
 
 
 def test_crop_transform(test_img, crop_img):
     transform = {'Crop': dict(x_min=0, y_min=0, x_max=106, y_max=172)}
     crafter = AC([transform])
-    crafted_img = crafter.craft(test_img)
+    crafted_imgs = crafter.craft([test_img, test_img])
 
-    np.testing.assert_almost_equal(crop_img, crafted_img)
+    assert len(crafted_imgs) == 2
+    np.testing.assert_almost_equal(crop_img, crafted_imgs[0]['blob'])
+    np.testing.assert_almost_equal(crop_img, crafted_imgs[1]['blob'])
 
 
 def test_center_crop_transform(test_img, center_crop_img):
     transform = {'CenterCrop': dict(height=100, width=100)}
     crafter = AC([transform])
-    crafted_img = crafter.craft(test_img)
+    crafted_imgs = crafter.craft([test_img, test_img])
 
-    np.testing.assert_almost_equal(center_crop_img, crafted_img)
+    assert len(crafted_imgs) == 2
+    np.testing.assert_almost_equal(center_crop_img, crafted_imgs[0]['blob'])
+    np.testing.assert_almost_equal(center_crop_img, crafted_imgs[1]['blob'])
 
 
 def test_resize_transform(test_img, resize_img):
     transform = {'Resize': dict(height=100, width=200)}
     crafter = AC([transform])
-    crafted_img = crafter.craft(test_img)
+    crafted_imgs = crafter.craft([test_img, test_img])
 
-    np.testing.assert_almost_equal(resize_img, crafted_img)
+    assert len(crafted_imgs) == 2
+    np.testing.assert_almost_equal(resize_img, crafted_imgs[0]['blob'])
+    np.testing.assert_almost_equal(resize_img, crafted_imgs[1]['blob'])
 
 
 def test_wrong_transforms():

@@ -1,6 +1,8 @@
-from typing import Dict
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
 
-import numpy as np
+from typing import Dict, Iterable
+
 from jina.executors.rankers import Match2DocRanker
 
 
@@ -8,24 +10,26 @@ class LevenshteinRanker(Match2DocRanker):
     """
     :class:`LevenshteinRanker` Computes the negative Levenshtein distance
         between a query and its matches. The distance is negative, in order to
-        achieve a bigger=better sorting in the respective driver.
+        achieve a bigger=better result, sort in the respective driver.
     """
 
-    required_keys = {"text"}
+    query_required_keys = ['text']
+    match_required_keys = ['text']
 
     def score(
-        self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
-    ) -> "np.ndarray":
-        from Levenshtein import distance
+            self,
+            old_match_scores: Iterable[float],
+            query_meta: Dict,
+            match_meta: Iterable[Dict],
+    ) -> Iterable[float]:
+        """
+        Calculate the negative Levenshtein distance
 
-        new_scores = [
-            (
-                match_id,
-                -distance(query_meta['text'], match_meta[match_id]['text']),
-            )
-            for match_id, old_score in old_match_scores.items()
-        ]
-        return np.array(
-            new_scores,
-            dtype=[(self.COL_MATCH_ID, np.int64), (self.COL_SCORE, np.float64)],
-        )
+        :param old_match_scores: Contains old scores in a list
+        :param query_meta: Dictionary containing all the query meta information requested by the `query_required_keys` class_variable.
+        :param match_meta: List containing all the matches meta information requested by the `match_required_keys` class_variable. Sorted in the same way as `old_match_scores`
+        :return: An iterable of the .
+
+        """
+        from Levenshtein import distance
+        return [-distance(query_meta['text'], m['text']) for m in match_meta]

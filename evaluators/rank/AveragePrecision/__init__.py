@@ -4,33 +4,42 @@ from jina.executors.evaluators.rank import BaseRankingEvaluator
 
 
 class AveragePrecisionEvaluator(BaseRankingEvaluator):
-    """A :class:`AveragePrecisionEvaluator` evaluates the Average Precision of the search.
-       https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Average_precision
     """
+    Evaluates the Average Precision of the search.
+    https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Average_precision
+
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
-        :param actual: the matched document identifiers from the request as matched by jina indexers and rankers
-        :param desired: the expected documents matches ids sorted as they are expected
-        :return the evaluation metric value for the request document
+        Evaluate the Average Precision of the search.
+
+        :param actual: the matched document identifiers from the request
+            as matched by Indexers and Rankers
+        :param desired: A list of all the relevant IDs. All documents
+            identified in this list are considered to be relevant
+        :return: the evaluation metric value for the request document
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
-        matches = []
-        for idx, doc_id in enumerate(desired):
-            matches.append(doc_id in actual[:idx+1])
-        matches = np.array(matches)
-        cumsum = np.cumsum(matches)
-        precision = cumsum / np.arange(1, len(matches) + 1)
 
-        # Does not match behaviour in
-        # https://github.com/jina-ai/jina/blob/master/tests/unit/executors/evaluators/rank/test_precision.py#L10
-        precision = np.insert(precision, 0, 1.)
+        if len(desired) == 0 or len(actual) == 0:
+            return 0.0
 
-        recall = cumsum / len(matches)
-        # same behaviour as in
-        # https://github.com/jina-ai/jina/blob/master/tests/unit/executors/evaluators/rank/test_recall.py#L10
-        recall = np.insert(recall, 0, 0.)
+        desired_set = set(desired)
 
-        ap = np.sum(np.diff(recall) * ((precision[1:] + precision[:-1]) / 2))
-        return ap
+        def _precision(eval_at: int):
+            if actual[eval_at - 1] not in desired_set:
+                return 0.0
+            actual_at_k = actual[:eval_at]
+            ret = len(set(actual_at_k).intersection(desired_set))
+            sub = len(actual_at_k)
+            return ret / sub if sub != 0 else 0.
+
+        precisions = list(map(lambda eval_at: _precision(eval_at), range(1, len(actual) + 1)))
+        return sum(precisions) / len(desired)

@@ -2,12 +2,12 @@ manifest_version: 1
 name: CustomImageTorchEncoder
 kind: encoder
 type: pod
-description: '`CustomImageTorchEncoder` encodes data from a ndarray, potentially B
-  x (Channel x Height x Width) into a ndarray of `B x D`.'
+description: '`CustomImageTorchEncoder` encodes data from a Numpy `ndarray` of shape  `BatchSize
+  x (Channel x Height x Width)` into  `BatchSize x EmbeddingDimension` Numpy array.' 
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.10
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/image/CustomImageTorchEncoder/README.md
+version: 0.0.12
 license: apache-2.0
-keywords: [CNN, Computer Vision]
+keywords: [CNN, Computer Vision, image, encoder, torch]

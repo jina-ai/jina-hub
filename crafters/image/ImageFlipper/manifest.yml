@@ -7,7 +7,7 @@ description: flips the image horizontally or vertically. Flip image in the left/
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.11
+documentation: https://github.com/jina-ai/jina-hub/tree/master/crafters/image/ImageFlipper/README.md
+version: 0.0.14
 license: apache-2.0
-keywords: [Some keywords to describe the executor, separated by commas]
+keywords: [image, flip, crafter]

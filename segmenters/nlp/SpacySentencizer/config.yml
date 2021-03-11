@@ -1,0 +1,8 @@
+!SpacySentencizer
+with:
+  lang: "xx_sent_ud_sm"
+  use_default_segmenter: false
+metas:
+  py_modules:
+    # - you can put more dependencies here
+    - __init__.py
