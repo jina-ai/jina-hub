@@ -18,7 +18,7 @@ def test_io_uri():
     tmp_fn = crafter.get_file_from_workspace('test.jpeg')
     img_size = 50
     create_test_image(tmp_fn, size_width=img_size, size_height=img_size)
-    test_docs = crafter.craft([None, None], [tmp_fn, tmp_fn])
+    test_docs = crafter.craft([None, None], np.stack([tmp_fn, tmp_fn]))
     assert len(test_docs) == 2
     for test_doc in test_docs:
         assert test_doc['blob'].shape == (img_size, img_size, 3)
@@ -33,7 +33,7 @@ def test_io_buffer():
     img = Image.open(tmp_fn)
     img.save(image_buffer, format='PNG')
     image_buffer.seek(0)
-    test_docs = crafter.craft([image_buffer.getvalue(), image_buffer.getvalue()], [None, None])
+    test_docs = crafter.craft(np.stack([image_buffer.getvalue(), image_buffer.getvalue()]), [None, None])
     assert len(test_docs) == 2
     for test_doc in test_docs:
         assert test_doc['blob'].shape == (img_size, img_size, 3)
