@@ -1,3 +1,5 @@
+import numpy as np
+
 import pytest
 
 from .. import TikaExtractor
@@ -10,8 +12,8 @@ def input_bytes():
 
 
 @pytest.mark.parametrize('uri, buffer', [
-    (['cats_are_awesome.pdf', 'cats_are_awesome.pdf'], [None, None]),
-    ([None, None], [input_bytes(), input_bytes()])
+    (np.stack(['cats_are_awesome.pdf', 'cats_are_awesome.pdf']), [None, None]),
+    ([None, None], np.stack([input_bytes(), input_bytes()]))
 ])
 def test_extraction(uri, buffer):
     tika_extractor = TikaExtractor()
