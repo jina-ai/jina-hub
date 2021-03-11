@@ -69,10 +69,17 @@ class BiMatchRanker(Chunk2DocRanker):
         s2 = self._directional_score(match_idx, query_chunk_meta, col=self.COL_QUERY_CHUNK_ID)
         return (s1 + s2) / 2.
 
+    def _group_by(self, match_idx, col_name):
+        # sort by ``col
+        _sorted_m = np.sort(match_idx, order=col_name)
+        _, _doc_counts = np.unique(_sorted_m[col_name], return_counts=True)
+        # group by ``col``
+        return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
+
     def _directional_score(self, g: Dict, chunk_meta: Dict, col: str):
         # g [parent_match_id, match_id, query_id, score]
-        # col = self.COL_MATCH_ID, from matched_chunk aspect
-        # col = self.COL_DOC_CHUNK_ID, from query chunk aspect
+        # col = self.COL_DOC_CHUNK_ID, from matched_chunk aspect
+        # col = self.COL_QUERY_CHUNK_ID, from query chunk aspect
         # group by "match_id" or "query_chunk_id". So here groups have in common 1st (match_parent_id) and `n` column
         _groups = self._group_by(g, col)
         # take the best match from each group

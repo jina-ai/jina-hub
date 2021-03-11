@@ -4,6 +4,10 @@
 
 The **ImageNormalizer** executor needs the following parameters:
 
+## Snippets:
+
+Initialise ImageNormalizer:
+
 | `param_name`  | `param_remarks` |
 | ------------- | ------------- |
 | `target_size`  |It's the desired output size.  |
@@ -12,37 +16,47 @@ The **ImageNormalizer** executor needs the following parameters:
 | `resize_dim`  |It's the desired size that images will be resized to. They are resized before the cropping |
 | `channel_axis`  |It's the axis id of the color channel.  |
 
-## Usage
+**NOTE**: 
 
-Users can use Pod images in several ways:
+- `MODULE_VERSION` is the version of the ImageNormalizer, in semver format. E.g. `0.0.13`.
+- `JINA_VERSION` is the version of the Jina core version with which the Docker image was built. E.g. `1.0.1` 
 
-1. Run with Docker (`docker run`)
-   ```bash
-    docker run jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.1 --port-in 55555 --port-out 55556
-    ```
-    
-2. Run with Flow API
-   ```python
+- Flow API
+
+  ```python
     from jina.flow import Flow
-
     f = (Flow()
-        .add(name='my_crafter', uses='docker://jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.1'))
+        .add(name='my-crafter', uses='docker://jinahub/pod.crafter.imagenormalizer:MODULE_VERSION-JINA_VERSION')
     ```
-    
-3. Run with Jina CLI
-   ```bash
-    jina pod --uses docker://jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.1 --port-in 55555 --port-out 55556
-    ```
-    
-4. Conventional local usage with `uses` argument
-    ```bash
-    jina pod --uses hub/example/imagenormalizer.yml --port-in 55555 --port-out 55556
-    ```
-    
-5. Docker command to download the image
-
-   Specify the image name along with the version tag. The snippet below uses Jina version `1.0.1`
-
-   ```bash
-    docker pull jinahub/pod.crafter.imagenormalizer:0.0.13-1.0.1
+- Flow YAML file
+  This is the only way to provide arguments to its parameters:
+  
+  ```yaml
+  pods:
+    - name: ngt
+      uses: crafters/image/ImageNormalizer/config.yml
+  ```
+  
+  and then in `imagenormaliser.yml`:
+  ```yaml
+  !ImageNormalizer
+  metas:
+    - py_modules:
+        - __init__.py
+  ```
+- Jina CLI
+  
+  ```bash
+  jina pod --uses docker://jinahub/pod.crafter.imagenormalizer:MODULE_VERSION-JINA_VERSION
+  ```
+- Conventional local usage with `uses` argument
+  
+  ```bash
+  jina pod --uses crafters/image/ImageNormalizer/config.yml --port-in 55555 --port-out 55556
+  ```
+- Run with Docker (`docker run`)
+ 
+  Specify the image name along with the version tag. The snippet below uses Jina version as `JINA_VERSION`.
+  ```bash
+    docker run --network host docker://jinahub/pod.crafter.imagenormalizer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
     ```

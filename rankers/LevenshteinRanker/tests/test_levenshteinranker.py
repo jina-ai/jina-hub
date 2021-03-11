@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import copy
 import json
-import numpy as np
 
 from jina.executors.rankers import Match2DocRanker
 
@@ -11,17 +10,24 @@ from .. import LevenshteinRanker
 
 
 def test_levenshteinranker():
-    query_meta = {"text": "cool stuff"}
+    query_meta = {'text': 'cool stuff'}
+    query_meta_json = json.dumps(query_meta, sort_keys=True)
     old_match_scores = [5, 4]
-    match_meta = [{"text": "cool stuff"}, {"text": "kewl stuff"}]
+    old_match_scores_json = json.dumps(old_match_scores, sort_keys=True)
+    match_meta = [{'text': 'cool stuff'}, {'text': 'kewl stuff'}]
+    match_meta_json = json.dumps(match_meta, sort_keys=True)
 
     ranker = LevenshteinRanker()
     new_scores = ranker.score(
-        old_match_scores,
-        query_meta,
-        match_meta
+        copy.deepcopy(old_match_scores),
+        copy.deepcopy(query_meta),
+        copy.deepcopy(match_meta)
     )
 
-    assert len(new_scores) == 1
-    assert new_scores[0] == 0
-    assert new_scores[1] == -3
+    assert new_scores == [0, -3]
+
+    # Guarantee no side-effects happen
+    assert query_meta_json == json.dumps(query_meta, sort_keys=True)
+    assert old_match_scores_json == json.dumps(old_match_scores, sort_keys=True)
+    assert match_meta_json == json.dumps(match_meta, sort_keys=True)
+

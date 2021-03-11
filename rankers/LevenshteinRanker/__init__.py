@@ -1,9 +1,8 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Dict
+from typing import Dict, Iterable
 
-import numpy as np
 from jina.executors.rankers import Match2DocRanker
 
 
@@ -14,22 +13,25 @@ class LevenshteinRanker(Match2DocRanker):
         achieve a bigger=better result, sort in the respective driver.
     """
 
-    required_keys = {"text"}
+    def __init__(self, *args, **kwargs):
+        super().__init(*args, **kwargs)
+        self.query_required_keys = ['text']
+        self.match_required_keys = ['text']
 
     def score(
-        self, old_match_scores: Iterable[float], query_meta: Dict, match_meta: Iterable[Dict]
-    ) -> "np.ndarray":
+            self,
+            old_match_scores: Iterable[float],
+            query_meta: Dict,
+            match_meta: Iterable[Dict],
+    ) -> Iterable[float]:
         """
         Calculate the negative Levenshtein distance
 
-        :param old_match_scores: Previously scored matches
-        :param query_meta: A Dict of queries to score
-        :param match_meta: A Dict of matches of given query
-        :return: an `ndarray` of the size ``M x 2``.
-            `M`` is the number of new scores.
-            The columns correspond to the ``COL_MATCH_ID`` and ``COL_SCORE``.
+        :param old_match_scores: Contains old scores in a list
+        :param query_meta: Dictionary containing all the query meta information requested by the `query_required_keys` class_variable.
+        :param match_meta: List containing all the matches meta information requested by the `match_required_keys` class_variable. Sorted in the same way as `old_match_scores`
+        :return: An iterable of the .
 
         """
         from Levenshtein import distance
-
         return [-distance(query_meta['text'], m['text']) for m in match_meta]

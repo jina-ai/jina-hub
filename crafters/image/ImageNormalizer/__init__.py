@@ -1,6 +1,11 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from typing import Tuple, Dict, Union, Iterable
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 
 from .helper import _load_image, _move_channel_axis, _crop_image, _resize_short
@@ -51,6 +56,7 @@ class ImageNormalizer(BaseCrafter):
         self.img_std = np.array(img_std).reshape((1, 1, 3))
         self.channel_axis = channel_axis
 
+    @single
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
         Normalize the image.

@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 import torch
-import clip
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTorchEncoder
 from jina.executors.devices import TorchDevice
+
 
 class CLIPTextEncoder(BaseTorchEncoder):
     """Encode data from a `np.ndarray` (of strings) of length `BatchSize` into
@@ -19,7 +19,8 @@ class CLIPTextEncoder(BaseTorchEncoder):
     :param args: Additional positional arguments.
     :param kwargs: Additional positional arguments.
     """
-    def __init__(self, model_name: str ='ViT-B/32',
+
+    def __init__(self, model_name: str = 'ViT-B/32',
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
@@ -41,6 +42,7 @@ class CLIPTextEncoder(BaseTorchEncoder):
         :param kwargs: Additional positional arguments.
         :return: A `BachSize x EmbeddingSize` numpy `ndarray`.
         """
+        import clip
         input_torchtensor = clip.tokenize(data)
         if self.on_gpu:
             input_torchtensor = input_torchtensor.cuda()
@@ -50,4 +52,3 @@ class CLIPTextEncoder(BaseTorchEncoder):
 
         embedded_data = embedded_data.cpu().numpy()
         return embedded_data
-    
