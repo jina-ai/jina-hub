@@ -12,7 +12,7 @@ def test_arraystringreader(single):
     text = ','.join([str(x) for x in sample_array])
 
     reader = ArrayStringReader()
-    crafted_docs = reader.craft(text if single else [text, text])
+    crafted_docs = reader.craft(text if single else np.stack([text, text]))
 
     if single:
         assert crafted_docs['blob'].shape[0] == _size
