@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -82,6 +83,7 @@ class SpacySentencizer(BaseSegmenter):
                 )
                 raise
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.
@@ -92,6 +94,6 @@ class SpacySentencizer(BaseSegmenter):
         :param kwargs: Additional keyword arguments
 
         """
-        sentences = self.spacy_model(text).sents
+        sentences = self.spacy_model(str(text)).sents
         results = [dict(text=sent) for sent in sentences]
         return results

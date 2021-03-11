@@ -2,6 +2,7 @@ from collections import deque
 from itertools import islice
 from typing import Dict, List
 
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -40,6 +41,7 @@ class SlidingWindowSegmenter(BaseSegmenter):
                 'the step_size (={}) should not be larger than the window_size (={})'.format(
                     self.window_size, self.step_size))
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into overlapping chunks
@@ -47,7 +49,7 @@ class SlidingWindowSegmenter(BaseSegmenter):
         :return: a list of chunk dicts
         """
 
-        def sliding_window(iterable, size, step):
+        def sliding_window(size, step):
             i = iter(text)
             d = deque(islice(i, size),
                       maxlen=size)
@@ -64,7 +66,7 @@ class SlidingWindowSegmenter(BaseSegmenter):
                          for _ in range(step - 1))
 
         chunks = [''.join(filter(None, list(chunk))) for chunk in
-                  sliding_window(text, self.window_size, self.step_size)]
+                  sliding_window(self.window_size, self.step_size)]
         results = []
         for idx, s in enumerate(chunks):
             if self.min_substring_len <= len(s):

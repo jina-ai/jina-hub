@@ -2,6 +2,7 @@ import re
 import string
 from typing import Dict, List, Optional
 
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -47,6 +48,7 @@ class Sentencizer(BaseSegmenter):
                 self.min_sent_len, self.max_sent_len))
         self._slit_pat = re.compile('\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(self.punct_chars))))
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.
