@@ -13,10 +13,8 @@ class LevenshteinRanker(Match2DocRanker):
         achieve a bigger=better result, sort in the respective driver.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init(*args, **kwargs)
-        self.query_required_keys = ['text']
-        self.match_required_keys = ['text']
+    query_required_keys = ['text']
+    match_required_keys = ['text']
 
     def score(
             self,

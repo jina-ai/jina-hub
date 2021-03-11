@@ -30,4 +30,3 @@ def test_levenshteinranker():
     assert query_meta_json == json.dumps(query_meta, sort_keys=True)
     assert old_match_scores_json == json.dumps(old_match_scores, sort_keys=True)
     assert match_meta_json == json.dumps(match_meta, sort_keys=True)
-
