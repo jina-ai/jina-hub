@@ -50,7 +50,7 @@ def test_lightgbmranker(pretrained_model):
     ranker = LightGBMRanker(model_path=pretrained_model, query_feature_names=query_features,
                             match_feature_names=match_features)
 
-    query_meta = [
+    queries_metas = [
         {
             'tags__query_length': 1.0,
             'tags__query_language': 0.0,
@@ -60,7 +60,7 @@ def test_lightgbmranker(pretrained_model):
             'tags__query_language': 0.0,
         }
     ]
-    match_meta = [
+    matches_metas = [
         [
             {
                 'tags__document_length': 0.0,
@@ -96,7 +96,7 @@ def test_lightgbmranker(pretrained_model):
             }
         ]
     ]
-    scores = ranker.score(query_meta=query_meta, old_match_scores=None, match_meta=match_meta)
+    scores = ranker.score([None, None], queries_metas, matches_metas)
     # it does not come sorted, we know that the ones with the same `tags_document_pagerank` have the same score
     # because the model did only split based on that feature
     assert scores.shape == (6,)
