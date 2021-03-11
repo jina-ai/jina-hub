@@ -64,8 +64,6 @@ def chunk_scores(factor=1):
     match_idx = []
     num_query_chunks = len(query_chunk2match_chunk)
     for query_chunk_id, matches in query_chunk2match_chunk.items():
-        print('query_chunk_id: ', query_chunk_id)
-        print('matches: ', matches)
         query_chunk_meta[query_chunk_id] = {'length': num_query_chunks}
         for c in matches:
             match_chunk_meta[c['id']] = {'length': c['length']}
