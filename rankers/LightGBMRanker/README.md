@@ -24,7 +24,7 @@ param = {'num_leaves': 31, 'objective': 'lambdarank', 'metric': 'ndcg'}
 booster = lgb.train(param, train_data, 2, valid_sets=[validation_data])
 booster.save_model(model_path)
 
-ranker = LightGBMRanker(model_path=model_path, feature_names=['price', 'size', 'brand'])
+ranker = LightGBMRanker(model_path=model_path, feature_names=['tags__price', 'tags__size', 'tags__brand'])
 ```
 
 This is how it would look a `yaml` configuration to be loaded inside a Jina Flow.
@@ -33,7 +33,7 @@ This is how it would look a `yaml` configuration to be loaded inside a Jina Flow
 !LightGBMRanker
 with:
   model_path: './lightgbm-model.txt'
-  feature_names: ['price', 'size', 'brand']
+  feature_names: ['tags__price', 'tags__size', 'tags__brand']
 metas:
   py_modules:
     - __init__.py
