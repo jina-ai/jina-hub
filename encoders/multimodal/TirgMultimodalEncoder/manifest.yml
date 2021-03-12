@@ -2,8 +2,8 @@ manifest_version: 1
 name: TirgMultiModalEncoder
 kind: encoder
 type: pod
-description: '`TirgMultiModalEncoder` encodes data from a ndarray, potentially B
-  x (Channel x Height x Width) into a ndarray of `B x D`.'
+description: '`TirgMultiModalEncoder` encodes data from a ndarray, potentially B x
+  (Channel x Height x Width) into a ndarray of `B x D`.'
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
@@ -11,3 +11,4 @@ documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.6
 license: apache-2.0
 keywords: [CNN, Computer Vision, TIRG]
+timestamp: 1615511688.4987864
