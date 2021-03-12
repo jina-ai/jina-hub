@@ -3,44 +3,60 @@
 **ImageResizer** is a crafter that resizes the image to the given size.
 The **ImageResizer** executor needs below parameters:
 
+## Snippets:
+
 | `param_name`  | `param_remarks` |
 | ------------- | ------------- |
 | `target_size`  |Desired output size|
 | `how`  |The interpolation method i.e. `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`|
 | `channel_axis`  |The axis id of the color channel. The **-1** is the color channel info at the last axis.|
 
+**NOTE**: 
+
+- `MODULE_VERSION` is the version of the ImageResizer, in semver format. E.g. `0.0.13`.
+- `JINA_VERSION` is the version of the Jina core version with which the Docker image was built. E.g. `1.0.1` 
+
 
 ## Usage
 
 Users can use Pod images in several ways:
 
-1. Run with Docker (`docker run`)
-   ```bash
-    docker run jinahub/pod.crafter.imageresizer:0.0.15-1.0.7 --port-in 55555 --port-out 55556
-    ```
-    
-2. Run with Flow API
-   ```python
+- Flow API
+
+  ```python
     from jina.flow import Flow
-
     f = (Flow()
-        .add(name='my_crafter', uses='docker://jinahub/pod.crafter.imageresizer:0.0.15-1.0.7', port_in=55555, port_out=55556))
+        .add(name='my-crafter', uses='docker://jinahub/pod.crafter.imageresizer:MODULE_VERSION-JINA_VERSION')
     ```
-    
-3. Run with Jina CLI
-   ```bash
-    jina pod --uses docker://jinahub/pod.crafter.imageresizer:0.0.15-1.0.7 --port-out 55556
-    ```
-    
-4. Conventional local usage with `uses` argument
-    ```bash
-    jina pod --uses hub/example/imageresizer.yml --port-in 55555 --port-out 55556
-    ```
-    
-5. Docker command
-
-   Specify the image name along with the version tag. The snippet below uses Jina version `1.0.7`
-
-   ```bash
-    docker pull jinahub/pod.crafter.imageresizer:0.0.15-1.0.7
+- Flow YAML file
+  This is the only way to provide arguments to its parameters:
+  
+  ```yaml
+  pods:
+    - name: imgresizer
+      uses: crafters/image/ImageResizer/config.yml
+  ```
+  
+  and then in `imageresizer.yml`:
+  ```yaml
+  !ImageResizer
+  metas:
+    - py_modules:
+        - __init__.py
+  ```
+- Jina CLI
+  
+  ```bash
+  jina pod --uses docker://jinahub/pod.crafter.imageresizer:MODULE_VERSION-JINA_VERSION
+  ```
+- Conventional local usage with `uses` argument
+  
+  ```bash
+  jina pod --uses crafters/image/ImageResizer/config.yml --port-in 55555 --port-out 55556
+  ```
+- Run with Docker (`docker run`)
+ 
+  Specify the image name along with the version tag. The snippet below uses Jina version as `JINA_VERSION`.
+  ```bash
+    docker run --network host docker://jinahub/pod.crafter.imageresizer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
     ```
