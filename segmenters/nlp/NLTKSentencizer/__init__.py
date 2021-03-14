@@ -101,9 +101,3 @@ class NLTKSentencizer(BaseSegmenter):
             start = end
 
         return results
-
-
-if __name__ == '__main__':
-    text = 'Hello world!'
-    sentencizer = NLTKSentencizer()
-    assert len(sentencizer.segment(text)) == 1
