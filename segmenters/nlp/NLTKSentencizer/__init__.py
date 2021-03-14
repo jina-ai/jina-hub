@@ -21,6 +21,8 @@ class NLTKSentencizer(BaseSegmenter):
 
     :param language: default='english'. Lowercased language name to initialize the sentence tokenizer, accepted languages are listed in :attr:`SUPPORTED_LANGUAGES`.
     :type language: str
+    :param resource_url: default=None. Optional parameter to specify the location for tokenizer model, overrides `language`. For a file path, should follow `file://path_to_resource` format. For more information, see https://www.nltk.org/data.html
+    :type resource_url: str
     :param args: Additional positional arguments
     :param kwargs: Additional keyword arguments
     """
@@ -46,36 +48,47 @@ class NLTKSentencizer(BaseSegmenter):
         'turkish',
     ]
 
-    def __init__(self, language: str = 'english', *args, **kwargs):
+    def __init__(
+        self, language: str = 'english', resource_url: str = None, *args, **kwargs
+    ):
         """Set constructor"""
         super().__init__(*args, **kwargs)
-        self.language = language
-        self.tokenizer_path = f'tokenizers/punkt/{self.language}.pickle'
+        if resource_url:
+            self.resource_url = resource_url
+            self.language = ''
+        else:
+            self.resource_url = f'tokenizers/punkt/{language}.pickle'
+            self.language = language
 
     def post_init(self):
         from nltk.data import load
 
         try:
-            self._sent_tokenizer = load(self.tokenizer_path)
+            self._sent_tokenizer = load(self.resource_url)
         except LookupError:
             if self.language in self.SUPPORTED_LANGUAGES:
                 try:
                     import nltk
 
                     nltk.download('punkt')
-                    self._sent_tokenizer = load(self.tokenizer_path)
+                    self._sent_tokenizer = load(self.resource_url)
                 except:
                     self.logger.error(
                         f'Please ensure that "nltk_data" folder is accessible to your working directory.'
                     )
                     raise
-            else:
+            elif self.language != '':
                 self.logger.error(
-                    f'The language you specified ("{self.language}") is not supported by NLTK. '
+                    f'The language you specified ("{self.language}") is not supplied by NLTK.'
                     f'Please ensure that language is one of the acceptable languages listed in '
-                    f'{self.SUPPORTED_LANGUAGES}.\nOr for latest list of supported languages check out '
+                    f'{self.SUPPORTED_LANGUAGES}.\nFor latest list of supported languages check out '
                     f'https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/index.xml with '
                     f'id="punkt"'
+                )
+                raise
+            else:
+                self.logger.error(
+                    f'The resource_url you provided could not be loaded: {self.resource_url}'
                 )
                 raise
         self.logger.info(f'NLTK {self.language} sentence tokenizer ready.')
