@@ -50,21 +50,20 @@ class NLTKSentencizer(BaseSegmenter):
         """Set constructor"""
         super().__init__(*args, **kwargs)
         self.language = language
-        self.sent_tokenizer = None
+        self.tokenizer_path = f'tokenizers/punkt/{self.language}.pickle'
 
     def post_init(self):
         from nltk.data import load
 
         try:
-            self.sent_tokenizer = load(f'tokenizers/punkt/{self.language}.pickle')
-            self.logger.info(f'NLTK {self.language} sentence tokenizer ready.')
+            self._sent_tokenizer = load(self.tokenizer_path)
         except LookupError:
             if self.language in self.SUPPORTED_LANGUAGES:
                 try:
                     import nltk
 
                     nltk.download('punkt')
-                    self.post_init()
+                    self._sent_tokenizer = load(self.tokenizer_path)
                 except:
                     self.logger.error(
                         f'Please ensure that "nltk_data" folder is accessible to your working directory.'
@@ -79,6 +78,7 @@ class NLTKSentencizer(BaseSegmenter):
                     f'id="punkt"'
                 )
                 raise
+        self.logger.info(f'NLTK {self.language} sentence tokenizer ready.')
 
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
@@ -91,7 +91,7 @@ class NLTKSentencizer(BaseSegmenter):
         :return: List of dictonaries representing sentences with three keys: ``text``, for representing the text of the sentence; ``offset``, representing the order of the sentence within input text; ``location``, a list with start and end indeces for the sentence.
         :rtype: List[Dict]
         """
-        sentences = self.sent_tokenizer.tokenize(text)
+        sentences = self._sent_tokenizer.tokenize(text)
         results = []
         start = 0
         for i, s in enumerate(sentences):
