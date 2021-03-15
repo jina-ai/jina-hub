@@ -12,9 +12,4 @@ class UMAPEncoder(TransformEncoder):
     Full code and documentation can be found
     `here <https://github.com/lmcinnes/umap>`_.
     """
-    def post_init(self):
-        """Load UMAP model"""
-        super().post_init()
-        if not self.model:
-            from umap import UMAP
-            self.model = UMAP(n_components=self.output_dim, random_state=self.random_state)
+    pass
