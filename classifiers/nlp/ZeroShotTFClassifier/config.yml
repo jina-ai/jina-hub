@@ -1,6 +1,6 @@
 !ZeroShotTFClassifier
 with:
-  {}
+  labels: ['label1', 'label2']
 metas:
   py_modules:
     # - you can put more dependencies here
