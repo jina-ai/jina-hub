@@ -3,7 +3,7 @@ name: NLTKSentencizer
 kind: segmenter
 description:
   Segments text into sentences using NLTK.
-author: Jina AI Dev-Team (dev-team@jina.ai)
+author: mezig351 (mezigsara@gmail.com)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub/blob/master/segmenters/nlp/NLTKSentencizer/README.md
