@@ -45,7 +45,7 @@ Users can use Pod images in several ways:
 
 1. Run with Docker (`docker run`)
    ```bash
-    docker run jinahub/pod.ranker.LightGBMRanker:0.0.1-1.0.2 --port-in 55555 --port-out 55556
+    docker run --network host jinahub/pod.ranker.LightGBMRanker:0.0.1-1.0.2 --port-in 55555 --port-out 55556
     ```
     
 2. Run with Flow API
