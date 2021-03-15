@@ -6,7 +6,7 @@ huggingface, and performs zero-shot learning classification for NLP data.
 It takes an ndarray of sequences and return a ndarray of labels.
 
 * Input shape: `BatchSize`
-* Output shape: `BatchSize`
+* Output shape: `BatchSize x Number of Labels`
 
 ## Usage
 
