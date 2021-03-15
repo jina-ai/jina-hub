@@ -1,4 +1,4 @@
-FROM jinaai/jina
+FROM jinaai/jina as base
 
 RUN apt-get update && apt-get install libgomp1
 
