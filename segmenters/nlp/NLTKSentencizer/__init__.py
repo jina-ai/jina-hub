@@ -11,11 +11,12 @@ class NLTKSentencizer(BaseSegmenter):
     Example:
 
     >>> sentencizer = NLTKSentencizer() # doctest:+ELLIPSIS
+    NLTKSentencizer@4...[W]:__main__.NLTKSentencizer works on keys, but no keys are specified
     NLTKSentencizer@...[I]:post_init may take some time...
     NLTKSentencizer@...[I]:NLTK english sentence tokenizer ready.
     NLTKSentencizer@...[I]:post_init may take some time takes ... seconds (...s)
     >>> text = "Today is a good day. Can't wait for tomorrow!"
-    >>> sentencizer.segment(text)
+    >>> sentencizer.segment([text])
     [{'text': 'Today is a good day.', 'offset': 0, 'location': [0, 20]}, {'text': "Can't wait for tomorrow!", 'offset': 1, 'location': [21, 45]}]
 
 
