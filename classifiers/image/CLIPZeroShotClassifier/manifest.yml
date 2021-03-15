@@ -1,0 +1,13 @@
+manifest_version: 1
+name: CLIPZeroShotClassifier
+kind: classifier
+description: |
+ Zero Shot classification for images using OpenAI Clip
+author: Deepam Patel (deepam8155@gmail.com)
+url: https://deepampatel.github.io/
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [Clip, Zero-shot, Classification, images]
+type: pod

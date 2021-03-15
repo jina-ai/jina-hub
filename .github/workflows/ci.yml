@@ -26,7 +26,7 @@ jobs:
         id: executor-changed
         run: |
           is_changed=0
-          executor_dirs=("crafters encoders evaluators indexers rankers segmenters")
+          executor_dirs=("classifiers crafters encoders evaluators indexers rankers segmenters")
           for changed_file in ${{ steps.changed-files.outputs.all }}; do
             file_base_dir=$(echo $changed_file | cut -d/ -f1)
             current_executor_changed=$(echo ${executor_dirs[@]} | grep -o "$file_base_dir" | wc -w)
