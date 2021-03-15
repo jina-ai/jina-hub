@@ -1,6 +1,8 @@
 from typing import Dict, List
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -32,6 +34,7 @@ class AudioSlicer(BaseSegmenter):
             raise ValueError(f'audio signal must be 1D or 2D array: {signal}')
         return frames
 
+    @single
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Slices the input audio signal array into frames
@@ -44,4 +47,3 @@ class AudioSlicer(BaseSegmenter):
 
         return [dict(offset=idx, weight=1.0, blob=frame, length=frames.shape[0])
                 for idx, frame in enumerate(frames)]
-
