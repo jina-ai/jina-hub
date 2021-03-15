@@ -4,13 +4,16 @@ __license__ = "Apache-2.0"
 from typing import Dict
 
 import numpy as np
+
 from jina.executors.crafters import BaseCrafter
+from jina.executors.decorators import single
 
 
 class AudioMonophoner(BaseCrafter):
     """:class:`AudioMonophoner` makes the audio signal monophonic on doc-level."""
 
-    def craft(self, blob: np.ndarray, *args, **kwargs) -> Dict:
+    @single
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
         Read the `ndarray` of the audio signal.
 
