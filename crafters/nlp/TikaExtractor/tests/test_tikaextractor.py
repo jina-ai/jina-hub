@@ -1,5 +1,7 @@
-import numpy as np
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
 
+import numpy as np
 import pytest
 
 from .. import TikaExtractor

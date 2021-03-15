@@ -5,6 +5,7 @@ from typing import Dict, List, Union
 
 import numpy as np
 
+from jina.executors.decorators import single, as_ndarray
 from jina.executors.crafters import BaseCrafter
 
 
@@ -68,10 +69,10 @@ class AlbumentationsCrafter(BaseCrafter):
     """
 
     def __init__(
-        self,
-        transforms: List[Union[str, Dict[str, Dict]]] = ['HorizontalFlip'],
-        *args,
-        **kwargs
+            self,
+            transforms: List[Union[str, Dict[str, Dict]]] = ['HorizontalFlip'],
+            *args,
+            **kwargs
     ):
         """Set constructor."""
         super().__init__(*args, **kwargs)
@@ -123,6 +124,7 @@ class AlbumentationsCrafter(BaseCrafter):
 
         self.transforms = A.Compose(transforms_list)
 
+    @single
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """Apply transformations to the image.
 
@@ -131,6 +133,4 @@ class AlbumentationsCrafter(BaseCrafter):
             (size 1).
         :return: The transformed image
         """
-
-        return self.transforms(image=blob)['image']
-
+        return {'blob': self.transforms(image=blob)['image']}

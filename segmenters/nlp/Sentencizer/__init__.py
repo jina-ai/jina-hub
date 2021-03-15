@@ -63,8 +63,7 @@ class Sentencizer(BaseSegmenter):
         if not ret:
             ret = [(text, 0, len(text))]
         for ci, (r, s, e) in enumerate(ret):
-            f = ''.join(filter(lambda x: x in string.printable, r))
-            f = re.sub('\n+', ' ', f).strip()
+            f = re.sub('\n+', ' ', r).strip()
             f = f[:self.max_sent_len]
             if len(f) > self.min_sent_len:
                 results.append(dict(
