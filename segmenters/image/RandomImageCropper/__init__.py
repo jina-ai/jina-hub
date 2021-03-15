@@ -1,6 +1,8 @@
 from typing import Tuple, Dict, List, Union
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 from .helper import _crop_image, _move_channel_axis, _load_image
@@ -31,6 +33,7 @@ class RandomImageCropper(BaseSegmenter):
         self.num_patches = num_patches
         self.channel_axis = channel_axis
 
+    @single
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array.
@@ -40,7 +43,7 @@ class RandomImageCropper(BaseSegmenter):
         """
         raw_img = _load_image(blob, self.channel_axis)
         result = []
-        for i in range(self.num_patches):
+        for _ in range(self.num_patches):
             _img, top, left = _crop_image(raw_img, self.target_size, how='random')
             img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
             result.append(
