@@ -1,6 +1,8 @@
 from typing import Tuple, Dict, List, Union
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 from .helper import _move_channel_axis
@@ -55,6 +57,7 @@ class SlidingWindowImageCropper(BaseSegmenter):
                       mode='constant',
                       constant_values=0)
 
+    @single
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array with a sliding window.

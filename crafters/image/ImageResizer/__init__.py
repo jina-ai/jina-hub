@@ -1,10 +1,12 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import warnings
 from typing import Union, Tuple, Dict, Iterable
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 
 from .helper import _load_image, _move_channel_axis, _resize_short
@@ -29,8 +31,7 @@ class ImageResizer(BaseCrafter):
                  how: str = 'BILINEAR',
                  channel_axis: int = -1,
                  *args, **kwargs):
-        """Set Constructor."""
-        warnings.warn(f'{self!r} will be retired soon, you can add `- !URI2Blob {{}}` to the driver', DeprecationWarning)
+        warnings.warn(f'{self!r} will be retired soon, you can add `- !URI2Blob {{}}` to the drivers', DeprecationWarning)
         super().__init__(*args, **kwargs)
         if isinstance(target_size, int):
             self.output_dim = target_size
@@ -41,6 +42,7 @@ class ImageResizer(BaseCrafter):
         self.how = how
         self.channel_axis = channel_axis
 
+    @single
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
         Resize the image array to the given size.

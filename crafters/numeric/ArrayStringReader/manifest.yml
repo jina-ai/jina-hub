@@ -6,7 +6,7 @@ description: convertsthe string of numbers into a numpy array and save to the Do
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
+documentation: https://github.com/jina-ai/jina-hub/blob/master/crafters/numeric/ArrayStringReader/README.md
 version: 0.0.10
 license: apache-2.0
-keywords: [Some keywords to describe the executor, separated by commas]
+keywords: [crafter, numeric, string]

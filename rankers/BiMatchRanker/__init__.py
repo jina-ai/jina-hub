@@ -62,17 +62,24 @@ class BiMatchRanker(Chunk2DocRanker):
         super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
         self.d_miss = d_miss or 2000
 
-    def _get_score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict, *args, **kwargs):
+    def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict, *args, **kwargs):
         # match_idx [parent_match_id, match_id, query_id, score]
         # all matches have the same parent_id (the parent_id of the matches)
         s1 = self._directional_score(match_idx, match_chunk_meta, col=self.COL_DOC_CHUNK_ID)
         s2 = self._directional_score(match_idx, query_chunk_meta, col=self.COL_QUERY_CHUNK_ID)
-        return self.get_doc_id(match_idx), (s1 + s2) / 2.
+        return (s1 + s2) / 2.
+
+    def _group_by(self, match_idx, col_name):
+        # sort by ``col
+        _sorted_m = np.sort(match_idx, order=col_name)
+        _, _doc_counts = np.unique(_sorted_m[col_name], return_counts=True)
+        # group by ``col``
+        return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
 
     def _directional_score(self, g: Dict, chunk_meta: Dict, col: str):
         # g [parent_match_id, match_id, query_id, score]
-        # col = self.COL_MATCH_ID, from matched_chunk aspect
-        # col = self.COL_DOC_CHUNK_ID, from query chunk aspect
+        # col = self.COL_DOC_CHUNK_ID, from matched_chunk aspect
+        # col = self.COL_QUERY_CHUNK_ID, from query chunk aspect
         # group by "match_id" or "query_chunk_id". So here groups have in common 1st (match_parent_id) and `n` column
         _groups = self._group_by(g, col)
         # take the best match from each group

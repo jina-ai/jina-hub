@@ -1,6 +1,8 @@
 from typing import Dict, List
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 from jina.executors.devices import TorchDevice
 
@@ -87,6 +89,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
             labels = labels.cpu()
         return boxes, scores, labels
 
+    @single
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array.

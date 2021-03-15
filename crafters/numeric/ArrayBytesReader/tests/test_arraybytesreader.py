@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import pytest
 
 import numpy as np
@@ -14,7 +17,7 @@ def test_bytes_reader(single, as_type):
 
     reader = ArrayBytesReader(as_type=as_type)
 
-    crafted_docs = reader.craft(array_bytes if single else np.stack([array_bytes, array_bytes]))
+    crafted_docs = reader.craft(array_bytes if single else [array_bytes, array_bytes])
     if single:
         assert crafted_docs['blob'].shape[0] == _size
         np.testing.assert_array_equal(crafted_docs['blob'], sample_array)

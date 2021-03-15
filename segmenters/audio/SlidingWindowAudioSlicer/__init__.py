@@ -1,6 +1,8 @@
 from typing import Dict, List
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -37,6 +39,7 @@ class SlidingWindowAudioSlicer(BaseSegmenter):
             raise ValueError(f'audio signal must be 1D or 2D array: {signal}')
         return frames
 
+    @single
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Slices the input audio signal array into frames

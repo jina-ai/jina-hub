@@ -1,7 +1,11 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
 
 from typing import Dict
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 
 from .helper import _load_image, _move_channel_axis
@@ -31,6 +35,7 @@ class ImageFlipper(BaseCrafter):
         self.vertical = vertical
         self.channel_axis = channel_axis
 
+    @single
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
         Flip the input image array horizontally or vertically.
