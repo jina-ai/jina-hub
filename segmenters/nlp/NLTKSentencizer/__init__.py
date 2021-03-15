@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
-
 from jina.executors.segmenters import BaseSegmenter
+from jina.executors.decorators import single
 
 
 class NLTKSentencizer(BaseSegmenter):
@@ -97,6 +97,7 @@ class NLTKSentencizer(BaseSegmenter):
                 raise
         self.logger.info(f'NLTK {self.language} sentence tokenizer ready.')
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Segment text into sentences.
