@@ -28,7 +28,7 @@ class LightGBMRanker(Match2DocRanker):
 
     .. note::
         The name of the features are used to extract the features from incoming `documents`. Check how these features are accessed in
-        :class:`Document`
+        :class:`Document` at https://docs.jina.ai/api/jina.types.document/
 
     """
 
