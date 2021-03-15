@@ -9,4 +9,6 @@ vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub/blob/master/evaluators/rank/NdcgEvaluator/README.md
 version: 0.0.6
 license: apache-2.0
-keywords: [ndcg, evaluator, normalized discounted cumulative gain, information retrieval evaluation]
+keywords: [ndcg, evaluator, normalized discounted cumulative gain, information retrieval
+    evaluation]
+timestamp: 1615770272.0647388
