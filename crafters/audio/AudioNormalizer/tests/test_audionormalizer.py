@@ -11,9 +11,15 @@ def test_audionormalizer():
     signal_orig = np.random.randn(2, 31337)
 
     crafter = AudioNormalizer()
-    crafted_doc = crafter.craft(signal_orig, 0)
+    crafted_docs = crafter.craft(np.stack([signal_orig, signal_orig]))
 
-    signal_norm = crafted_doc["blob"]
+    assert len(crafted_docs) == 2
+    signal_norm = crafted_docs[0]['blob']
+    assert signal_norm.shape == signal_orig.shape
+    assert np.min(signal_norm) == -1
+    assert np.max(signal_norm) == 1
+
+    signal_norm = crafted_docs[1]['blob']
     assert signal_norm.shape == signal_orig.shape
     assert np.min(signal_norm) == -1
     assert np.max(signal_norm) == 1

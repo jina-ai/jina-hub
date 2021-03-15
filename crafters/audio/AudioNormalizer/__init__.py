@@ -1,11 +1,14 @@
 import numpy as np
+
 from jina.executors.crafters import BaseCrafter
+from jina.executors.decorators import single
 
 
 class AudioNormalizer(BaseCrafter):
     """:class:`AudioNormalizer` normalizes the audio signal on doc-level."""
 
-    def craft(self, blob: np.ndarray, *args, **kwargs):
+    @single
+    def craft(self, blob: 'np.ndarray', *args, **kwargs):
         """
         Normalize signal from the audio signal.
 
