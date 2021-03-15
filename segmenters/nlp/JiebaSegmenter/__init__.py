@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -44,6 +45,7 @@ class JiebaSegmenter(BaseSegmenter):
                 raise FileNotFoundError(f'User dictionary can not be found at {self.user_dict_file}')
             jieba.load_userdict(self.user_dict_file)
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the chinese text into words.
