@@ -5,7 +5,7 @@ huggingface, and performs zero-shot learning classification for NLP data.
 
 It takes an ndarray of sequences and return a ndarray of labels.
 
-* Input shape: `BatchSize`
+* Input length: `BatchSize`
 * Output shape: `BatchSize x Number of Labels`
 
 ## Usage
@@ -68,4 +68,3 @@ jina pod --uses custom_folder/zeroshottfclassifier.yml --port-in 55555 --port-ou
 ```
 docker pull jinahub/pod.classifier.zeroshottfclassifier:0.0.8-1.0.4
 ```
-
