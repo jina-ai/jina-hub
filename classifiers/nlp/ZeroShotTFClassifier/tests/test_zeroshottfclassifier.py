@@ -298,8 +298,8 @@ def test_classifier_evaluation():
 
     classifier = ZeroShotTFClassifier(labels=test_labels)
 
-    assert classifier._evaluate([1, 1, 1], [1, 1, 1]) == 0
-    assert classifier._evaluate([1, 0, 1], [0, 1, 0]) == 1
+    assert pytest.approx(classifier._evaluate([1, 1, 1], [1, 1, 1])) == 0
+    assert pytest.approx(classifier._evaluate([1, 0, 1], [0, 1, 0])) == 1
 
 
 def test_classifier_invalid_labels():
