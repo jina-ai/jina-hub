@@ -1,8 +1,9 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Iterable
+from typing import Dict, Sequence
 
+from jina.executors.decorators import batching_multi_input
 from jina.executors.rankers import Match2DocRanker
 
 
@@ -14,14 +15,17 @@ class LevenshteinRanker(Match2DocRanker):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(query_required_keys=['text'], match_required_keys=['text'], *args, *kwargs)
+        super().__init__(
+            query_required_keys=['text'], match_required_keys=['text'], *args, *kwargs
+        )
 
+    @batching_multi_input(num_data=3)
     def score(
-            self,
-            old_match_scores: Iterable[float],
-            query_meta: Dict,
-            match_meta: Iterable[Dict],
-    ) -> Iterable[float]:
+        self,
+        old_matches_scores: Sequence[float],
+        queries_metas: Sequence[Dict],
+        matches_metas: Sequence[Sequence[Dict]],
+    ) -> Sequence[float]:
         """
         Calculate the negative Levenshtein distance
 
@@ -32,4 +36,11 @@ class LevenshteinRanker(Match2DocRanker):
 
         """
         from Levenshtein import distance
-        return [-distance(query_meta['text'], m['text']) for m in match_meta]
+
+        return [
+            [
+                -distance(query_meta['text'], match_meta['text'])
+                for match_meta in match_metas
+            ]
+            for query_meta, match_metas in zip(queries_metas, matches_metas)
+        ]
