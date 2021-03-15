@@ -1,11 +1,11 @@
+import numpy as np
 import pytest
-from jina import Flow
 
 from .. import NLTKSentencizer
 
 
 @pytest.mark.parametrize(
-    'language, expected_len, expected_first_sentence, expected_second_sentence, text',
+    'language, expected_len, expected_first_chunk, expected_second_chunk, text',
     [
         (
             None,
@@ -59,39 +59,41 @@ from .. import NLTKSentencizer
     ],
 )
 def test_nltksentencizer(
-    language, expected_len, expected_first_sentence, expected_second_sentence, text
+    language, expected_len, expected_first_chunk, expected_second_chunk, text
 ):
     """
     Test multiple scenarios with various languages
     """
     if language:
-        sentencizer = NLTKSentencizer(language)
+        segmenter = NLTKSentencizer(language)
     else:
         # default language is English
-        sentencizer = NLTKSentencizer()
-    segmented = sentencizer.segment(text)
-    sentences = [i['text'] for i in segmented]
-    assert len(segmented) == expected_len
-    assert sentences[0] == expected_first_sentence
-    assert sentences[1] == expected_second_sentence
+        segmenter = NLTKSentencizer()
+    docs_chunks = segmenter.segment(np.stack([text, text]))
+    assert len(docs_chunks) == 2
+    for chunks in docs_chunks:
+        assert len(chunks) == expected_len
+        assert chunks[0]['text'] == expected_first_chunk
+        assert chunks[1]['text'] == expected_second_chunk
 
 
 def test_locations():
     """Test simple logics regarding the ``location`` key of sentences returned by the sentencizer"""
-    sentencizer = NLTKSentencizer()
+    segmenter = NLTKSentencizer()
     text = (
         "This is a sentence. Here's another sentence. One more sentence?    Aaand, yes, one more! \n"
         "Lastly, this one is the last sentence."
     )
-    sentences = sentencizer.segment(text)
+    docs_chunks = segmenter.segment(np.stack([text, text]))
 
-    # first sentence should start at the first index or later
-    assert sentences[0]['location'][0] >= 0
-    # last sentence can not end at an index greater than the length of text
-    assert sentences[-1]['location'][-1] <= len(text)
-    # sentences beginning and ending indeces cannot overlap
-    for i in range(1, len(sentences)):
-        assert sentences[i]['location'][0] > sentences[i - 1]['location'][-1]
+    for chunks in docs_chunks:
+        # first sentence should start at the first index or later
+        assert chunks[0]['location'][0] >= 0
+        # last sentence can not end at an index greater than the length of text
+        assert chunks[-1]['location'][-1] <= len(text)
+        # sentences beginning and ending indeces cannot overlap
+        for i in range(1, len(chunks)):
+            assert chunks[i]['location'][0] > chunks[i - 1]['location'][-1]
 
 
 def test_nltk_sentencizer_unsupported_language():
@@ -104,10 +106,11 @@ def test_nltk_sentencizer_unsupported_language():
 
 def test_offset():
     """Test that last offset is the same as the length of sentences minus one"""
-    sentencizer = NLTKSentencizer()
+    segmenter = NLTKSentencizer()
     text = '  This ,  text is...  . Amazing !!'
-    sentences = sentencizer.segment(text)
-    assert len(sentences) - 1 == sentences[-1]['offset']
+    docs_chunks = segmenter.segment(np.stack([text, text]))
+    for chunks in docs_chunks:
+        assert len(chunks) - 1 == chunks[-1]['offset']
 
 
 @pytest.mark.parametrize(
@@ -120,21 +123,8 @@ def test_offset():
 )
 def test_turkish_abbreviations(text):
     """Check that Turkish sentences that include dots in abbreviations do not separate on those"""
-    sentencizer = NLTKSentencizer(language='turkish')
+    segmenter = NLTKSentencizer(language='turkish')
     # turkish abbreviations include dot, and they should not be segmented
-    assert len(sentencizer.segment(text)) == 1
-
-
-def test_nltk_sentencizer_in_flow():
-    def validate(req):
-        assert req.docs[0].chunks[0].text == 'Today is a good day.'
-        assert req.docs[0].chunks[1].location[0] == 21
-
-    f = Flow().add(uses='!NLTKSentencizer')
-    with f:
-        f.index_lines(
-            ["Today is a good day. Can't wait for tomorrow!"],
-            on_done=validate,
-            callback_on_body=True,
-            line_format='csv',
-        )
+    docs_chunks = segmenter.segment(np.stack([text, text]))
+    for chunks in docs_chunks:
+        assert len(chunks) == 1
