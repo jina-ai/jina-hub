@@ -78,8 +78,8 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
                 'There are duplicate value in the target_label argument.'
             )
 
-    @batching
     @as_ndarray
+    @batching
     def predict(self,
                 data: 'np.ndarray',
                 *args,
