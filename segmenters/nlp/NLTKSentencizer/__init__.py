@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from jina.executors.segmenters import BaseSegmenter
 
@@ -20,9 +20,9 @@ class NLTKSentencizer(BaseSegmenter):
 
 
     :param language: default='english'. Lowercased language name to initialize the sentence tokenizer, accepted languages are listed in :attr:`SUPPORTED_LANGUAGES`.
-    :type language: str
+    :type language: Optional[str]
     :param resource_url: default=None. Optional parameter to specify the location for tokenizer model, overrides `language`. For a file path, should follow `file://path_to_resource` format. For more information, see https://www.nltk.org/data.html
-    :type resource_url: str
+    :type resource_url: Optional[str]
     :param args: Additional positional arguments
     :param kwargs: Additional keyword arguments
     """
@@ -49,13 +49,17 @@ class NLTKSentencizer(BaseSegmenter):
     ]
 
     def __init__(
-        self, language: str = 'english', resource_url: str = None, *args, **kwargs
+        self,
+        language: Optional[str] = 'english',
+        resource_url: Optional[str] = None,
+        *args,
+        **kwargs,
     ):
         """Set constructor"""
         super().__init__(*args, **kwargs)
         if resource_url:
             self.resource_url = resource_url
-            self.language = ''
+            self.language = None
         else:
             self.resource_url = f'tokenizers/punkt/{language}.pickle'
             self.language = language
@@ -77,7 +81,7 @@ class NLTKSentencizer(BaseSegmenter):
                         f'Please ensure that "nltk_data" folder is accessible to your working directory.'
                     )
                     raise
-            elif self.language != '':
+            elif self.language:
                 self.logger.error(
                     f'The language you specified ("{self.language}") is not supplied by NLTK.'
                     f'Please ensure that language is one of the acceptable languages listed in '
