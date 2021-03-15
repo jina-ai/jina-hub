@@ -12,7 +12,6 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def create_random_img_array(img_height, img_width):
-    import numpy as np
     return np.random.randint(0, 256, (img_height, img_width, 3))
 
 
@@ -24,7 +23,7 @@ def test_crop():
     width = 30
     height = 20
     crafter = ImageCropper(top=top, left=left, width=width, height=height)
-    crafted_docs = crafter.craft([img_array, img_array])
+    crafted_docs = crafter.craft(np.stack([img_array, img_array]))
 
     assert len(crafted_docs) == 2
     for crafted_doc in crafted_docs:
@@ -46,7 +45,7 @@ def test_crop_file_image():
     img = Image.open(tmp_fn).convert('RGB')
     img_array = np.array(img).astype('float32')
     crafter = ImageCropper(top=541, left=992, width=24, height=67)
-    crafted_docs = crafter.craft([img_array, img_array])
+    crafted_docs = crafter.craft(np.stack([img_array, img_array]))
     assert len(crafted_docs) == 2
     for crafted_doc in crafted_docs:
         assert crafted_doc['blob'].shape == (67, 24, 3)
