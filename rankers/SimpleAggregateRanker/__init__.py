@@ -30,7 +30,7 @@ class SimpleAggregateRanker(Chunk2DocRanker):
         else:
             raise ValueError(f'The aggregate function "{aggregate_function}" is not in "{self.AGGREGATE_FUNCTIONS}".')
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         scores = match_idx[self.COL_SCORE]
         aggregated_score = self.np_aggregate_function(scores)
         if self.inverse_score:
@@ -38,4 +38,4 @@ class SimpleAggregateRanker(Chunk2DocRanker):
                 raise ValueError(f'Setting "is_reversed_score" to True does not allow to have an aggregated document '
                                  f'negative score')
             aggregated_score = 1. / (1. + aggregated_score)
-        return self.get_doc_id(match_idx), aggregated_score
+        return aggregated_score

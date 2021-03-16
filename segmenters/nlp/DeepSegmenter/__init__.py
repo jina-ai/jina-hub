@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -33,6 +34,7 @@ class DeepSegmenter(BaseSegmenter):
         from deepsegment import DeepSegment
         self._segmenter = DeepSegment(self.lang_code, checkpoint_name=self.checkpoint_name)
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.

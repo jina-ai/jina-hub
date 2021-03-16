@@ -1,5 +1,6 @@
 import pytest
 import spacy
+import numpy as np
 
 from .. import SpacySentencizer
 
@@ -19,11 +20,13 @@ def multilingual_model_name():
 )
 def test_multilingual_sentencizer(multilingual_model_name, multilingual_test_inputs, multilingual_test_expected):
     # xx_sent_ud_sm does not have DependencyParser model, ignoring use_default_segmenter=True
-    sentencizer = SpacySentencizer(multilingual_model_name, use_default_segmenter=False)
+    segmenter = SpacySentencizer(multilingual_model_name, use_default_segmenter=False)
     text = multilingual_test_inputs
     expected_num_of_splits = multilingual_test_expected
-    crafted_chunk_list = sentencizer.segment(text, 0)
-    assert len(crafted_chunk_list) == expected_num_of_splits
+    docs_chunks = segmenter.segment(np.stack([text, text]))
+    assert len(docs_chunks) == 2
+    for chunks in docs_chunks:
+        assert len(chunks) == expected_num_of_splits
 
 
 def test_unsupported_lang(tmp_path):

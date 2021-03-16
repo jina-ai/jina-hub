@@ -8,7 +8,6 @@ from .. import CenterImageCropper
 
 
 def create_random_img_array(img_height, img_width):
-    import numpy as np
     return np.random.randint(0, 256, (img_height, img_width, 3))
 
 
@@ -19,7 +18,7 @@ def test_center_crop():
     height = 20
     output_dim = (height, width)
     crafter = CenterImageCropper(output_dim)
-    crafted_docs = crafter.craft([img_array, img_array])
+    crafted_docs = crafter.craft(np.stack([img_array, img_array]))
     assert len(crafted_docs) == 2
     for crafted_doc in crafted_docs:
         assert crafted_doc['blob'].shape == (height, width, 3)

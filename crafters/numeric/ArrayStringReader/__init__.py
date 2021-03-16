@@ -1,6 +1,11 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from typing import Dict
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 
 
@@ -22,6 +27,7 @@ class ArrayStringReader(BaseCrafter):
         self.delimiter = delimiter
         self.as_type = as_type
 
+    @single
     def craft(self, text: str, *args, **kwargs) -> Dict:
         """
         Split string into numbers and convert to numpy array.
