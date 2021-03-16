@@ -4,7 +4,7 @@ kind: encoder
 description:
   |
   Encodes data using Uniform Manifold Approximation and Projection Embedding.
-author: Jina AI Dev-Team (dev-team@jina.ai)
+author: Will Perkins (hi@willperkins.com)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
