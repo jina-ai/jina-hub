@@ -11,5 +11,11 @@ class UMAPEncoder(TransformEncoder):
 
     Full code and documentation can be found
     `here <https://github.com/lmcinnes/umap>`_.
+
+    :param model_path: Path to pre-trained model
+    :param args: Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
-    pass
+    def __init__(self, model_path: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_path = model_path
