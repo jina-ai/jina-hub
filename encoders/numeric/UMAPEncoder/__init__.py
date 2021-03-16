@@ -1,3 +1,5 @@
+from typing import Optional
+
 from jina.executors.encoders.numeric import TransformEncoder
 
 
@@ -16,6 +18,8 @@ class UMAPEncoder(TransformEncoder):
     :param args: Additional positional arguments
     :param kwargs: Additional keyword arguments
     """
-    def __init__(self, model_path: str, *args, **kwargs):
+    def __init__(self,
+                 model_path: Optional[str] = 'pre-trained.model',
+                 *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_path = model_path
