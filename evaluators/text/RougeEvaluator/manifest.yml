@@ -1,8 +1,7 @@
 manifest_version: 1
 name: RougeEvaluator
 kind: evaluator
-description:
-  |
+description: |
   Evaluate ROUGE score between actual and ground truth texts.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
@@ -12,3 +11,4 @@ version: 0.0.4
 license: apache-2.0
 keywords: [evaluator, rouge]
 type: pod
+timestamp: 1615944858.3202984
