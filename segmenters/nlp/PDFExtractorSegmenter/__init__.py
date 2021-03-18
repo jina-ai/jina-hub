@@ -15,7 +15,7 @@ class PDFExtractorSegmenter(BaseSegmenter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @single(num_data=2)
+    @single(slice_nargs=2)
     def segment(self, uri: str, buffer: bytes, *args, **kwargs) -> List[Dict]:
         """
         Segments PDF files. Extracts data from them.
