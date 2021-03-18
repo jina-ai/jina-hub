@@ -28,8 +28,8 @@ Initialise MFCCTimbreEncoder:
 
   ```python
     from jina.flow import Flow
-    f = (Flow()
-        .add(name='mfcc-encoder', uses='docker://jinahub/pod.encoder.mfcctimbreencoder:MODULE_VERSION-JINA_VERSION')
+    f = (Flow().add(name='mfcc-encoder',
+                    uses='docker://jinahub/pod.encoder.mfcctimbreencoder:MODULE_VERSION-JINA_VERSION')
     ```
 - Flow YAML file
   This is the only way to provide arguments to its parameters:
