@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 import os
 
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
-from jina.executors.decorators import single_multi_input
 
 TIKA_URL = 'http://0.0.0.0:9998'
 
@@ -68,7 +68,7 @@ class TikaExtractor(BaseCrafter):
         super().close()
         self.tika_process.kill()
 
-    @single_multi_input(num_data=2)
+    @single(slice_nargs=2)
     def craft(self, uri: str, buffer: bytes, *args, **kwargs):
         """
         Craft PDF files. Extract data from them.
