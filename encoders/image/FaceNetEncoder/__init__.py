@@ -10,7 +10,7 @@ from jina.executors.devices import TorchDevice
 
 
 class FaceNetEncoder(BaseTorchEncoder, TorchDevice):
-    """Each image is encoded into a face embedding:
+    """FaceNetEncoder encodes images using the following algorithm:
     * Face detector detects faces on the image
         * If multiple faces are detected the largest is selected (default heuristic)
         * If no faces are detected a dummy face is used (an array with zeroes)
