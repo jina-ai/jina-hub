@@ -2,9 +2,9 @@ manifest_version: 1
 name: VSEImageEncoder
 kind: encoder
 description: |
-    `VSEImageEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a
-        ndarray of `BatchSize x D`. Taken from the paper implementation of (VSE++: Improving Visual-Semantic Embeddings with Hard Negatives)
-    at https://github.com/fartashf/vseppauthor: Jina AI Dev-Team (dev-team@jina.ai)
+  `VSEImageEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a
+      ndarray of `BatchSize x D`. Taken from the paper implementation of (VSE++: Improving Visual-Semantic Embeddings with Hard Negatives)
+  at https://github.com/fartashf/vseppauthor: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
@@ -12,3 +12,4 @@ version: 0.0.5
 license: apache-2.0
 keywords: [image, cross-model, computer vision, VSE, hard negative mining, vsepp]
 type: pod
+timestamp: 1616030086.008567
