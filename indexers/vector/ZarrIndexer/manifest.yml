@@ -1,8 +1,7 @@
 manifest_version: 1
 name: ZarrIndexer
 kind: indexer
-description:
-  |
+description: |
   Zarr based indexer
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
@@ -12,3 +11,4 @@ version: 0.0.11
 license: apache-2.0
 keywords: [zarr, numpy, indexer]
 type: pod
+timestamp: 1616029318.9522486
