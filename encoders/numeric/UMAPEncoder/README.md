@@ -26,24 +26,24 @@ Users can use Pod images in several ways:
   Specify the image name along with the version tag. The snippet below uses Jina version as `JINA_VERSION` and UMAPEncoder version as `MODULE_VERSION`.
   - ```bash
     docker run --network host docker://jinahub/pod.encoder.umapencoder:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
-  ```
+    ```
 
 - Flow API
   - ```python
     from jina.flow import Flow
     f = (Flow()
         .add(name='umap_encoder', uses='docker://jinahub/pod.encoder.umapencoder:MODULE_VERSION-JINA_VERSION')
-  ```
+    ```
 
 - Jina CLI
   - ```bash
-  jina pod --uses docker://jinahub/pod.encoder.umapencoder:MODULE_VERSION-JINA_VERSION
-  ```
+    jina pod --uses docker://jinahub/pod.encoder.umapencoder:MODULE_VERSION-JINA_VERSION
+    ```
 
 - Conventional local usage with `uses` argument 
   - ```bash
-  jina pod --uses hub/example/config.yml --port-in 55555 --port-out 55556
-  ```
+    jina pod --uses hub/example/config.yml --port-in 55555 --port-out 55556
+    ```
 
 **NOTE**:
 
