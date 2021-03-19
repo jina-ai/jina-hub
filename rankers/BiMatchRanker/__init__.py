@@ -83,7 +83,7 @@ class BiMatchRanker(Chunk2DocRanker):
         # group by "match_id" or "query_chunk_id". So here groups have in common 1st (match_parent_id) and `n` column
         _groups = self._group_by(g, col)
         # take the best match from each group
-        _groups_best = np.stack([np.sort(gg, order=col)[0] for gg in _groups])
+        _groups_best = np.stack([np.sort(gg, order='score')[0] for gg in _groups])
         # doc total length
         # how many chunks in the document (match or query)
         _c = chunk_meta[_groups_best[0][col]]['length']

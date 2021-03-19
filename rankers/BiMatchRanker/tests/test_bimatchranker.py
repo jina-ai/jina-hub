@@ -23,7 +23,7 @@ def test_bimatchranker():
     match_chunk_meta = {'10': {'length': 200}, '11': {'length': 200}, '20': {'length': 300}}
 
     # test score() with fake grouped data
-    match_idx_1 = np.array([('1', '10', '100', 0.40000001), ('1', '10', '110', 0.30000001),
+    match_idx_1 = np.array([('1', '10', '100', 0.4), ('1', '10', '110', 0.3),
                             ('1', '11', '110', 0.2)],
                            dtype=[('match_parent_id', '<U64'), ('match_doc_chunk_id', '<U64'),
                                   ('match_query_chunk_id', '<U64'), ('score', '<f8')])
@@ -68,11 +68,11 @@ def test_bimatchranker_readme():
     match_score_1 = ranker.score(match_idx_1, query_chunk_meta, match_chunk_meta)
     assert match_score_1 == pytest.approx(0.3458, 0.001)
 
-    match_idx_2 = np.array([('2', '21', '1', 0.69999999), ('2', '21', '2', 0.1),
+    match_idx_2 = np.array([('2', '21', '1', 0.7), ('2', '21', '2', 0.1),
                             ('2', '21', '3', 0.1), ('2', '22', '1', 0.5),
-                            ('2', '22', '2', 0.69999999), ('2', '22', '3', 0.5),
-                            ('2', '23', '3', 0.69999999)],
+                            ('2', '22', '2', 0.7), ('2', '22', '3', 0.5),
+                            ('2', '23', '3', 0.7)],
                            dtype=[('match_parent_id', '<U64'), ('match_doc_chunk_id', '<U64'),
                                   ('match_query_chunk_id', '<U64'), ('score', '<f8')])
     match_score_2 = ranker.score(match_idx_2, query_chunk_meta, match_chunk_meta)
-    assert match_score_2 == pytest.approx(0.5333, 0.001)
+    assert match_score_2 == pytest.approx(0.6666, 0.001)
