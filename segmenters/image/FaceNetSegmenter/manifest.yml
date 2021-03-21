@@ -1,0 +1,13 @@
+manifest_version: 1
+name: FaceNetSegmenter
+kind: encoder
+description: |
+    FaceNetSegmenter segments faces from an image. Input image is an array of shape (Width x Height x Channels).
+author: Anton Kiselev (straw.berry.pie@ya.ru)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub/blob/master/segmenters/image/FaceNetSegmenter/README.md
+version: 0.0.1
+license: apache-2.0
+keywords: [image, FaceNet, faces, computer vision, detection]
+type: pod
