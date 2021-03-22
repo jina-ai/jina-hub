@@ -2,7 +2,8 @@ manifest_version: 1
 name: InfiniteNormEvaluator
 kind: evaluator
 type: pod
-description: Evaluates distance between embeddings computing the Infinite Norm between them.
+description: Evaluates distance between embeddings computing the Infinite Norm between
+  them.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
@@ -10,3 +11,4 @@ documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.6
 license: apache-2.0
 keywords: [Infinite, evaluator, embedding, information retrieval evaluation]
+timestamp: 1616377428.1209147
