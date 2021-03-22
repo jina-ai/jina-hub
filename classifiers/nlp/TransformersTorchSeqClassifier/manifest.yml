@@ -1,5 +1,5 @@
 manifest_version: 1
-name: TransformersTorchSequenceClassifier
+name: TransformersTorchSeqClassifier
 kind: classifier
 description:
   |

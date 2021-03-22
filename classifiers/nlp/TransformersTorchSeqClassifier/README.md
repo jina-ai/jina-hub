@@ -1,4 +1,4 @@
-# TransformersTorchSequenceClassifier
+# TransformersTorchSeqClassifier
 
 Sequence (text) classification wrapper for [HuggingFace sequence classification models](https://huggingface.co/transformers/usage.html#sequence-classification). 
 Works with all trained sequence classification models, including the ones hosted on 
@@ -6,16 +6,16 @@ Works with all trained sequence classification models, including the ones hosted
 
 
 ## Usage:
-The following code snippets show how to use TransformersTorchSequenceClassifier.
+The following code snippets show how to use TransformersTorchSeqClassifier.
 
 - Simple Python usage:
 
  - ```python
-   from jina.hub.classifiers.nlp.TransformersTorchSequenceClassifier import TransformersTorchSequenceClassifier
+   from jina.hub.classifiers.nlp.TransformersTorchSeqClassifier import TransformersTorchSeqClassifier
    import numpy as np
    
    model_name = 'distilbert-base-uncased-finetuned-sst-2-english'
-   classifier = TransformersTorchSequenceClassifier(model_name)
+   classifier = TransformersTorchSeqClassifier(model_name)
    data =np.stack(['Today is a good day.',
                    "Can't wait for tomorrow!",
                    "Today is a good day. Can't wait for tomorrow!"])
@@ -30,12 +30,12 @@ Users can use Pod images in several ways:
 
 - Run with Docker (`docker run`)
   - ```bash
-    docker run jinahub/pod.classifier.transformerstorchqequenceclassifier:0.0.1-1.0.1 --port-in 55555 --port-out 55556
+    docker run jinahub/pod.classifier.transformerstorchseqclassifier:0.0.1-1.0.1 --port-in 55555 --port-out 55556
     ```
     
-- The `transformerstorchsequenceclassifier.yml` can be created with following configurations:
+- The `TransformersTorchSeqClassifier.yml` can be created with following configurations:
     - ```yaml
-      !TransformersTorchSequenceClassifier
+      !TransformersTorchSeqClassifier
       with:
         pretrained_model_name_or_path: "distilbert-base-uncased-finetuned-sst-2-english"
       metas:
@@ -44,12 +44,12 @@ Users can use Pod images in several ways:
         ```
 - Jina CLI
   - ```bash
-    jina pod --uses docker://jinahub/pod.classifier.transformerstorchqequenceclassifier:0.0.1-1.0.1 --port-in 55555 --port-out 55556
+    jina pod --uses docker://jinahub/pod.classifier.transformerstorchseqclassifier:0.0.1-1.0.1 --port-in 55555 --port-out 55556
     ```
     
 - Conventional local usage with `uses` argument, you need to create the YAML file first. You may also want to refer [YAML Syntax](https://docs.jina.ai/chapters/yaml/executor.html).
   - ```bash
-    jina pod --uses transformerstorchqequenceclassifier.yml --port-in 55555 --port-out 55556
+    jina pod --uses transformerstorchseqclassifier.yml --port-in 55555 --port-out 55556
     ```
     
 - Docker command
@@ -57,12 +57,12 @@ Users can use Pod images in several ways:
   - Specify the image name along with the version tag. The snippet below uses Jina version `1.0.1`
 
   - ```bash
-    docker pull jinahub/pod.classifier.transformerstorchqequenceclassifier:0.0.1-1.0.1
+    docker pull jinahub/pod.classifier.transformerstorchseqclassifier:0.0.1-1.0.1
     ```
    
  Note:
  
  One of the limitations with the Hub Executors currently is the tags - all Executor images should have the versions appended in the name i.e.
- if the version is `0.0.1-1.0.1`, the image name would be `jinahub/pod.classifier.transformerstorchqequenceclassifier:0.0.1-1.0.1`.
+ if the version is `0.0.1-1.0.1`, the image name would be `jinahub/pod.classifier.transformerstorchseqclassifier:0.0.1-1.0.1`.
    
  

@@ -4,9 +4,9 @@ from jina.executors.decorators import batching, as_ndarray
 from jina.executors.devices import TorchDevice
 
 
-class TransformersTorchSequenceClassifier(TorchDevice, BaseClassifier):
+class TransformersTorchSeqClassifier(TorchDevice, BaseClassifier):
     """
-    :class:`TransformersTorchSequenceClassifier`
+    :class:`TransformersTorchSeqClassifier`
     Wrapper for :class:`transformers.AutoModelForSequenceClassification`. Works with all trained sequence classification models
     on `Huggingface Transformers model hub <https://huggingface.co/models?pipeline_tag=text-classification>`_.
 
@@ -81,22 +81,3 @@ class TransformersTorchSequenceClassifier(TorchDevice, BaseClassifier):
 
         scores = scores.detach().numpy()
         return scores
-
-
-if __name__ == '__main__':
-    from jina.flow import Flow
-
-    def print_chunks(req):
-        print("-----------------------")
-        for chunk in req.docs[0].chunks:
-            print(chunk.text)
-        print("-----------------------")
-
-    # It may take some time if you don't pull the image, you can set timeout_ready=-1 or pull image locally before.
-    f = Flow().add(name='sequence_classifier', uses='config.yml')
-    with f:
-        f.index_lines(
-            ['It is a sunny day!!!! When Andy comes back, we are going to the zoo.'],
-            on_done=print_chunks,
-            line_format='csv',
-        )

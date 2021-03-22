@@ -1,11 +1,11 @@
-from .. import TransformersTorchSequenceClassifier
+from .. import TransformersTorchSeqClassifier
 import numpy as np
 import pytest
 
 
 def test_sequencetransformerstorchclassifier():
     model_name = 'distilbert-base-uncased-finetuned-sst-2-english'
-    classifier = TransformersTorchSequenceClassifier(model_name)
+    classifier = TransformersTorchSeqClassifier(model_name)
     data = np.stack(
         [
             'Today is a good day.',
@@ -44,7 +44,7 @@ def test_sequencetransformerstorchclassifier():
 )
 def test_multilingual(data):
     model_name = 'nlptown/bert-base-multilingual-uncased-sentiment'
-    classifier = TransformersTorchSequenceClassifier(model_name)
+    classifier = TransformersTorchSeqClassifier(model_name)
     output = classifier.predict(data)
     print(output.argmax(axis=1))
     assert output.shape[0] == 3
