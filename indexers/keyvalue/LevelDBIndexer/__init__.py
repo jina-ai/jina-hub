@@ -66,7 +66,6 @@ class LevelDBIndexer(BinaryPbIndexer):
         if missed:
             raise KeyError(f'Key(s) {missed} were not found in {self.save_abspath}')
 
-        self.delete(keys)
         self.add(keys, values)
 
     def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
