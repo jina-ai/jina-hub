@@ -29,7 +29,7 @@ The following code snippets show how to use TransformersTorchSeqClassifier.
 Users can use Pod images in several ways:
 
 - Run with Docker (`docker run`)
-  - ```bash
+  ```bash
     docker run --network host jinahub/pod.classifier.transformerstorchseqclassifier:0.0.1-1.0.1 --port-in 55555 --port-out 55556
     ```
     
