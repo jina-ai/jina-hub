@@ -25,7 +25,7 @@ COPY . /workspace
 WORKDIR /workspace
 
 # for testing the image
-# FROM base
+FROM base
 
 RUN pip install pytest && pytest
 
