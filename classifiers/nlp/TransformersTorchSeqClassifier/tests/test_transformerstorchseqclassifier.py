@@ -46,7 +46,7 @@ def test_multilingual(data):
     model_name = 'nlptown/bert-base-multilingual-uncased-sentiment'
     classifier = TransformersTorchSeqClassifier(model_name)
     output = classifier.predict(data)
-    assert output.shape[0] == 3
+    assert output.shape[0] == data.shape[0]
     assert output.shape[1] == 5
     # all predictions should be more positive than negative, out of 5
     assert (output.argmax(axis=1) > 2).all()
