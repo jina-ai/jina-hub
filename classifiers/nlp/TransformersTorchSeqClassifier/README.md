@@ -43,7 +43,7 @@ Users can use Pod images in several ways:
           - __init__.py
         ```
 - Jina CLI
-  - ```bash
+  ```bash
     jina pod --uses docker://jinahub/pod.classifier.transformerstorchseqclassifier:0.0.1-1.0.1 --port-in 55555 --port-out 55556
     ```
     
