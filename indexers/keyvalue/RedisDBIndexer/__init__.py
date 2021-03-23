@@ -30,6 +30,7 @@ class RedisDBIndexer(BinaryPbIndexer):
         """
         import redis
         try:
+            # TODO use a conn. pool
             r = redis.Redis(host=self.hostname, port=self.port, db=self.db, socket_timeout=10)
             r.ping()
             return r
@@ -53,9 +54,10 @@ class RedisDBIndexer(BinaryPbIndexer):
         """
         redis_docs = [{'_id': i, 'values': j} for i, j in zip(keys, values)]
 
-        with self.get_query_handler() as redis_handler:
+        with self.get_query_handler().pipeline() as redis_handler:
             for k in redis_docs:
                 redis_handler.set(k['_id'], k['values'])
+            redis_handler.execute()
 
     def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Update JSON-friendly serialized documents on the index.
@@ -78,6 +80,7 @@ class RedisDBIndexer(BinaryPbIndexer):
 
         :param keys: document ids to delete
         """
-        with self.get_query_handler() as h:
+        with self.get_query_handler().pipeline() as h:
             for k in keys:
                 h.delete(k)
+            h.execute()

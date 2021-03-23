@@ -1,0 +1,6 @@
+!UMAPEncoder
+with:
+  model_path: 'pre-trained.model'
+metas:
+  py_modules: 
+    - __init__.py

@@ -8,7 +8,7 @@ description: |
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.1
+version: 0.0.2
 license: apache-2.0
 keywords: [Cross-Modal, image, CLIP, computer vision]
 type: pod

@@ -3,7 +3,7 @@ from typing import Dict
 
 import numpy as np
 
-from jina.executors.decorators import single_multi_input
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 
 
@@ -22,7 +22,7 @@ class ImageReader(BaseCrafter):
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
 
-    @single_multi_input(num_data=2)
+    @single(slice_nargs=2)
     def craft(self, buffer: bytes, uri: str, *args, **kwargs) -> Dict:
         """
         Read image file and craft it into image matrix.
