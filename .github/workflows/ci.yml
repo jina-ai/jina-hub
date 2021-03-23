@@ -39,6 +39,7 @@ jobs:
         with:
           # push is true only for PRs raised by jina-bot
           push: ${{github.actor == 'jina-bot'}}
+          jina_hub_token: ${{ secrets.JINA_DEV_BOT }}
           dockerhub_username: ${{ secrets.JINAHUB_DOCKER_USER }}
           dockerhub_password: ${{ secrets.JINAHUB_DOCKER_PWD }}
           slack_webhook: ${{ secrets.JINAHUB_SLACK_WEBHOOK }}
