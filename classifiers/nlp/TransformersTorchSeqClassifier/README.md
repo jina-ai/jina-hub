@@ -34,7 +34,7 @@ Users can use Pod images in several ways:
     ```
     
 - The `TransformersTorchSeqClassifier.yml` can be created with following configurations:
-    - ```yaml
+    ```yaml
       !TransformersTorchSeqClassifier
       with:
         pretrained_model_name_or_path: "distilbert-base-uncased-finetuned-sst-2-english"
