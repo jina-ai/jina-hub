@@ -29,6 +29,6 @@ FROM base
 
 RUN pip install pytest && pytest
 
-# FROM base
+FROM base
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml", "--timeout-ready", "180000"]
