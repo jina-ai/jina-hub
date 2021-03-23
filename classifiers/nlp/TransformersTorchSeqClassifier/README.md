@@ -30,7 +30,7 @@ Users can use Pod images in several ways:
 
 - Run with Docker (`docker run`)
   - ```bash
-    docker run jinahub/pod.classifier.transformerstorchseqclassifier:0.0.1-1.0.1 --port-in 55555 --port-out 55556
+    docker run --network host jinahub/pod.classifier.transformerstorchseqclassifier:0.0.1-1.0.1 --port-in 55555 --port-out 55556
     ```
     
 - The `TransformersTorchSeqClassifier.yml` can be created with following configurations:
