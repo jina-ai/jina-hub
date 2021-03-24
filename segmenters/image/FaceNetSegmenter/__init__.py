@@ -5,6 +5,7 @@ from typing import List, Dict
 
 import numpy as np
 import torch
+from jina.executors.decorators import single
 
 from jina.executors.devices import TorchDevice
 from jina.executors.segmenters import BaseSegmenter

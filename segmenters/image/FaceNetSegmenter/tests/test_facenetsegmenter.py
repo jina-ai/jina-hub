@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import List
 
 import pytest
 
@@ -24,26 +25,32 @@ def assert_correct_output(result, n_faces: int):
         assert face['blob'].shape == (3, 160, 160)
 
 
-@pytest.mark.parametrize('filename', ['one_face.jpg',
-                                      'three_faces.jpg',
-                                      'four_faces.jpg',
-                                      'five_faces.jpg'])
-def test_segment_face(segmenter, filename):
-    image = Image.open(SEGMENTER_DIR / 'imgs' / filename)
+@pytest.mark.parametrize('filenames', [
+    ['one_face.jpg'],
+    ['three_faces.jpg', 'four_faces.jpg'],
+    ['one_face.jpg', 'three_faces.jpg', 'four_faces.jpg', 'five_faces.jpg'],
+])
+def test_segment_face(segmenter, filenames: List[str]):
+    images = [
+        np.array(Image.open(os.path.join(SEGMENTER_DIR, 'imgs', filename)))
+        for filename in filenames
+    ]
 
-    result = segmenter.segment(np.array(image))
-
-    assert_correct_output(result, n_faces=1)
+    results = segmenter.segment(images)
+    for result in results:
+        assert_correct_output(result, n_faces=1)
 
 
 @pytest.mark.parametrize('height', [128, 512])
 @pytest.mark.parametrize('width', [128, 512])
-def test_segment_no_face(segmenter, height: int, width: int):
-    image = np.zeros((width, height, 3))
+@pytest.mark.parametrize('batch_size', [1, 4, 16])
+def test_segment_no_face(segmenter, height: int, width: int, batch_size: int):
+    images = np.zeros((batch_size, width, height, 3))
 
-    result = segmenter.segment(image)
+    results = segmenter.segment(images)
 
-    assert_correct_output(result, n_faces=0)
+    for result in results:
+        assert_correct_output(result, n_faces=0)
 
 
 @pytest.fixture
@@ -59,7 +66,7 @@ def segmenter_multiface():
 def test_segment_face(segmenter_multiface, filename, n_faces):
     image = Image.open(os.path.join(SEGMENTER_DIR, 'imgs', filename))
 
-    result = segmenter_multiface.segment(np.array(image))
+    result = segmenter_multiface.segment([np.array(image)])[0]
 
     assert_correct_output(result, n_faces=n_faces)
 
