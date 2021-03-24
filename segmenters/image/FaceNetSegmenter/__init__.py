@@ -82,22 +82,20 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
             # Create a batch of size 1
             image = image.unsqueeze(0)
 
-            faces, probabilities = self.face_detector(images, return_prob=True)
+            faces, probabilities = self.face_detector(image, return_prob=True)
 
             if self.keep_all:
                 # All faces and probabilities are grouped in the first dimension of the first batch element
                 faces = faces[0]
                 probabilities = probabilities[0]
 
-            faces = [(face, probability)
-                     for face, probability in zip(faces, probabilities)
-                     if face is not None]
-
             results = [
-                dict(offset=0,
-                     weight=probability,
-                     blob=face.cpu().numpy(),
-                     tags={'probability': probability})
-                for face, probability in faces
+                dict(
+                    offset=0,
+                    weight=probability,
+                    blob=face.detach().numpy(),
+                )
+                for face, probability in zip(faces, probabilities)
+                if face is not None
             ]
             return results
