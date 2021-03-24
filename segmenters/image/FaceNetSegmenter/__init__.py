@@ -95,7 +95,7 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
 
             results = [
                 dict(offset=0,
-                     weight=1.,
+                     weight=probability,
                      blob=face.cpu().numpy(),
                      tags={'probability': probability})
                 for face, probability in faces
