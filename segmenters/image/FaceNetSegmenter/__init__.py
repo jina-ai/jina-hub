@@ -51,8 +51,6 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         self.min_face_size = min_face_size
         self.channel_axis = channel_axis
 
-        self.face_detector = None
-
         self._default_channel_axis = 2
 
     def post_init(self):
