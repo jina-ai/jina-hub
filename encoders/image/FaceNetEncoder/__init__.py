@@ -30,17 +30,15 @@ class FaceNetEncoder(BaseTorchEncoder, TorchDevice):
         self.pretrained_weights = pretrained_weights
         self.channel_axis = channel_axis
 
-        self.embedder = None
-
         self._default_channel_axis = 1
 
     def post_init(self):
         from facenet_pytorch import InceptionResnetV1
 
-        self.embedder = InceptionResnetV1(pretrained=self.pretrained_weights,
-                                          classify=False,
-                                          device=self.device).eval()
-        self.embedder.to(self.device)
+        self.model = InceptionResnetV1(pretrained=self.pretrained_weights,
+                                       classify=False,
+                                       device=self.device).eval()
+        self.model.to(self.device)
 
     @batching
     @as_ndarray
@@ -58,5 +56,5 @@ class FaceNetEncoder(BaseTorchEncoder, TorchDevice):
 
         with torch.no_grad():
             images = torch.from_numpy(data.astype('float32')).to(self.device)
-            embedded_faces = self.embedder(images)
-        return embedded_faces.cpu()
+            embedded_faces = self.model(images)
+        return embedded_faces.detach().cpu()

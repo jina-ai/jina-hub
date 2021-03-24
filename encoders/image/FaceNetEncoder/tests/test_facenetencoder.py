@@ -1,11 +1,13 @@
+import os
 from pathlib import Path
 
-import pytest
-
 from PIL import Image
+import pytest
 import numpy as np
 
 from .. import FaceNetEncoder
+
+
 ENCODER_DIR = Path(__file__).parent.parent
 
 
@@ -16,7 +18,7 @@ def encoder():
 
 @pytest.mark.parametrize('batch_size', [1, 2, 32])
 def test_encoding_face_batch(encoder, batch_size: int):
-    image = Image.open(ENCODER_DIR / 'imgs' / 'man_piercing.jpg')
+    image = Image.open(os.path.join(ENCODER_DIR, 'imgs', 'man_piercing.jpg'))
     image = np.array(image).transpose((2, 0, 1))  # channels-first
     image = image / 128. - 127.5
     images = np.stack([image] * batch_size)
