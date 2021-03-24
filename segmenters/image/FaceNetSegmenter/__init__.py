@@ -78,9 +78,9 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
 
         with torch.no_grad():
-            images = torch.from_numpy(data.astype('float32')).to(self.device)
+            image = torch.from_numpy(data.astype('float32')).to(self.device)
             # Create a batch of size 1
-            images = images.unsqueeze(0)
+            image = image.unsqueeze(0)
 
             faces, probabilities = self.face_detector(images, return_prob=True)
 
