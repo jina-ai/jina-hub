@@ -1,8 +1,7 @@
 manifest_version: 1
 name: CompressionVaeEncoder
 kind: encoder
-description:
-  |
+description: |
   `CompressVaeEncoder` is a dimensionality reduction tool based on the idea of Variational Autoencoders. It encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`. Full code and documentation can be found here: https://github.com/maxfrenzel/CompressionVAE.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
@@ -10,5 +9,6 @@ vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
 version: 0.0.6
 license: apache-2.0
-keywords: [Tensorflow,Computer Vision,Variational Autoencoders, encoder, numeric]
+keywords: [Tensorflow, Computer Vision, Variational Autoencoders, encoder, numeric]
 type: pod
+timestamp: 1616548855.1117074
