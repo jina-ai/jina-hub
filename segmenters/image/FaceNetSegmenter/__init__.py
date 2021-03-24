@@ -65,6 +65,7 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
                                    min_face_size=self.min_face_size,
                                    keep_all=self.keep_all).eval()
 
+    @single
     def segment(self, data: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """Transform a numpy `ndarray` of shape `(Height x Width x Channel)`
         into a list with dicts that contain cropped images.
