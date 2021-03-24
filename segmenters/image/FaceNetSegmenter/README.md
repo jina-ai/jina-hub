@@ -15,11 +15,10 @@ A single face is detected by default. Use `keep_all=True` to get all faces from 
 
 ## Usage
 
-The following example shows how to generate output embeddings given an input `np.ndarray` containing images.
+The following example shows how to get cropped faces for a single image represented by `np.ndarray`.
 
 ```python
-# Encoder embedding 
 segmenter = FaceNetSegmenter()
-result = segmenter.encode(image)
+result = segmenter.encode([image])
 face = result[0]['blob']
 ```
