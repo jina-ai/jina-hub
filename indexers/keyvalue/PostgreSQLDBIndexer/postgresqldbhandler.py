@@ -21,8 +21,7 @@ class PostgreSQLDBHandler:
                  port: int = 5432,
                  username: Optional[str] = None,
                  password: Optional[str] = None,
-                 database: str = 'postgres',
-                 collection: str = 'defaultcol'):
+                 database: str = 'postgres'):
         self.logger = JinaLogger(self.__class__.__name__)
         self.hostname = hostname
         self.port = port
@@ -31,10 +30,10 @@ class PostgreSQLDBHandler:
         self.database_name = database
         if self.username and self.password:
             self.connection_string = \
-                f'mongodb://{self.username}:{self.password}@{self.hostname}:{self.port}'
+                f'PostgreSQL://{self.username}:{self.password}@{self.hostname}:{self.port}'
         else:
             self.connection_string = \
-                f'mongodb://{self.hostname}:{self.port}'
+                f'PostgreSQL://{self.hostname}:{self.port}'
 
     def __enter__(self):
         return self.connect()
@@ -70,13 +69,13 @@ class PostgreSQLDBHandler:
         import psycopg2
         try:
             cursor = self.connection.cursor()
-            #cur.execute("SELECT admission, name, age, course, department from STUDENT")
+            # TODO find out the key value store for postgre? 
             cursor.execute()
-
-            cursor = self.collection.find({'_id': key})
-            cursor_contents = list(cursor)
+            #cursor = self.collection.find({'_id': key})
+            self.connection.commit()
+            cursor_contents = cursor.fetchall()
             if cursor_contents:
-                return cursor_contents[0]
+                return cursor_contents
             return None
         except psycopg2.errors.RaiseException as exp:
             raise Exception(f'Got an error while finding a document in the db {exp}')
