@@ -12,7 +12,6 @@ if False:
 
 class PostgreSQLDBIndexer(BaseIndexer):
     """:class:`PostgreSQLDBIndexer` PostgreSQL based KV Indexer.
-
         Initialize the PostgreSQLDBIndexer.
 
         :param hostname: hostname of the machine
@@ -30,7 +29,7 @@ class PostgreSQLDBIndexer(BaseIndexer):
                  hostname: str = '127.0.0.1',
                  port: int = 5432,
                  username: str = 'default_name',
-                 password: str = 'default_name',
+                 password: str = 'default_pwd',
                  database: str = 'default_db',
                  *args, **kwargs):
 
@@ -56,11 +55,21 @@ class PostgreSQLDBIndexer(BaseIndexer):
                 database=self.database_name,
                 host=self.hostname,
                 port=self.port)
-            self.cursor = self.connection.cursor()
             self.logger.info('Successfully connected to the database')
+            self.create_table()
         except (Exception, Error) as error:
-            print('Error while connecting to PostgreSQL', error)
+            self.logger.error('Error while connecting to PostgreSQL', error)
         return self
+
+    def create_table(self):
+        self.cursor = self.connection.cursor()
+        try:
+            self.cursor.execute("CREATE TABLE SQL (id serial PRIMARY KEY, vecs integer, metas varchar);")
+            self.logger.info('Successfully table created')
+        except:
+            self.logger.error("Error while creating table!")
+
+
 
     def add(self, ids, vecs, metas, *args, **kwargs):
         raise NotImplementedError
