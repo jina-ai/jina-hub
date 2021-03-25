@@ -7,6 +7,6 @@ author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub/blob/master/crafters/image/ImageResizer/README.md
-version: 0.0.18
+version: 0.0.19
 license: apache-2.0
 keywords: [crafter, image, resizer]
