@@ -2,7 +2,6 @@ FROM continuumio/miniconda3 as conda
 
 COPY requirements.txt /
 RUN conda update conda -c conda-forge && \
-    pip install jina && \
     pip install -r requirements.txt --no-cache-dir && \
     conda clean -afy
 

@@ -18,6 +18,15 @@ updates:
         dependency-type: "direct"
     open-pull-requests-limit: 1
 
+  - package-ecosystem: "pip"
+    directory: "classifiers/image/ZeroShotTFClassifier"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
   - package-ecosystem: "docker"
     directory: "/encoders/numeric/UMAPEncoder"
     schedule:
