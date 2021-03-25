@@ -8,7 +8,6 @@ COPY . /workspace
 WORKDIR /workspace
 
 
-RUN pip install jina
 # install the third-party requirements
 RUN pip install git+https://github.com/openai/CLIP.git
 

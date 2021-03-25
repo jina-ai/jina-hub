@@ -7,7 +7,7 @@ author: Deepam Patel (deepam8155@gmail.com)
 url: https://deepampatel.github.io/
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub/classifiers/image/CLIPZeroShotClassifier/README.md
-version: 0.0.2
+version: 0.0.3
 license: apache-2.0
 keywords: [Clip, Zero-shot, Classification, images]
 type: pod
