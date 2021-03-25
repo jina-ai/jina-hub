@@ -24,21 +24,23 @@ class PostgreSQLDBIndexer(BaseIndexer):
         :param kwargs: other keyword arguments
     """
 
-
     def __init__(self,
                  hostname: str = '127.0.0.1',
                  port: int = 5432,
                  username: str = 'default_name',
                  password: str = 'default_pwd',
                  database: str = 'default_db',
+                 table: Optional[str] = 'default_table',
                  *args, **kwargs):
 
         super().__init__(*args, **kwargs)
+
         self.hostname = hostname
         self.port = port
         self.username = username
         self.password = password
         self.database_name = database
+        self.table = table
 
     def __enter__(self):
         return self.connect()
@@ -55,24 +57,37 @@ class PostgreSQLDBIndexer(BaseIndexer):
                 database=self.database_name,
                 host=self.hostname,
                 port=self.port)
+            self.cursor = self.connection.cursor()
             self.logger.info('Successfully connected to the database')
             self.create_table()
+            self.connection.commit()
         except (Exception, Error) as error:
             self.logger.error('Error while connecting to PostgreSQL', error)
         return self
 
     def create_table(self):
-        self.cursor = self.connection.cursor()
-        try:
-            self.cursor.execute("CREATE TABLE SQL (id serial PRIMARY KEY, vecs integer, metas varchar);")
-            self.logger.info('Successfully table created')
-        except:
-            self.logger.error("Error while creating table!")
-
-
+        self.cursor.execute("select exists(select * from information_schema.tables where table_name=%s)", (self.table,))
+        if self.cursor.fetchone()[0]:
+            self.logger.info('Using existing table')
+        else:
+            try:
+                self.cursor.execute("CREATE TABLE SQL (ID INT PRIMARY KEY, VECS INTEGER, METAS TEXT);")
+                self.logger.info('Successfully table created')
+            except:
+                self.logger.error("Error while creating table!")
 
     def add(self, ids, vecs, metas, *args, **kwargs):
-        raise NotImplementedError
+        """ Insert the documents into the database.
+
+        :param ids: id of docs to be added
+        :param vecs: vecs to be added
+        :param metas: metas of docs to be added
+        """
+        self.cursor.execute("INSERT INTO sql (ID, VECS, METAS) VALUES (%s, %s, %s)", (ids, vecs, metas,))
+        self.connection.commit()
+        self.cursor.execute("SELECT * from sql")
+        record = self.cursor.fetchall()
+        print('Current data ', record)
 
     def update(self, ids, vecs, metas, *args, **kwargs):
         raise NotImplementedError
