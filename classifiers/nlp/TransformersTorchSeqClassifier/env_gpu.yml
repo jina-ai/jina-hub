@@ -1,0 +1,11 @@
+channels:
+  - huggingface
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pip
+  - pytorch=1.7.1
+  - cudatoolkit=11.0
+  - transformers=4.1.1

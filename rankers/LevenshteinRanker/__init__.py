@@ -19,7 +19,7 @@ class LevenshteinRanker(Match2DocRanker):
             query_required_keys=['text'], match_required_keys=['text'], *args, *kwargs
         )
 
-    @batching_multi_input(num_data=3)
+    @batching_multi_input(slice_nargs=3)
     def score(
         self,
         old_matches_scores: Sequence[float],

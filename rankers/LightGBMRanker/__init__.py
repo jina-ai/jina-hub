@@ -92,7 +92,7 @@ class LightGBMRanker(Match2DocRanker):
         else:
             return match_dataset.construct().add_features_from(query_dataset.construct())
 
-    @batching_multi_input(num_data=3)
+    @batching_multi_input(slice_nargs=3)
     def score(
             self, old_match_scores: List[List[float]], query_meta: List[Dict], match_meta: List[List[Dict]]
     ) -> 'np.ndarray':
