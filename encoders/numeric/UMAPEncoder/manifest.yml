@@ -1,8 +1,7 @@
 manifest_version: 1
 name: UMAPEncoder
 kind: encoder
-description:
-  |
+description: |
   Encodes data using Uniform Manifold Approximation and Projection Embedding.
 author: Will Perkins (hi@willperkins.com)
 url: https://jina.ai
@@ -12,3 +11,4 @@ version: 0.0.2
 license: apache-2.0
 keywords: [numeric, encoder, umap]
 type: pod
+timestamp: 1616663724.4126446
