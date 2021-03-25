@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directory: "/encoders/numeric/UMAPEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "pip"
+    directory: "/indexers/vector/ScannIndexer"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
