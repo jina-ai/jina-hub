@@ -2,8 +2,6 @@ name: Update hub
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *'  # every day at midnight
 
 jobs:
   update-jina-hub:
