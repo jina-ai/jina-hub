@@ -28,4 +28,6 @@ def test_postgress():
         ]
         if info:
             ids, vecs, metas = zip(*info)
+
             postgres_indexer.add(ids, vecs, metas)
+            postgres_indexer.delete(ids[0])

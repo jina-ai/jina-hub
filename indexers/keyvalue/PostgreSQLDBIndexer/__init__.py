@@ -1,11 +1,10 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional, Iterable
+import pickle
+from typing import Optional
 
 from jina.executors.indexers import BaseIndexer
-from jina.helper import cached_property
-from psycopg2.extras import execute_values
 
 if False:
     from ..PostgreSQLDBIndexer.postgresqldbhandler import PostgreSQLDBHandler
@@ -67,12 +66,20 @@ class PostgreSQLDBIndexer(BaseIndexer):
         return self
 
     def create_table(self):
+        """
+        Create Table with id, vecs and metas.
+        """
+
         self.cursor.execute("select exists(select * from information_schema.tables where table_name=%s)", (self.table,))
         if self.cursor.fetchone()[0]:
             self.logger.info('Using existing table')
         else:
             try:
-                self.cursor.execute("CREATE TABLE SQL (ID INT PRIMARY KEY, VECS INTEGER, METAS TEXT);")
+                self.cursor.execute("""DROP TABLE IF EXISTS SQL;
+                                    CREATE TABLE SQL (
+                                    ID INT PRIMARY KEY, 
+                                    VECS BYTEA, 
+                                    METAS BYTEA);""")
                 self.logger.info('Successfully table created')
             except:
                 self.logger.error("Error while creating table!")
@@ -80,31 +87,46 @@ class PostgreSQLDBIndexer(BaseIndexer):
     def add(self, ids, vecs, metas, *args, **kwargs):
         """ Insert the documents into the database.
 
-        :param ids: id of docs to be added
-        :param vecs: vecs to be added
-        :param metas: metas of docs to be added
+        :param ids: List of doc ids to be added
+        :param vecs: List of vecs to be added
+        :param metas: List of metas of docs to be added
         """
 
-        #self.cursor.execute("DELETE FROM sql")
-        for id in ids:
-            self.cursor.execute("INSERT INTO sql (ID) VALUES (%s)", (id))
+        self.cursor.execute("DELETE FROM sql")
+        for i in range(len(ids)):
+            self.cursor.execute("INSERT INTO sql (ID, VECS, METAS) VALUES (%s, %s, %s)", (ids[i], pickle.dumps(vecs), pickle.dumps(metas)))
         self.connection.commit()
         self.cursor.execute("SELECT * from sql")
         record = self.cursor.fetchall()
-        print('Current data ', record)
+        #self.cursor.execute("SELECT VECS from sql")
+        #record = pickle.loads(self.cursor.fetchone()[0])
+        print('Inserted data ', record)
 
     def update(self, ids, vecs, metas, *args, **kwargs):
         raise NotImplementedError
 
-    def delete(self, ids, *args, **kwargs):
-        raise NotImplementedError
+    def delete(self, id, *args, **kwargs):
+        """ Delete document from the database.
+
+        :param ids: List of doc ids to be added
+        :param vecs: List of vecs to be added
+        :param metas: List of metas of docs to be added
+         """
+
+        self.cursor.execute("DELETE FROM sql where (ID) = (%s) ", id)
+        self.connection.commit()
+        count = self.cursor.rowcount
+        print(count, "Record deleted successfully ")
+        self.cursor.execute("SELECT * from sql")
+        record = self.cursor.fetchall()
+        print('Current data after deletion: ', record)
 
     def dump(self, uri, shards, formats):
         raise NotImplementedError
 
     def __exit__(self, *args):
-        """ Make sure the connection to the database is closed.
-        """
+        """ Make sure the connection to the database is closed."""
+
         from psycopg2 import Error
         try:
             self.connection.close()
