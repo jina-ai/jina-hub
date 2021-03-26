@@ -343,6 +343,12 @@ updates:
     open-pull-requests-limit: 1
 
   - package-ecosystem: "docker"
+    directory: "segmenters/nlp/Sentencizer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
     directory: "encoders/numeric/UMAPEncoder"
     schedule:
       interval: "daily"
