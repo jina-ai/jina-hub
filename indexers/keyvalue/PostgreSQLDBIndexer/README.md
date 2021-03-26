@@ -1,21 +1,19 @@
-# MongoDBIndexer
+# PostgressIndexer
 
-Key-value indexer wrapper around the Mongo database. Mongo is a no-SQL storage system. You can read more about it here: https://www.mongodb.com/
+Indexer wrapper around Postgress database. Postrges is an open source object-relational database. You can read more about it here: https://www.postgresql.org/
 
-
-**NOTE** You will need to manually delete the entries in the database if you choose to delete a workspace. 
 
 ## Snippets:
 
-Initialise MongoDBIndexer:
+Initialise PostgresIndexer:
 
-`MongoDBIndexer(hostname, port, username, password, database, collection)`
+`PostgreSQLDBIndexer(username, password, database', table')`
 
 Users can use Pod images in several ways:
 
 **NOTE**: 
 
-- `MODULE_VERSION` is the version of the MongoDBIndexer, in semver format. E.g. `0.0.6`.
+- `MODULE_VERSION` is the version of the PostgresIndexer, in semver format. E.g. `0.0.6`.
 - `JINA_VERSION` is the version of the Jina core version with which the Docker image was built. E.g. `1.0.1` 
 
 - YAML file
@@ -24,14 +22,14 @@ Users can use Pod images in several ways:
   
   ```yaml
   pods:
-    - name: mongodb
-      uses: docker://jinahub/pod.indexer.mongodbindexer:MODULE_VERSION-JINA_VERSION 
-      uses_internal: mongodb.yml
+    - name: postgresdb
+      uses: docker://jinahub/pod.indexer.postgresdbindexer:MODULE_VERSION-JINA_VERSION 
+      uses_internal: postgresdb.yml
   ```
   
-  and then in `mongodb.yml`:
+  and then in `postgresdb.yml`:
   ```yaml
-  !MongoDBIndexer
+  !PostgreSQLDBIndexer
   with:
     hostname: host.com
     # key-value arguments go here 
@@ -40,7 +38,7 @@ Users can use Pod images in several ways:
 - Run with Docker (`docker run`)
   
   ```bash
-    docker run jinahub/pod.indexer.mongodbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
+    docker run jinahub/pod.indexer.postgresdbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
     ```
 
 - Flow API
@@ -48,13 +46,13 @@ Users can use Pod images in several ways:
   ```python
     from jina.flow import Flow
     f = (Flow()
-        .add(name='my-indexer', uses='docker://jinahub/pod.indexer.mongodbindexer:MODULE_VERSION-JINA_VERSION', port_in=55555, port_out=55556)
+        .add(name='my-indexer', uses='docker://jinahub/pod.indexer.postgresdbindexer:MODULE_VERSION-JINA_VERSION', port_in=55555, port_out=55556)
     ```
 
 - Jina CLI
   
   ```bash
-  jina pod --uses jinahub/pod.indexer.mongodbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
+  jina pod --uses jinahub/pod.indexer.postgresdbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
   ```
 
 - Conventional local usage with `uses` argument
@@ -68,5 +66,5 @@ Users can use Pod images in several ways:
   Specify the image name along with the version tag. The snippet below uses Jina version as `JINA_VERSION`.
 
   ```bash
-  docker pull jinahub/pod.indexer.mongodbindexer:MODULE_VERSION-JINA_VERSION
+  docker pull jinahub/pod.indexer.postgresdbindexer:MODULE_VERSION-JINA_VERSION
   ```

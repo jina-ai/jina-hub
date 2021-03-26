@@ -18,7 +18,7 @@ def doc_without_embedding(d):
     return new_doc
 
 def test_postgress():
-    with PostgreSQLDBIndexer(username='susana', password='pwd', database='python_test',
+    with PostgreSQLDBIndexer(username='user', password='pwd', database='python_test',
             table='sql') as postgres_indexer:
         docs = list(get_documents(chunks=0, same_content=False))
         info = [
