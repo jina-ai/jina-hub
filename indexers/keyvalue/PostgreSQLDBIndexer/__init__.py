@@ -102,15 +102,26 @@ class PostgreSQLDBIndexer(BaseIndexer):
         #record = pickle.loads(self.cursor.fetchone()[0])
         print('Inserted data ', record)
 
-    def update(self, ids, vecs, metas, *args, **kwargs):
-        raise NotImplementedError
+    def update(self, id, vecs, metas, *args, **kwargs):
+        """ Updated document from the database.
+
+        :param ids: Id of Doc to be updated
+        :param vecs: List of vecs to be updated
+        :param metas: List of metas of docs to be updated
+        """
+
+        self.cursor.execute("UPDATE sql SET VECS = %s, METAS = %s WHERE ID = %s", (pickle.dumps(vecs), pickle.dumps(metas), id))
+        self.connection.commit()
+        self.cursor.execute("SELECT * from sql")
+        record = self.cursor.fetchall()
+        #self.cursor.execute("SELECT VECS from sql")
+        #record = pickle.loads(self.cursor.fetchone()[0])
+        print('Current data after update: ', record)
 
     def delete(self, id, *args, **kwargs):
         """ Delete document from the database.
 
-        :param ids: List of doc ids to be added
-        :param vecs: List of vecs to be added
-        :param metas: List of metas of docs to be added
+        :param ids: List of doc ids to be removed
          """
 
         self.cursor.execute("DELETE FROM sql where (ID) = (%s) ", id)

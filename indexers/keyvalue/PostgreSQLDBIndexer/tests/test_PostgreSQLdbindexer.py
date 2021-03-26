@@ -20,7 +20,6 @@ def doc_without_embedding(d):
 def test_postgress():
     with PostgreSQLDBIndexer(username='susana', password='pwd', database='python_test',
             table='sql') as postgres_indexer:
-        #postgres_indexer.add(8, 23, 'test')
         docs = list(get_documents(chunks=0, same_content=False))
         info = [
             (doc.id, doc.embedding, doc_without_embedding(doc).SerializeToString())
@@ -30,4 +29,5 @@ def test_postgress():
             ids, vecs, metas = zip(*info)
 
             postgres_indexer.add(ids, vecs, metas)
+            postgres_indexer.update(ids[0], vecs[1], metas[1])
             postgres_indexer.delete(ids[0])
