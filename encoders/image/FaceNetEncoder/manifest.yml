@@ -2,8 +2,8 @@ manifest_version: 1
 name: FaceNetEncoder
 kind: encoder
 description: |
-    `FaceNetEncoder` encodes a batch of face images of size `Height x Width x Channels` into
-    an np.ndarray of size `BatchSize x 512`.
+  `FaceNetEncoder` encodes a batch of face images of size `Height x Width x Channels` into
+  an np.ndarray of size `BatchSize x 512`.
 author: Anton Kiselev (straw.berry.pie@ya.ru)
 url: https://jina.ai
 vendor: Jina AI Limited
@@ -12,3 +12,4 @@ version: 0.0.1
 license: apache-2.0
 keywords: [image, FaceNet, faces, computer vision]
 type: pod
+timestamp: 1616720073.8158648
