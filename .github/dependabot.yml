@@ -10,7 +10,7 @@ updates:
     open-pull-requests-limit: 1
 
   - package-ecosystem: "pip"
-    directory: "classifiers/image/TransformersTorchSeqClassifier"
+    directory: "classifiers/nlp/TransformersTorchSeqClassifier"
     schedule:
       interval: "daily"
     allow:
@@ -19,7 +19,7 @@ updates:
     open-pull-requests-limit: 1
 
   - package-ecosystem: "pip"
-    directory: "classifiers/image/ZeroShotTFClassifier"
+    directory: "classifiers/nlp/ZeroShotTFClassifier"
     schedule:
       interval: "daily"
     allow:
@@ -196,7 +196,7 @@ updates:
     open-pull-requests-limit: 1
 
   - package-ecosystem: "docker"
-    directory: "encoders/multimodal/TirgImageEncoder"
+    directory: "encoders/multimodal/TirgMultimodalEncoder"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 1
@@ -316,13 +316,13 @@ updates:
     open-pull-requests-limit: 1
 
   - package-ecosystem: "docker"
-    directory: "encoders/numeric/VideoPaddleEncoder"
+    directory: "encoders/video/VideoPaddleEncoder"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 1
 
   - package-ecosystem: "docker"
-    directory: "encoders/numeric/VideoTorchEncoder"
+    directory: "encoders/video/VideoTorchEncoder"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 1
@@ -358,7 +358,7 @@ updates:
     open-pull-requests-limit: 1
 
   - package-ecosystem: "docker"
-    directory: "evaluators/rank/NDCGEvaluator"
+    directory: "evaluators/rank/NdcgEvaluator"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 1
