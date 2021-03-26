@@ -295,6 +295,12 @@ updates:
     open-pull-requests-limit: 1
 
   - package-ecosystem: "docker"
+    directory: "segmenters/image/FiveImageCropper"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
     directory: "encoders/numeric/UMAPEncoder"
     schedule:
       interval: "daily"
