@@ -274,6 +274,12 @@ updates:
     open-pull-requests-limit: 1
 
   - package-ecosystem: "docker"
+    directory: "encoders/numeric/FastICAEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
     directory: "evaluators/embedding/InfiniteNormEvaluator"
     schedule:
       interval: "daily"
