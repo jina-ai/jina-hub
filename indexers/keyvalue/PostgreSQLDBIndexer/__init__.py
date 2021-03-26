@@ -5,6 +5,7 @@ from typing import Optional, Iterable
 
 from jina.executors.indexers import BaseIndexer
 from jina.helper import cached_property
+from psycopg2.extras import execute_values
 
 if False:
     from ..PostgreSQLDBIndexer.postgresqldbhandler import PostgreSQLDBHandler
@@ -83,7 +84,10 @@ class PostgreSQLDBIndexer(BaseIndexer):
         :param vecs: vecs to be added
         :param metas: metas of docs to be added
         """
-        self.cursor.execute("INSERT INTO sql (ID, VECS, METAS) VALUES (%s, %s, %s)", (ids, vecs, metas,))
+
+        #self.cursor.execute("DELETE FROM sql")
+        for id in ids:
+            self.cursor.execute("INSERT INTO sql (ID) VALUES (%s)", (id))
         self.connection.commit()
         self.cursor.execute("SELECT * from sql")
         record = self.cursor.fetchall()
