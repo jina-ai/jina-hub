@@ -1,2 +1,0 @@
-jina
-psycopg2-binary

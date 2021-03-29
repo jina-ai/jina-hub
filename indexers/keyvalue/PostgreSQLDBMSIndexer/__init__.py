@@ -9,7 +9,7 @@ from jina.executors.indexers import BaseIndexer
 
 
 class PostgreSQLDBMSIndexer(BaseIndexer):
-    """:class:`PostgreSQLDBIndexer` PostgreSQL based KV Indexer.
+    """:class:`PostgreSQLDBMSIndexer` PostgreSQL based KV Indexer.
         Initialize the PostgreSQLDBIndexer.
 
         :param hostname: hostname of the machine
@@ -47,7 +47,7 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         """Connect to the database. """
 
         import psycopg2
-        from psycopg2 import Error, extras
+        from psycopg2 import Error
 
         try:
             self.connection = psycopg2.connect(user=self.username,
