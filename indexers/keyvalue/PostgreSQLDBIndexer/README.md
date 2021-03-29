@@ -1,13 +1,13 @@
-# PostgressIndexer
+# PostgreSQLDBMSIndexer
 
-Indexer wrapper around Postgress database. Postrges is an open source object-relational database. You can read more about it here: https://www.postgresql.org/
+Indexer wrapper around the PostgreSQL DBMS. Postgres is an open source object-relational database. You can read more about it here: https://www.postgresql.org/
 
 
 ## Snippets:
 
-Initialise PostgresIndexer:
+Initialise PostgreSQLDBMSIndexer:
 
-`PostgreSQLDBIndexer(username, password, database', table')`
+`PostgreSQLDBMSIndexer(username, password, database', table')`
 
 Users can use Pod images in several ways:
 
@@ -29,7 +29,7 @@ Users can use Pod images in several ways:
   
   and then in `postgresdb.yml`:
   ```yaml
-  !PostgreSQLDBIndexer
+  !PostgreSQLDBMSIndexer
   with:
     hostname: host.com
     # key-value arguments go here 

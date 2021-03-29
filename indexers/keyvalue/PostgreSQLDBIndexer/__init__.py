@@ -6,11 +6,9 @@ from typing import Optional
 
 from jina.executors.indexers import BaseIndexer
 
-if False:
-    from ..PostgreSQLDBIndexer.postgresqldbhandler import PostgreSQLDBHandler
 
 
-class PostgreSQLDBIndexer(BaseIndexer):
+class PostgreSQLDBMSIndexer(BaseIndexer):
     """:class:`PostgreSQLDBIndexer` PostgreSQL based KV Indexer.
         Initialize the PostgreSQLDBIndexer.
 
@@ -75,8 +73,8 @@ class PostgreSQLDBIndexer(BaseIndexer):
             self.logger.info('Using existing table')
         else:
             try:
-                self.cursor.execute("""DROP TABLE IF EXISTS SQL;
-                                    CREATE TABLE SQL (
+                self.cursor.execute("""DROP TABLE IF EXISTS jina_index;
+                                    CREATE TABLE jina_index (
                                     ID INT PRIMARY KEY, 
                                     VECS BYTEA, 
                                     METAS BYTEA);""")
@@ -92,13 +90,13 @@ class PostgreSQLDBIndexer(BaseIndexer):
         :param metas: List of metas of docs to be added
         """
 
-        self.cursor.execute("DELETE FROM sql")
+        self.cursor.execute("DELETE FROM jina_index")
         for i in range(len(ids)):
-            self.cursor.execute("INSERT INTO sql (ID, VECS, METAS) VALUES (%s, %s, %s)", (ids[i], pickle.dumps(vecs), pickle.dumps(metas)))
+            self.cursor.execute("INSERT INTO jina_index (ID, VECS, METAS) VALUES (%s, %s, %s)", (ids[i], pickle.dumps(vecs), pickle.dumps(metas)))
         self.connection.commit()
-        self.cursor.execute("SELECT * from sql")
+        self.cursor.execute("SELECT * from jina_index")
         record = self.cursor.fetchall()
-        #self.cursor.execute("SELECT VECS from sql")
+        #self.cursor.execute("SELECT VECS from jina_index")
         #record = pickle.loads(self.cursor.fetchone()[0])
         print('Inserted data ', record)
 
@@ -110,11 +108,11 @@ class PostgreSQLDBIndexer(BaseIndexer):
         :param metas: List of metas of docs to be updated
         """
 
-        self.cursor.execute("UPDATE sql SET VECS = %s, METAS = %s WHERE ID = %s", (pickle.dumps(vecs), pickle.dumps(metas), id))
+        self.cursor.execute("UPDATE jina_index SET VECS = %s, METAS = %s WHERE ID = %s", (pickle.dumps(vecs), pickle.dumps(metas), id))
         self.connection.commit()
-        self.cursor.execute("SELECT * from sql")
+        self.cursor.execute("SELECT * from jina_index")
         record = self.cursor.fetchall()
-        #self.cursor.execute("SELECT VECS from sql")
+        #self.cursor.execute("SELECT VECS from jina_index")
         #record = pickle.loads(self.cursor.fetchone()[0])
         print('Current data after update: ', record)
 
@@ -124,11 +122,11 @@ class PostgreSQLDBIndexer(BaseIndexer):
         :param ids: List of doc ids to be removed
          """
 
-        self.cursor.execute("DELETE FROM sql where (ID) = (%s) ", id)
+        self.cursor.execute("DELETE FROM jina_index where (ID) = (%s) ", id)
         self.connection.commit()
         count = self.cursor.rowcount
         print(count, "Record deleted successfully ")
-        self.cursor.execute("SELECT * from sql")
+        self.cursor.execute("SELECT * from jina_index")
         record = self.cursor.fetchall()
         print('Current data after deletion: ', record)
 

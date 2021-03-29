@@ -1,15 +1,8 @@
-import os
-import shutil
-import sys
-from typing import Iterator
-
-import numpy as np
-import pytest
-
 from jina import Document
-from .. import PostgreSQLDBIndexer
+from .. import PostgreSQLDBMSIndexer
 
 from tests import get_documents
+
 
 def doc_without_embedding(d):
     new_doc = Document()
@@ -17,8 +10,9 @@ def doc_without_embedding(d):
     new_doc.ClearField('embedding')
     return new_doc
 
+
 def test_postgress():
-    with PostgreSQLDBIndexer(username='user', password='pwd', database='python_test',
+    with PostgreSQLDBMSIndexer(username='user', password='pwd', database='python_test',
             table='sql') as postgres_indexer:
         docs = list(get_documents(chunks=0, same_content=False))
         info = [
