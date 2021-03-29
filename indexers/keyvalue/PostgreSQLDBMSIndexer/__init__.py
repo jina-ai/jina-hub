@@ -7,7 +7,6 @@ from typing import Optional
 from jina.executors.indexers import BaseIndexer
 
 
-
 class PostgreSQLDBMSIndexer(BaseIndexer):
     """:class:`PostgreSQLDBMSIndexer` PostgreSQL based KV Indexer.
         Initialize the PostgreSQLDBIndexer.
@@ -88,17 +87,17 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         :param ids: List of doc ids to be added
         :param vecs: List of vecs to be added
         :param metas: List of metas of docs to be added
+        :return record: List of Document's id added
         """
 
         self.cursor.execute("DELETE FROM jina_index")
         for i in range(len(ids)):
-            self.cursor.execute("INSERT INTO jina_index (ID, VECS, METAS) VALUES (%s, %s, %s)", (ids[i], pickle.dumps(vecs), pickle.dumps(metas)))
+            self.cursor.execute("INSERT INTO jina_index (ID, VECS, METAS) VALUES (%s, %s, %s)",
+                (ids[i], pickle.dumps(vecs), pickle.dumps(metas)))
         self.connection.commit()
-        self.cursor.execute("SELECT * from jina_index")
+        self.cursor.execute("SELECT ID from jina_index")
         record = self.cursor.fetchall()
-        #self.cursor.execute("SELECT VECS from jina_index")
-        #record = pickle.loads(self.cursor.fetchone()[0])
-        print('Inserted data ', record)
+        return record
 
     def update(self, id, vecs, metas, *args, **kwargs):
         """ Updated document from the database.
@@ -106,29 +105,29 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         :param ids: Id of Doc to be updated
         :param vecs: List of vecs to be updated
         :param metas: List of metas of docs to be updated
+        :return record: List of Document's id after update
         """
 
-        self.cursor.execute("UPDATE jina_index SET VECS = %s, METAS = %s WHERE ID = %s", (pickle.dumps(vecs), pickle.dumps(metas), id))
+        self.cursor.execute("UPDATE jina_index SET VECS = %s, METAS = %s WHERE ID = %s",
+            (pickle.dumps(vecs), pickle.dumps(metas), id))
         self.connection.commit()
-        self.cursor.execute("SELECT * from jina_index")
+        self.cursor.execute("SELECT ID from jina_index")
         record = self.cursor.fetchall()
-        #self.cursor.execute("SELECT VECS from jina_index")
-        #record = pickle.loads(self.cursor.fetchone()[0])
-        print('Current data after update: ', record)
+        return record
 
     def delete(self, id, *args, **kwargs):
         """ Delete document from the database.
 
-        :param ids: List of doc ids to be removed
+        :param id: Id of Document to be removed
+        :return record: List of Document's id after deletion
          """
 
         self.cursor.execute("DELETE FROM jina_index where (ID) = (%s) ", id)
         self.connection.commit()
         count = self.cursor.rowcount
-        print(count, "Record deleted successfully ")
-        self.cursor.execute("SELECT * from jina_index")
+        self.cursor.execute("SELECT ID from jina_index")
         record = self.cursor.fetchall()
-        print('Current data after deletion: ', record)
+        return record
 
     def dump(self, uri, shards, formats):
         raise NotImplementedError
