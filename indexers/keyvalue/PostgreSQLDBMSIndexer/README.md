@@ -38,7 +38,7 @@ Users can use Pod images in several ways:
 - Run with Docker (`docker run`)
   
   ```bash
-    docker run jinahub/pod.indexer.postgresdbindexer:MODULE_VERSION-JINA_VERSION --port-in 55555 --port-out 55556
+    docker run --network host jinahub/pod.indexer.postgresdbindexer:MODULE_VERSION-JINA_VERSION
     ```
 
 - Flow API
