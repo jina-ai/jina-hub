@@ -1,4 +1,4 @@
-FROM postgres:13.2
+FROM postgres:13.2 as base
 
 # install and upgrade pip
 RUN apt-get update && apt-get install -y python3.7 python3.7-dev python3-pip
