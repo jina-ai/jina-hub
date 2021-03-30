@@ -8,6 +8,7 @@ from jina.executors.indexers import BaseIndexer
 
 
 class PostgreSQLDBMSIndexer(BaseIndexer):
+    # TODO:  this class need to be a subclass from the DBMSIndexer (when it's merged into master)
     """:class:`PostgreSQLDBMSIndexer` PostgreSQL based KV Indexer.
         Initialize the PostgreSQLDBIndexer.
 
