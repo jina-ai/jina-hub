@@ -13,6 +13,10 @@ RUN python3.7 -m pip install -r requirements.txt
 COPY . /workspace
 WORKDIR /workspace
 
+RUN adduser --disabled-password --gecos '' postgres
+RUN adduser postgres sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
 USER postgres
 
 FROM base
