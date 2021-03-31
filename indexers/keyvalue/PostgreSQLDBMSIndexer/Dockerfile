@@ -12,11 +12,14 @@ RUN python3.7 -m pip install -r requirements.txt
 
 COPY . /workspace
 WORKDIR /workspace
-FROM base
-RUN pip install pytest && pytest 
 
 FROM base
 EXPOSE 5432
+
+FROM base
+RUN pip install pytest && pytest 
+
+
 
 # jina pod
 ENTRYPOINT [ "jina", "pod", "--uses", "config.yml" ]
