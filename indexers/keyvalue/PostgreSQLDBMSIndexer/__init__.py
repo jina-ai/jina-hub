@@ -23,8 +23,10 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
     """
 
     def __init__(self,
-                 hostname: str = '0.0.0.0',
+                 hostname: str = '127.0.0.1',
                  port: int = 5432,
+                 username: str = 'default_name',
+                 password: str = 'default_pwd',
                  database: str = 'default_db',
                  table: Optional[str] = 'default_table',
                  *args, **kwargs):
@@ -33,6 +35,8 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
 
         self.hostname = hostname
         self.port = port
+        self.username = username
+        self.password = password
         self.database_name = database
         self.table = table
 
@@ -46,7 +50,8 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         from psycopg2 import Error
 
         try:
-            self.connection = psycopg2.connect(
+            self.connection = psycopg2.connect(user=self.username,
+                password=self.password,
                 database=self.database_name,
                 host=self.hostname,
                 port=self.port)

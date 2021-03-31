@@ -13,28 +13,24 @@ RUN python3.7 -m pip install -r requirements.txt
 COPY . /workspace
 WORKDIR /workspace
 
-RUN adduser postgres sudo
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+#RUN adduser postgres sudo
+#RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-RUN mkdir -p /usr/local/var/
-RUN chown postgres /usr/local/var/
+#RUN mkdir -p /usr/local/var/
+#RUN chown postgres /usr/local/var/
 
-FROM base
-USER postgres
-RUN /etc/init.d/postgresql start &&\
-    initdb /usr/local/var/default_db &&\
-    pg_ctl -D /usr/local/var/default_db start &&\
-    createdb default_db
+USER posgre
 
-FROM base
-USER root
-RUN pip install pytest && pytest
+#RUN /etc/init.d/postgresql start &&\
+#    /usr/pgsql-13.2/bin/postgresql132-setup initdb initdb /usr/local/var/default_db &&\
+#    pg_ctl -D /usr/local/var/default_db start &&\
+#    createdb default_db &&\
+#    python3.7 -m pip install pytest && python3.7 -m pytest -s -v
 
-FROM base
 EXPOSE 5432
 
-
-
+#FROM base
+#RUN pip install pytest && pytest
 
 # jina pod
-ENTRYPOINT [ "jina", "pod", "--uses", "config.yml" ]
+#ENTRYPOINT [ "jina", "pod", "--uses", "config.yml" ]
