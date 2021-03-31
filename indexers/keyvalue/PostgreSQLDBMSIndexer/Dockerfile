@@ -22,10 +22,11 @@ RUN initdb /usr/local/var/default_db &&\
     createdb -O default_name default_db
 
 FROM base
-RUN pip install pytest && pytest 
+EXPOSE 5432
 
 FROM base
-EXPOSE 5432
+RUN pip install pytest && pytest 
+
 
 # jina pod
 ENTRYPOINT [ "jina", "pod", "--uses", "config.yml" ]
