@@ -13,8 +13,13 @@ RUN python3.7 -m pip install -r requirements.txt
 COPY . /workspace
 WORKDIR /workspace
 
-RUN sudo initdb /usr/local/var/postgres &&\
-    sudo pg_ctl -D /usr/local/var/postgres start
+USER postgres
+
+FROM base
+RUN initdb /usr/local/var/default_db &&\
+    pg_ctl -D /usr/local/var/default_db start &&\
+    psql --command "CREATE USER default_name WITH SUPERUSER PASSWORD 'default_pwd';" &&\
+    createdb -O default_name default_db
 
 FROM base
 RUN pip install pytest && pytest 
