@@ -48,7 +48,7 @@ def doc_without_embedding(d):
 
 
 def test_postgress():
-    with PostgreSQLDBMSIndexer(username='default_name', password='default_pwd', database='default_db',
+    with PostgreSQLDBMSIndexer(database='default_db',
                                table='jina_index') as postgres_indexer:
         docs = list(get_documents(chunks=0, same_content=False))
         info = [

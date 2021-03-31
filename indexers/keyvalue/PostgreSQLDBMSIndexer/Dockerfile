@@ -13,23 +13,27 @@ RUN python3.7 -m pip install -r requirements.txt
 COPY . /workspace
 WORKDIR /workspace
 
-RUN adduser --disabled-password --gecos '' postgres
 RUN adduser postgres sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-USER postgres
+RUN mkdir -p /usr/local/var/
+RUN chown postgres /usr/local/var/
 
 FROM base
-RUN initdb /usr/local/var/default_db &&\
+USER postgres
+RUN /etc/init.d/postgresql start &&\
+    initdb /usr/local/var/default_db &&\
     pg_ctl -D /usr/local/var/default_db start &&\
-    psql --command "CREATE USER default_name WITH SUPERUSER PASSWORD 'default_pwd';" &&\
-    createdb -O default_name default_db
+    createdb default_db
+
+FROM base
+USER root
+RUN pip install pytest && pytest
 
 FROM base
 EXPOSE 5432
 
-FROM base
-RUN pip install pytest && pytest 
+
 
 
 # jina pod
