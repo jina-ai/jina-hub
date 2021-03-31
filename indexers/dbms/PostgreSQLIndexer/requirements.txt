@@ -1,2 +1,2 @@
-jina==1.0.16
+jina==1.0.10
 psycopg2-binary==2.8.6

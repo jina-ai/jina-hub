@@ -13,28 +13,28 @@ def get_documents(chunks, same_content, nr=10, index_start=0, same_tag_content=N
         with Document() as d:
             d.id = i
             if same_content:
-                d.text = 'hello world'
+                d.text = "hello world"
                 d.embedding = d_embedding
             else:
-                d.text = f'hello world {i}'
+                d.text = f"hello world {i}"
                 d.embedding = np.random.random(d_embedding.shape)
             if same_tag_content:
-                d.tags['tag_field'] = 'tag data'
+                d.tags["tag_field"] = "tag data"
             elif same_tag_content is False:
-                d.tags['tag_field'] = f'tag data {i}'
+                d.tags["tag_field"] = f"tag data {i}"
             for j in range(chunks):
                 with Document() as c:
                     c.id = next_chunk_id
                     if same_content:
-                        c.text = 'hello world from chunk'
+                        c.text = "hello world from chunk"
                         c.embedding = c_embedding
                     else:
-                        c.text = f'hello world from chunk {j}'
+                        c.text = f"hello world from chunk {j}"
                         c.embedding = np.random.random(d_embedding.shape)
                     if same_tag_content:
-                        c.tags['tag field'] = 'tag data'
+                        c.tags["tag field"] = "tag data"
                     elif same_tag_content is False:
-                        c.tags['tag field'] = f'tag data {next_chunk_id}'
+                        c.tags["tag field"] = f"tag data {next_chunk_id}"
                 next_chunk_id += 1
                 d.chunks.append(c)
         yield d
@@ -43,13 +43,12 @@ def get_documents(chunks, same_content, nr=10, index_start=0, same_tag_content=N
 def doc_without_embedding(d):
     new_doc = Document()
     new_doc.CopyFrom(d)
-    new_doc.ClearField('embedding')
+    new_doc.ClearField("embedding")
     return new_doc
 
 
 def test_postgress():
-    with PostgreSQLDBMSIndexer(username='default_name', password='default_pwd', database='default_db',
-                               table='jina_index') as postgres_indexer:
+    with PostgreSQLDBMSIndexer() as postgres_indexer:
         docs = list(get_documents(chunks=0, same_content=False))
         info = [
             (doc.id, doc.embedding, doc_without_embedding(doc).SerializeToString())
