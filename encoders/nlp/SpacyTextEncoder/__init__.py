@@ -2,11 +2,9 @@ __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numpy as np
-import torch
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.frameworks import BaseTorchEncoder
-from typing import Dict, List
 
 class SpacyTextEncoder(BaseTorchEncoder):
     """
@@ -88,8 +86,11 @@ class SpacyTextEncoder(BaseTorchEncoder):
         :param kwargs: Additional positional arguments.
         :return: A `BachSize x EmbeddingSize` numpy `ndarray`.
         """
-        processed_data = self.spacy_model(data)
-        print(processed_data.text)
-        embedded_data = [dict(text=token.tensor) for token in processed_data]
-        return embedded_data
+        processed_data = self.spacy_model(str(data[0]))
+        result = [self.tensor2array(token.tensor) for token in processed_data]
+        return np.vstack(result)
 
+    def tensor2array(self, tensor):
+        if isinstance(tensor, np.ndarray):
+            return tensor
+        return tensor.cpu().numpy() if self.on_gpu else tensor.numpy()
