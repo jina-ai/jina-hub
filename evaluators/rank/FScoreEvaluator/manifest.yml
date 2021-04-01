@@ -1,0 +1,13 @@
+manifest_version: 1
+name: FScoreEvaluator
+kind: evaluator
+description: |
+  Gives the f-score between result and ground truth.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub/blob/master/evaluators/rank/FScoreEvaluator/README.md
+version: 0.0.6
+license: apache-2.0
+keywords: [evaluator, fScore, f1Score, ranking]
+type: pod

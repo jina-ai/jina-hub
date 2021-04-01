@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import pytest
 
 from .. import BleuEvaluator
@@ -31,7 +34,7 @@ def test_without_reset_weight():
     we get a warning invovling ZeroDivisionError: Fraction(0, 0)
     We need to reset the scores because the n-gram is 3 in this case.
     """
-    evalualtor = BleuEvaluator()
+    evaluator = BleuEvaluator()
     actual_list = 'A small cat'.lower().split()
     desired_list = 'A small cat'.lower().split()
-    assert evalualtor.get_score(actual_list, [desired_list], 4) < 1
+    assert evaluator.get_score(actual_list, [desired_list], 4) < 1

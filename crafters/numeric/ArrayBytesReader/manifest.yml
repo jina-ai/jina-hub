@@ -6,7 +6,7 @@ description: converts a byte stream into a numpy array and save to the Document.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.7
+documentation: https://github.com/jina-ai/jina-hub/blob/master/crafters/numeric/ArrayBytesReader/README.md
+version: 0.0.10
 license: apache-2.0
-keywords: [Some keywords to describe the executor, separated by commas]
+keywords: [crafter, numeric, reader]

@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from pathlib import Path
 
 import pytest
@@ -10,22 +13,21 @@ from .. import LevelDBIndexer
 cur_dir = Path(__file__).parent.absolute()
 
 
-def create_document(doc_id, text, weight, length):
+def create_document(doc_id, text, weight):
     d = Document()
-    d._document.id = (str(doc_id) * 16)[:16]
+    d.id = doc_id
     d.buffer = text.encode('utf8')
     d.weight = weight
-    d.length = length
     return d
 
 
 def get_documents(ids):
     documents = [
-        [0, 'cat', 0.1, 3],
-        [1, 'dog', 0.2, 3],
-        [2, 'crow', 0.3, 4],
-        [3, 'pikachu', 0.4, 7],
-        [4, 'magikarp', 0.5, 8]
+        [0, 'cat', 0.1],
+        [1, 'dog', 0.2],
+        [2, 'crow', 0.3],
+        [3, 'pikachu', 0.4],
+        [4, 'magikarp', 0.5]
     ]
     id_to_document = {d[0]: d for d in documents}
     data = [
@@ -64,10 +66,9 @@ def validate_positive_results(keys, documents, searcher):
     assert len(list(zip(keys, documents))) > 0
     for key, query_doc in zip(keys, documents):
         result_doc = searcher.query(key)
-        assert result_doc.id == str(query_doc[0]) * 16
+        assert result_doc.id == str(query_doc[0])
         assert result_doc.buffer == query_doc[1].encode('utf8')
         assert round(result_doc.weight, 5) == query_doc[2]
-        assert result_doc.length == query_doc[3]
 
 
 def validate_negative_results(keys, searcher):

@@ -2,11 +2,11 @@ manifest_version: 1
 name: AudioNormalizer
 kind: crafter
 type: pod
-description: normalizes the audio signal on doc-level.
+description: Receives signal audio as input and normalizes it on the Doc-level.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.8
+documentation: https://github.com/jina-ai/jina-hub/blob/master/crafters/audio/AudioNormalizer/README.md
+version: 0.0.12
 license: apache-2.0
-keywords: [audio, librosa]
+keywords: [audio, librosa, crafter]

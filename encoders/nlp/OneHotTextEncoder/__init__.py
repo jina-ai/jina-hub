@@ -4,9 +4,14 @@ import numpy as np
 
 class OneHotTextEncoder(BaseTextEncoder):
     """
-    One-hot Encoder encodes the characters into one-hot vectors. ONLY FOR TESTING USAGES.
-    :param on_value: the default value for the locations represented by characters
-    :param off_value: the default value for the locations not represented by characters
+    Encode the characters into one-hot vectors.
+
+    ONLY FOR TESTING USAGES.
+
+    :param on_value: the default value for the locations
+        represented by characters
+    :param off_value: the default value for the locations
+        not represented by characters
     """
 
     def __init__(self,
@@ -23,6 +28,7 @@ class OneHotTextEncoder(BaseTextEncoder):
         self.embeddings = None
 
     def post_init(self):
+        """Set embeddings"""
         self.embeddings = np.eye(self.dim) * self.on_value + \
                           (np.ones((self.dim, self.dim)) - np.eye(self.dim)) * self.off_value
 
@@ -31,9 +37,12 @@ class OneHotTextEncoder(BaseTextEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
+        Encode data into one-hot vectors.
 
-        :param data: each row is one character, an 1d array of string type (data.dtype.kind == 'U') in size B
-        :return: an ndarray of `B x D`
+        :param data: each row is one character,
+            an 1d array of string type (data.dtype.kind == 'U') in size B
+        :return: an ndarray of `B x D`. Where B is the `Batch size`
+            and `D` the dimension.
         """
         output = []
         for r in data:

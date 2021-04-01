@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from typing import List
 
 from jina.executors.evaluators.text import BaseTextEvaluator
@@ -29,7 +32,7 @@ class BleuEvaluator(BaseTextEvaluator):
         Cumulative score is the calculation of individual n-grams
         from 1 to n-order, and then weights them with the geometric mean
         It will check the n-gram size, if the n-gram is smaller than 4,
-        which is the standard for NLTK, it is neccesary to reset the weights
+        which is the standard for NLTK, it is necessary to reset the weights
         """
         import nltk.translate.bleu_score as bleu
         from nltk.translate.bleu_score import SmoothingFunction

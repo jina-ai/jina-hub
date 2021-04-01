@@ -1,0 +1,13 @@
+manifest_version: 1
+name: ZeroShotTFClassifier
+kind: classifier
+type: pod
+description: :class:`ZeroShotTFClassifier` wraps tensorflow transformers from huggingface,
+  and performs zero shot learning classification for nlp data.
+author: julianpetrich
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [classifier, zeroshot, nlp, tf]

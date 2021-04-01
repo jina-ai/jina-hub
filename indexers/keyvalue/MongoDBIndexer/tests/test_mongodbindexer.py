@@ -1,5 +1,5 @@
 import random
-from collections import Iterator
+from collections import Iterable
 
 import numpy as np
 from jina import Document
@@ -7,7 +7,7 @@ from jina import Document
 from .. import MongoDBIndexer
 
 
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
+def _random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
     c_id = 3 * num_docs  # avoid collision with docs
     for j in range(num_docs):
         with Document() as d:
@@ -28,14 +28,14 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
 
 def test_mongodbindexer():
     num_docs = 5
-    docs = list(random_docs(num_docs=num_docs,
+    docs = list(_random_docs(num_docs=num_docs,
                             chunks_per_doc=3))
-    keys: Iterator[int] = iter([doc.id for doc in docs])
+    keys: Iterable[str] = [doc.id for doc in docs]
     values = [doc.SerializeToString() for doc in docs]
 
     query_index = random.randint(0, num_docs - 1)
     # adding type annotations to remove further warnings
-    query_key: int = docs[query_index].id
+    query_key: str = docs[query_index].id
     query_text = docs[query_index].text
 
     # add
@@ -49,11 +49,11 @@ def test_mongodbindexer():
         d.ParseFromString(result['values'])
         assert d.text == query_text
 
-    # update
-    new_docs = list(random_docs(num_docs=num_docs, chunks_per_doc=3))
-    # what we insert
+    # documents to be updated
+    new_docs = list(_random_docs(num_docs=num_docs, chunks_per_doc=3))
+    # documents for insertion
     new_values = [doc.SerializeToString() for doc in new_docs]
-    # what we assert
+    # documents for assertion
     new_texts = [doc.text for doc in new_docs]
 
     with MongoDBIndexer() as mongo_indexer:

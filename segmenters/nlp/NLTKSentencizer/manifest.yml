@@ -1,0 +1,13 @@
+manifest_version: 1
+name: NLTKSentencizer
+kind: segmenter
+description:
+  Segments text into sentences using NLTK.
+author: mezig351 (mezigsara@gmail.com)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub/blob/master/segmenters/nlp/NLTKSentencizer/README.md
+version: 0.0.1
+license: apache-2.0
+keywords: [nltk, sentencizer, text, segmenter]
+type: pod

@@ -5,8 +5,8 @@ description: Apply transformations from the Albumentations package to the image.
 author: Tadej Svetina (@tadejsv)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.1
+documentation: https://github.com/jina-ai/jina-hub/tree/master/crafters/image/AlbumentationsCrafter/README.md
+version: 0.0.6
 license: apache-2.0
 keywords: [image, transform, augmentation, albumentations]
 type: pod

@@ -3,6 +3,7 @@ from typing import Dict, List
 
 import numpy as np
 
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -14,9 +15,10 @@ class PDFExtractorSegmenter(BaseSegmenter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    @single(slice_nargs=2)
     def segment(self, uri: str, buffer: bytes, *args, **kwargs) -> List[Dict]:
         """
-        Segements PDF files. Extracts data from them.
+        Segments PDF files. Extracts data from them.
 
         Checks if the input is a string of the filename,
         or if it's the file in bytes.
@@ -63,7 +65,7 @@ class PDFExtractorSegmenter(BaseSegmenter):
 
         # Extract text
         with pdf_text:
-            text = ""
+            text = ''
             pdf_reader = PyPDF2.PdfFileReader(pdf_text)
             count = pdf_reader.numPages
             for page in range(count):

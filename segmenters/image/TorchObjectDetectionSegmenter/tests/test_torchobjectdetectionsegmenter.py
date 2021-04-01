@@ -54,28 +54,32 @@ def test_encoding_mock_model_results():
     img_array = create_random_img_array(128, 64)
     img_array = img_array / 255
     with patch.object(detection_models, 'fasterrcnn_resnet50_fpn', return_value=MockModel()):
-        crafter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.9,
-                                                label_name_map={0: 'zero',
-                                                                1: 'one',
-                                                                2: 'two',
-                                                                3: 'three'})
-        chunks = crafter.segment(img_array)
-        assert len(chunks) == 2
-        assert chunks[0]['blob'].shape == (25, 20, 3)
-        assert chunks[0]['location'] == (15, 10)
-        assert chunks[0]['meta_info'].decode() == 'one'
+        segmenter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.9,
+                                                  label_name_map={0: 'zero',
+                                                                  1: 'one',
+                                                                  2: 'two',
+                                                                  3: 'three'})
+        docs_chunks = segmenter.segment(np.stack([img_array, img_array]))
+        assert len(docs_chunks) == 2
+        for chunks in docs_chunks:
+            assert len(chunks) == 2
+            assert chunks[0]['blob'].shape == (25, 20, 3)
+            assert chunks[0]['location'] == (15, 10)
+            assert chunks[0]['tags']['label'] == 'one'
 
-        assert chunks[1]['blob'].shape == (30, 10, 3)
-        assert chunks[1]['location'] == (10, 20)
-        assert chunks[1]['meta_info'].decode() == 'three'
+            assert chunks[1]['blob'].shape == (30, 10, 3)
+            assert chunks[1]['location'] == (10, 20)
+            assert chunks[1]['tags']['label'] == 'three'
 
 
 def test_encoding_fasterrcnn_results():
     img_array = create_random_img_array(128, 64)
     img_array = img_array / 255
-    crafter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.98)
-    chunks = crafter.segment(img_array)
-    assert len(chunks) == 0
+    segmenter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.98)
+    docs_chunks = segmenter.segment(np.stack([img_array, img_array]))
+    assert len(docs_chunks) == 2
+    for chunks in docs_chunks:
+        assert len(chunks) == 0
 
 
 def test_encoding_fasterrcnn_results_real_image():
@@ -98,118 +102,122 @@ def test_encoding_fasterrcnn_results_real_image():
     img = Image.open(path)
     img = img.convert('RGB')
     img_array = np.array(img).astype('float32') / 255
-    crafter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.9)
-    chunks = crafter.segment(img_array)
-    assert len(chunks) == 10
-    assert chunks[0]['meta_info'].decode() == 'person'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-0.png'))
-    assert chunks[0]['location'] == (541, 992)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[0]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (67, 24, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+    segmenter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.9)
+    docs_chunks = segmenter.segment(np.stack([img_array, img_array]))
+    assert len(docs_chunks) == 2
+    for chunks in docs_chunks:
+        assert len(chunks) == 10
+        assert chunks[0]['tags']['label'] == 'person'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-0.png'))
+        assert chunks[0]['location'] == (541, 992)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[0]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (67, 24, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[1]['meta_info'].decode() == 'car'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-1.png'))
-    assert chunks[1]['location'] == (496, 201)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[1]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (104, 161, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[1]['tags']['label'] == 'car'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-1.png'))
+        assert chunks[1]['location'] == (496, 201)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[1]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (104, 161, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[2]['meta_info'].decode() == 'car'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-2.png'))
-    assert chunks[2]['location'] == (524, 574)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[2]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (77, 131, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[2]['tags']['label'] == 'car'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-2.png'))
+        assert chunks[2]['location'] == (524, 574)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[2]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (77, 131, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[3]['meta_info'].decode() == 'person'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-3.png'))
-    assert chunks[3]['location'] == (539, 969)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[3]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (66, 27, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[3]['tags']['label'] == 'person'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-3.png'))
+        assert chunks[3]['location'] == (539, 969)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[3]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (66, 27, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[4]['meta_info'].decode() == 'person'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-4.png'))
-    assert chunks[4]['location'] == (530, 934)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[4]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (74, 18, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[4]['tags']['label'] == 'person'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-4.png'))
+        assert chunks[4]['location'] == (530, 934)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[4]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (74, 18, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[5]['meta_info'].decode() == 'car'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-5.png'))
-    assert chunks[5]['location'] == (517, 377)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[5]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (82, 154, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[5]['tags']['label'] == 'car'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-5.png'))
+        assert chunks[5]['location'] == (517, 377)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[5]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (82, 154, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[6]['meta_info'].decode() == 'person'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-6.png'))
-    assert chunks[6]['location'] == (532, 919)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[6]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (70, 19, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[6]['tags']['label'] == 'person'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-6.png'))
+        assert chunks[6]['location'] == (532, 919)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[6]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (70, 19, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    # it missclassifies as truck (but is a fairly big car)
-    assert chunks[7]['meta_info'].decode() == 'truck'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-7.png'))
-    assert chunks[7]['location'] == (498, 702)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[7]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (106, 169, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        # it missclassifies as truck (but is a fairly big car)
+        assert chunks[7]['tags']['label'] == 'truck'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-7.png'))
+        assert chunks[7]['location'] == (498, 702)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[7]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (106, 169, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[8]['meta_info'].decode() == 'car'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-8.png'))
-    assert chunks[8]['location'] == (522, 1046)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[8]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (88, 164, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[8]['tags']['label'] == 'car'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/car-8.png'))
+        assert chunks[8]['location'] == (522, 1046)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[8]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (88, 164, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[9]['meta_info'].decode() == 'person'
-    img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-9.png'))
-    assert chunks[9]['location'] == (536, 962)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[9]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (70, 17, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[9]['tags']['label'] == 'person'
+        img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-9.png'))
+        assert chunks[9]['location'] == (536, 962)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[9]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (70, 17, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
 
 def test_encoding_maskrcnn_results():
     img_array = create_random_img_array(128, 64)
     img_array = img_array / 255
-    crafter = TorchObjectDetectionSegmenter(model_name='maskrcnn_resnet50_fpn',
-                                            channel_axis=-1, confidence_threshold=0.98)
-    chunks = crafter.segment(img_array)
-    assert len(chunks) == 0
+    segmenter = TorchObjectDetectionSegmenter(model_name='maskrcnn_resnet50_fpn',
+                                              channel_axis=-1, confidence_threshold=0.98)
+    docs_chunks = segmenter.segment(np.stack([img_array, img_array]))
+    assert len(docs_chunks) == 2
+    for chunks in docs_chunks:
+        assert len(chunks) == 0
 
 
 def test_encoding_maskrcnn_results_real_image():
@@ -233,108 +241,110 @@ def test_encoding_maskrcnn_results_real_image():
     img = Image.open(path)
     img = img.convert('RGB')
     img_array = np.array(img).astype('float32') / 255
-    crafter = TorchObjectDetectionSegmenter(model_name='maskrcnn_resnet50_fpn',
-                                            channel_axis=-1, confidence_threshold=0.9)
-    chunks = crafter.segment(img_array)
+    segmenter = TorchObjectDetectionSegmenter(model_name='maskrcnn_resnet50_fpn',
+                                              channel_axis=-1, confidence_threshold=0.9)
 
-    assert len(chunks) == 10
-    assert chunks[0]['meta_info'].decode() == 'car'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-0.png'))
-    assert chunks[0]['location'] == (518, 379)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[0]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (85, 152, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+    docs_chunks = segmenter.segment(np.stack([img_array, img_array]))
+    assert len(docs_chunks) == 2
+    for chunks in docs_chunks:
+        assert len(chunks) == 10
+        assert chunks[0]['tags']['label'] == 'car'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-0.png'))
+        assert chunks[0]['location'] == (518, 379)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[0]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (85, 152, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[1]['meta_info'].decode() == 'car'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-1.png'))
-    assert chunks[1]['location'] == (527, 572)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[1]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (74, 134, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[1]['tags']['label'] == 'car'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-1.png'))
+        assert chunks[1]['location'] == (527, 572)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[1]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (74, 134, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[2]['meta_info'].decode() == 'person'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-2.png'))
-    assert chunks[2]['location'] == (541, 993)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[2]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (66, 23, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[2]['tags']['label'] == 'person'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-2.png'))
+        assert chunks[2]['location'] == (541, 993)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[2]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (66, 23, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[3]['meta_info'].decode() == 'person'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-3.png'))
-    assert chunks[3]['location'] == (531, 934)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[3]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (74, 19, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[3]['tags']['label'] == 'person'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-3.png'))
+        assert chunks[3]['location'] == (531, 934)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[3]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (74, 19, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[4]['meta_info'].decode() == 'car'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-4.png'))
-    assert chunks[4]['location'] == (499, 196)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[4]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (103, 165, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[4]['tags']['label'] == 'car'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-4.png'))
+        assert chunks[4]['location'] == (499, 196)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[4]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (103, 165, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[5]['meta_info'].decode() == 'person'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-5.png'))
-    assert chunks[5]['location'] == (532, 917)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[5]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (71, 20, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[5]['tags']['label'] == 'person'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-5.png'))
+        assert chunks[5]['location'] == (532, 917)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[5]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (71, 20, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[6]['meta_info'].decode() == 'person'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-6.png'))
-    assert chunks[6]['location'] == (539, 968)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[6]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (68, 27, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[6]['tags']['label'] == 'person'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/person-6.png'))
+        assert chunks[6]['location'] == (539, 968)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[6]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (68, 27, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    # it missclassifies as truck (but is a fairly big car)
-    assert chunks[7]['meta_info'].decode() == 'truck'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-7.png'))
-    assert chunks[7]['location'] == (499, 700)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[7]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (107, 167, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        # it missclassifies as truck (but is a fairly big car)
+        assert chunks[7]['tags']['label'] == 'truck'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-7.png'))
+        assert chunks[7]['location'] == (499, 700)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[7]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (107, 167, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[8]['meta_info'].decode() == 'car'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-8.png'))
-    assert chunks[8]['location'] == (534, 142)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[8]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (64, 65, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[8]['tags']['label'] == 'car'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-8.png'))
+        assert chunks[8]['location'] == (534, 142)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[8]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (64, 65, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)
 
-    assert chunks[9]['meta_info'].decode() == 'car'
-    img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-9.png'))
-    assert chunks[9]['location'] == (521, 1037)
-    # check that the shape of retrieved is the same as the expected image (was computed and stored once)
-    blob = chunks[9]['blob']
-    assert (blob.shape[1], blob.shape[0]) == img.size
-    assert blob.shape == (90, 175, 3)
-    array = np.array(img)
-    np.testing.assert_array_almost_equal(blob, array)
+        assert chunks[9]['tags']['label'] == 'car'
+        img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-9.png'))
+        assert chunks[9]['location'] == (521, 1037)
+        # check that the shape of retrieved is the same as the expected image (was computed and stored once)
+        blob = chunks[9]['blob']
+        assert (blob.shape[1], blob.shape[0]) == img.size
+        assert blob.shape == (90, 175, 3)
+        array = np.array(img)
+        np.testing.assert_array_almost_equal(blob, array)

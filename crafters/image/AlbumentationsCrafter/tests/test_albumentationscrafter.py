@@ -1,80 +1,99 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
+import os
+
 import cv2
 import numpy as np
 import pytest
+
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
 from .. import AlbumentationsCrafter as AC
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-@pytest.fixture(scope='module')
+
 def test_img():
-    return cv2.imread('tests/rubi.png')[:, :, ::-1]
+    return cv2.imread(os.path.join(cur_dir, '../tests/rubi.png'))[:, :, ::-1]
 
 
-@pytest.fixture
 def flip_img():
-    return cv2.imread('tests/rubi_flip.png')[:, :, ::-1]
+    return cv2.imread(os.path.join(cur_dir, '../tests/rubi_flip.png'))[:, :, ::-1]
 
 
-@pytest.fixture
 def crop_img():
-    return cv2.imread('tests/rubi_crop.png')[:, :, ::-1]
+    return cv2.imread(os.path.join(cur_dir, '../tests/rubi_crop.png'))[:, :, ::-1]
 
 
-@pytest.fixture
 def center_crop_img():
-    return cv2.imread('tests/rubi_center_crop.png')[:, :, ::-1]
+    return cv2.imread(os.path.join(cur_dir, '../tests/rubi_center_crop.png'))[:, :, ::-1]
 
 
-@pytest.fixture
 def resize_img():
-    return cv2.imread('tests/rubi_resize.png')[:, :, ::-1]
+    return cv2.imread(os.path.join(cur_dir, '../tests/rubi_resize.png'))[:, :, ::-1]
 
 
-def test_normalize_transform(test_img):
+def normalize_transform():
     transform = {
         'Normalize': dict(mean=(0, 0, 0), std=(1, 1, 1), max_pixel_value=255)
     }
-    crafter = AC([transform])
-    crafted_img = crafter.craft(test_img)
-
-    np.testing.assert_almost_equal(test_img / 255, crafted_img)
+    return transform
 
 
-def test_flip_transform(test_img, flip_img):
-    crafter = AC(['VerticalFlip'])
-    crafted_img = crafter.craft(test_img)
-
-    np.testing.assert_almost_equal(flip_img, crafted_img)
+def flip_transform():
+    return 'VerticalFlip'
 
 
-def test_crop_transform(test_img, crop_img):
+def crop_transform():
     transform = {'Crop': dict(x_min=0, y_min=0, x_max=106, y_max=172)}
-    crafter = AC([transform])
-    crafted_img = crafter.craft(test_img)
-
-    np.testing.assert_almost_equal(crop_img, crafted_img)
+    return transform
 
 
-def test_center_crop_transform(test_img, center_crop_img):
+def center_crop_transform():
     transform = {'CenterCrop': dict(height=100, width=100)}
-    crafter = AC([transform])
-    crafted_img = crafter.craft(test_img)
-
-    np.testing.assert_almost_equal(center_crop_img, crafted_img)
+    return transform
 
 
-def test_resize_transform(test_img, resize_img):
+def resize_transform():
     transform = {'Resize': dict(height=100, width=200)}
-    crafter = AC([transform])
-    crafted_img = crafter.craft(test_img)
+    return transform
 
-    np.testing.assert_almost_equal(resize_img, crafted_img)
+
+@pytest.mark.parametrize('stack', [False, True])
+@pytest.mark.parametrize('transform, inputs, expected',
+                         [
+                             (normalize_transform(), [test_img(), test_img()], test_img() / 255),
+                             (flip_transform(), [test_img(), test_img()], flip_img()),
+                             (crop_transform(), [test_img(), test_img()], crop_img()),
+                             (center_crop_transform(), [test_img(), test_img()], center_crop_img()),
+                             (resize_transform(), [test_img(), test_img()], resize_img()),
+                         ])
+def test_transform_batch(stack, transform, inputs, expected):
+    crafter = AC([transform])
+    crafted_imgs = crafter.craft(np.stack(inputs) if stack else inputs)
+
+    assert len(crafted_imgs) == 2
+    for crafted_img in crafted_imgs:
+        np.testing.assert_almost_equal(expected, crafted_img['blob'])
+
+
+@pytest.mark.parametrize('transform, inputs, expected',
+                         [
+                             (normalize_transform(), test_img(), test_img() / 255),
+                             (flip_transform(), test_img(), flip_img()),
+                             (crop_transform(), test_img(), crop_img()),
+                             (center_crop_transform(), test_img(), center_crop_img()),
+                             (resize_transform(), test_img(), resize_img()),
+                         ])
+def test_transform_single_kwargs(transform, inputs, expected):
+    crafter = AC([transform])
+    crafted_img = crafter.craft(blob=inputs)
+    np.testing.assert_almost_equal(expected, crafted_img['blob'])
 
 
 def test_wrong_transforms():
-
     # Transforms not a list
     with pytest.raises(ValueError):
         AC('VerticalFlip')
@@ -102,7 +121,7 @@ def test_save_load_config(tmp_path):
     orig_crafter.save_config()
     orig_trs = orig_crafter.transforms._to_dict()
 
-    load_crafter1 = BaseExecutor.load_config('tests/config.yaml')
+    load_crafter1 = BaseExecutor.load_config(os.path.join(cur_dir, '../tests/config.yaml'))
     load_crafter2 = BaseExecutor.load_config(orig_crafter.config_abspath)
 
     assert orig_trs == load_crafter1.transforms._to_dict()

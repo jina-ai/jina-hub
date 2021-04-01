@@ -10,10 +10,23 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
     """
-    :class:`VideoTorchEncoder` encodes data from a ndarray, potentially B x T x (Channel x Height x Width) into an
-        ndarray of `B x D`.
-    Internally, :class:`VideoTorchEncoder` wraps the models from `torchvision.models`.
-    https://pytorch.org/docs/stable/torchvision/models.html
+    Encode data from a ndarray, using the models from `torchvision.models`.
+
+    :class:`VideoTorchEncoder` encodes data from a ndarray, potentially
+    B x T x (Channel x Height x Width) into an ndarray of `B x D`.
+    Internally, :class:`VideoTorchEncoder` wraps the models from
+    `torchvision.models`: https://pytorch.org/docs/stable/torchvision/models.html
+
+    :param model_name: the name of the model.
+        Supported models include ``r3d_18``, ``mc3_18``, ``r2plus1d_18``
+        Default is ``r3d_18``.
+    :param pool_strategy: the pooling strategy
+        - `None` means that the output of the model will be the 4D tensor
+            output of the last convolutional block.
+        - `mean` means that global average pooling will be applied to the
+            output of the last convolutional block, and thus the output
+            of the model will be a 2D tensor.
+        - `max` means that global max pooling will be applied.
     """
 
     def __init__(self,
@@ -21,14 +34,6 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
                  channel_axis: int = 1,
                  pool_strategy: str = 'mean',
                  *args, **kwargs):
-        """
-        :param model_name: the name of the model. Supported models include ``r3d_18``, ``mc3_18``, ``r2plus1d_18``
-        :param pool_strategy: the pooling strategy
-            - `None` means that the output of the model will be the 4D tensor output of the last convolutional block.
-            - `mean` means that global average pooling will be applied to the output of the last convolutional block, and
-                 thus the output of the model will be a 2D tensor.
-            - `max` means that global max pooling will be applied.
-        """
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
         self.model_name = model_name
@@ -38,6 +43,7 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
         self.pool_strategy = pool_strategy
 
     def post_init(self):
+        """Load Torch model"""
         super().post_init()
         import torchvision.models.video as models
         if self.pool_strategy is not None:
@@ -63,6 +69,13 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+         Encode data from a ndarray.
+
+         :param data: a `B x T x (Channel x Height x Width)` numpy ``ndarray``,
+            `B` is the size of the batch, `T` is the number of frames
+         :return: a `B x D` numpy ``ndarray``, `D` is the output dimension
+        """
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch

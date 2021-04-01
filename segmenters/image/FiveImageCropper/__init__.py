@@ -1,6 +1,8 @@
 from typing import Tuple, Dict, List, Union
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 from .helper import _crop_image, _move_channel_axis, _load_image
@@ -9,6 +11,13 @@ from .helper import _crop_image, _move_channel_axis, _load_image
 class FiveImageCropper(BaseSegmenter):
     """
     :class:`FiveImageCropper` crops the image into four corners and the central crop.
+
+    :param target_size: desired output size. If size is a sequence like (h, w),
+        the output size will be matched to this. If size is an int,
+        the output will have the same height and width as the `target_size`.
+    :param channel_axis: Axis for channel
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self,
@@ -16,15 +25,12 @@ class FiveImageCropper(BaseSegmenter):
                  channel_axis: int = -1,
                  *args,
                  **kwargs):
-        """
-
-        :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
-            this. If size is an int, the output will have the same height and width as the `target_size`.
-        """
+        """Set Constructor"""
         super().__init__(*args, **kwargs)
         self.target_size = target_size
         self.channel_axis = channel_axis
 
+    @single
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array.

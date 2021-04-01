@@ -1,0 +1,14 @@
+manifest_version: 1
+name: TransformersTorchSeqClassifier
+kind: classifier
+description:
+  |
+  Wrapper for transformers.AutoModelForSequenceClassification . Works with all trained models for sequence classification on HuggingFace Transformers model hub.
+author: mezig351 (mezigsara@gmail.com)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.2
+license: apache-2.0
+keywords: [sequence, classification, text, huggingface, transformers, nlp]
+type: pod

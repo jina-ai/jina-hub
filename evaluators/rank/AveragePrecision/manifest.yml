@@ -1,13 +1,13 @@
 manifest_version: 1
-name: AveragePrecision
+name: AveragePrecisionEvaluator
 kind: evaluator
 description: |
-  Calculate Average Precision.
+  Computes the AveragePrecision ranking metric for the resulting ranking of a Search System.
 author: Kilian Pfeiffer (kilsen512@gmail.com)
 url: github.com/kilsenp
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.5
+documentation: https://github.com/jina-ai/jina-hub/blob/master/evaluators/rank/AveragePrecision/README.md
+version: 0.0.7
 license: apache-2.0
 keywords: [evaluator, average precision]
 type: pod

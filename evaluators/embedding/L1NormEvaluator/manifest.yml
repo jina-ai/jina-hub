@@ -2,11 +2,11 @@ manifest_version: 1
 name: L1NormEvaluator
 kind: evaluator
 type: pod
-description: evaluates L1 Norm.
+description: Evaluates the distance embeddings computing the L1 Norm between them.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.5
+documentation: https://gitub.com/jina-ai/jina-hub
+version: 0.0.7
 license: apache-2.0
-keywords: [L1, evaluator, embedding, information retrieval evaluation]
+keywords: [l1, evaluator, embedding, information retrieval evaluation]

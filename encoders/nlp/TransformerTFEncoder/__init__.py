@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
@@ -12,7 +12,25 @@ from jina.executors.encoders import BaseEncoder
 
 class TransformerTFEncoder(TFDevice, BaseEncoder):
     """
-    Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
+    Internally wraps the tensorflow-version of transformers from huggingface.
+
+    :param pretrained_model_name_or_path: Either:
+        - a string, the `model id` of a pretrained model hosted inside a
+            model repo on huggingface.co, e.g.: ``bert-base-uncased``.
+        - a path to a `directory` containing model weights saved using
+            :func:`~transformers.PreTrainedModel.save_pretrained`, e.g.:
+            ``./my_model_directory/``.
+    :param base_tokenizer_model: The name of the base model to use for
+        creating the tokenizer. If None, will be equal to
+        `pretrained_model_name_or_path`.
+    :param pooling_strategy: the strategy to merge the word embeddings
+        into the chunk embedding. Supported strategies include
+        'cls', 'mean', 'max', 'min'.
+    :param layer_index: index of the transformer layer that is used to
+        create encodings. Layer 0 corresponds to the embeddings layer
+    :param max_length: the max length to truncate the tokenized sequences to.
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(
@@ -25,16 +43,6 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
         *args,
         **kwargs,
     ):
-        """
-        :param pretrained_model_name_or_path: Either:
-            - a string, the `model id` of a pretrained model hosted inside a model repo on huggingface.co, e.g.: ``bert-base-uncased``.
-            - a path to a `directory` containing model weights saved using :func:`~transformers.PreTrainedModel.save_pretrained`, e.g.: ``./my_model_directory/``.
-        :param base_tokenizer_model: The name of the base model to use for creating the tokenizer. If None, will be equal to `pretrained_model_name_or_path`.
-        :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
-            strategies include 'cls', 'mean', 'max', 'min'.
-        :param layer_index: index of the transformer layer that is used to create encodings. Layer 0 corresponds to the embeddings layer
-        :param max_length: the max length to truncate the tokenized sequences to.
-        """
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.base_tokenizer_model = base_tokenizer_model or pretrained_model_name_or_path
@@ -57,6 +65,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
             raise NotImplementedError
 
     def post_init(self):
+        """Load the transformer model and encoder"""
         from transformers import TFAutoModel, AutoTokenizer
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
@@ -69,6 +78,9 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
+        Encode an array of string in size `B` into an ndarray in size `B x D`,
+        where `B` is the batch size and `D` is the dimensionality of the encoding.
+
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """

@@ -1,6 +1,8 @@
 from typing import Tuple, Dict, List, Union
 
 import numpy as np
+
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 from .helper import _move_channel_axis
@@ -9,6 +11,25 @@ from .helper import _move_channel_axis
 class SlidingWindowImageCropper(BaseSegmenter):
     """
     :class:`SlidingWindowImageCropper` crops the image with a sliding window.
+
+    :param target_size: desired output size. If size is a sequence like (h, w),
+        the output size will be matched to this.
+        If size is an int, the output will have the
+        same height and width as the `target_size`.
+    :param strides: the strides between two neighboring sliding windows.
+        `strides` is a sequence like (h, w),
+        in which denote the strides on the vertical
+        and the horizontal axis.
+    :param padding: If False, only patches which are
+        fully contained in the input image are included.
+        If True, all patches whose starting point
+        is inside the input are included,
+        and areas outside the input default to zero.
+        The `padding` argument has no effect on the size of each patch,
+        it determines how many patches are extracted.
+        Default is False.
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(self,
@@ -18,17 +39,7 @@ class SlidingWindowImageCropper(BaseSegmenter):
                  channel_axis: int = -1,
                  *args,
                  **kwargs):
-        """
-
-        :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
-            this. If size is an int, the output will have the same height and width as the `target_size`.
-        :param strides: the strides between two neighboring sliding windows. `strides` is a sequence like (h, w), in
-            which denote the strides on the vertical and the horizontal axis.
-        :param padding: If False, only patches which are fully contained in the input image are included. If True,
-            all patches whose starting point is inside the input are included, and areas outside the input default to
-            zero. The `padding` argument has no effect on the size of each patch, it determines how many patches are
-            extracted. Default is False.
-        """
+        """Set constructor"""
         super().__init__(*args, **kwargs)
         self.target_size = target_size
         if len(strides) != 2:
@@ -46,12 +57,15 @@ class SlidingWindowImageCropper(BaseSegmenter):
                       mode='constant',
                       constant_values=0)
 
+    @single
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array with a sliding window.
 
         :param blob: the ndarray of the image with the color channel at the last axis
         :return: a list of chunk dicts with the cropped images.
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raw_img = np.copy(blob)
         raw_img = _move_channel_axis(raw_img, self.channel_axis)

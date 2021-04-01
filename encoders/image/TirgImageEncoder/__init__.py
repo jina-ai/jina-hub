@@ -1,4 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
@@ -11,13 +11,26 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 
 
 class TirgImageEncoder(BaseTorchEncoder):
+    """
+    Encode BatchSize x (Channel x Height x Width) ndarray into BatchSize * d ndarray.
+
+    :class:`TirgImageEncoder` is originally proposed in the paper *Composing Text and Image for Image Retrieval - An Empirical Odyssey*.
+    It can been used for multimodal image retrieval purpose.
+
+    :param model_path: the directory of the TIRG model.
+    :param texts_path: the pickled training text of the TIRG model.
+    :param channel_axis: The axis of the channel, default -1, will move the axis of input data from -1 to 1.
+    :param args: additional positional arguments.
+    :param kwargs: additional positional arguments.
+    """
 
     def __init__(self, model_path: str = 'checkpoint.pth',
                  texts_path: str = 'texts.pkl',
                  channel_axis: int = -1, 
-                 *args, **kwargs):
+                 *args,
+                 **kwargs):
         """
-        :param model_path: the path where the model is stored.
+        Class constructor.
         """
         super().__init__(*args, **kwargs)
         self.model_path = model_path
@@ -27,6 +40,7 @@ class TirgImageEncoder(BaseTorchEncoder):
         self._default_channel_axis = 1
 
     def post_init(self):
+        """Load `TIRG` model."""
         super().post_init()
         from .img_text_composition_models import TIRG
         import torch
@@ -47,6 +61,14 @@ class TirgImageEncoder(BaseTorchEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+        Encode input data into `np.ndarray`.
+
+        :param data: Image to be encoded, expected a `np.ndarray` of BatchSize x (Channel x Height x Width).
+        :param args: additional positional arguments.
+        :param kwargs: additional positional arguments.
+        :return feature: Encoded result as `np.ndarray`.
+        """
         import numpy as np
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
@@ -54,8 +76,8 @@ class TirgImageEncoder(BaseTorchEncoder):
         _input = torch.from_numpy(data.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()
-        _feature = self._get_features(_input).detach()
+        feature = self._get_features(_input).detach()
         if self.on_gpu:
-            _feature = _feature.cpu()
-        _feature = _feature.numpy()
-        return _feature
+            feature = feature.cpu()
+        feature = feature.numpy()
+        return feature

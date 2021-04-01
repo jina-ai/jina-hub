@@ -6,7 +6,7 @@ description: makes the audio signal monophonic on doc-level.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.8
+documentation: https://github.com/jina-ai/jina-hub/tree/master/crafters/audio/AudioMonophoner/README.md
+version: 0.0.11
 license: apache-2.0
 keywords: [audio, librosa]
