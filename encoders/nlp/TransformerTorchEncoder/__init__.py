@@ -143,11 +143,11 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         import requests
 
         retries = 0
+        headers = {"Authorization": "Bearer " + self.api_token}
+        api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.pretrained_model_name_or_path}"
 
         while retries < self.max_retries:
             retries += 1
-            headers = {"Authorization": "Bearer " + self.api_token}
-            api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.pretrained_model_name_or_path}"
             r = requests.post(api_url, json=query, headers=headers)
             if r.status_code == HTTP_SERVICE_UNAVAILABLE:
                 self.logger.info('Service is currently unavailable. Model is loading.')
