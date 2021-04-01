@@ -52,7 +52,6 @@ def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index)
         'deepset/roberta-base-squad2': 768,
         'xlm-roberta-base': 768,
         'xlnet-base-cased': 768,
-        'yjernite/retribert-base-uncased': 768
     }
     hidden_dim_size = hidden_dim_sizes[encoder.pretrained_model_name_or_path]
     assert encoded_data.shape == (2, hidden_dim_size)
@@ -81,7 +80,7 @@ def test_encoding_results_retribert(test_metas, function_name, pooling_strategy,
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
 
-    assert encoded_data.shape == (2, 768)
+    assert encoded_data.shape == (2, 128)
 
     if encoder.pooling_strategy != 'cls' or encoder.layer_index != 0:
         assert not np.allclose(encoded_data[0], encoded_data[1], rtol=1)
