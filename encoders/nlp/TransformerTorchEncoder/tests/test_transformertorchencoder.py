@@ -1,4 +1,5 @@
 import os
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
@@ -35,13 +36,12 @@ def _assert_params_equal(params_dict: dict, encoder: TransformerTorchEncoder):
 @pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
 @pytest.mark.parametrize('layer_index', [-1, -2, 0])
 def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index):
-    params = {
-        'pretrained_model_name_or_path': model_name,
-        'pooling_strategy': pooling_strategy,
-        'layer_index': layer_index,
-    }
-
-    encoder = TransformerTorchEncoder(metas=test_metas, **params)
+    encoder = TransformerTorchEncoder(
+        metas=test_metas,
+        pretrained_model_name_or_path=model_name,
+        pooling_strategy=pooling_strategy,
+        layer_index=layer_index,
+    )
 
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
@@ -64,14 +64,11 @@ def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index)
 
 @pytest.mark.parametrize('function_name', ['embed_questions', 'embed_answers'])
 def test_encoding_results_retribert(test_metas, function_name):
-    model_name = 'yjernite/retribert-base-uncased'
-
-    params = {
-        'pretrained_model_name_or_path': model_name,
-        'embedding_fn_name': function_name,
-    }
-
-    encoder = TransformerTorchEncoder(metas=test_metas, **params)
+    encoder = TransformerTorchEncoder(
+        metas=test_metas,
+        pretrained_model_name_or_path='yjernite/retribert-base-uncased',
+        embedding_fn_name=function_name,
+    )
 
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
@@ -86,9 +83,7 @@ def test_encoding_results_acceleration(test_metas, acceleration):
     if 'JINA_TEST_GPU' in os.environ and acceleration == 'quant':
         pytest.skip("Can't test quantization on GPU.")
 
-    encoder = TransformerTorchEncoder(
-        metas=test_metas, **{"acceleration": acceleration}
-    )
+    encoder = TransformerTorchEncoder(metas=test_metas, acceleration=acceleration)
 
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
@@ -101,14 +96,14 @@ def test_encoding_results_acceleration(test_metas, acceleration):
 @pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
 @pytest.mark.parametrize('layer_index', [-1, -2])
 def test_embedding_consistency(test_metas, model_name, pooling_strategy, layer_index):
-    params = {
-        'pretrained_model_name_or_path': model_name,
-        'pooling_strategy': pooling_strategy,
-        'layer_index': layer_index,
-    }
-    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+    encoder = TransformerTorchEncoder(
+        metas=test_metas,
+        pretrained_model_name_or_path=model_name,
+        pooling_strategy=pooling_strategy,
+        layer_index=layer_index,
+    )
 
-    encoder = TransformerTorchEncoder(metas=test_metas, **params)
+    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
 
     encoded_data_file = f'tests/{model_name}-{pooling_strategy}-{layer_index}.npy'
@@ -121,13 +116,14 @@ def test_embedding_consistency(test_metas, model_name, pooling_strategy, layer_i
 @pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
 @pytest.mark.parametrize('layer_index', [-1])
 def test_max_length_truncation(test_metas, model_name, pooling_strategy, layer_index):
-    params = {
-        'pretrained_model_name_or_path': model_name,
-        'pooling_strategy': pooling_strategy,
-        'layer_index': layer_index,
-        'max_length': 3,
-    }
-    encoder = TransformerTorchEncoder(metas=test_metas, **params)
+    encoder = TransformerTorchEncoder(
+        metas=test_metas,
+        pretrained_model_name_or_path=model_name,
+        pooling_strategy=pooling_strategy,
+        layer_index=layer_index,
+        max_length=3,
+    )
+
     test_data = np.array(['it is a very good day!', 'it is a very sunny day!'])
     encoded_data = encoder.encode(test_data)
 
@@ -138,15 +134,17 @@ def test_max_length_truncation(test_metas, model_name, pooling_strategy, layer_i
 @pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
 @pytest.mark.parametrize('layer_index', [-1, -2])
 def test_shape_single_document(test_metas, model_name, pooling_strategy, layer_index):
-    params = {
-        'pretrained_model_name_or_path': model_name,
-        'pooling_strategy': pooling_strategy,
-        'layer_index': layer_index,
-        'max_length': 3,
-    }
-    encoder = TransformerTorchEncoder(metas=test_metas, **params)
+    encoder = TransformerTorchEncoder(
+        metas=test_metas,
+        pretrained_model_name_or_path=model_name,
+        pooling_strategy=pooling_strategy,
+        layer_index=layer_index,
+        max_length=3,
+    )
+
     test_data = np.array(['it is a very good day!'])
     encoded_data = encoder.encode(test_data)
+
     assert len(encoded_data.shape) == 2
     assert encoded_data.shape[0] == 1
 
@@ -160,7 +158,12 @@ def test_save_and_load(test_metas, model_name, pooling_strategy, layer_index):
         'pooling_strategy': pooling_strategy,
         'layer_index': layer_index,
     }
-    encoder = TransformerTorchEncoder(metas=test_metas, **params)
+    encoder = TransformerTorchEncoder(
+        metas=test_metas,
+        pretrained_model_name_or_path=model_name,
+        pooling_strategy=pooling_strategy,
+        layer_index=layer_index,
+    )
     test_data = np.array(['a', 'b', 'c', 'x', '!'])
     encoded_data_control = encoder.encode(test_data)
 
@@ -196,11 +199,10 @@ def test_save_and_load_config(test_metas, model_name, pooling_strategy, layer_in
 
 @pytest.mark.parametrize('layer_index', [-100, 100])
 def test_wrong_layer_index(test_metas, layer_index):
-    params = {'layer_index': layer_index}
-    encoder = TransformerTorchEncoder(metas=test_metas, **params)
+    encoder = TransformerTorchEncoder(metas=test_metas, layer_index=layer_index)
 
-    encoder.layer_index = layer_index
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+
     with pytest.raises(ValueError):
         _ = encoder.encode(test_data)
 
@@ -224,3 +226,24 @@ def test_no_cls_token(test_metas, params):
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     with pytest.raises(ValueError):
         _ = encoder.encode(test_data)
+
+
+@pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
+def test_encoding_results_api(test_metas, pooling_strategy):
+    encoder = TransformerTorchEncoder(
+        metas=test_metas,
+        pretrained_model_name_or_path='sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+        pooling_strategy=pooling_strategy,
+        api_token='fake_token',
+    )
+
+    api_mock = MagicMock(return_value=np.random.rand(2, 9, 768).tolist())
+    encoder._api_call = api_mock
+
+    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+    encoded_data = encoder.encode(test_data)
+
+    api_mock.assert_called()
+    assert encoded_data.shape == (2, 768)
+
+    assert not np.allclose(encoded_data[0], encoded_data[1], rtol=1)
