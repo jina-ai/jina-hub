@@ -6,14 +6,12 @@ import time
 from typing import Optional, Dict
 
 import numpy as np
-import requests
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.devices import TorchDevice
 from jina.executors.encoders import BaseEncoder
 
 if False:
-    # It is not assumed yet they inherit from this, but the transformers documentation seem to suggest so
     import torch
 
 HTTP_SERVICE_UNAVAILABLE = 503
@@ -128,6 +126,8 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
                 self.model = torch.quantization.quantize_dynamic(
                     self.model, {torch.nn.Linear}, dtype=torch.qint8
                 )
+        else:
+            self._api_call('Scotty, please warmup.')
 
     def amp_accelerate(self):
         """Check acceleration method """
@@ -140,6 +140,8 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             return nullcontext()
 
     def _api_call(self, query):
+        import requests
+
         retries = 0
 
         while retries < self.max_retries:
