@@ -48,18 +48,18 @@ def doc_without_embedding(d):
 
 
 def test_postgress():
-    with PostgreSQLDBMSIndexer() as postgres_indexer:
-        docs = list(get_documents(chunks=0, same_content=False))
-        info = [
-            (doc.id, doc.embedding, doc_without_embedding(doc).SerializeToString())
-            for doc in docs
-        ]
-        if info:
-            ids, vecs, metas = zip(*info)
+    postgres_indexer = PostgreSQLDBMSIndexer()
+    docs = list(get_documents(chunks=0, same_content=False))
+    info = [
+        (doc.id, doc.embedding, doc_without_embedding(doc).SerializeToString())
+        for doc in docs
+    ]
+    if info:
+        ids, vecs, metas = zip(*info)
 
-            added = postgres_indexer.add(ids, vecs, metas)
-            updated = postgres_indexer.update(ids[0], vecs[1], metas[1])
-            deleted = postgres_indexer.delete(ids[0])
-            assert len(added) == 10
-            assert len(updated) == 10
-            assert len(deleted) == 9
+        added = postgres_indexer.add(ids, vecs, metas)
+        updated = postgres_indexer.update(ids[0], vecs[1], metas[1])
+        deleted = postgres_indexer.delete(ids[0])
+        assert len(added) == 10
+        assert len(updated) == 10
+        assert len(deleted) == 9

@@ -42,8 +42,9 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         self.password = password
         self.database_name = database
         self.table = table
+        self.connect()
 
-    def __enter__(self):
+    def get_connection(self):
         return self.connect()
 
     def connect(self):
