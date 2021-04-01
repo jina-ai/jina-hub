@@ -38,8 +38,9 @@ def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index)
     params = {
         'pretrained_model_name_or_path': model_name,
         'pooling_strategy': pooling_strategy,
-        'layer_index': layer_index
+        'layer_index': layer_index,
     }
+
     encoder = TransformerTorchEncoder(metas=test_metas, **params)
 
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
@@ -61,12 +62,33 @@ def test_encoding_results(test_metas, model_name, pooling_strategy, layer_index)
         assert np.allclose(encoded_data[0], encoded_data[1], atol=1e-5, rtol=1e-4)
 
 
+@pytest.mark.parametrize('function_name', ['embed_questions', 'embed_answers'])
+def test_encoding_results_retribert(test_metas, function_name):
+    model_name = 'yjernite/retribert-base-uncased'
+
+    params = {
+        'pretrained_model_name_or_path': model_name,
+        'embedding_fn_name': function_name,
+    }
+
+    encoder = TransformerTorchEncoder(metas=test_metas, **params)
+
+    test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+    encoded_data = encoder.encode(test_data)
+
+    assert encoded_data.shape == (2, 128)
+
+    assert not np.allclose(encoded_data[0], encoded_data[1], rtol=1)
+
+
 @pytest.mark.parametrize('acceleration', ['amp', 'quant'])
 def test_encoding_results_acceleration(test_metas, acceleration):
     if 'JINA_TEST_GPU' in os.environ and acceleration == 'quant':
         pytest.skip("Can't test quantization on GPU.")
 
-    encoder = TransformerTorchEncoder(metas=test_metas, **{"acceleration": acceleration})
+    encoder = TransformerTorchEncoder(
+        metas=test_metas, **{"acceleration": acceleration}
+    )
 
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
     encoded_data = encoder.encode(test_data)
@@ -103,7 +125,7 @@ def test_max_length_truncation(test_metas, model_name, pooling_strategy, layer_i
         'pretrained_model_name_or_path': model_name,
         'pooling_strategy': pooling_strategy,
         'layer_index': layer_index,
-        'max_length': 3
+        'max_length': 3,
     }
     encoder = TransformerTorchEncoder(metas=test_metas, **params)
     test_data = np.array(['it is a very good day!', 'it is a very sunny day!'])
@@ -120,7 +142,7 @@ def test_shape_single_document(test_metas, model_name, pooling_strategy, layer_i
         'pretrained_model_name_or_path': model_name,
         'pooling_strategy': pooling_strategy,
         'layer_index': layer_index,
-        'max_length': 3
+        'max_length': 3,
     }
     encoder = TransformerTorchEncoder(metas=test_metas, **params)
     test_data = np.array(['it is a very good day!'])
@@ -136,7 +158,7 @@ def test_save_and_load(test_metas, model_name, pooling_strategy, layer_index):
     params = {
         'pretrained_model_name_or_path': model_name,
         'pooling_strategy': pooling_strategy,
-        'layer_index': layer_index
+        'layer_index': layer_index,
     }
     encoder = TransformerTorchEncoder(metas=test_metas, **params)
     test_data = np.array(['a', 'b', 'c', 'x', '!'])
@@ -160,7 +182,7 @@ def test_save_and_load_config(test_metas, model_name, pooling_strategy, layer_in
     params = {
         'pretrained_model_name_or_path': model_name,
         'pooling_strategy': pooling_strategy,
-        'layer_index': layer_index
+        'layer_index': layer_index,
     }
     encoder = TransformerTorchEncoder(metas=test_metas, **params)
 

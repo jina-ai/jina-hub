@@ -2,13 +2,17 @@ __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Optional
+from typing import Optional, Dict
 
 import numpy as np
 
 from jina.executors.decorators import batching, as_ndarray
 from jina.executors.devices import TorchDevice
 from jina.executors.encoders import BaseEncoder
+
+if False:
+    # It is not assumed yet they inherit from this, but the transformers documentation seem to suggest so
+    from transformers.modeling_outputs import BaseModelOutput
 
 
 class TransformerTorchEncoder(TorchDevice, BaseEncoder):
@@ -28,7 +32,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     :param layer_index: index of the transformer layer that is used to create
         encodings. Layer 0 corresponds to the embeddings layer
     :param max_length: the max length to truncate the tokenized sequences to.
-    :acceleration: The method to accelerate encoding. The available options are:
+    :param acceleration: The method to accelerate encoding. The available options are:
         - ``'amp'``, which uses `automatic mixed precision
             `<https://pytorch.org/docs/stable/amp.html>`_ autocasting.
             This option is only available on GPUs that support it
@@ -37,6 +41,8 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             See `this tutorial
             <https://pytorch.org/tutorials/intermediate/dynamic_quantization_bert_tutorial.html>`_
             for more information. This option is currently not supported on GPUs.
+    :param embedding_fn_name: name of the function to be called from the `model` to do the embedding. `__call__` by default.
+            Other possible values would `embed_questions` for `RetriBert` based models
     :param args:  Additional positional arguments
     :param kwargs: Additional keyword arguments
 
@@ -54,6 +60,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             layer_index: int = -1,
             max_length: Optional[int] = None,
             acceleration: Optional[str] = None,
+            embedding_fn_name: str = '__call__',
             *args,
             **kwargs,
     ):
@@ -64,6 +71,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         self.layer_index = layer_index
         self.max_length = max_length
         self.acceleration = acceleration
+        self.embedding_fn_name = embedding_fn_name
 
         if self.pooling_strategy == 'auto':
             self.pooling_strategy = 'cls'
@@ -112,6 +120,47 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         else:
             return nullcontext()
 
+    def _compute_embedding_from_model_output(self, outputs: 'BaseModelOutput', input_tokens: Dict):
+        import torch
+        n_layers = len(outputs.hidden_states)
+        if self.layer_index not in list(range(-n_layers, n_layers)):
+            self.logger.error(
+                f'Invalid value {self.layer_index} for `layer_index`,'
+                f' for the model {self.pretrained_model_name_or_path}'
+                f' valid values are integers from {-n_layers} to {n_layers - 1}.'
+            )
+            raise ValueError
+
+        if self.pooling_strategy == 'cls' and not self.tokenizer.cls_token:
+            self.logger.error(
+                f'You have set pooling_strategy to "cls", but the tokenizer'
+                f' for the model {self.pretrained_model_name_or_path}'
+                f' does not have a cls token set.'
+            )
+            raise ValueError
+
+        fill_vals = {'cls': 0.0, 'mean': 0.0, 'max': -np.inf, 'min': np.inf}
+        fill_val = torch.tensor(fill_vals[self.pooling_strategy], device=self.device)
+
+        layer = outputs.hidden_states[self.layer_index]
+        attn_mask = input_tokens['attention_mask'].unsqueeze(-1).expand_as(layer)
+        layer = torch.where(attn_mask.bool(), layer, fill_val)
+
+        if self.pooling_strategy == 'cls':
+            CLS = self.tokenizer.cls_token_id
+            ind = torch.nonzero(input_tokens['input_ids'] == CLS)[:, 1]
+            ind = ind.unsqueeze(-1).unsqueeze(-1).expand(-1, -1, layer.shape[2])
+            embeddings = torch.gather(layer, 1, ind).squeeze(dim=1)
+        elif self.pooling_strategy == 'mean':
+            embeddings = layer.sum(dim=1) / attn_mask.sum(dim=1)
+        elif self.pooling_strategy == 'max':
+            embeddings = layer.max(dim=1).values
+        elif self.pooling_strategy == 'min':
+            embeddings = layer.min(dim=1).values
+
+        return embeddings.cpu().numpy()
+
+
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
@@ -140,42 +189,9 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             input_tokens = {k: v.to(self.device) for k, v in input_tokens.items()}
 
             with self.amp_accelerate():
-                outputs = self.model(**input_tokens)
+                outputs = getattr(self.model, self.embedding_fn_name)(**input_tokens)
 
-            n_layers = len(outputs.hidden_states)
-            if self.layer_index not in list(range(-n_layers, n_layers)):
-                self.logger.error(
-                    f'Invalid value {self.layer_index} for `layer_index`,'
-                    f' for the model {self.pretrained_model_name_or_path}'
-                    f' valid values are integers from {-n_layers} to {n_layers - 1}.'
-                )
-                raise ValueError
-
-            if self.pooling_strategy == 'cls' and not self.tokenizer.cls_token:
-                self.logger.error(
-                    f'You have set pooling_strategy to "cls", but the tokenizer'
-                    f' for the model {self.pretrained_model_name_or_path}'
-                    f' does not have a cls token set.'
-                )
-                raise ValueError
-
-            fill_vals = {'cls': 0.0, 'mean': 0.0, 'max': -np.inf, 'min': np.inf}
-            fill_val = torch.tensor(fill_vals[self.pooling_strategy], device=self.device)
-
-            layer = outputs.hidden_states[self.layer_index]
-            attn_mask = input_tokens['attention_mask'].unsqueeze(-1).expand_as(layer)
-            layer = torch.where(attn_mask.bool(), layer, fill_val)
-
-            if self.pooling_strategy == 'cls':
-                CLS = self.tokenizer.cls_token_id
-                ind = torch.nonzero(input_tokens['input_ids'] == CLS)[:, 1]
-                ind = ind.unsqueeze(-1).unsqueeze(-1).expand(-1, -1, layer.shape[2])
-                embeddings = torch.gather(layer, 1, ind).squeeze(dim=1)
-            elif self.pooling_strategy == 'mean':
-                embeddings = layer.sum(dim=1) / attn_mask.sum(dim=1)
-            elif self.pooling_strategy == 'max':
-                embeddings = layer.max(dim=1).values
-            elif self.pooling_strategy == 'min':
-                embeddings = layer.min(dim=1).values
-
-            return embeddings.cpu().numpy()
+            if not isinstance(outputs, torch.Tensor):
+                return self._compute_embedding_from_model_output(outputs, input_tokens)
+            else:
+                return outputs.cpu().numpy()
