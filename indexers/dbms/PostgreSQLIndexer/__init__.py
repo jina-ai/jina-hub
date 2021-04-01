@@ -103,7 +103,7 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         for i in range(len(ids)):
             self.cursor.execute(
                 f"INSERT INTO {self.table} (ID, VECS, METAS) VALUES (%s, %s, %s)",
-                (ids[i], pickle.dumps(vecs), pickle.dumps(metas)),
+                (ids[i], pickle.dumps(vecs[i]), pickle.dumps(metas[i])),
             )
         self.connection.commit()
         self.cursor.execute(f"SELECT ID from {self.table}")

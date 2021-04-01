@@ -1,3 +1,5 @@
+import pickle
+
 import numpy as np
 from jina import Document
 
@@ -47,6 +49,16 @@ def doc_without_embedding(d):
     return new_doc
 
 
+def validate_db_side(postgres_indexer, expected_data):
+    ids, vecs, metas = zip(*expected_data)
+    postgres_indexer.cursor.execute(f"SELECT ID, VECS, METAS from {postgres_indexer.table} ORDER BY ID")
+    record = postgres_indexer.cursor.fetchall()
+    for i in range(len(expected_data)):
+        assert ids[i] == str(record[i][0])
+        assert (np.array(vecs[i]) == np.array(pickle.loads(record[i][1]))).all()
+        assert metas[i] == pickle.loads(record[i][2])
+
+
 def test_postgress():
     postgres_indexer = PostgreSQLDBMSIndexer()
     docs = list(get_documents(chunks=0, same_content=False))
@@ -58,8 +70,14 @@ def test_postgress():
         ids, vecs, metas = zip(*info)
 
         added = postgres_indexer.add(ids, vecs, metas)
-        updated = postgres_indexer.update(ids[0], vecs[1], metas[1])
-        deleted = postgres_indexer.delete(ids[0])
         assert len(added) == 10
+        validate_db_side(postgres_indexer, info)
+
+        updated = postgres_indexer.update(ids[0], vecs[1], metas[1])
+        expected_info = [(ids[0], vecs[1], metas[1])]
         assert len(updated) == 10
+        validate_db_side(postgres_indexer, expected_info)
+
+        deleted = postgres_indexer.delete(ids[0])
         assert len(deleted) == 9
+        validate_db_side(postgres_indexer, info[1:])
