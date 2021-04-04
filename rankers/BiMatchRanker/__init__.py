@@ -59,7 +59,7 @@ class BiMatchRanker(Chunk2DocRanker):
     """
 
     def __init__(self, d_miss: Optional[Union[int, float]] = None, *args, **kwargs):
-        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
+        super().__init__(query_required_keys=('siblings', ), match_required_keys=('siblings', ), *args, **kwargs)
         self.d_miss = d_miss or 2000
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict, *args, **kwargs):
@@ -84,9 +84,9 @@ class BiMatchRanker(Chunk2DocRanker):
         _groups = self._group_by(g, col)
         # take the best match from each group
         _groups_best = np.stack([np.sort(gg, order='score')[0] for gg in _groups])
-        # doc total length
+        # doc total siblings, which is the the number of chunks
         # how many chunks in the document (match or query)
-        _c = chunk_meta[_groups_best[0][col]]['length']
+        _c = chunk_meta[_groups_best[0][col]]['siblings']
         # how many chunks hit
         _h = _groups_best.shape[0]
         # hit distance
