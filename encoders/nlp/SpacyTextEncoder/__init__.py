@@ -80,15 +80,20 @@ class SpacyTextEncoder(BaseTorchEncoder):
         """
         Transform a `np.ndarray` of strings of length `BatchSize` into
         a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
+        Calculate word embeddings by applying spacy's tok2vec component
+        model in a sentence wise manner.
 
-        :param data: A `np.ndarray` of strings.
+        :param data: A `np.ndarray` of strings. Each string is a sentence.
         :param args: Additional positional arguments.
         :param kwargs: Additional positional arguments.
         :return: A `BachSize x EmbeddingSize` numpy `ndarray`.
         """
-        processed_data = self.spacy_model(str(data[0]))
-        result = [self.tensor2array(token.tensor) for token in processed_data]
-        return np.vstack(result)
+        embedding = []
+        for sent_data in data:
+            processed_data = self.spacy_model(str(sent_data))
+            result = [self.tensor2array(token.tensor) for token in processed_data]
+            embedding.append(result)
+        return np.vstack(embedding)
 
     def tensor2array(self, tensor):
         if isinstance(tensor, np.ndarray):
