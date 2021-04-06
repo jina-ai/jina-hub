@@ -143,7 +143,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         import requests
 
         retries = 0
-        headers = {"Authorization": "Bearer " + self.api_token}
+        headers = {"Authorization": f"Bearer {self.api_token}"}
         api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.pretrained_model_name_or_path}"
 
         while retries < self.max_retries:

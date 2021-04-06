@@ -1,12 +1,13 @@
 import os
-from unittest.mock import MagicMock
+import requests
+from unittest.mock import patch
 
 import numpy as np
 import pytest
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
 
-from .. import TransformerTorchEncoder
+from .. import TransformerTorchEncoder, HTTP_SERVICE_UNAVAILABLE
 
 
 @pytest.fixture(scope='function')
@@ -228,22 +229,46 @@ def test_no_cls_token(test_metas, params):
         _ = encoder.encode(test_data)
 
 
+class DummyResult:
+    def __init__(self):
+        self.counter = 0
+
+    def json(self):
+        if self.counter == 2:
+            return np.random.rand(2, 9, 768).tolist()
+        else:
+            return []
+
+    @property
+    def status_code(self):
+        if self.counter == 2:
+            return 200
+        else:
+            self.counter += 1
+            return HTTP_SERVICE_UNAVAILABLE
+
+
 @pytest.mark.parametrize('pooling_strategy', ['cls', 'mean', 'max'])
 def test_encoding_results_api(test_metas, pooling_strategy):
+    model_name = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens'
+    token = 'dummy_token'
     encoder = TransformerTorchEncoder(
         metas=test_metas,
-        pretrained_model_name_or_path='sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+        pretrained_model_name_or_path=model_name,
         pooling_strategy=pooling_strategy,
-        api_token='fake_token',
+        api_token=token,
     )
 
-    api_mock = MagicMock(return_value=np.random.rand(2, 9, 768).tolist())
-    encoder._api_call = api_mock
-
     test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
-    encoded_data = encoder.encode(test_data)
+    with patch.object(requests, 'post', return_value=DummyResult()) as post_mock:
+        encoded_data = encoder.encode(test_data)
 
-    api_mock.assert_called()
     assert encoded_data.shape == (2, 768)
 
-    assert not np.allclose(encoded_data[0], encoded_data[1], rtol=1)
+    assert not np.allclose(encoded_data[0], encoded_data[1], rtol=0.01)
+    headers = {"Authorization": f"Bearer {token}"}
+    api_url = (
+        f"https://api-inference.huggingface.co/pipeline/feature-extraction/{model_name}"
+    )
+    post_mock.assert_called_with(api_url, json=test_data.tolist(), headers=headers)
+    assert post_mock.call_count == 3
