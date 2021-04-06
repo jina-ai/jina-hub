@@ -4,7 +4,7 @@ on:
     types: [ labeled ]
 jobs:
   auto-merge:
-    if: ${{ github.event.label.name == 'dependencies' && github.actor == 'dependabot' $$ contains(github.event.pull_request.name, 'bump jinaai/jina from')}}
+    if: ${{ github.event.label.name == 'dependencies' && github.event.pull_request.user.login == 'dependabot[bot]'}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
