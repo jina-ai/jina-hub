@@ -1,3 +1,3 @@
-bash /docker-entrypoint.sh postgres &
-sleep 1 &
-jina pod --uses config.yml
+nohup bash -c "/docker-entrypoint.sh postgres &" &&
+sleep 3 &&
+jina pod --uses config.yml $@

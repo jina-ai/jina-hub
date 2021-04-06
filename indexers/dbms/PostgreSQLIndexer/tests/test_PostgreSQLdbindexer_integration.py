@@ -51,7 +51,7 @@ def validate(resp):
     #print(resp)
     #print(resp)
 
-f = Flow().add(uses='docker://pos_new')
+f = Flow().add(uses='docker://pos')
 docs = list(get_documents(chunks=0, same_content=False))
 
 info = [
