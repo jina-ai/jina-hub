@@ -1,7 +1,8 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import os
+import time
+
 from typing import Optional, Dict
 
 import numpy as np
@@ -11,8 +12,9 @@ from jina.executors.devices import TorchDevice
 from jina.executors.encoders import BaseEncoder
 
 if False:
-    # It is not assumed yet they inherit from this, but the transformers documentation seem to suggest so
-    from transformers.modeling_outputs import BaseModelOutput
+    import torch
+
+HTTP_SERVICE_UNAVAILABLE = 503
 
 
 class TransformerTorchEncoder(TorchDevice, BaseEncoder):
@@ -53,25 +55,31 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
     """
 
     def __init__(
-            self,
-            pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
-            base_tokenizer_model: Optional[str] = None,
-            pooling_strategy: str = 'mean',
-            layer_index: int = -1,
-            max_length: Optional[int] = None,
-            acceleration: Optional[str] = None,
-            embedding_fn_name: str = '__call__',
-            *args,
-            **kwargs,
+        self,
+        pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+        base_tokenizer_model: Optional[str] = None,
+        pooling_strategy: str = 'mean',
+        layer_index: int = -1,
+        max_length: Optional[int] = None,
+        acceleration: Optional[str] = None,
+        embedding_fn_name: str = '__call__',
+        api_token: Optional[str] = None,
+        max_retries: int = 20,
+        *args,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
-        self.base_tokenizer_model = base_tokenizer_model or pretrained_model_name_or_path
+        self.base_tokenizer_model = (
+            base_tokenizer_model or pretrained_model_name_or_path
+        )
         self.pooling_strategy = pooling_strategy
         self.layer_index = layer_index
         self.max_length = max_length
         self.acceleration = acceleration
         self.embedding_fn_name = embedding_fn_name
+        self.api_token = api_token
+        self.max_retries = max_retries
 
         if self.pooling_strategy == 'auto':
             self.pooling_strategy = 'cls'
@@ -94,21 +102,32 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             )
             raise NotImplementedError
 
+        if self.api_token is not None and self.layer_index != -1:
+            self.logger.error(
+                f'layer_index {self.layer_index} not available via the huggingface API.'
+                ' Please set the layer_index to -1 or disable huggingface API usage.'
+            )
+            raise ValueError
+
     def post_init(self):
         """Load the transformer model and encoder"""
         import torch
         from transformers import AutoModel, AutoTokenizer
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
-        self.model = AutoModel.from_pretrained(
-            self.pretrained_model_name_or_path, output_hidden_states=True
-        )
-        self.to_device(self.model)
 
-        if self.acceleration == 'quant' and not self.on_gpu:
-            self.model = torch.quantization.quantize_dynamic(
-                self.model, {torch.nn.Linear}, dtype=torch.qint8
+        if self.api_token is None:
+            self.model = AutoModel.from_pretrained(
+                self.pretrained_model_name_or_path, output_hidden_states=True
             )
+            self.to_device(self.model)
+
+            if self.acceleration == 'quant' and not self.on_gpu:
+                self.model = torch.quantization.quantize_dynamic(
+                    self.model, {torch.nn.Linear}, dtype=torch.qint8
+                )
+        else:
+            self._api_call('Scotty, please warmup.')
 
     def amp_accelerate(self):
         """Check acceleration method """
@@ -120,9 +139,27 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         else:
             return nullcontext()
 
-    def _compute_embedding_from_model_output(self, outputs: 'BaseModelOutput', input_tokens: Dict):
+    def _api_call(self, query):
+        import requests
+
+        retries = 0
+        headers = {"Authorization": f"Bearer {self.api_token}"}
+        api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.pretrained_model_name_or_path}"
+
+        while retries < self.max_retries:
+            retries += 1
+            r = requests.post(api_url, json=query, headers=headers)
+            if r.status_code == HTTP_SERVICE_UNAVAILABLE:
+                self.logger.info('Service is currently unavailable. Model is loading.')
+                time.sleep(3)
+            else:
+                break
+        return r.json()
+
+    def _compute_embedding(self, hidden_states: 'torch.Tensor', input_tokens: Dict):
         import torch
-        n_layers = len(outputs.hidden_states)
+
+        n_layers = len(hidden_states)
         if self.layer_index not in list(range(-n_layers, n_layers)):
             self.logger.error(
                 f'Invalid value {self.layer_index} for `layer_index`,'
@@ -142,7 +179,7 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
         fill_vals = {'cls': 0.0, 'mean': 0.0, 'max': -np.inf, 'min': np.inf}
         fill_val = torch.tensor(fill_vals[self.pooling_strategy], device=self.device)
 
-        layer = outputs.hidden_states[self.layer_index]
+        layer = hidden_states[self.layer_index]
         attn_mask = input_tokens['attention_mask'].unsqueeze(-1).expand_as(layer)
         layer = torch.where(attn_mask.bool(), layer, fill_val)
 
@@ -159,7 +196,6 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             embeddings = layer.min(dim=1).values
 
         return embeddings.cpu().numpy()
-
 
     @batching
     @as_ndarray
@@ -188,10 +224,17 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
             )
             input_tokens = {k: v.to(self.device) for k, v in input_tokens.items()}
 
-            with self.amp_accelerate():
-                outputs = getattr(self.model, self.embedding_fn_name)(**input_tokens)
+            if self.api_token is not None:
+                outputs = self._api_call(list(data))
 
-            if not isinstance(outputs, torch.Tensor):
-                return self._compute_embedding_from_model_output(outputs, input_tokens)
+                hidden_states = torch.tensor([outputs])
             else:
-                return outputs.cpu().numpy()
+                with self.amp_accelerate():
+                    outputs = getattr(self.model, self.embedding_fn_name)(
+                        **input_tokens
+                    )
+                    if isinstance(outputs, torch.Tensor):
+                        return outputs.cpu().numpy()
+                    hidden_states = outputs.hidden_states
+
+            return self._compute_embedding(hidden_states, input_tokens)
