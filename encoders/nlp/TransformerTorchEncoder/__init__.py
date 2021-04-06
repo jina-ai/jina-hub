@@ -237,7 +237,4 @@ class TransformerTorchEncoder(TorchDevice, BaseEncoder):
                         return outputs.cpu().numpy()
                     hidden_states = outputs.hidden_states
 
-            if not isinstance(outputs, torch.Tensor):
-                return self._compute_embedding(hidden_states, input_tokens)
-            else:
-                return outputs.cpu().numpy()
+            return self._compute_embedding(hidden_states, input_tokens)
