@@ -1,0 +1,580 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "classifiers/image/CLIPZeroShotClassifier"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "pip"
+    directory: "classifiers/nlp/TransformersTorchSeqClassifier"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "pip"
+    directory: "classifiers/nlp/ZeroShotTFClassifier"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/audio/AudioMonophoner"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/audio/AudioNormalizer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/audio/AudioReader"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/image/AlbumentationsCrafter"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/image/CenterImageCropper"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/image/ImageCropper"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/image/ImageFlipper"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/image/ImageNormalizer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/image/ImageReader"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/image/ImageResizer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "pip"
+    directory: "crafters/nlp/TikaExtractor"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/numeric/ArrayBytesReader"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "crafters/numeric/ArrayStringReader"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/audio/ChromaPitchEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/audio/MFCCTimbreEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/audio/Wav2VecSpeechEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/BigTransferEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/CLIPImageEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/CustomImageTorchEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/CustomKerasImageEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/FaceNetEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/ImageKerasEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/ImageOnnxEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/ImagePaddlehubEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/ImageTorchEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/image/TirgImageEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "pip"
+    directory: "encoders/image/VSEImageEncoder"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/multimodal/TirgMultimodalEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/nlp/CLIPTextEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/nlp/FarmTextEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/nlp/FlairTextEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/nlp/LaserEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/nlp/OneHotTextEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/nlp/TextPaddlehubEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/nlp/TransformerTFEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "pip"
+    directory: "encoders/nlp/TransformerTorchEncoder"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/nlp/UniversalSentenceEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "pip"
+    directory: "encoders/nlp/VSETextEncoder"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/numeric/CompressionVaeEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/numeric/FastICAEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/numeric/FeatureAgglomerationEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/numeric/IncrementalPCAEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/numeric/RandomGaussianEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/numeric/RandomSparseEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/numeric/TSNEEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/numeric/UMAPEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/video/VideoPaddleEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "encoders/video/VideoTorchEncoder"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/embedding/InfiniteNormEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/embedding/L1NormEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/embedding/MinkowskiDistanceEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/rank/AveragePrecision"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/rank/FScoreEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/rank/NdcgEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/rank/ReciprocalRankEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/text/BleuEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/text/EditDistanceEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/text/GleuEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/text/HammingDistanceEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/text/JaccardSimilarityEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "evaluators/text/RougeEvaluator"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "indexers/keyvalue/LevelDBIndexer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "pip"
+    directory: "indexers/keyvalue/MongoDBIndexer"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "indexers/keyvalue/RedisDBIndexer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "indexers/vector/AnnoyIndexer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "indexers/vector/FaissIndexer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "indexers/vector/MilvusIndexer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "indexers/vector/NGTIndexer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "indexers/vector/NmsLibIndexer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "pip"
+    directory: "indexers/vector/ScannIndexer"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "jina"
+        dependency-type: "direct"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "indexers/vector/SptagIndexer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "indexers/vector/ZarrIndexer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "rankers/BiMatchRanker"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "rankers/LevenshteinRanker"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "rankers/LightGBMRanker"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "rankers/SimpleAggregateRanker"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/audio/AudioSlicer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/audio/SlidingWindowAudioSlicer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/image/FiveImageCropper"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/image/RandomImageCropper"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/image/SlidingWindowImageCropper"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/image/TorchObjectDetectionSegmenter"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/nlp/DeepSegmenter"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/nlp/JiebaSegmenter"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/nlp/NLTKSentencizer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/nlp/PDFExtractorSegmenter"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/nlp/Sentencizer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/nlp/SlidingWindowSegmenter"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "docker"
+    directory: "segmenters/nlp/SpacySentencizer"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 1
