@@ -99,3 +99,21 @@ class PysparnnIndexer(BaseVectorIndexer):
             raise Exception(' Not possible query while indexing')
         for key in keys:
             del self.index[key]
+
+
+    def store_index_to_disk(self):
+        """Store self.index to disk"""
+        scipy.sparse.save_npz('./vectors.npz', scipy.sparse.vstack(self.index.values()))
+        
+        with open('./indices.npy', 'wb') as f:
+            np.save(f, list(self.index.keys()))
+
+    def load_index_from_disk(self):
+        """Load self.index from disk"""
+        vectors = scipy.sparse.load_npz('./vectors.npz')
+            
+        with open('./indices.npy', 'rb') as f:
+            indices = np.load(f)
+            
+        self.index = {ind:vec for ind,vec in zip(indices, vectors)}       
+        
