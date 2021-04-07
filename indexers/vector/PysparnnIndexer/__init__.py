@@ -3,6 +3,15 @@ import scipy
 from jina.executors.indexers.vector import BaseVectorIndexer
 
 
+def check_indexer(func):
+    def checker(self, *args, **kwargs):
+        if self.multi_cluster_index:
+            raise ValueError('Not possible query while indexing')
+        else:
+            return func(self, *args, **kwargs)
+    return checker
+
+
 class PysparnnIndexer(BaseVectorIndexer):
     """
     :class:`PysparnnIndexer` Approximate Nearest Neighbor Search for Sparse Data in Python using PySparNN.
@@ -57,6 +66,7 @@ class PysparnnIndexer(BaseVectorIndexer):
 
         return np.array(indices), np.array(distances)
 
+    @check_indexer
     def add(self, keys, vectors, *args, **kwargs):
         """Add keys and vectors to the indexer.
 
@@ -66,11 +76,10 @@ class PysparnnIndexer(BaseVectorIndexer):
         :param kwargs: not used
 
         """
-        if self.multi_cluster_index:
-            raise Exception(' Not possible query while indexing')
         for key, vector in zip(keys, vectors):
             self.index[key] = vector
 
+    @check_indexer
     def update(
             self, keys, vectors, *args, **kwargs
     ) -> None:
@@ -82,11 +91,10 @@ class PysparnnIndexer(BaseVectorIndexer):
         :param kwargs: not used
         """
 
-        if self.multi_cluster_index:
-            raise Exception(' Not possible query while indexing')
         for key, vector in zip(keys, vectors):
             self.index[key] = vector
 
+    @check_indexer
     def delete(self, keys, *args, **kwargs) -> None:
         """Delete the embeddings from the index via document ids (keys).
 
@@ -94,8 +102,6 @@ class PysparnnIndexer(BaseVectorIndexer):
         :param args: not used
         :param kwargs: not used
         """
-        if self.multi_cluster_index:
-            raise Exception(' Not possible query while indexing')
         for key in keys:
             del self.index[key]
 
