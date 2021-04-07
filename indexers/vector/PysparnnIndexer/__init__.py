@@ -23,9 +23,24 @@ class PysparnnIndexer(BaseVectorIndexer):
         super().__init__(*args, **kwargs)
 
         self.index = {}
-        self.metric = metric  #TODO add metric in search
+        self.metric = self._assign_distance_class(metric) 
         self.k_clusters = k_clusters
         self.multi_cluster_index = None
+
+    def _assign_distance_class(self, metric: str):
+        
+        if metric == 'cosine':
+            class_metric = pysparnn.matrix_distance.CosineDistance
+        elif metric == 'unit_cosine':
+            class_metric = pysparnn.matrix_distance.UnitCosineDistance
+        elif metric == 'euclidean':
+            class_metric = pysparnn.matrix_distance.SlowEuclideanDistance
+        elif metric == 'dense_cosine':
+            class_metric = pysparnn.matrix_distance.DenseCosineDistance
+        else:
+            class_metric = None
+
+        return class_metric
 
     def build_advanced_index(self):
         if not self.index:
@@ -36,7 +51,8 @@ class PysparnnIndexer(BaseVectorIndexer):
             keys.append(key)
             indexed_vectors.append(vector)
 
-        self.multi_cluster_index = ci.MultiClusterIndex(scipy.sparse.vstack(indexed_vectors), keys)
+        self.multi_cluster_index = ci.MultiClusterIndex(scipy.sparse.vstack(indexed_vectors), keys, 
+                                                        distance_type=self.metric)
 
     def query(self, vectors, top_k, *args, **kwargs):
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
