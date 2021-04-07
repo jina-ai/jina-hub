@@ -1,3 +1,5 @@
+import numpy as np
+import scipy
 from jina.executors.indexers.vector import BaseVectorIndexer
 
 
@@ -9,12 +11,10 @@ class PysparnnIndexer(BaseVectorIndexer):
     def __init__(self, k_clusters=2, num_indexes=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.index = {}
+        self.multi_cluster_index = None
         self.k_clusters = k_clusters
         self.num_indexes = num_indexes
-
-    def post_init(self):
-        self.index = {}
-        self.mci = None
 
     def _build_advanced_index(self):
         keys = []
@@ -23,8 +23,8 @@ class PysparnnIndexer(BaseVectorIndexer):
         for key, vector in self.index.items():
             keys.append(key)
             indexed_vectors.append(vector)
-        
-        self.mci = ci.MultiClusterIndex(scipy.sparse.vstack(indexed_vectors), keys)
+
+        self.multi_cluster_index = ci.MultiClusterIndex(scipy.sparse.vstack(indexed_vectors), keys)
 
     def query(self, vectors, top_k, *args, **kwargs):
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
@@ -40,24 +40,23 @@ class PysparnnIndexer(BaseVectorIndexer):
         :return: tuple of arrays of the form `(indices, distances`
         """
 
-        if not self.mci:
+        if not self.multi_cluster_index:
             self._build_advanced_index()
 
-        n_elements = search_features_vec.shape[0]
-        index_distance_pairs = self.mci.search(vectors,
-                                               k=top_k,
-                                               k_clusters=self.k_clusters,
-                                               num_indexes=self.num_indexes,
-                                               return_distance=True)
+        index_distance_pairs = self.multi_cluster_index.search(vectors,
+                                                               k=top_k,
+                                                               k_clusters=self.k_clusters,
+                                                               num_indexes=self.num_indexes,
+                                                               return_distance=True)
         distances = []
-        indices = [] 
+        indices = []
         for record in index_distance_pairs:
             distances_to_record, indices_to_record = zip(*record)
             distances.append(distances_to_record)
             indices.append(indices_to_record)
 
         return np.array(indices), np.array(distances)
-    
+
     def add(self, keys, vectors, *args, **kwargs):
         """Add keys and vectors to the indexer.
 
@@ -67,7 +66,7 @@ class PysparnnIndexer(BaseVectorIndexer):
         :param kwargs: not used
 
         """
-        if self.mci is not None:
+        if self.multi_cluster_index:
             raise Exception(' Not possible query while indexing')
         for key, vector in zip(keys, vectors):
             self.index[key] = vector
@@ -83,7 +82,7 @@ class PysparnnIndexer(BaseVectorIndexer):
         :param kwargs: not used
         """
 
-        if self.mci is not None:
+        if self.multi_cluster_index:
             raise Exception(' Not possible query while indexing')
         for key, vector in zip(keys, vectors):
             self.index[key] = vector
@@ -95,25 +94,23 @@ class PysparnnIndexer(BaseVectorIndexer):
         :param args: not used
         :param kwargs: not used
         """
-        if self.mci is not None:
+        if self.multi_cluster_index:
             raise Exception(' Not possible query while indexing')
         for key in keys:
             del self.index[key]
 
-
     def store_index_to_disk(self):
         """Store self.index to disk"""
         scipy.sparse.save_npz('./vectors.npz', scipy.sparse.vstack(self.index.values()))
-        
+
         with open('./indices.npy', 'wb') as f:
             np.save(f, list(self.index.keys()))
 
     def load_index_from_disk(self):
         """Load self.index from disk"""
         vectors = scipy.sparse.load_npz('./vectors.npz')
-            
+
         with open('./indices.npy', 'rb') as f:
             indices = np.load(f)
-            
-        self.index = {ind:vec for ind,vec in zip(indices, vectors)}       
-        
+
+        self.index = {ind: vec for ind, vec in zip(indices, vectors)}
