@@ -1,4 +1,3 @@
-
 import pytest
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -52,8 +51,10 @@ def test_immutable_with_index_built(indexer, features):
         indexer.delete([0])
 
 
-def test_query():
-    pass
+def test_query(indexer, features):
+    indexer.add(keys=list(range(0, 50)), vectors=features)
+    indices, distances = indexer.query(vectors=features[:5], top_k=1)
+    assert indices[0] == [0]
 
 
 def test_save_load(indexer, features):

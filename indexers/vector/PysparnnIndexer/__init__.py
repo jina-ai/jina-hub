@@ -28,6 +28,8 @@ class PysparnnIndexer(BaseVectorIndexer):
         self.multi_cluster_index = None
 
     def build_advanced_index(self):
+        if not self.index:
+            raise ValueError('Index is empty, please add data into the indexer using `add` method.')
         keys = []
         indexed_vectors = []
         for key, vector in self.index.items():
