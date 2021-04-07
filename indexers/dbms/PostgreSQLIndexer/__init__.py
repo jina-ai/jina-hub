@@ -1,10 +1,11 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import pickle
+from jina.executors.indexers import BaseIndexer
+
 from typing import Optional
 
-from jina.executors.indexers import BaseIndexer
+from ..PostgreSQLIndexer.postgreshandler import PostgreSQLDBMSHandler
 
 
 class PostgreSQLDBMSIndexer(BaseIndexer):
@@ -23,17 +24,16 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
     """
 
     def __init__(
-        self,
-        hostname: str = "127.0.0.1",
-        port: int = 5432,
-        username: str = "postgres",
-        password: str = "123456",
-        database: str = "postgres",
-        table: Optional[str] = "default_table",
-        *args,
-        **kwargs
+            self,
+            hostname: str = "127.0.0.1",
+            port: int = 5432,
+            username: str = "default_name",
+            password: str = "default_pwd",
+            database: str = "postgres",
+            table: Optional[str] = "default_table",
+            *args,
+            **kwargs
     ):
-
         super().__init__(*args, **kwargs)
 
         self.hostname = hostname
@@ -42,73 +42,43 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         self.password = password
         self.database_name = database
         self.table = table
-        self.connect()
 
-    def get_connection(self):
-        return self.connect()
+    def post_init(self):
+        """Initialize the PostregssHandler inside the Indexer."""
+        from .postgreshandler import PostgreSQLDBMSHandler
+        super().post_init()
+        self.handler = PostgreSQLDBMSHandler(
+            hostname=self.hostname,
+            port=self.port,
+            username=self.username,
+            password=self.password,
+            database=self.database_name,
+            table=self.table)
 
-    def connect(self):
-        """Connect to the database. """
+    def get_add_handler(self) -> 'PostgreSQLDBMSHandler':
+        """Get the handler to PostgresSQLMDBMS."""
+        return self.handler
 
-        import psycopg2
-        from psycopg2 import Error
+    def get_create_handler(self) -> 'PostgreSQLDBMSHandler':
+        """Get the handler to PostgresSQLMDBMS."""
+        return self.handler
 
-        try:
-            self.connection = psycopg2.connect(
-                user=self.username,
-                password=self.password,
-                database=self.database_name,
-                host=self.hostname,
-                port=self.port,
-            )
-            self.cursor = self.connection.cursor()
-            self.logger.info("Successfully connected to the database")
-            self.create_table()
-            self.connection.commit()
-        except (Exception, Error) as error:
-            self.logger.error("Error while connecting to PostgreSQL", error)
-        return self
-
-    def create_table(self):
-        """
-        Create Table with id, vecs and metas.
-        """
-
-        self.cursor.execute("select exists(select * from information_schema.tables where table_name=%s)", (self.table,))
-        if self.cursor.fetchone()[0]:
-            self.logger.info("Using existing table")
-        else:
-            try:
-                self.cursor.execute(
-                    f"""DROP TABLE IF EXISTS {self.table};
-                                    CREATE TABLE {self.table} (
-                                    ID INT PRIMARY KEY, 
-                                    VECS BYTEA, 
-                                    METAS BYTEA);"""
-                )
-                self.logger.info("Successfully table created")
-            except:
-                self.logger.error("Error while creating table!")
+    def get_query_handler(self) -> 'PostgreSQLDBMSHandler':
+        """Get the handler to PostgresSQLMDBMS."""
+        return self.handler
 
     def add(self, ids, vecs, metas, *args, **kwargs):
-        """Insert the documents into the database.
+        """Add a Document to PostgresSQLMDBMS.
 
         :param ids: List of doc ids to be added
         :param vecs: List of vecs to be added
         :param metas: List of metas of docs to be added
-        :return record: List of Document's id added
-        """
-
-        self.cursor.execute(f"DELETE FROM {self.table}")
-        for i in range(len(ids)):
-            self.cursor.execute(
-                f"INSERT INTO {self.table} (ID, VECS, METAS) VALUES (%s, %s, %s)",
-                (ids[i], pickle.dumps(vecs[i]), pickle.dumps(metas[i])),
-            )
-        self.connection.commit()
-        self.cursor.execute(f"SELECT ID from {self.table}")
-        record = self.cursor.fetchall()
+        return record: List of Document's id added
+         """
+        with self.write_handler as postgres_handler:
+            record = postgres_handler.add(ids=ids, vecs=vecs, metas=metas)
         return record
+
 
     def update(self, id, vecs, metas, *args, **kwargs):
         """Updated document from the database.
@@ -119,13 +89,8 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         :return record: List of Document's id after update
         """
 
-        self.cursor.execute(
-            f"UPDATE {self.table} SET VECS = %s, METAS = %s WHERE ID = %s",
-            (pickle.dumps(vecs), pickle.dumps(metas), id),
-        )
-        self.connection.commit()
-        self.cursor.execute(f"SELECT ID from {self.table}")
-        record = self.cursor.fetchall()
+        with self.write_handler as postgres_handler:
+            record = postgres_handler.update(id=id, vecs=vecs, metas=metas)
         return record
 
     def delete(self, id, *args, **kwargs):
@@ -135,24 +100,9 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         :return record: List of Document's id after deletion
         """
 
-        self.cursor.execute(f"DELETE FROM {self.table} where (ID) = (%s) ", id)
-        self.connection.commit()
-        count = self.cursor.rowcount
-        self.cursor.execute(f"SELECT ID from {self.table}")
-        record = self.cursor.fetchall()
+        with self.write_handler as postgres_handler:
+            record = postgres_handler.delete(id=id)
         return record
 
     def dump(self, uri, shards, formats):
         raise NotImplementedError
-
-    def __exit__(self, *args):
-        """ Make sure the connection to the database is closed."""
-
-        from psycopg2 import Error
-
-        try:
-            self.connection.close()
-            self.cursor.close()
-            print("PostgreSQL connection is closed")
-        except (Exception, Error) as error:
-            print("Error while closing: ", error)
