@@ -1,9 +1,9 @@
 import scipy
 import numpy as np
+import pysparnn
 import pysparnn.cluster_index as ci
 
 from jina.executors.indexers.vector import BaseVectorIndexer
-
 
 def check_indexer(func):
     def checker(self, *args, **kwargs):
@@ -55,7 +55,7 @@ class PysparnnIndexer(BaseVectorIndexer):
         self.multi_cluster_index = ci.MultiClusterIndex(
             features=scipy.sparse.vstack(indexed_vectors),
             records_data=keys,
-            metric=self.metric,
+            distance_type=self.metric,
             num_indexes=self.num_indexes)
 
     def query(self, vectors, top_k, *args, **kwargs):

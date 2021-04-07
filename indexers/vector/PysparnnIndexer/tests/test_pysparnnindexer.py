@@ -7,13 +7,18 @@ from .. import PysparnnIndexer
 
 @pytest.fixture
 def indexer():
-    return PysparnnIndexer()
+    return PysparnnIndexer(metric='cosine')
 
 
 @pytest.fixture
 def features():
     vectors = np.random.binomial(1, 0.01, size=(50, 100))
     return csr_matrix(vectors)
+
+
+def test_invalid_metric():
+    with pytest.raises(ValueError):
+        PysparnnIndexer(metric='cosin')
 
 
 def test_add(indexer, features):
@@ -66,4 +71,6 @@ def test_save_load(indexer, features):
     indexer = PysparnnIndexer.load(filename='abc')
     assert indexer.index[0].shape == (1, 100)
     assert (indexer.index[0] != index_before_save).nnz == 0
+
+
 
