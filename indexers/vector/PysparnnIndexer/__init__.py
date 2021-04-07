@@ -19,12 +19,13 @@ class PysparnnIndexer(BaseVectorIndexer):
     :class:`PysparnnIndexer` Approximate Nearest Neighbor Search for Sparse Data in Python using PySparNN.
     """
 
-    def __init__(self, k_clusters=2, metric: str = 'cosine', *args, **kwargs):
+    def __init__(self, k_clusters=2, metric: str = 'cosine', num_indexes: int = 2, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.index = {}
         self.metric = metric  #TODO add metric in search
         self.k_clusters = k_clusters
+        self.num_indexes = num_indexes
         self.multi_cluster_index = None
 
     def build_advanced_index(self):
@@ -36,7 +37,10 @@ class PysparnnIndexer(BaseVectorIndexer):
             keys.append(key)
             indexed_vectors.append(vector)
 
-        self.multi_cluster_index = ci.MultiClusterIndex(scipy.sparse.vstack(indexed_vectors), keys)
+        self.multi_cluster_index = ci.MultiClusterIndex(
+            features=scipy.sparse.vstack(indexed_vectors),
+            records_data=keys,
+            num_indexes=self.num_indexes)
 
     def query(self, vectors, top_k, *args, **kwargs):
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
