@@ -1,5 +1,7 @@
-import numpy as np
 import scipy
+import numpy as np
+import pysparnn.cluster_index as ci
+
 from jina.executors.indexers.vector import BaseVectorIndexer
 
 
@@ -17,18 +19,17 @@ class PysparnnIndexer(BaseVectorIndexer):
     :class:`PysparnnIndexer` Approximate Nearest Neighbor Search for Sparse Data in Python using PySparNN.
     """
 
-    def __init__(self, k_clusters=2, num_indexes=None, *args, **kwargs):
+    def __init__(self, k_clusters=2, metric: str = 'cosine', *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.index = {}
-        self.multi_cluster_index = None
+        self.metric = metric  #TODO add metric in search
         self.k_clusters = k_clusters
-        self.num_indexes = num_indexes
+        self.multi_cluster_index = None
 
-    def _build_advanced_index(self):
+    def build_advanced_index(self):
         keys = []
         indexed_vectors = []
-        import pysparnn.cluster_index as ci
         for key, vector in self.index.items():
             keys.append(key)
             indexed_vectors.append(vector)
@@ -50,12 +51,11 @@ class PysparnnIndexer(BaseVectorIndexer):
         """
 
         if not self.multi_cluster_index:
-            self._build_advanced_index()
+            self.build_advanced_index()
 
         index_distance_pairs = self.multi_cluster_index.search(vectors,
                                                                k=top_k,
                                                                k_clusters=self.k_clusters,
-                                                               num_indexes=self.num_indexes,
                                                                return_distance=True)
         distances = []
         indices = []
@@ -104,19 +104,3 @@ class PysparnnIndexer(BaseVectorIndexer):
         """
         for key in keys:
             del self.index[key]
-
-    def store_index_to_disk(self):
-        """Store self.index to disk"""
-        scipy.sparse.save_npz('./vectors.npz', scipy.sparse.vstack(self.index.values()))
-
-        with open('./indices.npy', 'wb') as f:
-            np.save(f, list(self.index.keys()))
-
-    def load_index_from_disk(self):
-        """Load self.index from disk"""
-        vectors = scipy.sparse.load_npz('./vectors.npz')
-
-        with open('./indices.npy', 'rb') as f:
-            indices = np.load(f)
-
-        self.index = {ind: vec for ind, vec in zip(indices, vectors)}
