@@ -1,10 +1,9 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
-
-from jina.executors.indexers import BaseIndexer
-
 from typing import Optional
 
+
+from jina.executors.indexers import BaseIndexer
 from ..PostgreSQLIndexer.postgreshandler import PostgreSQLDBMSHandler
 
 
@@ -27,8 +26,8 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
             self,
             hostname: str = "127.0.0.1",
             port: int = 5432,
-            username: str = "default_name",
-            password: str = "default_pwd",
+            username: str = "postgres",
+            password: str = "123456",
             database: str = "postgres",
             table: Optional[str] = "default_table",
             *args,
