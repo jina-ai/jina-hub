@@ -51,5 +51,5 @@ class SlidingWindowAudioSlicer(BaseSegmenter):
         """
         frames = self._segment(blob)
 
-        return [dict(offset=idx, weight=1.0, blob=frame, length=frames.shape[0])
+        return [dict(offset=idx, weight=1.0, blob=frame)
                 for idx, frame in enumerate(frames)]
