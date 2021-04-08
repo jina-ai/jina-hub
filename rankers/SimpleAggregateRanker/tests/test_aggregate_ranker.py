@@ -45,28 +45,24 @@ def fake_group_and_score(ranker, match_idx,query_chunk_meta,match_chunk_meta):
 def chunk_scores(factor=1):
     query_chunk2match_chunk = {
         100: [
-            {'parent_id': 1, 'id': 10, 'score': 0.4, 'length': 200},
+            {'parent_id': 1, 'id': 10, 'score': 0.4},
         ],
         101: [
-            {'parent_id': 2, 'id': 20, 'score': 0.25, 'length': 200},
-            {'parent_id': 2, 'id': 21, 'score': 0.25, 'length': 200},
-            {'parent_id': 2, 'id': 22, 'score': 0.15, 'length': 200},
-            {'parent_id': 2, 'id': 23, 'score': 0.15, 'length': 200},
+            {'parent_id': 2, 'id': 20, 'score': 0.25},
+            {'parent_id': 2, 'id': 21, 'score': 0.25},
+            {'parent_id': 2, 'id': 22, 'score': 0.15},
+            {'parent_id': 2, 'id': 23, 'score': 0.15},
         ],
         110: [
-            {'parent_id': 1, 'id': 10, 'score': 0.5, 'length': 200},
-            {'parent_id': 1, 'id': 11, 'score': 0.2, 'length': 200},
-            {'parent_id': 3, 'id': 20, 'score': 0.1, 'length': 300},
+            {'parent_id': 1, 'id': 10, 'score': 0.5},
+            {'parent_id': 1, 'id': 11, 'score': 0.2},
+            {'parent_id': 3, 'id': 20, 'score': 0.1},
         ]
     }
-    query_chunk_meta = {}
-    match_chunk_meta = {}
+
     match_idx = []
-    num_query_chunks = len(query_chunk2match_chunk)
     for query_chunk_id, matches in query_chunk2match_chunk.items():
-        query_chunk_meta[query_chunk_id] = {'length': num_query_chunks}
         for c in matches:
-            match_chunk_meta[c['id']] = {'length': c['length']}
             match_idx.append((
                 c['parent_id'],
                 c['id'],
@@ -83,7 +79,7 @@ def chunk_scores(factor=1):
             (Chunk2DocRanker.COL_SCORE, np.float64)
         ]
     )
-    return match_idx_numpy, query_chunk_meta, match_chunk_meta
+    return match_idx_numpy, {}, {}
 
 
 def assert_document_order(doc_idx):
