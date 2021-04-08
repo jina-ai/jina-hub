@@ -73,4 +73,13 @@ def test_save_load(indexer, features):
     assert (indexer.index[0] != index_before_save).nnz == 0
 
 
+def test_delete_save_load(indexer, features):
+    keys_to_remove =[5,10,15]
+    indexer.add(keys=list(range(0, 50)), vectors=features)
+    indexer.delete(keys=keys_to_remove)
+    n_index_before_save = len(indexer.index)
+    indexer.save(filename='abc')
+    indexer_from_file = PysparnnIndexer.load(filename='abc')
+    assert len(indexer_from_file.index) == n_index_before_save
+
 
