@@ -27,7 +27,7 @@ class PysparnnIndexer(BaseVectorIndexer):
         self.k_clusters = k_clusters
         self.num_indexes = num_indexes
         self.multi_cluster_index = None
-
+        
     def _assign_distance_class(self, metric: str):
         
         if metric == 'cosine':
@@ -125,7 +125,7 @@ class PysparnnIndexer(BaseVectorIndexer):
         :param kwargs: not used
         """
         for key in keys:
-            del self.index[key]
+            self.index.pop(key)
 
     def store_index_to_disk(self):
         """Store self.index to disk"""
