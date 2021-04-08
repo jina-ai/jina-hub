@@ -1,9 +1,9 @@
 import scipy
 import numpy as np
-import pysparnn
-import pysparnn.cluster_index as ci
+
 
 from jina.executors.indexers.vector import BaseVectorIndexer
+
 
 def check_indexer(func):
     def checker(self, *args, **kwargs):
@@ -11,6 +11,7 @@ def check_indexer(func):
             raise ValueError('Not possible query while indexing')
         else:
             return func(self, *args, **kwargs)
+
     return checker
 
 
@@ -19,31 +20,54 @@ class PysparnnIndexer(BaseVectorIndexer):
     :class:`PysparnnIndexer` Approximate Nearest Neighbor Search for Sparse Data in Python using PySparNN.
     """
 
-    def __init__(self, k_clusters=2, metric: str = 'cosine', num_indexes: int = 2, *args, **kwargs):
+    def __init__(self,
+                 k_clusters: int = 2,
+                 metric: str = 'cosine',
+                 num_indexes: int = 2,
+                 prefix_filename: str = 'pysparnn_index',
+                 *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.index = {}
-        self.metric = self._assign_distance_class(metric) 
+        self.metric = self._assign_distance_class(metric)
         self.k_clusters = k_clusters
         self.num_indexes = num_indexes
         self.multi_cluster_index = None
-        
+        self.index_filename = prefix_filename + '_index.npz'
+        self.indices_filename = prefix_filename + '_indices.npy'
+
+    def post_init(self):
+        import os
+        super().post_init()
+        if os.path.exists(self.index_abspath):
+            self._load_index_from_disk()
+
+    def close(self) -> None:
+        """
+        Release the resources as executor is destroyed, need to be overridden
+        """
+        self._store_index_to_disk()
+        super().close()
+
     def _assign_distance_class(self, metric: str):
-        
+        from pysparnn import matrix_distance
         if metric == 'cosine':
-            class_metric = pysparnn.matrix_distance.CosineDistance
+            class_metric = matrix_distance.CosineDistance
         elif metric == 'unit_cosine':
-            class_metric = pysparnn.matrix_distance.UnitCosineDistance
+            class_metric = matrix_distance.UnitCosineDistance
         elif metric == 'euclidean':
-            class_metric = pysparnn.matrix_distance.SlowEuclideanDistance
+            class_metric = matrix_distance.SlowEuclideanDistance
         elif metric == 'dense_cosine':
-            class_metric = pysparnn.matrix_distance.DenseCosineDistance
+            class_metric = matrix_distance.DenseCosineDistance
         else:
-            class_metric = None
+            raise ValueError(f'metric={metric} is not a valid metric')
 
         return class_metric
 
     def build_advanced_index(self):
+        import pysparnn.cluster_index as ci
+        import scipy
+
         if not self.index:
             raise ValueError('Index is empty, please add data into the indexer using `add` method.')
         keys = []
@@ -127,18 +151,20 @@ class PysparnnIndexer(BaseVectorIndexer):
         for key in keys:
             self.index.pop(key)
 
-    def store_index_to_disk(self):
+    def _store_index_to_disk(self):
         """Store self.index to disk"""
-        scipy.sparse.save_npz('./vectors.npz', scipy.sparse.vstack(self.index.values()))
+        import scipy
+        scipy.sparse.save_npz(self.index_abspath, scipy.sparse.vstack(self.index.values()))
 
-        with open('./indices.npy', 'wb') as f:
+        with open(self.get_file_from_workspace(self.indices_filename), 'wb') as f:
             np.save(f, list(self.index.keys()))
 
-    def load_index_from_disk(self):
+    def _load_index_from_disk(self):
         """Load self.index from disk"""
-        vectors = scipy.sparse.load_npz('./vectors.npz')
+        import scipy
+        vectors = scipy.sparse.load_npz(self.index_abspath)
 
-        with open('./indices.npy', 'rb') as f:
+        with open(self.get_file_from_workspace(self.indices_filename), 'rb') as f:
             indices = np.load(f)
 
-        self.index = {ind:vec for ind,vec in zip(indices, vectors)}
+        self.index = {ind: vec for ind, vec in zip(indices, vectors)}
