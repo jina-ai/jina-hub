@@ -75,9 +75,3 @@ embeddeding_batch_np = encoder.encode(text_batch)
   - ```bash
     docker pull jinahub/pod.encoder.spacyencoder:0.0.1-1.0.16
     ```
-   
- Note:
- 
- One of the limitations with the Hub Executors currently is the tags - all Executor images should have the versions appended in the name i.e.
- if the version is `0.0.1-1.0.16`, the image name would be `jinahub/pod.encoder.spacyencoder:0.0.1-1.0.16`.
-   

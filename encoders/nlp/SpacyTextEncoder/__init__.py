@@ -11,7 +11,8 @@ class SpacyTextEncoder(BaseTorchEncoder):
     :class:`SpacyTextEncoder` encodes data from a `np.ndarray` (of strings) of length `BatchSize` into
     a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
 
-    :param lang: pre-trained spaCy language pipeline (model name HashEmbedCNN by default for tok2vec), `en_core_web_sm` by default.
+    :param lang: pre-trained spaCy language pipeline (model name HashEmbedCNN by default for tok2vec), `en_core_web_sm`
+        by default. Allows models `en_core_web_md`, `en_core_web_lg`, `en_core_web_trf`. Refer https://spacy.io/models/en.
     :param use_default_encoder: if True will use parser component,
         otherwise tok2vec implementation will be chosen,
         by default False.
