@@ -26,7 +26,7 @@ class TFIDFTextEncoder(BaseEncoder):
         import pickle
         self.tfidf_vectorizer = pickle.load(open( os.path.join(cur_dir,self.path_vectorizer), "rb"))
 
-    def encode(self, data, *args, **kwargs) -> 'np.ndarray':
+    def encode(self, data, *args, **kwargs) -> 'scipy.sparse.csr_matrix':
         """Encode the data creating a tf-idf feature vector of the input.
 
         :param data: text data to be encoded
