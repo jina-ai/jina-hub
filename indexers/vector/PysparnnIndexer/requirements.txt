@@ -1,3 +1,2 @@
-jina
 scipy
 git+https://github.com/facebookresearch/pysparnn.git

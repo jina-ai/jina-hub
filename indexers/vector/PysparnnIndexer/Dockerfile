@@ -1,11 +1,12 @@
-FROM jina AS base
+FROM jinaai/jina AS base
 
 # setup the workspace
 COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-RUN pip install -r requirements.txt
+
+RUN apt-get update && apt-get install -y git && pip install -r requirements.txt
 
 # for testing the image
 FROM base

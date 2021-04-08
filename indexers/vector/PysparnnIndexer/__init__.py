@@ -51,16 +51,19 @@ class PysparnnIndexer(BaseVectorIndexer):
 
     def _assign_distance_class(self, metric: str):
         import pysparnn
+        from pysparnn import matrix_distance
+
+
         if metric == 'cosine':
-            class_metric = pysparnn.matrix_distance.CosineDistance
+            class_metric = matrix_distance.CosineDistance
         elif metric == 'unit_cosine':
-            class_metric = pysparnn.matrix_distance.UnitCosineDistance
+            class_metric = matrix_distance.UnitCosineDistance
         elif metric == 'euclidean':
-            class_metric = pysparnn.matrix_distance.SlowEuclideanDistance
+            class_metric = matrix_distance.SlowEuclideanDistance
         elif metric == 'dense_cosine':
-            class_metric = pysparnn.matrix_distance.DenseCosineDistance
+            class_metric = matrix_distance.DenseCosineDistance
         else:
-            class_metric = None
+            raise ValueError(f'metric={metric} is not a valid metric')
 
         return class_metric
 
