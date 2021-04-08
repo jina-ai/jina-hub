@@ -25,5 +25,5 @@ if __name__ == '__main__':
     ### Encoding a batch
     text = ['Han likes eating pizza', 'Han likes pizza', 'Jina rocks']
     embedding_batch = tfidf_vectorizer.transform(text)
-    scipy.sparse.save_npz('expected_batch.npz', embeddeding_array)
+    scipy.sparse.save_npz('expected_batch.npz', embedding_batch)
 

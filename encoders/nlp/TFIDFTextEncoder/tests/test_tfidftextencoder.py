@@ -43,4 +43,4 @@ def test_tfidf_text_encoder_batch():
 
     # Compare with ouptut 
     expected_batch = scipy.sparse.load_npz(os.path.join(cur_dir, 'expected_batch.npz'))
-    np.testing.assert_almost_equal(embeddeding_batch.todense(), expected_batch.todense(), decimal=4)
+    np.testing.assert_almost_equal(embeddeding_batch.todense(), expected_batch.todense(), decimal=2)
