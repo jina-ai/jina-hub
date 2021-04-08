@@ -5,6 +5,7 @@ from jina import Document
 
 from .. import PostgreSQLDBMSIndexer
 
+
 d_embedding = np.array([1, 1, 1, 1, 1, 1, 1])
 c_embedding = np.array([2, 2, 2, 2, 2, 2, 2])
 
@@ -15,28 +16,28 @@ def get_documents(chunks, same_content, nr=10, index_start=0, same_tag_content=N
         with Document() as d:
             d.id = i
             if same_content:
-                d.text = "hello world"
+                d.text = 'hello world'
                 d.embedding = d_embedding
             else:
-                d.text = f"hello world {i}"
+                d.text = f'hello world {i}'
                 d.embedding = np.random.random(d_embedding.shape)
             if same_tag_content:
-                d.tags["tag_field"] = "tag data"
+                d.tags['field'] = 'tag data'
             elif same_tag_content is False:
-                d.tags["tag_field"] = f"tag data {i}"
+                d.tags['field'] = f'tag data {i}'
             for j in range(chunks):
                 with Document() as c:
                     c.id = next_chunk_id
                     if same_content:
-                        c.text = "hello world from chunk"
+                        c.text = 'hello world from chunk'
                         c.embedding = c_embedding
                     else:
-                        c.text = f"hello world from chunk {j}"
+                        c.text = f'hello world from chunk {j}'
                         c.embedding = np.random.random(d_embedding.shape)
                     if same_tag_content:
-                        c.tags["tag field"] = "tag data"
+                        c.tags['field'] = 'tag data'
                     elif same_tag_content is False:
-                        c.tags["tag field"] = f"tag data {next_chunk_id}"
+                        c.tags['field'] = f'tag data {next_chunk_id}'
                 next_chunk_id += 1
                 d.chunks.append(c)
         yield d
@@ -45,14 +46,15 @@ def get_documents(chunks, same_content, nr=10, index_start=0, same_tag_content=N
 def doc_without_embedding(d):
     new_doc = Document()
     new_doc.CopyFrom(d)
-    new_doc.ClearField("embedding")
+    new_doc.ClearField('embedding')
     return new_doc
 
 
 def validate_db_side(postgres_indexer, expected_data):
     ids, vecs, metas = zip(*expected_data)
-    postgres_indexer.cursor.execute(f"SELECT ID, VECS, METAS from {postgres_indexer.table} ORDER BY ID")
-    record = postgres_indexer.cursor.fetchall()
+    postgres_indexer.handler.connect()
+    postgres_indexer.handler.cursor.execute(f'SELECT ID, VECS, METAS from {postgres_indexer.table} ORDER BY ID')
+    record = postgres_indexer.handler.cursor.fetchall()
     for i in range(len(expected_data)):
         assert ids[i] == str(record[i][0])
         assert (np.array(vecs[i]) == np.array(pickle.loads(record[i][1]))).all()
