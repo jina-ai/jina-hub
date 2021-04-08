@@ -1,11 +1,8 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional
-
 from jina.executors.indexers import BaseIndexer
-from ..PostgreSQLIndexer.postgreshandler import PostgreSQLDBMSHandler
-
+from .postgreshandler import PostgreSQLDBMSHandler
 
 class PostgreSQLDBMSIndexer(BaseIndexer):
     # TODO:  this class need to be a subclass from the DBMSIndexer (when it's merged into master)
@@ -23,18 +20,17 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
     """
 
     def __init__(
-            self,
-            hostname: str = '127.0.0.1',
-            port: int = 5432,
-            username: str = 'postgres',
-            password: str = '123456',
-            database: str = 'postgres',
-            table: str = 'default_table',
-            *args,
-            **kwargs
+        self,
+        hostname: str = '127.0.0.1',
+        port: int = 5432,
+        username: str = 'postgres',
+        password: str = '123456',
+        database: str = 'postgres',
+        table: str = 'default_table',
+        *args,
+        **kwargs
     ):
         super().__init__(*args, **kwargs)
-
         self.hostname = hostname
         self.port = port
         self.username = username
@@ -43,7 +39,7 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         self.table = table
 
     def post_init(self):
-        """Initialize the PostregssHandler inside the Indexer."""
+        """Initialize the PostgresHandler inside the Indexer."""
         from .postgreshandler import PostgreSQLDBMSHandler
         super().post_init()
         self.handler = PostgreSQLDBMSHandler(

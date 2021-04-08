@@ -16,7 +16,7 @@ WORKDIR /workspace
 
 ENV POSTGRES_PASSWORD=123456
 
-RUN nohup bash -c "docker-entrypoint.sh postgres &" && sleep 3 && python3.7 -m pytest -s -v tests/test_PostgreSQLdbindexer.py
+RUN nohup bash -c "docker-entrypoint.sh postgres &" && sleep 3 && python3.7 -m pytest -s -v
 
 EXPOSE 5432
 
