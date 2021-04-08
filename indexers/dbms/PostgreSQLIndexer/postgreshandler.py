@@ -21,15 +21,15 @@ class PostgreSQLDBMSHandler:
     """
 
     def __init__(self,
-                 hostname: str = '127.0.0.1',
+                 hostname: str = "127.0.0.1",
                  port: int = 5432,
-                 username: str = 'default_name',
-                 password: str = 'default_pwd',
-                 database: str = 'default_db',
+                 username: str = "postgres",
+                 password: str = "123456",
+                 database: str = "postgres",
                  table: Optional[str] = 'default_table',
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        self.logger = JinaLogger(self.__class__.__name__)
         self.hostname = hostname
         self.port = port
         self.username = username
@@ -68,9 +68,9 @@ class PostgreSQLDBMSHandler:
         Create table if needed with id, vecs and metas.
         """
 
-        self.cursor.execute("select exists(select * from information_schema.tables where table_name=%s)", (self.table,))
+        self.cursor.execute('select exists(select * from information_schema.tables where table_name=%s)', (self.table,))
         if self.cursor.fetchone()[0]:
-            self.logger.info("Using existing table")
+            self.logger.info('Using existing table')
         else:
             try:
                 self.cursor.execute(
@@ -80,9 +80,9 @@ class PostgreSQLDBMSHandler:
                                     VECS BYTEA, 
                                     METAS BYTEA);"""
                 )
-                self.logger.info("Successfully table created")
+                self.logger.info('Successfully table created')
             except:
-                self.logger.error("Error while creating table!")
+                self.logger.error('Error while creating table!')
 
 
     def add(self, ids, vecs, metas, *args, **kwargs):
@@ -91,19 +91,19 @@ class PostgreSQLDBMSHandler:
         :param ids: List of doc ids to be added
         :param vecs: List of vecs to be added
         :param metas: List of metas of docs to be added
-        :return record: List of Document's id added
         :param args: other arguments
         :param kwargs: other keyword arguments
+        :return record: List of Document's id added
         """
 
-        self.cursor.execute(f"DELETE FROM {self.table}")
+        self.cursor.execute(f'DELETE FROM {self.table}')
         for i in range(len(ids)):
             self.cursor.execute(
-                f"INSERT INTO {self.table} (ID, VECS, METAS) VALUES (%s, %s, %s)",
+                f'INSERT INTO {self.table} (ID, VECS, METAS) VALUES (%s, %s, %s)',
                 (ids[i], pickle.dumps(vecs[i]), pickle.dumps(metas[i])),
             )
         self.connection.commit()
-        self.cursor.execute(f"SELECT ID from {self.table}")
+        self.cursor.execute(f'SELECT ID from {self.table}')
         record = self.cursor.fetchall()
         return record
 
@@ -119,11 +119,11 @@ class PostgreSQLDBMSHandler:
         """
 
         self.cursor.execute(
-            f"UPDATE {self.table} SET VECS = %s, METAS = %s WHERE ID = %s",
+            f'UPDATE {self.table} SET VECS = %s, METAS = %s WHERE ID = %s',
             (pickle.dumps(vecs), pickle.dumps(metas), id),
         )
         self.connection.commit()
-        self.cursor.execute(f"SELECT ID from {self.table}")
+        self.cursor.execute(f'SELECT ID from {self.table}')
         record = self.cursor.fetchall()
         return record
 
@@ -136,10 +136,10 @@ class PostgreSQLDBMSHandler:
         :return record: List of Document's id after deletion
          """
 
-        self.cursor.execute(f"DELETE FROM {self.table} where (ID) = (%s) ", id)
+        self.cursor.execute(f'DELETE FROM {self.table} where (ID) = (%s) ', id)
         self.connection.commit()
         count = self.cursor.rowcount
-        self.cursor.execute(f"SELECT ID from {self.table}")
+        self.cursor.execute(f'SELECT ID from {self.table}')
         record = self.cursor.fetchall()
         return record
 
