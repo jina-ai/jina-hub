@@ -1,0 +1,6 @@
+!SpacyTextEncoder
+with:
+  lang: "en_core_web_sm"
+metas:
+  py_modules:
+    - __init__.py

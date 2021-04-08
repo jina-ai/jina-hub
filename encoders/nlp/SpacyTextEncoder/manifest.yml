@@ -1,0 +1,15 @@
+manifest_version: 1
+name: SpacyTextEncoder
+kind: encoder
+description: |
+    `SpacyTextEncoder` encodes data from a string into ndarray of size `BatchSize x EmbeddingDimension`.
+    Model taken from spaCy - a library for advanced Natural Language Processing in Python and Cython.
+    It provides support for pretrained word vectors and embeddings. GitHub link: https://github.com/explosion/spaCy
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub/tree/master/encoders/nlp/SpacyTextEncoder
+version: 0.0.1
+license: apache-2.0
+keywords: [spacy, nlp, tok2vec]
+type: pod
