@@ -1,0 +1,99 @@
+{"$id": "https://api.jina.ai/schemas/hub/1.1.2.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "schema": {
+    "Create Jina App": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "Configurations",
+        "properties": {
+          "name": {
+            "description": "Human-readable title of the image",
+            "type": "string",
+            "title": "name",
+            "pattern": "^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{3,30}$",
+            "required": true
+          },
+          "description": {
+            "description": "Human-readable description of the software packaged in the image",
+            "type": "string",
+            "title": "description",
+            "required": true
+          },
+          "type": {
+            "description": "The version of the manifest protocol",
+            "type": "string",
+            "enum": ["crafter","segmenter","encoder","indexer","classifier","ranker","evaluator"],
+            "title": "type"
+          },
+          "author": {
+            "description": "Contact details of the people or organization responsible for the image (string)",
+            "type": "string",
+            "title": "author",
+            "default": "Jina AI Dev-Team (dev-team@jina.ai)"
+          },
+          "version": {
+            "type": "string",
+            "title": "version",
+            "pattern": "^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$",
+            "default": "0.0.1"
+          },
+          "manifest_version": {
+            "description": "The version of the manifest protocol",
+            "type": "integer",
+            "title": "manifest_version",
+            "default": 1
+          },
+          "url": {
+            "description": "URL to find more information on the image (string)",
+            "type": "string",
+            "title": "url",
+            "format": "url",
+            "default": "https://jina.ai"
+          },
+          "documentation": {
+            "description": "URL to get documentation on the image (string)",
+            "type": "string",
+            "title": "documentation",
+            "format": "url",
+            "default": "https://docs.jina.ai"
+          },
+          "vendor": {
+            "description": "The name of the distributing entity, organization or individual (string)",
+            "type": "string",
+            "title": "vendor",
+            "default": "Jina AI Limited"
+          },
+          "license": {
+            "description": "License under which contained software is distributed, it should be in https://github.com/jina-ai/jina-hub/blob/master/legacy/builder/osi-approved.yml",
+            "type": "string",
+            "title": "license",
+            "enum": ['apache-2.0: Apache license 2.0', 'afl-3.0: Academic Free License v3.0', 'artistic-2.0: Artistic license 2.0', 'bsl-1.0: Boost Software License 1.0', 'bsd-2-clause: BSD 2-clause "Simplified" license', 'bsd-3-clause: BSD 3-clause "New" or "Revised" license', 'bsd-3-clause-clear: BSD 3-clause Clear license', 'cc: Creative Commons license family', 'cc0-1.0: Creative Commons Zero v1.0 Universal', 'cc-by-4.0: Creative Commons Attribution 4.0', 'cc-by-sa-4.0: Creative Commons Attribution Share Alike 4.0', 'wtfpl: Do What The F*ck You Want To Public License', 'ecl-2.0: Educational Community License v2.0', 'epl-1.0: Eclipse Public License 1.0', 'eupl-1.1: European Union Public License 1.1', 'agpl-3.0: GNU Affero General Public License v3.0', 'gpl: GNU General Public License family', 'gpl-2.0: GNU General Public License v2.0', 'gpl-3.0: GNU General Public License v3.0', 'lgpl: GNU Lesser General Public License family', 'lgpl-2.1: GNU Lesser General Public License v2.1', 'lgpl-3.0: GNU Lesser General Public License v3.0', 'isc: ISC', 'lppl-1.3c: LaTeX Project Public License v1.3c', 'ms-pl: Microsoft Public License', 'mit: MIT', 'mpl-2.0: Mozilla Public License 2.0', 'osl-3.0: Open Software License 3.0', 'postgresql: PostgreSQL License', 'ofl-1.1: SIL Open Font License 1.1', 'ncsa: University of Illinois/NCSA Open Source License', 'unlicense: The Unlicense', 'zlib: zLib License'],
+            "default": "apache-2.0"
+          },
+          "platform": {
+            "description": "A list of CPU architectures that your image built on",
+            "type": "string",
+            "title": "platform",
+            "enum": ["linux/amd64","linux/arm64","linux/ppc64le","linux/s390x","linux/386","linux/arm/v7","linux/arm/v6"],
+            "default": "linux/amd64"
+          },
+          "keywords": {
+            "description": "A list of strings help user to filter and locate your package",
+            "type": "array",
+            "items": {
+                 "type": "string",
+                 "title": "keyword"
+             },
+            "title": "keywords",
+            "default": []
+          }
+        }
+      }
+    }
+  },
+  "value": {
+    "Create Jina App": [
+    ]
+  }
+}
