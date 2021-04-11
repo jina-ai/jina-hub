@@ -1,0 +1,13 @@
+manifest_version: 1
+name: TruncatedSVDEncoder
+kind: encoder
+description: |
+  :class:`TruncatedSVDEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
+author: Harshdeep Singh (harshdeep.harshdeep@epfl.ch)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [sklearn, decomposition, TruncatedSVD, svd, encoder, numeric]
+type: pod
