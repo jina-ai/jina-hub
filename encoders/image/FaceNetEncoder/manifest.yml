@@ -8,7 +8,7 @@ author: Anton Kiselev (straw.berry.pie@ya.ru)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/image/FaceNetEncoder/README.md
-version: 0.0.14
+version: 0.0.2
 license: apache-2.0
 keywords: [image, FaceNet, faces, computer vision]
 type: pod
