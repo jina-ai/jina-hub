@@ -1,7 +1,6 @@
 from typing import Dict, List
 
 import numpy as np
-
 from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
@@ -24,15 +23,17 @@ class AudioSlicer(BaseSegmenter):
         import librosa
         if signal.ndim == 1:  # mono
             frames = librosa.util.frame(signal, frame_length=self.frame_length, hop_length=self.hop_length, axis=0)
+            return frames,
+
         elif signal.ndim == 2:  # stereo
             left_frames = librosa.util.frame(
                 signal[0,], frame_length=self.frame_length, hop_length=self.hop_length, axis=0)
             right_frames = librosa.util.frame(
                 signal[1,], frame_length=self.frame_length, hop_length=self.hop_length, axis=0)
-            frames = np.concatenate((left_frames, right_frames), axis=0)
+            return left_frames, right_frames
+
         else:
             raise ValueError(f'audio signal must be 1D or 2D array: {signal}')
-        return frames
 
     @single
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
@@ -43,7 +44,13 @@ class AudioSlicer(BaseSegmenter):
         :param blob: the ndarray of the audio signal
         :return: a list of Chunk dicts with audio frames
         """
-        frames = self._segment(blob)
+        channel_frames = self._segment(blob)
 
-        return [dict(offset=idx, weight=1.0, blob=frame)
-                for idx, frame in enumerate(frames)]
+        chunks = []
+        for frames in channel_frames:
+            start = 0
+            for idx, frame in enumerate(frames):
+                chunks.append(dict(offset=idx, weight=1.0, blob=frame, location=[start, start + len(frame)]))
+                start += self.hop_length
+
+        return chunks
