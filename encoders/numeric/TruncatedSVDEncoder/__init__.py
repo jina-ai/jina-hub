@@ -8,14 +8,15 @@ from jina.executors.decorators import batching, require_train
 class TruncatedSVDEncoder(TransformEncoder):
     """
     Encodes data using truncated SVD, and does not center the data before
-    computing SVD which makes it efficient when working with sparse matrices.
+    computing SVD hence making them efficient for sparse input matrices.
 
     Encodes data from a ndarray of size `B x T` into a ndarray of size `B x D`.
     Where `B` is the batch's size and `T` and `D` are the dimensions pre (`T`)
     and after (`D`) the encoding.
 
     :param output_dim: Dimension of the output embedded space
-    :param n_iter: Number of iterations for the encoder to run
+    :param algorithm: algorithm to be used to run SVD
+    :param max_iter: Number of iterations for the encoder to run
     :param args:  Additional positional arguments
     :param kwargs: Additional keyword arguments
 

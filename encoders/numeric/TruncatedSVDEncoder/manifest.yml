@@ -2,7 +2,7 @@ manifest_version: 1
 name: TruncatedSVDEncoder
 kind: encoder
 description: |
-  :class:`TruncatedSVDEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
+  `TruncatedSVDEncoder` is a dimensionality reduction technique using SVD and encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`. More documentation can be found here: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.TruncatedSVD.html.
 author: Harshdeep Singh (harshdeep.harshdeep@epfl.ch)
 url: https://jina.ai
 vendor: Jina AI Limited
