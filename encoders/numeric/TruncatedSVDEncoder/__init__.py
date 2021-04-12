@@ -29,7 +29,7 @@ class TruncatedSVDEncoder(TransformEncoder):
 
     def __init__(
         self,
-        output_dim: int = None,
+        output_dim: int = 20,
         algorithm: str = "randomized",
         max_iter: int = 200,
         *args,
