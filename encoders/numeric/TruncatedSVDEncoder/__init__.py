@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from jina.executors.encoders.numeric import TransformEncoder
+from jina.executors.decorators import batching, require_train
 
 
 class TruncatedSVDEncoder(TransformEncoder):
@@ -48,3 +49,17 @@ class TruncatedSVDEncoder(TransformEncoder):
         self.model = TruncatedSVD(
             n_components=self.output_dim, algorithm=self.algorithm, n_iter=self.max_iter
         )
+
+    @require_train
+    @batching
+    def encode(self, data, *args, **kwargs) -> "np.ndarray":
+        """
+        Encode data from an ndarray in size `B x T` into an ndarray
+        in size `B x D`.
+
+        :param data: a `B x T` ndarray
+        :return: a `B x D` numpy ndarray
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        """
+        return super().encode(data, *args, **kwargs)

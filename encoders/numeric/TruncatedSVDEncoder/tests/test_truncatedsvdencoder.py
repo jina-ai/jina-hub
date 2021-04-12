@@ -63,6 +63,7 @@ def test_truncated_svd_encoder_train(train_data, test_data, target_output_dim):
 @pytest.mark.parametrize("target_output_dim", [2])
 def test_truncated_svd_save_and_load(train_data, test_data, target_output_dim):
     encoder = get_encoder(train_data, target_output_dim)
+    assert encoder is not None
     encoded_data_orig = encoder.encode(test_data)
 
     encoder.touch()
