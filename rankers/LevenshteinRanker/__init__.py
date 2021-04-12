@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Dict, Sequence
 
-from jina.executors.decorators import batching_multi_input
+from jina.executors.decorators import batching
 from jina.executors.rankers import Match2DocRanker
 
 
@@ -19,7 +19,7 @@ class LevenshteinRanker(Match2DocRanker):
             query_required_keys=['text'], match_required_keys=['text'], *args, *kwargs
         )
 
-    @batching_multi_input(slice_nargs=3)
+    @batching(slice_nargs=3)
     def score(
         self,
         old_matches_scores: Sequence[float],

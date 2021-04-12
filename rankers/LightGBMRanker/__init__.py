@@ -3,7 +3,7 @@ from typing import Dict, Optional, Tuple, List, Union
 
 import numpy as np
 
-from jina.executors.decorators import batching_multi_input
+from jina.executors.decorators import batching
 from jina.executors.rankers import Match2DocRanker
 from jina.excepts import PretrainedModelFileDoesNotExist
 
@@ -92,7 +92,7 @@ class LightGBMRanker(Match2DocRanker):
         else:
             return match_dataset.construct().add_features_from(query_dataset.construct())
 
-    @batching_multi_input(slice_nargs=3)
+    @batching(slice_nargs=3)
     def score(
             self, old_match_scores: List[List[float]], query_meta: List[Dict], match_meta: List[List[Dict]]
     ) -> 'np.ndarray':

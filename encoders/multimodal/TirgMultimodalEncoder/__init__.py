@@ -9,7 +9,7 @@ import numpy as np
 
 from jina.executors.devices import TorchDevice
 from jina.excepts import PretrainedModelFileDoesNotExist
-from jina.executors.decorators import batching_multi_input, as_ndarray
+from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 
 
@@ -64,7 +64,7 @@ class TirgMultiModalEncoder(TorchDevice, BaseMultiModalEncoder):
 
         return self.model.compose_img_text_features(img_features, text_features)
 
-    @batching_multi_input(num_data=2)
+    @batching(batch_size=2)
     @as_ndarray
     def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
         feature = self._get_features(data).detach()
