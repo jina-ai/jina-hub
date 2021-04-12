@@ -5,7 +5,7 @@ description: ImagePaddlehubEncoder encodes image data.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/image/ImagePaddlehubEncoder/README.md
 version: 0.0.9
 license: apache-2.0
 keywords: [Imagenet, PaddleHub, Computer Vision, image, encoder]
