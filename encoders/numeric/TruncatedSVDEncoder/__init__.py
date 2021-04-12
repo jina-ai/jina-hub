@@ -38,16 +38,13 @@ class TruncatedSVDEncoder(TransformEncoder):
         self.max_iter = max_iter
         self.algorithm = algorithm
         self.is_trained = False
-        self.model = None
 
     def post_init(self):
         """Load TruncatedSVD model"""
         super().post_init()
-        if not self.model:
-            from sklearn.decomposition import TruncatedSVD
 
-            self.model = TruncatedSVD(
-                n_components=self.output_dim,
-                algorithm=self.algorithm,
-                n_iter=self.max_iter,
-            )
+        from sklearn.decomposition import TruncatedSVD
+
+        self.model = TruncatedSVD(
+            n_components=self.output_dim, algorithm=self.algorithm, n_iter=self.max_iter
+        )
