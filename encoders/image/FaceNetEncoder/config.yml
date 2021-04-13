@@ -1,4 +1,4 @@
-!FaceNetEncoder
+jtype: FaceNetEncoder
 metas:
   py_modules:
     - __init__.py

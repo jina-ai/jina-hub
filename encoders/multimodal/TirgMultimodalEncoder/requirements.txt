@@ -1,1 +1,2 @@
+torch
 torchvision==0.8.2
