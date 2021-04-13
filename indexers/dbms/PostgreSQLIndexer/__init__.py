@@ -1,11 +1,12 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from jina.executors.indexers import BaseIndexer
+from jina.executors.indexers.dbms import BaseDBMSIndexer
+from jina.executors.indexers.dump import export_dump_streaming
+
 from .postgreshandler import PostgreSQLDBMSHandler
 
-class PostgreSQLDBMSIndexer(BaseIndexer):
-    # TODO:  this class need to be a subclass from the DBMSIndexer (when it's merged into master)
+class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
     """:class:`PostgreSQLDBMSIndexer` PostgreSQL based BDMS Indexer.
     Initialize the PostgreSQLDBIndexer.
 
@@ -37,6 +38,11 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
         self.password = password
         self.database_name = database
         self.table = table
+
+    def _get_generator(self):
+        self.handler.cursor.execute(f"SELECT * from {self.handler.table} ORDER BY ID")
+        record = self.handler.cursor.fetchall()
+        return record
 
     def post_init(self):
         """Initialize the PostgresHandler inside the Indexer."""
@@ -90,5 +96,24 @@ class PostgreSQLDBMSIndexer(BaseIndexer):
             record = postgres_handler.delete(id=id)
         return record
 
-    def dump(self, uri, shards, formats):
-        raise NotImplementedError
+    def dump(self, path, shards):
+        """Dump the index
+
+        :param path: the path to which to dump
+        :param shards: the nr of shards to which to dump
+        """
+        self.write_handler.close()
+        # noinspection PyPropertyAccess
+        del self.write_handler
+        self.handler_mutex = False
+        ids = self.query_handler.header.keys()
+        export_dump_streaming(
+            path,
+            shards=shards,
+            size=self.size,
+            data=self._get_generator(),
+        )
+        self.query_handler.close()
+        self.handler_mutex = False
+        # noinspection PyPropertyAccess
+        del self.query_handler
