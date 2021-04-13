@@ -19,10 +19,15 @@ class CLIPImageEncoder(BaseTorchEncoder):
     :param kwargs: Additional positional arguments.
     """
 
-    def __init__(self, model_name: str = 'ViT-B/32',
+    def __init__(self,
+                 model_name: str = 'ViT-B/32',
+                 channel_axis: int = 1,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
+        self.channel_axis = channel_axis
+        # axis 0 is the batch
+        self._default_channel_axis = 1
 
     def post_init(self):
         """Load a model from clip specified in `model_name`."""
@@ -45,6 +50,9 @@ class CLIPImageEncoder(BaseTorchEncoder):
         :param kwargs: Additional positional arguments.
         :return: A `BatchSize x EmbeddingDimension` numpy array.
         """
+
+        if self.channel_axis != self._default_channel_axis:
+            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
 
         input_torchtensor = torch.from_numpy(data.astype('float32'))

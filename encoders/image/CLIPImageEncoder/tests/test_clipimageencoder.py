@@ -48,7 +48,8 @@ def test_clip_image_encoder():
     np.testing.assert_almost_equal(embeddeding_np, expected, decimal=3)
 
 
-def test_clip_image_encoder_batch():
+@pytest.mark.parametrize('channel_axis', [-1, 1])
+def test_clip_image_encoder_batch(channel_axis):
 
     # Input
     man_piercing_image_path = os.path.join(cur_dir, '../imgs/man_piercing.jpg')
@@ -57,9 +58,10 @@ def test_clip_image_encoder_batch():
     im_tensor_clip_input = preprocess(im).unsqueeze(0)
     im_tensor_clip_np = im_tensor_clip_input.detach().numpy()
     batch = np.vstack([im_tensor_clip_input, im_tensor_clip_input, im_tensor_clip_input])
-
+    if channel_axis == -1:
+        batch = np.moveaxis(batch, 1, -1)
     # Encoder embedding 
-    encoder = CLIPImageEncoder()
+    encoder = CLIPImageEncoder(channel_axis=channel_axis)
     print_array_info(batch, 'batch')
     embeddeding_batch_np = encoder.encode(batch)
     print_array_info(embeddeding_batch_np, 'embeddeding_batch_np')
