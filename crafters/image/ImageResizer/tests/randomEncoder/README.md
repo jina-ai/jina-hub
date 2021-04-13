@@ -1,3 +1,0 @@
-# randomEncoder
-
-random things 
