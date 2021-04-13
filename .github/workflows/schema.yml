@@ -1,9 +1,7 @@
 name: Update JSON schema 
 
 on:
-  push:
-		paths:
-		- ../../schemas/'schema.json'
+  workflow_dispatch
 
 jobs:
   update-schema:

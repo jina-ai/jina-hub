@@ -64,7 +64,7 @@ class TirgMultiModalEncoder(TorchDevice, BaseMultiModalEncoder):
 
         return self.model.compose_img_text_features(img_features, text_features)
 
-    @batching_multi_input(num_data=2)
+    @batching(slice_nargs=2)
     @as_ndarray
     def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
         feature = self._get_features(data).detach()
