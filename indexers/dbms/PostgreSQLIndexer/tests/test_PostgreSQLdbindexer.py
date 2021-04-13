@@ -1,3 +1,4 @@
+import os
 import pickle
 
 import numpy as np
@@ -61,7 +62,8 @@ def validate_db_side(postgres_indexer, expected_data):
         assert metas[i] == pickle.loads(record[i][2])
 
 
-def test_postgress():
+def test_postgress(tmpdir):
+    dump_path = os.path.join(str(tmpdir), 'dump_dir')
     postgres_indexer = PostgreSQLDBMSIndexer()
     docs = list(get_documents(chunks=0, same_content=False))
     info = [
@@ -83,3 +85,7 @@ def test_postgress():
         deleted = postgres_indexer.delete(ids[0])
         assert len(deleted) == 9
         validate_db_side(postgres_indexer, info[1:])
+
+        dumped = postgres_indexer.dump(dump_path, 1)
+
+

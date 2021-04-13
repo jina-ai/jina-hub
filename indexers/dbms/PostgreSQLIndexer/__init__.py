@@ -1,10 +1,13 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import pickle
+
 from jina.executors.indexers.dbms import BaseDBMSIndexer
 from jina.executors.indexers.dump import export_dump_streaming
 
 from .postgreshandler import PostgreSQLDBMSHandler
+
 
 class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
     """:class:`PostgreSQLDBMSIndexer` PostgreSQL based BDMS Indexer.
@@ -21,15 +24,15 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
     """
 
     def __init__(
-        self,
-        hostname: str = '127.0.0.1',
-        port: int = 5432,
-        username: str = 'postgres',
-        password: str = '123456',
-        database: str = 'postgres',
-        table: str = 'default_table',
-        *args,
-        **kwargs
+            self,
+            hostname: str = '127.0.0.1',
+            port: int = 5432,
+            username: str = 'postgres',
+            password: str = '123456',
+            database: str = 'postgres',
+            table: str = 'default_table',
+            *args,
+            **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.hostname = hostname
@@ -42,7 +45,8 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
     def _get_generator(self):
         self.handler.cursor.execute(f"SELECT * from {self.handler.table} ORDER BY ID")
         record = self.handler.cursor.fetchall()
-        return record
+        for rec in record:
+            yield rec[0], rec[1], rec[2]
 
     def post_init(self):
         """Initialize the PostgresHandler inside the Indexer."""
@@ -68,7 +72,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         :param metas: List of metas of docs to be added
         return record: List of Document's id added
          """
-        with self.write_handler as postgres_handler:
+        with self.handler as postgres_handler:
             records = postgres_handler.add(ids=ids, vecs=vecs, metas=metas)
         return records
 
@@ -81,7 +85,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         :return record: List of Document's id after update
         """
 
-        with self.write_handler as postgres_handler:
+        with self.handler as postgres_handler:
             record = postgres_handler.update(id=id, vecs=vecs, metas=metas)
         return record
 
@@ -92,7 +96,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         :return record: List of Document's id after deletion
         """
 
-        with self.write_handler as postgres_handler:
+        with self.handler as postgres_handler:
             record = postgres_handler.delete(id=id)
         return record
 
@@ -102,18 +106,19 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         :param path: the path to which to dump
         :param shards: the nr of shards to which to dump
         """
-        self.write_handler.close()
+
+        # self.handler.close()
         # noinspection PyPropertyAccess
-        del self.write_handler
-        self.handler_mutex = False
-        ids = self.query_handler.header.keys()
+        # del self.handler
+        # self.handler_mutex = False
+        # ids = self.query_handler.header.keys()
         export_dump_streaming(
             path,
             shards=shards,
-            size=self.size,
-            data=self._get_generator(),
+            size=len(list(self._get_generator())),
+            data=self._get_generator()
         )
-        self.query_handler.close()
-        self.handler_mutex = False
-        # noinspection PyPropertyAccess
-        del self.query_handler
+    # self.query_handler.close()
+    # self.handler_mutex = False
+    # noinspection PyPropertyAccess
+    # del self.query_handler
