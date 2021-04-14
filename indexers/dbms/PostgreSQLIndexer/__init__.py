@@ -31,7 +31,6 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
             password: str = '123456',
             database: str = 'postgres',
             table: str = 'default_table',
-            entries: int = 0,
             *args,
             **kwargs
     ):
@@ -42,7 +41,6 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         self.password = password
         self.database_name = database
         self.table = table
-        self.entries = entries,
 
     def _get_generator(self):
         self.handler.cursor.execute(f"SELECT * from {self.handler.table} ORDER BY ID")
@@ -76,7 +74,6 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
          """
         with self.handler as postgres_handler:
             records = postgres_handler.add(ids=ids, vecs=vecs, metas=metas)
-            self.entries = len(records)
         return records
 
     def update(self, id, vecs, metas, *args, **kwargs):
@@ -90,7 +87,6 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
 
         with self.handler as postgres_handler:
             record = postgres_handler.update(id=id, vecs=vecs, metas=metas)
-            self.entries = len(record)
         return record
 
     def delete(self, id, *args, **kwargs):
@@ -102,7 +98,6 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
 
         with self.handler as postgres_handler:
             record = postgres_handler.delete(id=id)
-            self.entries = len(record)
         return record
 
     def dump(self, path, shards):
@@ -115,7 +110,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         export_dump_streaming(
             path,
             shards=shards,
-            size=self.entries,
+            size=self.handler.cursor.rowcount,
             data=self._get_generator()
         )
 

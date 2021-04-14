@@ -137,7 +137,6 @@ class PostgreSQLDBMSHandler:
 
         self.cursor.execute(f'DELETE FROM {self.table} where (ID) = (%s) ', id)
         self.connection.commit()
-        count = self.cursor.rowcount
         self.cursor.execute(f'SELECT ID from {self.table}')
         record = self.cursor.fetchall()
         return record
