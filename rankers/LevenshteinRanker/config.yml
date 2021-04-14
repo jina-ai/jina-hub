@@ -1,4 +1,4 @@
-!LevenshteinRanker
+jtype: LevenshteinRanker
 with:
   {}
 metas:
