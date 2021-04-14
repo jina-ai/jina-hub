@@ -33,6 +33,8 @@ class ImageNormalizer(BaseCrafter):
         The images are resized before cropping to the output size
     :param channel_axis: the axis id of the color channel,
         ``-1`` indicates the color channel info at the last axis
+    :param target_channel_axis: the axis id of the color channel that need to move to,
+        ``-1`` indicates the color channel info at the last axis, and ``0`` indicates the first axis
     """
 
     def __init__(self,
@@ -41,6 +43,7 @@ class ImageNormalizer(BaseCrafter):
                  img_std: Tuple[float] = (1, 1, 1),
                  resize_dim: int = 256,
                  channel_axis: int = -1,
+                 target_channel_axis: int = -1,
                  *args,
                  **kwargs):
         """Set Constructor."""
@@ -55,6 +58,7 @@ class ImageNormalizer(BaseCrafter):
         self.img_mean = np.array(img_mean).reshape((1, 1, 3))
         self.img_std = np.array(img_std).reshape((1, 1, 3))
         self.channel_axis = channel_axis
+        self.target_channel_axis = target_channel_axis
 
     @single
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
@@ -64,9 +68,11 @@ class ImageNormalizer(BaseCrafter):
         :param blob: the ndarray of the image with the color channel at the last axis
         :return: a chunk dict with the normalized image
         """
+        # load the data with original channel_axis
         raw_img = _load_image(blob, self.channel_axis)
         _img = self._normalize(raw_img)
-        img = _move_channel_axis(_img, -1, self.channel_axis)
+        # move the channel_axis to target_channel_axis to better fit different models
+        img = _move_channel_axis(_img, -1, self.target_channel_axis)
         return dict(offset=0, blob=img)
 
     def _normalize(self, img):

@@ -8,7 +8,7 @@ description: |
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/nlp/CLIPTextEncoder/README.md
-version: 0.0.2
+version: 0.0.3
 license: apache-2.0
 keywords: [Cross-Modal, nlp, CLIP]
 type: pod
