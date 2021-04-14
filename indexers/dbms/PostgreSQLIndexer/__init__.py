@@ -18,7 +18,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
     :param username: the username to authenticate
     :param password: the password to authenticate
     :param database: the database name
-    :param collection: the collection name
+    :param table: the table name to use
     :param args: other arguments
     :param kwargs: other keyword arguments
     """
@@ -31,6 +31,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
             password: str = '123456',
             database: str = 'postgres',
             table: str = 'default_table',
+            entries: int = 0,
             *args,
             **kwargs
     ):
@@ -41,11 +42,12 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         self.password = password
         self.database_name = database
         self.table = table
+        self.entries = entries,
 
     def _get_generator(self):
         self.handler.cursor.execute(f"SELECT * from {self.handler.table} ORDER BY ID")
-        record = self.handler.cursor.fetchall()
-        for rec in record:
+        records = self.handler.cursor.fetchall()
+        for rec in records:
             yield rec[0], rec[1], rec[2]
 
     def post_init(self):
@@ -61,11 +63,11 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
             table=self.table)
 
     def get_create_handler(self) -> 'PostgreSQLDBMSHandler':
-        """Get the handler to PostgresSQLMDBMS."""
+        """Get the handler to PostgreSQLDBMS."""
         return self.handler
 
     def add(self, ids, vecs, metas, *args, **kwargs):
-        """Add a Document to PostgresSQLMDBMS.
+        """Add a Document to PostgreSQLDBMS.
 
         :param ids: List of doc ids to be added
         :param vecs: List of vecs to be added
@@ -74,6 +76,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
          """
         with self.handler as postgres_handler:
             records = postgres_handler.add(ids=ids, vecs=vecs, metas=metas)
+            self.entries = len(records)
         return records
 
     def update(self, id, vecs, metas, *args, **kwargs):
@@ -87,6 +90,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
 
         with self.handler as postgres_handler:
             record = postgres_handler.update(id=id, vecs=vecs, metas=metas)
+            self.entries = len(record)
         return record
 
     def delete(self, id, *args, **kwargs):
@@ -98,6 +102,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
 
         with self.handler as postgres_handler:
             record = postgres_handler.delete(id=id)
+            self.entries = len(record)
         return record
 
     def dump(self, path, shards):
@@ -107,18 +112,11 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         :param shards: the nr of shards to which to dump
         """
 
-        # self.handler.close()
-        # noinspection PyPropertyAccess
-        # del self.handler
-        # self.handler_mutex = False
-        # ids = self.query_handler.header.keys()
         export_dump_streaming(
             path,
             shards=shards,
-            size=len(list(self._get_generator())),
+            size=self.entries,
             data=self._get_generator()
         )
-    # self.query_handler.close()
-    # self.handler_mutex = False
-    # noinspection PyPropertyAccess
-    # del self.query_handler
+
+
