@@ -43,6 +43,12 @@ def test_add(indexer, features):
     assert isinstance(indexer.index[0], csr_matrix)
 
 
+def test_add_newkeys(indexer, features):
+    indexer.add(keys=list(range(50, 100)), vectors=features)
+    assert indexer.index
+    assert isinstance(indexer.index[70], csr_matrix)
+
+
 def test_update(indexer, features):
     indexer.update(keys=list(range(0, 50)), vectors=features)
     assert indexer.index
@@ -100,12 +106,20 @@ def test_add_query_add_with_closing(indexer, features):
     query_results = indexer.query(vectors=features[:5], top_k=1)
     indexer.close()
     indexer_query = PysparnnIndexer(metas=indexer.metas, metric='cosine')
-    #  ValueError: Not possible query while indexing
     indexer_query.add(keys=list(range(0, 50)), vectors=features)
     indexer_query_results = indexer_query.query(vectors=features[:5], top_k=1)
 
     assert (query_results[0] == indexer_query_results[0]).all()    
     assert (query_results[1] == indexer_query_results[1]).all()
+
+
+def test_add_close_add_newkeys(indexer, features):
+    indexer.add(keys=list(range(0, 50)), vectors=features)
+    indexer.close()
+    indexer.add(keys=list(range(50, 100)), vectors=2*features)
+    indexer_results = indexer.query(vectors=2*features[0], top_k=100)
+    assert  (indexer_results[0]>50).any()
+
 
 def test_delete_close_load(indexer, features):
     keys_to_remove = [5, 10, 15]
@@ -119,3 +133,7 @@ def test_delete_close_load(indexer, features):
     indexer_index_values = [ indexer.index[k] for k in indexer_index_keys]
     indexer_from_file_values = [ indexer_from_file.index[k] for k in indexer_index_keys]
     assert  np.array([x.nnz==y.nnz for x,y in  zip(indexer_index_values,indexer_from_file_values)]).all()
+
+
+
+
