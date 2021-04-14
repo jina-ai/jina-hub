@@ -17,6 +17,10 @@ def check_indexer(func):
 class PysparnnIndexer(BaseVectorIndexer):
     """
     :class:`PysparnnIndexer` Approximate Nearest Neighbor Search for Sparse Data in Python using PySparNN.
+    
+    For more information about the Pysparnn supported parameters and installation please consult:
+        - https://github.com/facebookresearch/pysparnn
+
     """
 
     def __init__(self,
@@ -25,6 +29,15 @@ class PysparnnIndexer(BaseVectorIndexer):
                  num_indexes: int = 2,
                  prefix_filename: str = 'pysparnn_index',
                  *args, **kwargs):
+        """Initializes a PysparnnIndexer Indexer
+
+        :param k_clusters: number of clusters to be used in the multi_cluster_index from Pysparnn.
+        :param metric: type of metric used for query, one from ['cosine', 'unit_cosine'. 'euclidean','dense_cosine']
+        :param num_indexes: number of indexses used in the multi_cluster_index from Pysparnn.
+        :param prefix_filename: prefix used when storing indices to disk
+        :param args: not used
+        :param kwargs: not used
+        """
         super().__init__(*args, **kwargs)
         self.metric = self._assign_distance_class(metric)
         self.k_clusters = k_clusters
@@ -76,6 +89,8 @@ class PysparnnIndexer(BaseVectorIndexer):
         return class_metric
 
     def build_advanced_index(self):
+        """Build the index using pysparnn `cluster_index` and stores it in `multi_cluster_index` """
+
         import pysparnn.cluster_index as ci
         import scipy
 
@@ -131,7 +146,6 @@ class PysparnnIndexer(BaseVectorIndexer):
         :param vectors: vectors with which to search
         :param args: not used
         :param kwargs: not used
-
         """
         for key, vector in zip(keys, vectors):
             self.index[key] = vector
