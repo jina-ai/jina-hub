@@ -1,7 +1,6 @@
 import scipy
 import numpy as np
 
-
 from jina.executors.indexers.vector import BaseVectorIndexer
 
 
@@ -27,8 +26,6 @@ class PysparnnIndexer(BaseVectorIndexer):
                  prefix_filename: str = 'pysparnn_index',
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        self.index = {}
         self.metric = self._assign_distance_class(metric)
         self.k_clusters = k_clusters
         self.num_indexes = num_indexes
@@ -36,11 +33,28 @@ class PysparnnIndexer(BaseVectorIndexer):
         self.index_filename = prefix_filename + '_index.npz'
         self.indices_filename = prefix_filename + '_indices.npy'
 
+    def get_add_handler(self):
+        pass
+
+    def get_create_handler(self):
+        pass
+
+    def get_write_handler(self):
+        pass
+
+    def get_query_handler(self):
+        pass
+
     def post_init(self):
         import os
         super().post_init()
+        self.embeddings = []
+        self.indices = []
+        self.index = {}
         if os.path.exists(self.index_abspath):
             self._load_index_from_disk()
+        else:
+            self.indices = []
 
     def close(self) -> None:
         """
@@ -50,9 +64,7 @@ class PysparnnIndexer(BaseVectorIndexer):
         super().close()
 
     def _assign_distance_class(self, metric: str):
-        import pysparnn
         from pysparnn import matrix_distance
-
 
         if metric == 'cosine':
             class_metric = matrix_distance.CosineDistance

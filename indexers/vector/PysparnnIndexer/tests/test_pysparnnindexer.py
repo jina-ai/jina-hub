@@ -65,21 +65,17 @@ def test_query(indexer, features):
 def test_save_load(indexer, features):
     indexer.add(keys=list(range(0, 50)), vectors=features)
     assert indexer.index[0].shape == (1, 100)
-    index_before_save = indexer.index[0]
-    indexer.build_advanced_index()
-    indexer.save(filename='abc')
-    indexer = PysparnnIndexer.load(filename='abc')
+    indexer.close()
+    indexer_query = PysparnnIndexer(metric='cosine')
     assert indexer.index[0].shape == (1, 100)
-    assert (indexer.index[0] != index_before_save).nnz == 0
+    assert indexer_query.index[0].shape == (1, 100)
+    assert (indexer.index[0] != indexer_query.index[0]).nnz == 0
 
 
 def test_delete_save_load(indexer, features):
-    keys_to_remove =[5,10,15]
+    keys_to_remove = [5, 10, 15]
     indexer.add(keys=list(range(0, 50)), vectors=features)
     indexer.delete(keys=keys_to_remove)
-    n_index_before_save = len(indexer.index)
-    indexer.save(filename='abc')
-    indexer_from_file = PysparnnIndexer.load(filename='abc')
-    assert len(indexer_from_file.index) == n_index_before_save
-
-
+    indexer.close()
+    indexer_from_file = PysparnnIndexer(metric='cosine')
+    assert len(indexer_from_file.index) == len(indexer.index)
