@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import pickle
 from typing import Optional
 
 from jina.logging.logger import JinaLogger
@@ -21,11 +20,11 @@ class PostgreSQLDBMSHandler:
     """
 
     def __init__(self,
-                 hostname: str = "127.0.0.1",
+                 hostname: str = '127.0.0.1',
                  port: int = 5432,
-                 username: str = "postgres",
-                 password: str = "123456",
-                 database: str = "postgres",
+                 username: str = 'postgres',
+                 password: str = '123456',
+                 database: str = 'postgres',
                  table: Optional[str] = 'default_table',
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,7 +59,6 @@ class PostgreSQLDBMSHandler:
             self.logger.error('Error while connecting to PostgreSQL', error)
         return self
 
-
     def use_table(self):
         """
         Use table if exists or create one if it doesn't.
@@ -76,14 +74,13 @@ class PostgreSQLDBMSHandler:
                 self.cursor.execute(
                     f"""DROP TABLE IF EXISTS {self.table};
                                     CREATE TABLE {self.table} (
-                                    ID INT PRIMARY KEY, 
+                                    ID VARCHAR PRIMARY KEY, 
                                     VECS BYTEA, 
                                     METAS BYTEA);"""
                 )
                 self.logger.info('Successfully table created')
             except:
                 self.logger.error('Error while creating table!')
-
 
     def add(self, ids, vecs, metas, *args, **kwargs):
         """ Insert the documents into the database.
@@ -93,6 +90,8 @@ class PostgreSQLDBMSHandler:
         :param metas: List of metas of docs to be added
         :param args: other arguments
         :param kwargs: other keyword arguments
+        :param args: other arguments
+        :param kwargs: other keyword arguments
         :return record: List of Document's id added
         """
 
@@ -100,7 +99,7 @@ class PostgreSQLDBMSHandler:
         for i in range(len(ids)):
             self.cursor.execute(
                 f'INSERT INTO {self.table} (ID, VECS, METAS) VALUES (%s, %s, %s)',
-                (ids[i], pickle.dumps(vecs[i]), pickle.dumps(metas[i])),
+                (ids[i], vecs[i].tobytes(), metas[i]),
             )
         self.connection.commit()
         self.cursor.execute(f'SELECT ID from {self.table}')
@@ -108,9 +107,9 @@ class PostgreSQLDBMSHandler:
         return record
 
     def update(self, id, vecs, metas, *args, **kwargs):
-        """ Updated document from the database.
+        """ Updated documents from the database.
 
-        :param ids: Id of Doc to be updated
+        :param id: Id of Doc to be updated
         :param vecs: List of vecs to be updated
         :param metas: List of metas of docs to be updated
         :param args: other arguments
@@ -120,7 +119,7 @@ class PostgreSQLDBMSHandler:
 
         self.cursor.execute(
             f'UPDATE {self.table} SET VECS = %s, METAS = %s WHERE ID = %s',
-            (pickle.dumps(vecs), pickle.dumps(metas), id),
+            (vecs.tobytes(), metas, id),
         )
         self.connection.commit()
         self.cursor.execute(f'SELECT ID from {self.table}')

@@ -1,5 +1,4 @@
 import os
-import pickle
 
 import numpy as np
 from jina import Document
@@ -58,8 +57,8 @@ def validate_db_side(postgres_indexer, expected_data):
     record = postgres_indexer.handler.cursor.fetchall()
     for i in range(len(expected_data)):
         assert ids[i] == str(record[i][0])
-        assert (np.array(vecs[i]) == np.array(pickle.loads(record[i][1]))).all()
-        assert metas[i] == pickle.loads(record[i][2])
+        np.testing.assert_equal(vecs[i], np.frombuffer(record[i][1]))
+        assert metas[i] == bytes(record[i][2])
 
 
 def test_postgress(tmpdir):
