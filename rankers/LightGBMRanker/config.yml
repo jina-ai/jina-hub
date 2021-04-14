@@ -1,4 +1,4 @@
-!LightGBMRanker
+jtype: LightGBMRanker
 with:
   {}
 metas:

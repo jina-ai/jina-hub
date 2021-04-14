@@ -7,7 +7,7 @@ description: |
     at https://github.com/fartashf/vseppauthor: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/nlp/VSETextEncoder/README.md
 version: 0.0.6
 license: apache-2.0
 keywords: [Cross-Modal, NLP, VSE, Hard Negative Mining, vsepp]

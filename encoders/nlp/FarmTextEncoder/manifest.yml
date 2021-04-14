@@ -5,7 +5,7 @@ description: It encodes an array of string in size `B` into an ndarray in size `
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/nlp/FarmTextEncoder/README.md
 version: 0.0.9
 license: apache-2.0
 keywords: [encoder, farm, torch]
