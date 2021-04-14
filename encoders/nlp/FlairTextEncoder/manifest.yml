@@ -5,7 +5,7 @@ description: FlairTextEncoder encodes text data
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/nlp/FlairTextEncoder/README.md
 version: 0.0.10
 license: apache-2.0
 keywords: [flair, nlp, encoder, torch]
