@@ -86,6 +86,23 @@ def test_close_load(indexer, features):
     assert indexer_query.index[0].shape == (1, 100)
     assert (indexer.index[0] != indexer_query.index[0]).nnz == 0
 
+def test_add_query_add_without_closing(indexer, features):
+    indexer.add(keys=list(range(0, 50)), vectors=features)
+    query_results = indexer.query(vectors=features[:5], top_k=1)
+
+    #  ValueError: Not possible query while indexing
+    with pytest.raises(ValueError):
+        indexer.add(keys=list(range(0, 50)), vectors=features)
+
+
+def test_add_query_add_with_closing(indexer, features):
+    indexer.add(keys=list(range(0, 50)), vectors=features)
+    query_results = indexer.query(vectors=features[:5], top_k=1)
+    indexer.close()
+    indexer_query = PysparnnIndexer(metas=indexer.metas, metric='cosine')
+    #  ValueError: Not possible query while indexing
+    indexer_query.add(keys=list(range(0, 50)), vectors=features)
+
 
 def test_delete_close_load(indexer, features):
     keys_to_remove = [5, 10, 15]
