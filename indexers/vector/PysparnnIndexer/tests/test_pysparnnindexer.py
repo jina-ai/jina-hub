@@ -1,13 +1,28 @@
+import os
+
 import pytest
+
 import numpy as np
 from scipy.sparse import csr_matrix
+
+from jina.executors.metas import get_default_metas
 
 from .. import PysparnnIndexer
 
 
+@pytest.fixture(scope='function', autouse=True)
+def metas(tmpdir):
+    os.environ['TEST_WORKSPACE'] = str(tmpdir)
+    metas = get_default_metas()
+    metas['workspace'] = os.environ['TEST_WORKSPACE']
+    metas['name'] = 'name'
+    yield metas
+    del os.environ['TEST_WORKSPACE']
+
+
 @pytest.fixture
-def indexer():
-    return PysparnnIndexer(metric='cosine')
+def indexer(metas):
+    return PysparnnIndexer(metas=metas, metric='cosine')
 
 
 @pytest.fixture
@@ -62,20 +77,20 @@ def test_query(indexer, features):
     assert indices[0] == [0]
 
 
-def test_save_load(indexer, features):
+def test_close_load(indexer, features):
     indexer.add(keys=list(range(0, 50)), vectors=features)
     assert indexer.index[0].shape == (1, 100)
     indexer.close()
-    indexer_query = PysparnnIndexer(metric='cosine')
+    indexer_query = PysparnnIndexer(metas=indexer.metas, metric='cosine')
     assert indexer.index[0].shape == (1, 100)
     assert indexer_query.index[0].shape == (1, 100)
     assert (indexer.index[0] != indexer_query.index[0]).nnz == 0
 
 
-def test_delete_save_load(indexer, features):
+def test_delete_close_load(indexer, features):
     keys_to_remove = [5, 10, 15]
     indexer.add(keys=list(range(0, 50)), vectors=features)
     indexer.delete(keys=keys_to_remove)
     indexer.close()
-    indexer_from_file = PysparnnIndexer(metric='cosine')
+    indexer_from_file = PysparnnIndexer(metas=indexer.metas, metric='cosine')
     assert len(indexer_from_file.index) == len(indexer.index)
