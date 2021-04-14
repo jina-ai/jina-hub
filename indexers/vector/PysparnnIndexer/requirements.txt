@@ -1,2 +1,1 @@
-scipy
-git+https://github.com/facebookresearch/pysparnn.git
+scipy==1.6.2

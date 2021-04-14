@@ -6,7 +6,7 @@ WORKDIR /workspace
 
 # install the third-party requirements
 
-RUN apt-get update && apt-get install -y git && pip install -r requirements.txt
+RUN apt-get update && apt-get install -y git && pip install git+https://github.com/facebookresearch/pysparnn.git && pip install -r requirements.txt
 
 # for testing the image
 FROM base

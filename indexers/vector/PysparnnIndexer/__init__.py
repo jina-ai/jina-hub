@@ -48,13 +48,9 @@ class PysparnnIndexer(BaseVectorIndexer):
     def post_init(self):
         import os
         super().post_init()
-        self.embeddings = []
-        self.indices = []
         self.index = {}
         if os.path.exists(self.index_abspath):
             self._load_index_from_disk()
-        else:
-            self.indices = []
 
     def close(self) -> None:
         """
