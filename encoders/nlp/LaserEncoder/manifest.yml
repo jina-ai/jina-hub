@@ -6,7 +6,7 @@ description: encodes data from an 1d array of string in size `B` into an ndarray
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/nlp/LaserEncoder/README.md
 version: 0.0.8
 license: apache-2.0
 keywords: [nlp, encoder, LASER, multilingual]
