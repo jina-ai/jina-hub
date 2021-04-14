@@ -57,5 +57,5 @@ class JinaManifestSchema(BaseModel):
                             title='keywords',
                      description="A list of strings help user to filter and locate your package")
 
-pyperclip.copy(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))
-#print(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))
+with open("schema.json","x") as f:
+    f.write(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))

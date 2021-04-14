@@ -25,7 +25,8 @@ jobs:
           node-version: '14'
       - name: copy-schema-to-api-repo
         run: |
-          cp schema.json ../../api/schemas/schema.json
+          python3 ../../scripts/pydanticJSONgenerator.py
+          mv ../../schema.json ../../api/schemas/schema.json
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
