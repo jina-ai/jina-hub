@@ -44,7 +44,7 @@ if __name__ == '__main__':
     X = load_data()    
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_vectorizer.fit(X)
-    pickle.dump(tfidf_vectorizer, open("tfidf_vectorizer.pickle", "wb"))
+    pickle.dump(tfidf_vectorizer, open('tfidf_vectorizer.pickle', 'wb'))
 ```
 
 
@@ -56,7 +56,7 @@ The following example shows how to generate output embeddings given an input `np
 text_batch = np.array(['Han likes eating pizza', 'Han likes pizza', 'Jina rocks'])
 
 # Encoder embedding 
-encoder = TFIDFTextEncoder(path_vectorizer= "./model/tfidf_vectorizer.pickle")
+encoder = TFIDFTextEncoder(path_vectorizer= './model/tfidf_vectorizer.pickle')
 embeddeding_batch_csr = encoder.encode(text_batch)
 ```
 

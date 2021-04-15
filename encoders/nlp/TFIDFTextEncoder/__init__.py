@@ -27,10 +27,10 @@ class TFIDFTextEncoder(BaseEncoder):
         if os.path.exists(self.index_abspath):
             self.tfidf_vectorizer = pickle.load(open(self.path_vectorizer, "rb"))
 
-    def encode(self, data, *args, **kwargs) -> 'scipy.sparse.csr_matrix':
+    def encode(self, data: np.ndarray, *args, **kwargs) -> 'scipy.sparse.csr_matrix':
         """Encode the data creating a tf-idf feature vector of the input.
 
-        :param data: text data to be encoded
+        :param data: numpy array of strings containing the text data to be encoded
         :param args: not used
         :param kwargs: not used
         """
