@@ -1,4 +1,3 @@
-import scipy
 import numpy as np
 
 from jina.executors.indexers.vector import BaseVectorIndexer
@@ -17,26 +16,29 @@ def check_indexer(func):
 class PysparnnIndexer(BaseVectorIndexer):
     """
     :class:`PysparnnIndexer` Approximate Nearest Neighbor Search for Sparse Data in Python using PySparNN.
-    
+
     For more information about the Pysparnn supported parameters and installation please consult:
         - https://github.com/facebookresearch/pysparnn
 
     """
 
-    def __init__(self,
-                 k_clusters: int = 2,
-                 metric: str = 'cosine',
-                 num_indexes: int = 2,
-                 prefix_filename: str = 'pysparnn_index',
-                 *args, **kwargs):
+    def __init__(
+        self,
+        k_clusters: int = 2,
+        metric: str = 'cosine',
+        num_indexes: int = 2,
+        prefix_filename: str = 'pysparnn_index',
+        *args,
+        **kwargs,
+    ):
         """Initializes a PysparnnIndexer Indexer
 
         :param k_clusters: number of clusters to be used in the multi_cluster_index from Pysparnn.
         :param metric: type of metric used for query, one from ['cosine', 'unit_cosine'. 'euclidean','dense_cosine']
         :param num_indexes: number of indexses used in the multi_cluster_index from Pysparnn.
         :param prefix_filename: prefix used when storing indices to disk
-        :param args: not used
-        :param kwargs: not used
+        :param args: additional parameters.
+        :param kwargs: additional positional parameters.
         """
         super().__init__(*args, **kwargs)
         self.metric = self._assign_distance_class(metric)
@@ -59,7 +61,9 @@ class PysparnnIndexer(BaseVectorIndexer):
         pass
 
     def post_init(self):
+        """Load index if exist."""
         import os
+
         super().post_init()
         self.index = {}
         if os.path.exists(self.index_abspath):
@@ -95,7 +99,9 @@ class PysparnnIndexer(BaseVectorIndexer):
         import scipy
 
         if not self.index:
-            raise ValueError('Index is empty, please add data into the indexer using `add` method.')
+            raise ValueError(
+                'Index is empty, please add data into the indexer using `add` method.'
+            )
         keys = []
         indexed_vectors = []
         for key, vector in self.index.items():
@@ -106,7 +112,8 @@ class PysparnnIndexer(BaseVectorIndexer):
             features=scipy.sparse.vstack(indexed_vectors),
             records_data=keys,
             distance_type=self.metric,
-            num_indexes=self.num_indexes)
+            num_indexes=self.num_indexes,
+        )
 
     def query(self, vectors, top_k, *args, **kwargs):
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
@@ -116,19 +123,18 @@ class PysparnnIndexer(BaseVectorIndexer):
             If `n_vectors = vector.shape[0]` both arrays have shape `n_vectors x top_k`
 
         :param vectors: the vectors with which to search
-        :param args: not used
-        :param kwargs: not used
         :param top_k: number of results to return
+        :param args: additional positional parameters.
+        :param kwargs: additional positional parameters.
         :return: tuple of arrays of the form `(indices, distances`
         """
 
         if not self.multi_cluster_index:
             self.build_advanced_index()
 
-        index_distance_pairs = self.multi_cluster_index.search(vectors,
-                                                               k=top_k,
-                                                               k_clusters=self.k_clusters,
-                                                               return_distance=True)
+        index_distance_pairs = self.multi_cluster_index.search(
+            vectors, k=top_k, k_clusters=self.k_clusters, return_distance=True
+        )
         distances = []
         indices = []
         for record in index_distance_pairs:
@@ -144,22 +150,20 @@ class PysparnnIndexer(BaseVectorIndexer):
 
         :param keys: keys associated to the vectors
         :param vectors: vectors with which to search
-        :param args: not used
-        :param kwargs: not used
+        :param args: additional positional parameters.
+        :param kwargs: additional positional parameters.
         """
         for key, vector in zip(keys, vectors):
             self.index[key] = vector
 
     @check_indexer
-    def update(
-            self, keys, vectors, *args, **kwargs
-    ) -> None:
+    def update(self, keys, vectors, *args, **kwargs) -> None:
         """Update the embeddings on the index via document ids (keys).
 
         :param keys: keys associated to the vectors
         :param vectors: vectors with which to search
-        :param args: not used
-        :param kwargs: not used
+        :param args: additional positional parameters.
+        :param kwargs: additional positional parameters.
         """
 
         for key, vector in zip(keys, vectors):
@@ -170,8 +174,8 @@ class PysparnnIndexer(BaseVectorIndexer):
         """Delete the embeddings from the index via document ids (keys).
 
         :param keys: a list of ids
-        :param args: not used
-        :param kwargs: not used
+        :param args: additional positional parameters.
+        :param kwargs: additional positional parameters.
         """
         for key in keys:
             self.index.pop(key)
@@ -179,7 +183,10 @@ class PysparnnIndexer(BaseVectorIndexer):
     def _store_index_to_disk(self):
         """Store self.index to disk"""
         import scipy
-        scipy.sparse.save_npz(self.index_abspath, scipy.sparse.vstack(self.index.values()))
+
+        scipy.sparse.save_npz(
+            self.index_abspath, scipy.sparse.vstack(self.index.values())
+        )
 
         with open(self.get_file_from_workspace(self.indices_filename), 'wb') as f:
             np.save(f, list(self.index.keys()))
@@ -187,6 +194,7 @@ class PysparnnIndexer(BaseVectorIndexer):
     def _load_index_from_disk(self):
         """Load self.index from disk"""
         import scipy
+
         vectors = scipy.sparse.load_npz(self.index_abspath)
 
         with open(self.get_file_from_workspace(self.indices_filename), 'rb') as f:
