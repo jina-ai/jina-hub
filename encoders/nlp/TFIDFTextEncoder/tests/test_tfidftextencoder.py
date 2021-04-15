@@ -28,7 +28,7 @@ def test_tfidf_text_encoder():
     # Compare with ouptut 
     expected = scipy.sparse.load_npz(os.path.join(cur_dir, 'expected.npz'))
     np.testing.assert_almost_equal(embeddeding.todense(), expected.todense(), decimal=4)
-
+    assert expected.shape[0] == len(text)
 
 def test_tfidf_text_encoder_batch():
     # Input
@@ -44,3 +44,4 @@ def test_tfidf_text_encoder_batch():
     # Compare with ouptut 
     expected_batch = scipy.sparse.load_npz(os.path.join(cur_dir, 'expected_batch.npz'))
     np.testing.assert_almost_equal(embeddeding_batch.todense(), expected_batch.todense(), decimal=2)
+    assert expected_batch.shape[0] == len(text_batch)

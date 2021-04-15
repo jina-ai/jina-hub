@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from jina.executors.encoders import BaseEncoder
+import numpy as np
 
 class TFIDFTextEncoder(BaseEncoder):
     """Encode data from a `np.ndarray` (of strings) of length `BatchSize` into
@@ -24,7 +25,7 @@ class TFIDFTextEncoder(BaseEncoder):
         import pickle
 
         super().post_init()
-        if os.path.exists(self.index_abspath):
+        if os.path.exists(self.path_vectorizer):
             self.tfidf_vectorizer = pickle.load(open(self.path_vectorizer, "rb"))
 
     def encode(self, data: np.ndarray, *args, **kwargs) -> 'scipy.sparse.csr_matrix':
