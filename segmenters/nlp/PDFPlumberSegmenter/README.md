@@ -1,46 +1,33 @@
 # PDFPlumberSegmenter
 
-## 🗝️ Key Concepts
-This is a simple flow test where you can use the PDFExtractorSegmenter.
-This Segmenter will create a chunk per blob.
+PDFPlumberSegmenter is a segmenter used for extracting images and text as chunks from PDF data. It stores each images and text of each page as chunks separately.
 
-So if we have a PDF with 2 images and text, we will have 3 chunks; one per each image and one per the text.
+## Usage
 
+We use Pod images in several ways:
 
-## 🏃️ Flow
-First you define your flow here:
+1. Run with Docker: `docker run`
+   ```bash
+    docker run jinahub/pod.segmenter.pdfplumbersegmenter:0.0.1-1.0.1 --port-in 55555 --port-out 55556
+    ```
     
-    f = Flow().add(uses='PDFExtractorSegmenter', array_in_pb=True)
+2. Run with Flow API
+   ```python
+    from jina.flow import Flow
 
-If you have a PDF with images and text, the ```array_in_pb=True``` is necessary.
+    f = (Flow()
+        .add(name='my_segmenter', uses='docker://jinahub/pod.segmenter.pdfplumbersegmenter:0.0.1-1.0.1', port_in=55555, port_out=55556))
+    ```
+    
+3. Run with Jina CLI
+   ```bash
+    jina pod --uses docker://jinahub/pod.segmenter.pdfplumbersegmenter:0.0.1-1.0.1 --port-in 55555 --port-out 55556
+    ```
+    
+4. Docker command
 
-And then we search in: 
+   Specify the image name along with the version tag. In this example we use Jina version `1.0.1`
 
-    with f:
-        f.search(input_fn=search_generator(path=path, buffer=None), on_done=validate_mix_fn)
-
-For this example I have 3 different PDF files to test. 
-
- - **Image only:** If we want to test the only-images PDF file, we use  ```validate_img_fn``` in the ```on_done```
- - **Text only:** If we want to test the only-text PDF file, we use  ```validate_text_fn``` in the ```on_done```
- - **Image and text:** If we want to test the mixed PDF file (images and text), we use  ```validate_mix_fn``` in the ```on_done```
- 
- ## 🤔  Tests
- 
-For this examples we have 2 images per pdf, one of size 1024 x 660, and the other of 1191 x 626.
-
- #### 🧪 Images
-  
-For the image validations we will check each chunk and compare it with the original image
-
-    assert blob.shape[1], blob.shape[0] == img.size
-
- #### 🧪 Text
-And for the text we will check that that chunk corresponds with the expected text
-
-```
-expected_text = A cat poem I love cats, I love every kind of cat, I just wanna hug all of them, but I can't,
-I'm thinking about cats again I think about how cute they are\nAnd their whiskers and their nose"
-
-assert expected_text == d.chunks[2].text
-```
+   ```bash
+    docker pull jinahub/pod.segmenter.pdfplumbersegmenter:0.0.8-1.0.1
+    ```
