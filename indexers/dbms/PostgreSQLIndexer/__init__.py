@@ -106,12 +106,12 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         :param path: the path to which to dump
         :param shards: the nr of shards to which to dump
         """
-
-        export_dump_streaming(
-            path,
-            shards=shards,
-            size=self.handler.cursor.rowcount,
-            data=self._get_generator()
-        )
+        with self.handler as postgres_handler:
+            export_dump_streaming(
+                path,
+                shards=shards,
+                size=postgres_handler.cursor.rowcount,
+                data=self._get_generator()
+            )
 
 

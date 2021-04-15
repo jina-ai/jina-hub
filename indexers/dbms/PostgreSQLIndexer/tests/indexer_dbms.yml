@@ -1,6 +1,4 @@
 jtype: PostgreSQLDBMSIndexer
-with:
-  index_filename: keyvalue.bin
 metas:
   workspace: $DBMS_WORKSPACE
   name: keyvalue

@@ -91,7 +91,7 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
             },
         )
 
-    # TODO test components and test with the inner indexers separate from the Compoun
+    # TODO test components and test with the inner indexers separate from the Compound
 
 
 def path_size(dump_path):
