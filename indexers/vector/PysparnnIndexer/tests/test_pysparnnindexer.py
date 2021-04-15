@@ -99,6 +99,7 @@ def test_close_load(indexer, features):
 
 def test_add_query_add_without_closing(indexer, features):
     indexer.add(keys=list(range(0, 50)), vectors=features)
+    _ = indexer.query(vectors=features[:5], top_k=1)
 
     #  ValueError: Not possible query while indexing
     with pytest.raises(ValueError):
