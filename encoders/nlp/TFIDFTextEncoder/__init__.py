@@ -20,8 +20,12 @@ class TFIDFTextEncoder(BaseEncoder):
         self.path_vectorizer = path_vectorizer
 
     def post_init(self):
+        import os
         import pickle
-        self.tfidf_vectorizer = pickle.load(open(self.path_vectorizer, "rb"))
+
+        super().post_init()
+        if os.path.exists(self.index_abspath):
+            self.tfidf_vectorizer = pickle.load(open(self.path_vectorizer, "rb"))
 
     def encode(self, data, *args, **kwargs) -> 'scipy.sparse.csr_matrix':
         """Encode the data creating a tf-idf feature vector of the input.

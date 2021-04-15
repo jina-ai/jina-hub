@@ -16,7 +16,8 @@ if __name__ == '__main__':
     tfidf_vectorizer = TfidfVectorizer()
     X = load_data()
     tfidf_vectorizer.fit(X)
-    
+    #pickle.dump(tfidf_vectorizer, open("../model/tfidf_vectorizer.pickle", "wb"))
+
     ### Encoding a single item
     text = ['Han likes eating pizza']
     embeddeding_array = tfidf_vectorizer.transform(text)    
