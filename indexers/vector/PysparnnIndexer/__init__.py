@@ -1,9 +1,19 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import typing
 import numpy as np
+from scipy.sparse import coo_matrix, csr_matrix, bsr_matrix, csc_matrix
+from pysparnn.matrix_distance import (
+    CosineDistance,
+    UnitCosineDistance,
+    SlowEuclideanDistance,
+    DenseCosineDistance,
+)
 
 from jina.executors.indexers.vector import BaseVectorIndexer
+
+SparseMatrixType = typing.Union[csr_matrix, coo_matrix, bsr_matrix, csc_matrix]
 
 
 def check_indexer(func):
@@ -44,6 +54,7 @@ class PysparnnIndexer(BaseVectorIndexer):
         :param kwargs: additional positional parameters.
         """
         super().__init__(*args, **kwargs)
+        self.index = {}
         self.metric = self._assign_distance_class(metric)
         self.k_clusters = k_clusters
         self.num_indexes = num_indexes
@@ -63,12 +74,11 @@ class PysparnnIndexer(BaseVectorIndexer):
     def get_query_handler(self):
         pass
 
-    def post_init(self):
+    def post_init(self) -> None:
         """Load index if exist."""
         import os
 
         super().post_init()
-        self.index = {}
         if os.path.exists(self.index_abspath):
             self._load_index_from_disk()
 
@@ -80,22 +90,21 @@ class PysparnnIndexer(BaseVectorIndexer):
         super().close()
 
     def _assign_distance_class(self, metric: str):
-        from pysparnn import matrix_distance
 
         if metric == 'cosine':
-            class_metric = matrix_distance.CosineDistance
+            class_metric = CosineDistance
         elif metric == 'unit_cosine':
-            class_metric = matrix_distance.UnitCosineDistance
+            class_metric = UnitCosineDistance
         elif metric == 'euclidean':
-            class_metric = matrix_distance.SlowEuclideanDistance
+            class_metric = SlowEuclideanDistance
         elif metric == 'dense_cosine':
-            class_metric = matrix_distance.DenseCosineDistance
+            class_metric = DenseCosineDistance
         else:
             raise ValueError(f'metric={metric} is not a valid metric')
 
         return class_metric
 
-    def build_advanced_index(self):
+    def build_advanced_index(self) -> None:
         """Build the index using pysparnn `cluster_index` and stores it in `multi_cluster_index` """
 
         import pysparnn.cluster_index as ci
@@ -118,7 +127,7 @@ class PysparnnIndexer(BaseVectorIndexer):
             num_indexes=self.num_indexes,
         )
 
-    def query(self, vectors, top_k, *args, **kwargs):
+    def query(self, vectors: SparseMatrixType, top_k: int, *args, **kwargs):
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
         :return: a tuple of two ndarrays.
@@ -148,7 +157,9 @@ class PysparnnIndexer(BaseVectorIndexer):
         return np.array(indices), np.array(distances)
 
     @check_indexer
-    def add(self, keys, vectors, *args, **kwargs):
+    def add(
+        self, keys: typing.List, vectors: SparseMatrixType, *args, **kwargs
+    ) -> None:
         """Add keys and vectors to the indexer.
 
         :param keys: keys associated to the vectors
@@ -160,7 +171,9 @@ class PysparnnIndexer(BaseVectorIndexer):
             self.index[key] = vector
 
     @check_indexer
-    def update(self, keys, vectors, *args, **kwargs) -> None:
+    def update(
+        self, keys: typing.List, vectors: SparseMatrixType, *args, **kwargs
+    ) -> None:
         """Update the embeddings on the index via document ids (keys).
 
         :param keys: keys associated to the vectors
@@ -173,7 +186,7 @@ class PysparnnIndexer(BaseVectorIndexer):
             self.index[key] = vector
 
     @check_indexer
-    def delete(self, keys, *args, **kwargs) -> None:
+    def delete(self, keys: typing.List, *args, **kwargs) -> None:
         """Delete the embeddings from the index via document ids (keys).
 
         :param keys: a list of ids
