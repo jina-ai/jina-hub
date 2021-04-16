@@ -55,6 +55,9 @@ class JinaManifestSchema(BaseModel):
     keywords : List = Field(default=[],
                             title='keywords',
                      description="A list of strings help user to filter and locate your package")
-raise Exception
+
 with open("hub_executor_schema.json", "w") as f:
     f.write(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+print(dir_path)
