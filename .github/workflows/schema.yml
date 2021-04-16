@@ -21,9 +21,9 @@ jobs:
           pwd
           pip install -r scripts/requirements.txt
           touch scripts/hub_executor_schema.json
-          output = $(python scripts/pydanticJSONgenerator.py)
-          echo output > scripts/hub_executor_schema.json
-          echo output
+          output=$(python scripts/pydanticJSONgenerator.py)
+          echo ${output} > scripts/hub_executor_schema.json
+          echo ${output}
       - name: copy-schema-to-api-repo
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
