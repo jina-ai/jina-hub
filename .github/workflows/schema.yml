@@ -35,7 +35,7 @@ jobs:
       - name: copy-schema-to-api-repo
         run: |
           pwd
-          mv ../schemas/schema.json schemas/hub_executor_schema.json
+          mv schemas/schema.json schemas/hub_executor_schema.json
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
