@@ -1,3 +1,4 @@
+from typing import Optional
 import numpy as np
 
 from jina.executors.encoders.frameworks import BasePaddleEncoder
@@ -27,7 +28,7 @@ class TextPaddlehubEncoder(BasePaddleEncoder):
     :param kwargs: Additional keyword arguments
     """
 
-    def __init__(self, model_name: str = None, *args, **kwargs):
+    def __init__(self, model_name: Optional[str] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name or 'ernie_tiny'
 
@@ -47,7 +48,7 @@ class TextPaddlehubEncoder(BasePaddleEncoder):
         """
         results = []
         _raw_results = self.model.get_embedding(
-            texts=np.atleast_2d(data).reshape(-1, 1).tolist(), use_gpu=self.on_gpu, batch_size=data.shape[0])
+            np.atleast_2d(data).reshape(-1, 1).tolist(), use_gpu=self.on_gpu)
         for emb in _raw_results:
             _pooled_feature, _seq_feature = emb
             results.append(_pooled_feature)
