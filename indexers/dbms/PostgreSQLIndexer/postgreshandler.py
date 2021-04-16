@@ -22,18 +22,18 @@ class PostgreSQLDBMSHandler:
     def __init__(self,
                  hostname: str = '127.0.0.1',
                  port: int = 5432,
-                 username: str = 'postgres',
-                 password: str = '123456',
+                 username: str = 'default_name',
+                 password: str = 'default_pwd',
                  database: str = 'postgres',
                  table: Optional[str] = 'default_table',
                  *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        #super().__init__(*args, **kwargs)
         self.logger = JinaLogger(self.__class__.__name__)
         self.hostname = hostname
         self.port = port
         self.username = username
         self.password = password
-        self.database_name = database
+        self.database = database
         self.table = table
 
     def __enter__(self):
@@ -48,7 +48,7 @@ class PostgreSQLDBMSHandler:
         try:
             self.connection = psycopg2.connect(user=self.username,
                 password=self.password,
-                database=self.database_name,
+                database=self.database,
                 host=self.hostname,
                 port=self.port)
             self.cursor = self.connection.cursor()
@@ -65,6 +65,7 @@ class PostgreSQLDBMSHandler:
 
         Create table if needed with id, vecs and metas.
         """
+        from psycopg2 import Error
 
         self.cursor.execute('select exists(select * from information_schema.tables where table_name=%s)', (self.table,))
         if self.cursor.fetchone()[0]:
@@ -79,7 +80,7 @@ class PostgreSQLDBMSHandler:
                                     METAS BYTEA);"""
                 )
                 self.logger.info('Successfully table created')
-            except:
+            except (Exception, Error) as error:
                 self.logger.error('Error while creating table!')
 
     def add(self, ids, vecs, metas, *args, **kwargs):

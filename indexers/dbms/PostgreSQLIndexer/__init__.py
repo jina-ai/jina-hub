@@ -1,7 +1,8 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import pickle
+from typing import Tuple, Generator
+import numpy as np
 
 from jina.executors.indexers.dbms import BaseDBMSIndexer
 from jina.executors.indexers.dump import export_dump_streaming
@@ -28,8 +29,8 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
             hostname: str = '127.0.0.1',
             port: int = 5432,
             username: str = 'postgres',
-            password: str = 'default_pwd',
-            database: str = '123456',
+            password: str = '123456',
+            database: str = 'postgres',
             table: str = 'default_table',
             *args,
             **kwargs
@@ -39,10 +40,10 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         self.port = port
         self.username = username
         self.password = password
-        self.database_name = database
+        self.database = database
         self.table = table
 
-    def _get_generator(self):
+    def _get_generator(self) -> Generator[Tuple[str, np.array, bytes], None, None]:
         self.handler.cursor.execute(f"SELECT * from {self.handler.table} ORDER BY ID")
         records = self.handler.cursor.fetchall()
         for rec in records:
@@ -57,7 +58,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
             port=self.port,
             username=self.username,
             password=self.password,
-            database=self.database_name,
+            database=self.database,
             table=self.table)
 
     def get_handler(self) -> 'PostgreSQLDBMSHandler':
@@ -74,7 +75,6 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         with self.handler as postgres_handler:
             postgres_handler.add(ids=ids, vecs=vecs, metas=metas)
 
-
     def update(self, id, vecs, metas, *args, **kwargs):
         """Updated document from the database.
 
@@ -85,7 +85,6 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
 
         with self.handler as postgres_handler:
             postgres_handler.update(id=id, vecs=vecs, metas=metas)
-
 
     def delete(self, id, *args, **kwargs):
         """Delete document from the database.
