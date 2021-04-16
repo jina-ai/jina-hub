@@ -27,10 +27,10 @@ jobs:
           python3 scripts/pydanticJSONgenerator.py
       - name: checkout-api-repo
         uses: actions/checkout@v2
-          with:
-            repository: jina-ai/api
-            #path: schemas
-            token: ${{ secrets.JINA_DEV_BOT }}
+        with:
+          repository: jina-ai/api
+          #path: schemas
+          token: ${{ secrets.JINA_DEV_BOT }}
       - name: copy-schema-to-api-repo
         run: |
           pwd
