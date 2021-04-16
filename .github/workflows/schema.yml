@@ -27,13 +27,6 @@ jobs:
           pip install -r scripts/requirements.txt
           touch scripts/hub_executor_schema.json
           python scripts/pydanticJSONgenerator.py
-          ls scripts
-#      - name: checkout-api-repo
-#        uses: actions/checkout@v2
-#        with:
-#          repository: jina-ai/api
-#          #path: schemas
-#          token: ${{ secrets.JINA_DEV_BOT }}
       - name: copy-schema-to-api-repo
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
@@ -46,10 +39,3 @@ jobs:
           user_email: 'dev-bot@jina.ai'
           user_name: 'Jina Dev Bot'
           commit_message: 'update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}'
-
-#          pwd
-#          ls scripts
-#          mv scripts/schema.json schemas/hub_executor_schema.json
-#          git config --local user.email "dev-bot@jina.ai"
-#          git config --local user.name "Jina Dev Bot"
-#          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
