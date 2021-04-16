@@ -1,4 +1,6 @@
-paddlepaddle==1.8.5
-paddlehub==1.8.3
+paddlepaddle==2.0.0
+paddlehub==2.0.0
+paddlenlp==2.0.0-rc
 Pillow==8.1.2
-six==1.15.0
+regex==2021.4.4
+sentencepiece==0.1.95
