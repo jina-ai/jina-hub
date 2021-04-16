@@ -41,6 +41,7 @@ jobs:
           source_file: 'scripts/hub_executor_schema.json'
           destination_repo: 'jina-ai/api'
           destination_folder: 'schemas'
+          destination_branch: 'master'
           user_email: 'dev-bot@jina.ai'
           user_name: 'Jina Dev Bot'
           commit_message: 'update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}'
