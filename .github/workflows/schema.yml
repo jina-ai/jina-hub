@@ -1,4 +1,4 @@
-name: Update JSON schema 
+name: Update JSON schema
 
 on:
   push:
