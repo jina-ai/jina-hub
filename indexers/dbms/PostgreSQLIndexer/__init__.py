@@ -28,8 +28,8 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
             hostname: str = '127.0.0.1',
             port: int = 5432,
             username: str = 'postgres',
-            password: str = '123456',
-            database: str = 'postgres',
+            password: str = 'default_pwd',
+            database: str = '123456',
             table: str = 'default_table',
             *args,
             **kwargs
@@ -60,7 +60,7 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
             database=self.database_name,
             table=self.table)
 
-    def get_create_handler(self) -> 'PostgreSQLDBMSHandler':
+    def get_handler(self) -> 'PostgreSQLDBMSHandler':
         """Get the handler to PostgreSQLDBMS."""
         return self.handler
 
@@ -70,11 +70,10 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         :param ids: List of doc ids to be added
         :param vecs: List of vecs to be added
         :param metas: List of metas of docs to be added
-        return record: List of Document's id added
          """
         with self.handler as postgres_handler:
-            records = postgres_handler.add(ids=ids, vecs=vecs, metas=metas)
-        return records
+            postgres_handler.add(ids=ids, vecs=vecs, metas=metas)
+
 
     def update(self, id, vecs, metas, *args, **kwargs):
         """Updated document from the database.
@@ -82,23 +81,20 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         :param ids: Id of Doc to be updated
         :param vecs: List of vecs to be updated
         :param metas: List of metas of docs to be updated
-        :return record: List of Document's id after update
         """
 
         with self.handler as postgres_handler:
-            record = postgres_handler.update(id=id, vecs=vecs, metas=metas)
-        return record
+            postgres_handler.update(id=id, vecs=vecs, metas=metas)
+
 
     def delete(self, id, *args, **kwargs):
         """Delete document from the database.
 
         :param id: Id of Document to be removed
-        :return record: List of Document's id after deletion
         """
 
         with self.handler as postgres_handler:
-            record = postgres_handler.delete(id=id)
-        return record
+            postgres_handler.delete(id=id)
 
     def dump(self, path, shards):
         """Dump the index
@@ -113,5 +109,3 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
                 size=postgres_handler.cursor.rowcount,
                 data=self._get_generator()
             )
-
-

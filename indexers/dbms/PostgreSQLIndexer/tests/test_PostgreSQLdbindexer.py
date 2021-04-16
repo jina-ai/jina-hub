@@ -5,7 +5,6 @@ from jina import Document
 
 from .. import PostgreSQLDBMSIndexer
 
-
 d_embedding = np.array([1, 1, 1, 1, 1, 1, 1])
 c_embedding = np.array([2, 2, 2, 2, 2, 2, 2])
 
@@ -64,6 +63,7 @@ def validate_db_side(postgres_indexer, expected_data):
 def test_postgress(tmpdir):
     dump_path = os.path.join(str(tmpdir), 'dump_dir')
     postgres_indexer = PostgreSQLDBMSIndexer()
+    postgres_indexer.handler.connect()
     docs = list(get_documents(chunks=0, same_content=False))
     info = [
         (doc.id, doc.embedding, doc_without_embedding(doc).SerializeToString())
@@ -72,19 +72,17 @@ def test_postgress(tmpdir):
     if info:
         ids, vecs, metas = zip(*info)
 
-        added = postgres_indexer.add(ids, vecs, metas)
+        added = postgres_indexer.handler.add(ids, vecs, metas)
         assert len(added) == 10
         validate_db_side(postgres_indexer, info)
 
-        updated = postgres_indexer.update(ids[0], vecs[1], metas[1])
+        updated = postgres_indexer.handler.update(ids[0], vecs[1], metas[1])
         expected_info = [(ids[0], vecs[1], metas[1])]
         assert len(updated) == 10
         validate_db_side(postgres_indexer, expected_info)
 
-        deleted = postgres_indexer.delete(ids[0])
+        deleted = postgres_indexer.handler.delete(ids[0])
         assert len(deleted) == 9
         validate_db_side(postgres_indexer, info[1:])
 
-        dumped = postgres_indexer.dump(dump_path, 1)
-
-
+        postgres_indexer.dump(dump_path, shards=1)
