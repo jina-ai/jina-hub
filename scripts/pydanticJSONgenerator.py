@@ -3,7 +3,6 @@ from enum import Enum
 from typing import List
 from pydantic import BaseModel
 from pydantic.fields import Field
-import pyperclip
 
 class Types(str, Enum):
     pod = 'pod'

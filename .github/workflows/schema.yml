@@ -24,6 +24,7 @@ jobs:
       - name: generate-schema
         run: |
           pwd
+          pip3 install -r scripts/requirements.txt
           python3 scripts/pydanticJSONgenerator.py
       - name: checkout-api-repo
         uses: actions/checkout@v2
