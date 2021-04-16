@@ -16,7 +16,7 @@ def get_documents(chunks, same_content, nr=10, index_start=0, same_tag_content=N
             d.id = i
             if same_content:
                 d.text = 'hello world'
-                d.embedding = d_embedding
+                d.embedding = np.random.random(d_embedding.shape)
             else:
                 d.text = f'hello world {i}'
                 d.embedding = np.random.random(d_embedding.shape)
@@ -29,10 +29,10 @@ def get_documents(chunks, same_content, nr=10, index_start=0, same_tag_content=N
                     c.id = next_chunk_id
                     if same_content:
                         c.text = 'hello world from chunk'
-                        c.embedding = c_embedding
+                        c.embedding = np.random.random(c_embedding.shape)
                     else:
                         c.text = f'hello world from chunk {j}'
-                        c.embedding = np.random.random(d_embedding.shape)
+                        c.embedding = np.random.random(c_embedding.shape)
                     if same_tag_content:
                         c.tags['field'] = 'tag data'
                     elif same_tag_content is False:
@@ -64,25 +64,32 @@ def test_postgress(tmpdir):
     dump_path = os.path.join(str(tmpdir), 'dump_dir')
     postgres_indexer = PostgreSQLDBMSIndexer()
     postgres_indexer.handler.connect()
-    docs = list(get_documents(chunks=0, same_content=False))
-    info = [
+
+    original_docs = list(get_documents(chunks=0, same_content=False))
+    info_original_docs = [
         (doc.id, doc.embedding, doc_without_embedding(doc).SerializeToString())
-        for doc in docs
+        for doc in original_docs
     ]
-    if info:
-        ids, vecs, metas = zip(*info)
+    ids, vecs, metas = zip(*info_original_docs)
 
-        added = postgres_indexer.handler.add(ids, vecs, metas)
-        assert len(added) == 10
-        validate_db_side(postgres_indexer, info)
+    added = postgres_indexer.handler.add(ids, vecs, metas)
+    assert len(added) == 10
+    validate_db_side(postgres_indexer, info_original_docs)
 
-        updated = postgres_indexer.handler.update(ids[0], vecs[1], metas[1])
-        expected_info = [(ids[0], vecs[1], metas[1])]
-        assert len(updated) == 10
-        validate_db_side(postgres_indexer, expected_info)
+    new_docs = list(get_documents(chunks=False, nr=10, same_content=True))
+    info_new_docs = [
+        (doc.id, doc.embedding, doc_without_embedding(doc).SerializeToString())
+        for doc in new_docs
+    ]
+    ids, vecs, metas = zip(*info_new_docs)
 
-        deleted = postgres_indexer.handler.delete(ids[0])
-        assert len(deleted) == 9
-        validate_db_side(postgres_indexer, info[1:])
+    updated = postgres_indexer.handler.update(ids, vecs, metas)
+    expected_info = [(ids[0], vecs[0], metas[0])]
+    assert len(updated) == 10
+    validate_db_side(postgres_indexer, expected_info)
 
-        postgres_indexer.dump(dump_path, shards=1)
+    deleted = postgres_indexer.handler.delete(ids[0])
+    assert len(deleted) == 9
+    validate_db_side(postgres_indexer, info_new_docs[1:])
+
+    postgres_indexer.dump(dump_path, shards=1)

@@ -75,16 +75,16 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         with self.handler as postgres_handler:
             postgres_handler.add(ids=ids, vecs=vecs, metas=metas)
 
-    def update(self, id, vecs, metas, *args, **kwargs):
+    def update(self, ids, vecs, metas, *args, **kwargs):
         """Updated document from the database.
 
-        :param ids: Id of Doc to be updated
+        :param ids: Ids of Docs to be updated
         :param vecs: List of vecs to be updated
         :param metas: List of metas of docs to be updated
         """
 
         with self.handler as postgres_handler:
-            postgres_handler.update(id=id, vecs=vecs, metas=metas)
+            postgres_handler.update(ids=ids, vecs=vecs, metas=metas)
 
     def delete(self, id, *args, **kwargs):
         """Delete document from the database.

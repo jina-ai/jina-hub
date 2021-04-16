@@ -27,7 +27,7 @@ class PostgreSQLDBMSHandler:
                  database: str = 'postgres',
                  table: Optional[str] = 'default_table',
                  *args, **kwargs):
-        #super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.logger = JinaLogger(self.__class__.__name__)
         self.hostname = hostname
         self.port = port
@@ -79,7 +79,7 @@ class PostgreSQLDBMSHandler:
                                     VECS BYTEA, 
                                     METAS BYTEA);"""
                 )
-                self.logger.info('Successfully table created')
+                self.logger.info('Successfully created table')
             except (Exception, Error) as error:
                 self.logger.error('Error while creating table!')
 
@@ -107,10 +107,10 @@ class PostgreSQLDBMSHandler:
         record = self.cursor.fetchall()
         return record
 
-    def update(self, id, vecs, metas, *args, **kwargs):
+    def update(self, ids, vecs, metas, *args, **kwargs):
         """ Updated documents from the database.
 
-        :param id: Id of Doc to be updated
+        :param ids: Ids of Doc to be updated
         :param vecs: List of vecs to be updated
         :param metas: List of metas of docs to be updated
         :param args: other arguments
@@ -118,10 +118,11 @@ class PostgreSQLDBMSHandler:
         :return record: List of Document's id after update
         """
 
-        self.cursor.execute(
-            f'UPDATE {self.table} SET VECS = %s, METAS = %s WHERE ID = %s',
-            (vecs.tobytes(), metas, id),
-        )
+        for i in range(len(ids)):
+            self.cursor.execute(
+                f'UPDATE {self.table} SET VECS = %s, METAS = %s WHERE ID = %s',
+                (vecs[i].tobytes(), metas[i], ids[i]),
+            )
         self.connection.commit()
         self.cursor.execute(f'SELECT ID from {self.table}')
         record = self.cursor.fetchall()
