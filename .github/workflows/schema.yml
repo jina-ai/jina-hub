@@ -2,8 +2,8 @@ name: Update JSON schema
 
 on:
   push:
-	paths:
-	  - ../../schemas/'schema.json'
+    paths:
+	- '../../schemas/schema.json'
 
 jobs:
   update-schema:
