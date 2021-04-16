@@ -56,7 +56,5 @@ class JinaManifestSchema(BaseModel):
                             title='keywords',
                      description="A list of strings help user to filter and locate your package")
 
-with open("hub_executor_schema.json", "w") as f:
+with open("hub_executor_schema.json", "wb") as f:
     f.write(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))
-
-print(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))
