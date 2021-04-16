@@ -25,6 +25,7 @@ jobs:
         run: |
           pwd
           pip install -r scripts/requirements.txt
+          touch hub_executor_schema.json
           python scripts/pydanticJSONgenerator.py
           ls scripts
 #      - name: checkout-api-repo
