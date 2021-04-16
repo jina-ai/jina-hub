@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from jina.executors.encoders.numeric import TransformEncoder
 
+
 class FeatureAgglomerationEncoder(TransformEncoder):
     """
     Encode data agglomerating features.
@@ -16,10 +17,3 @@ class FeatureAgglomerationEncoder(TransformEncoder):
 
     See more `at <https://scikit-learn.org/stable/modules/generated/sklearn.cluster.FeatureAgglomeration.html>`_
     """
-
-    def post_init(self):
-        """Load FeatureAgglomeration model"""
-        super().post_init()
-        if not self.model:
-            from sklearn.cluster import FeatureAgglomeration
-            self.model = FeatureAgglomeration(n_clusters=self.output_dim)
