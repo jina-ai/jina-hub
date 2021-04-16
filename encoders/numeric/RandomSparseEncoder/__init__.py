@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from jina.executors.encoders.numeric import TransformEncoder
 
+
 class RandomSparseEncoder(TransformEncoder):
     """
     Reduce dimensionality using sparse random projection.
