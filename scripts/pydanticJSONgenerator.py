@@ -3,7 +3,6 @@ from enum import Enum
 from typing import List
 from pydantic import BaseModel
 from pydantic.fields import Field
-import os
 
 class Types(str, Enum):
     pod = 'pod'
@@ -56,8 +55,6 @@ class JinaManifestSchema(BaseModel):
     keywords : List = Field(default=[],
                             title='keywords',
                      description="A list of strings help user to filter and locate your package")
-
-OUTPUT_DIR = "/home/runner/work/jina-hub/jina-hub"
-
-with open(os.path.join(OUTPUT_DIR, "hub_executor_schema.json"), "w") as f:
+raise Exception
+with open("hub_executor_schema.json", "w") as f:
     f.write(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))
