@@ -20,6 +20,19 @@ class Kinds(str, Enum):
     evaluator = "evaluator"
 
 
+Platform = enum.Enum(
+    'Platform',
+    {
+        'linux/amd64': 'linux/amd64',
+        'linux/arm64': 'linux/arm64',
+        'linux/ppc64le': 'linux/ppc64le',
+        'linux/s390x': 'linux/s390x',
+        'linux/386': 'linux/386',
+        'linux/arm/v7': 'linux/arm/v7',
+        'linux/arm/v6': 'linux/arm/v6',
+    }
+)
+
 License = enum.Enum(
     'License',
     {
@@ -108,11 +121,11 @@ class JinaManifestSchema(BaseModel):
         default="apache-2.0",
         description="License under which contained software is distributed",
     )
-    platform: str = Field(
+    platform: Platform = Field(
         default="linux/amd64",
         description="A list of CPU architectures that your image built on",
     )
-    keywords: List = Field(
+    keywords: List[str] = Field(
         default=[],
         title='keywords',
         description="A list of strings help user to filter and locate your package",
