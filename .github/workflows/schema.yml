@@ -26,6 +26,7 @@ jobs:
           pwd
           pip3 install -r scripts/requirements.txt
           python3 scripts/pydanticJSONgenerator.py
+          ls scripts
       - name: checkout-api-repo
         uses: actions/checkout@v2
         with:
@@ -35,6 +36,7 @@ jobs:
       - name: copy-schema-to-api-repo
         run: |
           pwd
+          ls scripts
           mv scripts/schema.json schemas/hub_executor_schema.json
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
