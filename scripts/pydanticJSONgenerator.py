@@ -58,6 +58,3 @@ class JinaManifestSchema(BaseModel):
 
 with open("hub_executor_schema.json", "w") as f:
     f.write(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-print(dir_path)
