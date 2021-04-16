@@ -58,3 +58,5 @@ class JinaManifestSchema(BaseModel):
 
 with open("hub_executor_schema.json", "w") as f:
     f.write(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))
+
+print(JinaManifestSchema(name='abc', description='def').schema_json(indent=2))
