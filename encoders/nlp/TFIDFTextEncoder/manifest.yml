@@ -1,0 +1,13 @@
+manifest_version: 1
+name: TFIDFTextEncoder
+kind: encoder
+description: |
+    `TFIDFTextEncoder` encodes data from a string into ndarray of size `BatchSize x EmbeddingDimension`. 
+     The encoding is produced with a TFIDF feature representation
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.2
+license: apache-2.0
+keywords: [nlp, text retrieval]
+type: pod
