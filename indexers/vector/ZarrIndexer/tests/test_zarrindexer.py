@@ -27,6 +27,7 @@ def metas(tmpdir):
     os.environ['TEST_WORKSPACE'] = str(tmpdir)
     metas = get_default_metas()
     metas['workspace'] = os.environ['TEST_WORKSPACE']
+    metas['name'] = 'zarr_idx'
     yield metas
     del os.environ['TEST_WORKSPACE']
 
