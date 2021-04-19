@@ -30,6 +30,29 @@ def test_tfidf_text_encoder():
     np.testing.assert_almost_equal(embeddeding.todense(), expected.todense(), decimal=4)
     assert expected.shape[0] == len(text)
 
+
+def test_tfidf_unexistant_words():
+    # Input
+    text_batch = np.array(['poiefhgpeih psajfp', 'Han likes eating pizza'])
+
+    # Encoder embedding
+    encoder = TFIDFTextEncoder()
+
+    print_array_info(text_batch, 'text_batch')
+    embeddeding_batch = encoder.encode(text_batch)
+    print_array_info(embeddeding_batch, 'embeddeding_batch')
+
+    expected_1 = np.zeros([1, embeddeding_batch.shape[1]])
+    expected_2 = scipy.sparse.load_npz(os.path.join(cur_dir, 'expected.npz'))
+
+    embedding_1 = embeddeding_batch.getrow(0)
+    embedding_2 = embeddeding_batch.getrow(1)
+
+    # Compare with ouptut
+    np.testing.assert_almost_equal(embedding_1.todense(), expected_1, decimal=4)
+    np.testing.assert_almost_equal(embedding_2.todense(), expected_2.todense(), decimal=4)
+
+
 def test_tfidf_text_encoder_batch():
     # Input
     text_batch = np.array(['Han likes eating pizza', 'Han likes pizza', 'Jina rocks'])

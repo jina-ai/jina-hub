@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 from jina.executors.encoders import BaseEncoder
 import numpy as np
 
+
 class TFIDFTextEncoder(BaseEncoder):
     """Encode data from a `np.ndarray` (of strings) of length `BatchSize` into
     a `csr_matrix` of shape `Batchsize x EmbeddingDimension`. 
@@ -14,7 +15,7 @@ class TFIDFTextEncoder(BaseEncoder):
     """
 
     def __init__(self,
-                 path_vectorizer= "./model/tfidf_vectorizer.pickle",
+                 path_vectorizer="./model/tfidf_vectorizer.pickle",
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,11 +29,11 @@ class TFIDFTextEncoder(BaseEncoder):
         if os.path.exists(self.path_vectorizer):
             self.tfidf_vectorizer = pickle.load(open(self.path_vectorizer, "rb"))
 
-    def encode(self, data: np.ndarray, *args, **kwargs) -> 'scipy.sparse.csr_matrix':
+    def encode(self, content: np.ndarray, *args, **kwargs) -> 'scipy.sparse.csr_matrix':
         """Encode the data creating a tf-idf feature vector of the input.
 
-        :param data: numpy array of strings containing the text data to be encoded
+        :param content: numpy array of strings containing the text data to be encoded
         :param args: not used
         :param kwargs: not used
         """
-        return self.tfidf_vectorizer.transform(data)
+        return self.tfidf_vectorizer.transform(content)
