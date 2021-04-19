@@ -65,6 +65,18 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         """Get the handler to PostgreSQLDBMS."""
         return self.handler
 
+    def get_add_handler(self) -> 'PostgreSQLDBMSHandler':
+        """Get the handler to PostgresSQLMDBMS."""
+        return self.handler
+
+    def get_create_handler(self) -> 'PostgreSQLDBMSHandler':
+        """Get the handler to PostgresSQLMDBMS."""
+        return self.handler
+
+    def get_query_handler(self) -> 'PostgreSQLDBMSHandler':
+        """Get the handler to PostgresSQLMDBMS."""
+        return self.handler
+
     def add(self, ids, vecs, metas, *args, **kwargs):
         """Add a Document to PostgreSQLDBMS.
 
