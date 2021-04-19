@@ -1,4 +1,4 @@
-FROM jinaai/jina:1.1.5
+FROM jinaai/jina:1.1.6
 
 # install git
 RUN apt-get -y update && apt-get install -y git
