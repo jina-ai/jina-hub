@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 from jina.executors.encoders import BaseEncoder
 import numpy as np
 
+
 class TFIDFTextEncoder(BaseEncoder):
     """Encode data from a `np.ndarray` (of strings) of length `BatchSize` into
     a `csr_matrix` of shape `Batchsize x EmbeddingDimension`. 
@@ -14,7 +15,7 @@ class TFIDFTextEncoder(BaseEncoder):
     """
 
     def __init__(self,
-                 path_vectorizer= "./model/tfidf_vectorizer.pickle",
+                 path_vectorizer="./model/tfidf_vectorizer.pickle",
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
