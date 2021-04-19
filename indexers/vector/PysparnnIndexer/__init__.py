@@ -152,11 +152,10 @@ class PysparnnIndexer(BaseVectorIndexer):
         distances = []
         indices = []
         for record in index_distance_pairs:
-            distances_to_record, indices_to_record = zip(*record)
-            distances.append(distances_to_record)
-            indices.append(indices_to_record)
-
-        return np.array(indices), np.array(distances)
+            distance_list, index_list = zip(*record)
+            distances.append(distance_list)
+            indices.append(index_list)
+        return np.array(indices), np.array(distances).astype(np.float)
 
     @check_indexer
     def add(
@@ -201,6 +200,8 @@ class PysparnnIndexer(BaseVectorIndexer):
     def _store_index_to_disk(self):
         """Store self.index to disk"""
         import scipy
+        self.logger.info(f'Storing vectors to {self.index_abspath}')
+        self.logger.info(f'Storing indices from {self.get_file_from_workspace(self.indices_filename)}')
 
         scipy.sparse.save_npz(
             self.index_abspath, scipy.sparse.vstack(self.index.values())
@@ -212,6 +213,8 @@ class PysparnnIndexer(BaseVectorIndexer):
     def _load_index_from_disk(self):
         """Load self.index from disk"""
         import scipy
+        self.logger.info(f'Loading vectors from {self.index_abspath}')
+        self.logger.info(f'Loading indices from {self.get_file_from_workspace(self.indices_filename)}')
 
         vectors = scipy.sparse.load_npz(self.index_abspath)
 

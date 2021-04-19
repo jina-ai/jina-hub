@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y git && pip install git+https://github.c
 
 # for testing the image
 FROM base
-RUN pip install pytest && pytest
+RUN pip install pytest && pytest -v -s
 
 FROM base
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
