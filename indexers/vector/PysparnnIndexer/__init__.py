@@ -35,6 +35,8 @@ class PysparnnIndexer(BaseVectorIndexer):
 
     """
 
+    embedding_cls_type = 'scipy_csr'
+
     def __init__(
         self,
         k_clusters: int = 2,
