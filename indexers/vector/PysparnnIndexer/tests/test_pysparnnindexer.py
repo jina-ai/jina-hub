@@ -122,7 +122,7 @@ def test_add_close_add_newkeys(indexer, features):
     indexer.add(keys=list(range(0, 50)), vectors=features)
     indexer.close()
     indexer.add(keys=list(range(50, 100)), vectors=2 * features)
-    indexer_results = indexer.query(vectors=2 * features[0], top_k=100)
+    indexer_results = indexer.query(vectors=features[:5], top_k=100)
     assert (indexer_results[0] > 50).any()
 
 
@@ -130,7 +130,7 @@ def test_delete_close_update_newkeys(indexer, features):
     indexer.add(keys=list(range(0, 50)), vectors=features)
     indexer.close()
     indexer.add(keys=list(range(50, 100)), vectors=2 * features)
-    indexer_results = indexer.query(vectors=2 * features[0], top_k=100)
+    indexer_results = indexer.query(vectors=features[:5], top_k=100)
     assert (indexer_results[0] > 50).any()
 
 
