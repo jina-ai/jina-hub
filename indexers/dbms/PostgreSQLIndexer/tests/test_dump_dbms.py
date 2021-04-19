@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 
 from jina import Flow, Document
-from jina.drivers.dbms import _doc_without_embedding
 from jina.executors.indexers.dump import import_vectors, import_metas
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.query.compound import CompoundQueryExecutor
@@ -75,7 +74,7 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
     np.testing.assert_allclose(vecs, [d.embedding for d in docs_expected])
     np.testing.assert_equal(
         metas,
-        [_doc_without_embedding(d).SerializeToString() for d in docs_expected],
+        [doc_without_embedding(d).SerializeToString() for d in docs_expected],
     )
 
     # assert with Indexers
@@ -90,8 +89,6 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
                 'dump_path': dump_path,
             },
         )
-
-    # TODO test components and test with the inner indexers separate from the Compound
 
 
 def path_size(dump_path):
@@ -122,7 +119,7 @@ def test_dump(tmpdir, nr_docs, emb_size, run_basic=False):
                 assert len(d.matches) > 0
             for m in d.matches:
                 assert m.embedding.shape[0] == emb_size
-                assert _doc_without_embedding(m).SerializeToString() is not None
+                assert doc_without_embedding(m).SerializeToString() is not None
                 assert 'hello world' in m.text
                 assert f'tag data' in m.tags['tag_field']
 
@@ -152,6 +149,7 @@ def test_dump(tmpdir, nr_docs, emb_size, run_basic=False):
         assert_dump_data(dump_path, docs, shards, pea_id)
 
 
+'''
 # benchmark only
 @pytest.mark.skipif(
     'GITHUB_WORKFLOW' in os.environ, reason='skip the benchmark test on github workflow'
@@ -159,5 +157,6 @@ def test_dump(tmpdir, nr_docs, emb_size, run_basic=False):
 def test_benchmark(tmpdir):
     nr_docs = 100000
     return test_dump(
-        tmpdir, shards=1, nr_docs=nr_docs, emb_size=128, run_basic=True
+        tmpdir, nr_docs=nr_docs, emb_size=128, run_basic=True
     )
+'''
