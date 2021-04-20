@@ -13,7 +13,7 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 
 class CustomImageTorchEncoder(BaseTorchEncoder):
     """
-    :class:`CustomImageTorchEncoder` encodes document content from a ndarray,
+    :class:`CustomImageTorchEncoder` encodes ``Document`` content from a ndarray,
     potentially B x (Channel x Height x Width) into a ndarray of `B x D`.
 
     Internally, :class:`CustomImageTorchEncoder` wraps any custom torch

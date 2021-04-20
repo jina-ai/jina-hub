@@ -9,7 +9,7 @@ from jina.executors.encoders.frameworks import BasePaddleEncoder
 
 class ImagePaddlehubEncoder(BasePaddleEncoder):
     """
-    :class:`ImagePaddlehubEncoder` encodes document content from a ndarray,
+    :class:`ImagePaddlehubEncoder` encodes ``Document`` content from a ndarray,
     potentially B x (Channel x Height x Width) into a ndarray of `B x D`.
 
     Internally, :class:`ImagePaddlehubEncoder` wraps the models from `paddlehub`.

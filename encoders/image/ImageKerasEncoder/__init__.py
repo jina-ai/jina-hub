@@ -10,7 +10,7 @@ from jina.executors.encoders.frameworks import BaseTFEncoder
 
 class ImageKerasEncoder(BaseTFEncoder):
     """
-    :class:`ImageKerasEncoder` encodes document content from a ndarray,
+    :class:`ImageKerasEncoder` encodes ``Document`` content from a ndarray,
     potentially B x (Channel x Height x Width) into a ndarray of `B x D`.
 
     Where `B` is the batch size and `D` is the Dimension.
