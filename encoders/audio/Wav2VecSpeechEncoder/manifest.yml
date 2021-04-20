@@ -5,8 +5,8 @@ description: Uses the pre-trained model `wav2vec` to encode audio signal
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.9
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/audio/Wav2VecSpeechEncoder/README.md
+version: 0.0.10
 license: apache-2.0
 keywords: [encoder, audio, wav2vec]
 type: pod
