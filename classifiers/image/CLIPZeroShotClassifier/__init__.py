@@ -44,10 +44,10 @@ class CLIPZeroShotClassifier(TorchDevice, BaseClassifier):
 
     @batching
     @as_ndarray
-    def predict(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def predict(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         import torch
 
-        input_torchtensor = torch.from_numpy(data.astype('float32'))
+        input_torchtensor = torch.from_numpy(content.astype('float32'))
         with torch.no_grad():
             image_features = self.model.encode_image(input_torchtensor)
         output = (100.0 * image_features @ self._label_features.T).softmax(dim=-1).round().detach().numpy()
