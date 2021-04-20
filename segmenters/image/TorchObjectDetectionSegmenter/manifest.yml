@@ -1,4 +1,4 @@
-manifest_version: 1
+manifest_version: 2
 name: TorchObjectDetectionSegmenter
 kind: segmenter
 type: pod
