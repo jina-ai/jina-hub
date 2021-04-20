@@ -56,7 +56,7 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: np.ndarray, *args, **kwargs) -> np.ndarray:
+    def encode(self, content: np.ndarray, *args, **kwargs) -> np.ndarray:
         """
         Resample  input audio signal to 16kHz.
 
@@ -64,17 +64,17 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
         encodes the frames and concatenates Doc frame embeddings into a
         single Doc embedding.
 
-        :param data: A`Batch x Signal Length` ndarray, where
+        :param content: A`Batch x Signal Length` ndarray, where
             `Signal Length` is a number of samples
         :return: A `Batch x Concatenated Features` ndarray,
             where `Concatenated Features` is a 512-dimensional feature
             vector times the number of the wav2vec frames.
         """
-        assert data.shape[1] >= 465, 'the signal must have at least 465 samples'
+        assert content.shape[1] >= 465, 'the signal must have at least 465 samples'
         from librosa import resample
         embeds = []
         with self.session():
-            for chunk_data in data:
+            for chunk_data in content:
                 resampled_signal = resample(chunk_data, self.input_sample_rate, 16000)
                 signal_tensor = self.array2tensor(resampled_signal.reshape(1, -1))
                 features = self.model.feature_extractor(signal_tensor)
