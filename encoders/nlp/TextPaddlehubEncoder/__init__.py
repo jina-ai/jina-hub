@@ -39,16 +39,16 @@ class TextPaddlehubEncoder(BasePaddleEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data from an array of string in size `B` into a ndarray in size `B x D`.
+        Encode ``Document`` content from an array of string in size `B` into a ndarray in size `B x D`.
 
-        :param data: a 1d array of string type in size `B`
+        :param content: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
         results = []
         _raw_results = self.model.get_embedding(
-            np.atleast_2d(data).reshape(-1, 1).tolist(), use_gpu=self.on_gpu)
+            np.atleast_2d(content).reshape(-1, 1).tolist(), use_gpu=self.on_gpu)
         for emb in _raw_results:
             _pooled_feature, _seq_feature = emb
             results.append(_pooled_feature)

@@ -10,7 +10,7 @@ from jina.executors.devices import TorchDevice
 
 
 class CLIPTextEncoder(BaseTorchEncoder):
-    """Encode data from a `np.ndarray` (of strings) of length `BatchSize` into
+    """Encode ``Document`` content from a `np.ndarray` (of strings) of length `BatchSize` into
     a `np.ndarray` of shape `Batchsize x EmbeddingDimension`. 
 
     Internally, :class:`CLIPImageEncoder` wraps the `CLIP` model from `https://github.com/openai/CLIP`.
@@ -33,17 +33,17 @@ class CLIPTextEncoder(BaseTorchEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """Transform a `np.ndarray` of strings of length `BatchSize` into
         a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
 
-        :param data: A `np.ndarray` of strings.
+        :param content: A `np.ndarray` of strings.
         :param args: Additional positional arguments.
         :param kwargs: Additional positional arguments.
         :return: A `BachSize x EmbeddingSize` numpy `ndarray`.
         """
         import clip
-        input_torchtensor = clip.tokenize(data)
+        input_torchtensor = clip.tokenize(content)
         if self.on_gpu:
             input_torchtensor = input_torchtensor.cuda()
 

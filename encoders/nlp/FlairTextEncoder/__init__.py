@@ -80,15 +80,15 @@ class FlairTextEncoder(BaseTorchEncoder):
         else:
             self.logger.error('flair encoder initialization failed.')
 
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data from an array of string in size `B` into a ndarray in size `B x D`.
+        Encode ``Document`` content from an array of string in size `B` into a ndarray in size `B x D`.
 
-        :param data: a 1-dimension array of string type in size `B`
+        :param content: a 1-dimension array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
         from flair.data import Sentence
-        c_batch = [Sentence(row) for row in data]
+        c_batch = [Sentence(row) for row in content]
         self.model.embed(c_batch)
         result = [self.tensor2array(c_text.embedding) for c_text in c_batch]
         return np.vstack(result)
