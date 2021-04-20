@@ -2,16 +2,75 @@ __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from os import path
-from typing import Optional, Iterable
+from functools import wraps
+from typing import Optional, Iterable, Tuple, Callable
+from functools import lru_cache
 
 import numpy as np
+import copy
 
 from jina.executors.decorators import as_update_method
-from jina.executors.indexers.vector import NumpyIndexer
+from jina.executors.indexers.vector import NumpyIndexer, _ext_B, _euclidean, _norm, _cosine
 from jina.helper import cached_property
 
 if False:
     import zarr
+
+
+def zarr_batching(
+        func: Optional[Callable] = None,
+        batch_size: Optional[int] = None,
+):
+    """Split the input of a function into small batches and call :func:`func` on each batch
+    , collect the merged result and return. This is useful when the input is too big to fit into memory
+
+    :param func: function to decorate
+    :param batch_size: size of each batch
+    :return: the merged result as if run :func:`func` once on the input.
+    """
+
+    def _zarr_batching(func):
+
+        def batch_iterator(data, b_size):
+            _l = data.shape[0]
+            _d = data.ndim
+            sl = [slice(None)] * _d
+            for start in range(0, _l, b_size):
+                end = min(_l, start + b_size)
+                sl[0] = slice(start, end)
+                _data_args = data[tuple(sl)]
+                yield _data_args
+
+        @wraps(func)
+        def arg_wrapper(*args, **kwargs):
+            # priority: decorator > class_attribute
+            # by default data is in args[1] (self needs to be taken into account)
+            data = args[2]
+            b_size = batch_size or getattr(args[0], 'batch_size', None)
+
+            # no batching if b_size is None
+            if b_size is None or data is None:
+                return func(*args, **kwargs)
+
+            batch_args = list(copy.copy(args))
+
+            results = []
+            for _data_args in batch_iterator(data, b_size):
+                batch_args[2] = _data_args
+                r = func(*batch_args, **kwargs)
+                if r is not None:
+                    results.append(r)
+
+            final_result = np.concatenate(results, 1)
+
+            return final_result
+
+        return arg_wrapper
+
+    if func:
+        return _zarr_batching(func)
+    else:
+        return _zarr_batching
 
 
 class ZarrIndexer(NumpyIndexer):
@@ -23,8 +82,21 @@ class ZarrIndexer(NumpyIndexer):
 
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    @zarr_batching
+    def _euclidean(self, cached_A, raw_B):
+        data = _ext_B(raw_B)
+        return _euclidean(cached_A, data)
+
+    @zarr_batching
+    def _cosine(self, cached_A, raw_B):
+        data = _ext_B(_norm(raw_B))
+        return _cosine(cached_A, data)
+
+    @zarr_batching
+    def _cdist(self, *args, **kwargs):
+        with ImportExtensions(required=True):
+            from scipy.spatial.distance import cdist
+        return cdist(*args, **kwargs, metric=self.metric)
 
     def get_add_handler(self) -> 'zarr.hierarchy.Group':
         """

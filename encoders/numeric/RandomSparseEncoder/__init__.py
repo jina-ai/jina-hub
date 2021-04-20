@@ -15,10 +15,3 @@ class RandomSparseEncoder(TransformEncoder):
     More info can be found
     `here <https://scikit-learn.org/stable/modules/generated/sklearn.random_projection.SparseRandomProjection.html>`_
     """
-
-    def post_init(self):
-        """Load SparseRandomProjection model"""
-        super().post_init()
-        if not self.model:
-            from sklearn.random_projection import SparseRandomProjection
-            self.model = SparseRandomProjection(n_components=self.output_dim, random_state=self.random_state)
