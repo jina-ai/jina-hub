@@ -103,7 +103,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         # e.g. (h,w,c) -> (c,h,w) / (n,h,w,c) -> (c,n,h,w)
         raw_img = _move_channel_axis(raw_img, self.channel_axis, self._default_channel_axis)
 
-        batchedImgArr = np.asarray([raw_img[:, 0, :, :], raw_img[:, 1, :, :]])
+        batchedImgArr = np.asarray([raw_img[:, i, :, :] for i in range(raw_img.shape[1])])
         batchedPredictions = self._predict(batchedImgArr)
 
         result = []
