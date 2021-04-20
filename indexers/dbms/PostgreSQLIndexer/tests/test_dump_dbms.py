@@ -5,6 +5,8 @@ import numpy as np
 import pytest
 
 from jina import Flow, Document
+from jina.drivers.index import DBMSIndexDriver
+from jina.executors import BaseExecutor
 from jina.executors.indexers.dump import import_vectors, import_metas
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.query.compound import CompoundQueryExecutor
@@ -28,27 +30,6 @@ def get_documents(nr=10, index_start=0, emb_size=7):
         yield d
 
 
-def basic_benchmark(tmpdir, docs, validate_results_nonempty, error_callback, nr_search):
-    os.environ['BASIC_QUERY_WS'] = os.path.join(tmpdir, 'basic_query')
-    os.environ['BASIC_INDEX_WS'] = os.path.join(tmpdir, 'basic_index')
-    with Flow().add(uses='basic/query.yml') as flow:
-        flow.index(docs)
-
-    with Flow().add(uses='basic/query.yml') as flow:
-        with TimeContext(
-                f'### baseline - query time with {nr_search} on {len(docs)} docs'
-        ):
-            flow.search(
-                docs[:nr_search],
-                on_done=validate_results_nonempty,
-                on_error=error_callback,
-            )
-
-    with Flow().add(uses='basic/index.yml') as flow_dbms:
-        with TimeContext(f'### baseline - indexing: {len(docs)} docs'):
-            flow_dbms.index(docs)
-
-
 def assert_dump_data(dump_path, docs, shards, pea_id):
     size_shard = len(docs) // shards
     size_shard_modulus = len(docs) % shards
@@ -58,23 +39,29 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
     )
     if pea_id == shards - 1:
         docs_expected = docs[
-                        (pea_id) * size_shard: (pea_id + 1) * size_shard + size_shard_modulus
-                        ]
+            (pea_id) * size_shard : (pea_id + 1) * size_shard + size_shard_modulus
+        ]
     else:
-        docs_expected = docs[(pea_id) * size_shard: (pea_id + 1) * size_shard]
+        docs_expected = docs[(pea_id) * size_shard : (pea_id + 1) * size_shard]
     print(f'### pea {pea_id} has {len(docs_expected)} docs')
 
-    info = [
-        (doc.id, doc.embedding, doc_without_embedding(doc).SerializeToString())
-        for doc in docs
-    ]
-    ids, vecs, metas = zip(*info)
+    # TODO these might fail if we implement any ordering of elements on dumping / reloading
+    ids_dump = list(ids_dump)
+    vectors_dump = list(vectors_dump)
+    np.testing.assert_equal(ids_dump, [d.id for d in docs_expected])
+    np.testing.assert_allclose(vectors_dump, [d.embedding for d in docs_expected])
 
-    np.testing.assert_equal(ids, [d.id for d in docs_expected])
-    np.testing.assert_allclose(vecs, [d.embedding for d in docs_expected])
+    _, metas_dump = import_metas(
+        dump_path,
+        str(pea_id),
+    )
+    metas_dump = list(metas_dump)
     np.testing.assert_equal(
-        metas,
-        [doc_without_embedding(d).SerializeToString() for d in docs_expected],
+        metas_dump,
+        [
+            DBMSIndexDriver._doc_without_embedding(d).SerializeToString()
+            for d in docs_expected
+        ],
     )
 
     # assert with Indexers
@@ -89,6 +76,20 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
                 'dump_path': dump_path,
             },
         )
+    for c in cp.components:
+        assert c.size == len(docs_expected)
+
+    # test with the inner indexers separate from the Compound
+    for i, indexer_file in enumerate(['query_np.yml', 'query_kv.yml']):
+        indexer = BaseQueryIndexer.load_config(
+            indexer_file,
+            pea_id=pea_id,
+            metas={
+                'workspace': os.path.realpath(os.path.join(dump_path, f'new_ws-{i}')),
+                'dump_path': dump_path,
+            },
+        )
+        assert indexer.size == len(docs_expected)
 
 
 def path_size(dump_path):
@@ -98,38 +99,12 @@ def path_size(dump_path):
     return dir_size
 
 
+@pytest.mark.parametrize('shards', [1, 3, 7])
 @pytest.mark.parametrize('nr_docs', [10])
 @pytest.mark.parametrize('emb_size', [10])
-def test_dump(tmpdir, nr_docs, emb_size, run_basic=False):
-    shards = 1
+def test_dump(tmpdir, nr_docs, emb_size, shards):
     docs = list(get_documents(nr=nr_docs, index_start=0, emb_size=emb_size))
     assert len(docs) == nr_docs
-    nr_search = 1
-
-    os.environ['USES_AFTER'] = '_merge_matches' if shards > 1 else '_pass'
-    os.environ['SHARDS'] = str(shards)
-
-    def _validate_results_nonempty(resp):
-        assert len(resp.docs) == nr_search
-        for d in resp.docs:
-            if nr_docs < 10:
-                assert len(d.matches) == nr_docs
-            else:
-                # TODO does it return all of them no matter how many?
-                assert len(d.matches) > 0
-            for m in d.matches:
-                assert m.embedding.shape[0] == emb_size
-                assert doc_without_embedding(m).SerializeToString() is not None
-                assert 'hello world' in m.text
-                assert f'tag data' in m.tags['tag_field']
-
-    def error_callback(resp):
-        raise Exception('error callback called')
-
-    if run_basic:
-        basic_benchmark(
-            tmpdir, docs, _validate_results_nonempty, error_callback, nr_search
-        )
 
     dump_path = os.path.join(str(tmpdir), 'dump_dir')
     os.environ['DBMS_WORKSPACE'] = os.path.join(str(tmpdir), 'index_ws')
@@ -144,19 +119,32 @@ def test_dump(tmpdir, nr_docs, emb_size, run_basic=False):
         dir_size = path_size(dump_path)
         print(f'### dump path size: {dir_size} MBs')
 
+    with BaseExecutor.load(os.path.join(os.environ['DBMS_WORKSPACE'], 'psql-0', 'psql.bin')) as idx:
+        assert idx.size == nr_docs
+
     # assert data dumped is correct
     for pea_id in range(shards):
         assert_dump_data(dump_path, docs, shards, pea_id)
 
+    # required to pass next tests
+    with BaseExecutor.load(os.path.join(os.environ['DBMS_WORKSPACE'], 'psql-0', 'psql.bin')) as idx:
+        idx.delete([d.id for d in docs])
 
-'''
+
+def _in_docker():
+    """ Returns: True if running in a Docker container, else False """
+    with open('/proc/1/cgroup', 'rt') as ifh:
+        if 'docker' in ifh.read():
+            print('in docker, skipping benchmark')
+            return True
+        return False
+
 # benchmark only
 @pytest.mark.skipif(
-    'GITHUB_WORKFLOW' in os.environ, reason='skip the benchmark test on github workflow'
+    _in_docker() or ('GITHUB_WORKFLOW' in os.environ), reason='skip the benchmark test on github workflow or docker'
 )
 def test_benchmark(tmpdir):
     nr_docs = 100000
     return test_dump(
-        tmpdir, nr_docs=nr_docs, emb_size=128, run_basic=True
+        tmpdir, nr_docs=nr_docs, emb_size=128, shards=1
     )
-'''

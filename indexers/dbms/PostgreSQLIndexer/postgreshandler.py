@@ -73,11 +73,10 @@ class PostgreSQLDBMSHandler:
         else:
             try:
                 self.cursor.execute(
-                    f"""DROP TABLE IF EXISTS {self.table};
-                                    CREATE TABLE {self.table} (
-                                    ID VARCHAR PRIMARY KEY, 
-                                    VECS BYTEA, 
-                                    METAS BYTEA);"""
+                   f"CREATE TABLE {self.table} ( \
+                    ID VARCHAR PRIMARY KEY,  \
+                    VECS BYTEA,  \
+                    METAS BYTEA);"
                 )
                 self.logger.info('Successfully created table')
             except (Exception, Error) as error:
@@ -95,17 +94,15 @@ class PostgreSQLDBMSHandler:
         :param kwargs: other keyword arguments
         :return record: List of Document's id added
         """
-
-        self.cursor.execute(f'DELETE FROM {self.table}')
+        row_count = 0
         for i in range(len(ids)):
             self.cursor.execute(
                 f'INSERT INTO {self.table} (ID, VECS, METAS) VALUES (%s, %s, %s)',
                 (ids[i], vecs[i].tobytes(), metas[i]),
             )
+            row_count += self.cursor.rowcount
         self.connection.commit()
-        self.cursor.execute(f'SELECT ID from {self.table}')
-        record = self.cursor.fetchall()
-        return record
+        return row_count
 
     def update(self, ids, vecs, metas, *args, **kwargs):
         """ Updated documents from the database.
@@ -117,34 +114,31 @@ class PostgreSQLDBMSHandler:
         :param kwargs: other keyword arguments
         :return record: List of Document's id after update
         """
+        row_count = 0
 
         for i in range(len(ids)):
             self.cursor.execute(
                 f'UPDATE {self.table} SET VECS = %s, METAS = %s WHERE ID = %s',
                 (vecs[i].tobytes(), metas[i], ids[i]),
             )
+            row_count += self.cursor.rowcount
         self.connection.commit()
-        self.cursor.execute(f'SELECT ID from {self.table}')
-        record = self.cursor.fetchall()
-        return record
+        return row_count
 
-    def delete(self, id, *args, **kwargs):
+    def delete(self, ids, *args, **kwargs):
         """ Delete document from the database.
 
-        :param id: Id of Document to be removed
+        :param ids: ids of Documents to be removed
         :param args: other arguments
         :param kwargs: other keyword arguments
         :return record: List of Document's id after deletion
          """
-
-        self.cursor.execute(f'DELETE FROM {self.table} where (ID) = (%s) ', id)
+        row_count = 0
+        for id in ids:
+            self.cursor.execute(f'DELETE FROM {self.table} where (ID) = (%s);', (id,))
+            row_count += self.cursor.rowcount
         self.connection.commit()
-        self.cursor.execute(f'SELECT ID from {self.table}')
-        record = self.cursor.fetchall()
-        return record
-
-    def dump(self, uri, shards, formats):
-        raise NotImplementedError
+        return row_count
 
     def __exit__(self, *args):
         """ Make sure the connection to the database is closed."""
@@ -153,6 +147,6 @@ class PostgreSQLDBMSHandler:
         try:
             self.connection.close()
             self.cursor.close()
-            print('PostgreSQL connection is closed')
+            self.logger.info('PostgreSQL connection is closed')
         except (Exception, Error) as error:
-            print('Error while closing: ', error)
+            self.logger.error('Error while closing: ', error)

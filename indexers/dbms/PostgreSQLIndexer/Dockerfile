@@ -16,9 +16,8 @@ WORKDIR /workspace
 
 ENV POSTGRES_PASSWORD=123456
 
-RUN nohup bash -c "docker-entrypoint.sh postgres &" && sleep 3 && python3.7 -m pytest -s -v
+RUN nohup bash -c "docker-entrypoint.sh postgres &" && sleep 3 && python3.7 -m pytest -s -v tests/
 
 EXPOSE 5432
 
-# TODO figure out how to start PSQL in the background for the entrypoint
 ENTRYPOINT ["bash", "start.sh"]

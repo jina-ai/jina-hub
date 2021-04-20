@@ -44,10 +44,23 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         self.table = table
 
     def _get_generator(self) -> Generator[Tuple[str, np.array, bytes], None, None]:
-        self.handler.cursor.execute(f"SELECT * from {self.handler.table} ORDER BY ID")
-        records = self.handler.cursor.fetchall()
-        for rec in records:
-            yield rec[0], rec[1], rec[2]
+        with self.handler as handler:
+            # always order the dump by id as integer
+            handler.cursor.execute(f"SELECT * from {handler.table} ORDER BY ID::int")
+            records = handler.cursor.fetchall()
+            for rec in records:
+                yield rec[0], rec[1], rec[2]
+
+    @property
+    def size(self):
+        """Obtain the size of the table
+
+        .. # noqa: DAR201
+        """
+        with self.handler as postgres_handler:
+            postgres_handler.cursor.execute(f"SELECT COUNT(*) from {self.handler.table}")
+            records = postgres_handler.cursor.fetchall()
+            return records[0][0]
 
     def post_init(self):
         """Initialize the PostgresHandler inside the Indexer."""
@@ -66,15 +79,15 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         return self.handler
 
     def get_add_handler(self) -> 'PostgreSQLDBMSHandler':
-        """Get the handler to PostgresSQLMDBMS."""
+        """Get the handler to PostgresSQLDBMS."""
         return self.handler
 
     def get_create_handler(self) -> 'PostgreSQLDBMSHandler':
-        """Get the handler to PostgresSQLMDBMS."""
+        """Get the handler to PostgresSQLDBMS."""
         return self.handler
 
     def get_query_handler(self) -> 'PostgreSQLDBMSHandler':
-        """Get the handler to PostgresSQLMDBMS."""
+        """Get the handler to PostgresSQLDBMS."""
         return self.handler
 
     def add(self, ids, vecs, metas, *args, **kwargs):
@@ -98,14 +111,14 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         with self.handler as postgres_handler:
             postgres_handler.update(ids=ids, vecs=vecs, metas=metas)
 
-    def delete(self, id, *args, **kwargs):
+    def delete(self, ids, *args, **kwargs):
         """Delete document from the database.
 
-        :param id: Id of Document to be removed
+        :param ids: Ids of Document to be removed
         """
 
         with self.handler as postgres_handler:
-            postgres_handler.delete(id=id)
+            postgres_handler.delete(ids=ids)
 
     def dump(self, path, shards):
         """Dump the index
@@ -113,10 +126,9 @@ class PostgreSQLDBMSIndexer(BaseDBMSIndexer):
         :param path: the path to which to dump
         :param shards: the nr of shards to which to dump
         """
-        with self.handler as postgres_handler:
-            export_dump_streaming(
-                path,
-                shards=shards,
-                size=postgres_handler.cursor.rowcount,
-                data=self._get_generator()
-            )
+        export_dump_streaming(
+            path,
+            shards=shards,
+            size=self.size,
+            data=self._get_generator()
+        )

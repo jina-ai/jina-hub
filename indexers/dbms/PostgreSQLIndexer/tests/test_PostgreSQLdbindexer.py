@@ -61,7 +61,6 @@ def validate_db_side(postgres_indexer, expected_data):
 
 
 def test_postgress(tmpdir):
-    dump_path = os.path.join(str(tmpdir), 'dump_dir')
     postgres_indexer = PostgreSQLDBMSIndexer()
     postgres_indexer.handler.connect()
 
@@ -73,7 +72,7 @@ def test_postgress(tmpdir):
     ids, vecs, metas = zip(*info_original_docs)
 
     added = postgres_indexer.handler.add(ids, vecs, metas)
-    assert len(added) == 10
+    assert added == 10
     validate_db_side(postgres_indexer, info_original_docs)
 
     new_docs = list(get_documents(chunks=False, nr=10, same_content=True))
@@ -85,11 +84,8 @@ def test_postgress(tmpdir):
 
     updated = postgres_indexer.handler.update(ids, vecs, metas)
     expected_info = [(ids[0], vecs[0], metas[0])]
-    assert len(updated) == 10
+    assert updated == 10
     validate_db_side(postgres_indexer, expected_info)
 
-    deleted = postgres_indexer.handler.delete(ids[0])
-    assert len(deleted) == 9
-    validate_db_side(postgres_indexer, info_new_docs[1:])
-
-    postgres_indexer.dump(dump_path, shards=1)
+    deleted = postgres_indexer.handler.delete(ids)
+    assert deleted == 10

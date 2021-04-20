@@ -1,18 +1,18 @@
 jtype: PostgreSQLDBMSIndexer
 metas:
   workspace: $DBMS_WORKSPACE
-  name: keyvalue
+  name: psql
 requests:
   on:
     DumpRequest:
       - jtype: DumpDriver
         with:
-          executor: keyvalue
+          executor: psql
     [IndexRequest, UpdateRequest]:
       - jtype: DBMSIndexDriver
         with:
-          executor: keyvalue
+          executor: psql
     DeleteRequest:
       - jtype: DeleteDriver
         with:
-          executor: keyvalue
+          executor: psql
