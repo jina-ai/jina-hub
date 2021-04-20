@@ -2,7 +2,7 @@ from typing import Dict, List
 
 import numpy as np
 
-from jina.executors.decorators import single,batching
+from jina.executors.decorators import batching
 from jina.executors.segmenters import BaseSegmenter
 from jina.executors.devices import TorchDevice
 
