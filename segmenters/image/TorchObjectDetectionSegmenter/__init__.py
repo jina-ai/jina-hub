@@ -1,8 +1,9 @@
 from typing import Dict, List
 
 import numpy as np
+import tensorflow as tf
 
-from jina.executors.decorators import single
+from jina.executors.decorators import single,batching
 from jina.executors.segmenters import BaseSegmenter
 from jina.executors.devices import TorchDevice
 
@@ -77,9 +78,18 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         """
         import torch
         _input = torch.from_numpy(img.astype('float32'))
+        print(f"_input shape: {_input.shape}")
+        print(f"_input: {_input}")
         if self.on_gpu:
             _input = _input.cuda()
-        _predictions = self.model([_input])[0]
+
+        #_predictions = self.model([_input])[0]
+        _predictions = []
+        for i in range(_input.shape[0]):
+            prediction = self.model([_input[i]])
+            _predictions.extend(prediction)
+
+        '''
         boxes = _predictions['boxes'].detach()
         scores = _predictions['scores'].detach()
         labels = _predictions['labels']
@@ -87,9 +97,10 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
             boxes = boxes.cpu()
             scores = scores.cpu()
             labels = labels.cpu()
-        return boxes, scores, labels
+        return boxes, scores, labels'''
+        return _predictions
 
-    @single
+    @batching
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array.
@@ -99,25 +110,43 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
-        raw_img = np.copy(blob)
+        raw_img = np.copy(blob) # (2, 681, 1264, 3) when
+        # "Ensure the color channel axis is the default axis." i.e. c comes first
+        # e.g. (h,w,c) -> (c,h,w) / (n,h,w,c) -> (c,n,h,w)
+
         raw_img = _move_channel_axis(raw_img, self.channel_axis, self._default_channel_axis)
-        bboxes, scores, labels = self._predict(raw_img)
-        img = _load_image(raw_img * 255, self._default_channel_axis)
+        # raw_img = np.transpose(raw_img,[0,3,1,2]) # (n,h,w,c) -> (n,c,h,w)
+        print(f"raw img n: {raw_img.shape[1]}")
+        batchedImgArr = np.asarray([raw_img[:, 0, :, :], raw_img[:, 1, :, :]])#raw_img[np.arange(raw_img.shape[1])[:,None,None], x,y]
+        batchedPredictions = self._predict(batchedImgArr)
+
         result = []
-        for bbox, score, label in zip(bboxes.numpy(), scores.numpy(), labels.numpy()):
-            if score >= self.confidence_threshold:
-                x0, y0, x1, y1 = bbox
-                # note that tensors are [H, W] while PIL Images are [W, H]
-                top, left = int(y0), int(x0)
-                # target size must be (h, w)
-                target_size = (int(y1) - int(y0), int(x1) - int(x0))
-                # at this point, raw_img has the channel axis at the default tensor one
-                _img, top, left = _crop_image(img, target_size=target_size, top=top, left=left, how='precise')
-                _img = _move_channel_axis(np.asarray(_img).astype('float32'), -1, self.channel_axis)
-                label_name = self.label_name_map[label]
-                self.logger.debug(
-                    f'detected {label_name} with confidence {score} at position {(top, left)} and size {target_size}')
-                result.append(
-                    dict(offset=0, weight=1., blob=_img,
-                         location=(top, left), tags={'label': label_name}))
+        for i in range(len(batchedPredictions)):
+            pred = batchedPredictions[i]
+            bboxes = pred['boxes'].detach()
+            scores = pred['scores'].detach()
+            labels = pred['labels']
+            if self.on_gpu:
+                bboxes = bboxes.cpu()
+                scores = scores.cpu()
+                labels = labels.cpu()
+            img = _load_image(raw_img[:, i, :, :] * 255, self._default_channel_axis)
+
+            for bbox, score, label in zip(bboxes.numpy(), scores.numpy(), labels.numpy()):
+                if score >= self.confidence_threshold:
+                    x0, y0, x1, y1 = bbox
+                    # note that tensors are [H, W] while PIL Images are [W, H]
+                    top, left = int(y0), int(x0)
+                    # target size must be (h, w)
+                    target_size = (int(y1) - int(y0), int(x1) - int(x0))
+                    # at this point, raw_img has the channel axis at the default tensor one
+                    _img, top, left = _crop_image(img, target_size=target_size, top=top, left=left, how='precise')
+                    _img = _move_channel_axis(np.asarray(_img).astype('float32'), -1, self.channel_axis)
+                    label_name = self.label_name_map[label]
+                    self.logger.debug(
+                        f'detected {label_name} with confidence {score} at position {(top, left)} and size {target_size}')
+                    result.append(
+                        dict(offset=0, weight=1., blob=_img,
+                             location=(top, left), tags={'label': label_name}))
+
         return result
