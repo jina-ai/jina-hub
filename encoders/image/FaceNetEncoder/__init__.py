@@ -42,19 +42,19 @@ class FaceNetEncoder(BaseTorchEncoder, TorchDevice):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """Transform a numpy `ndarray` of shape `BatchSize x (Height x Width x Channel)`
         into a numpy `ndarray` of shape `Batchsize x EmbeddingDimension`.
 
-        :param data: A numpy `ndarray` of strings.
+        :param content: A numpy `ndarray` of strings.
         :param args: Additional positional arguments.
         :param kwargs: Additional positional arguments.
         :return: A `BatchSize x EmbeddingDimension` numpy array.
         """
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
+            content = np.moveaxis(content, self.channel_axis, self._default_channel_axis)
 
         with torch.no_grad():
-            images = torch.from_numpy(data.astype('float32')).to(self.device)
+            images = torch.from_numpy(content.astype('float32')).to(self.device)
             embedded_faces = self.model(images)
         return embedded_faces.detach().cpu()

@@ -9,14 +9,14 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class VSEImageEncoder(BaseTorchEncoder):
     """
-    :class:`VSEImageEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a
+    :class:`VSEImageEncoder` encodes ``Document`` content from a ndarray, potentially BatchSize x (Channel x Height x Width) into a
         ndarray of BatchSize * d.
 
     The :clas:`VSEImageEncoder` was originally proposed in `VSE++: Improving Visual-Semantic Embeddings with Hard Negatives <https://github.com/fartashf/vsepp>`_.
 
     :param path: The VSE model path.
     :param pool_strategy: Pooling strategy for the encoder, default `mean`.
-    :param channel_axis: The axis of the channel, default -1, will move the axis of input data from -1 to 1.
+    :param channel_axis: The axis of the channel, default -1, will move the axis of input content from -1 to 1.
     :param args: additional positional arguments.
     :param kwargs: additional positional arguments.
     """
@@ -53,11 +53,11 @@ class VSEImageEncoder(BaseTorchEncoder):
         self.to_device(self.model)
         del model.txt_enc
 
-    def _get_features(self, data):
+    def _get_features(self, content):
         from torch.autograd import Variable
         # It needs Resize and Normalization before reaching this Point in another Pod
         # Check how this works, it may not be necessary to squeeze
-        images = Variable(data, requires_grad=False)
+        images = Variable(content, requires_grad=False)
         img_emb = self.model(images)
         return img_emb
 
@@ -68,19 +68,19 @@ class VSEImageEncoder(BaseTorchEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode input data into `np.ndarray`.
+        Encode input ``Document`` content into `np.ndarray`.
 
-        :param data: Image to be encoded, expected a `np.ndarray` of BatchSize x (Channel x Height x Width).
+        :param content: Image to be encoded, expected a `np.ndarray` of BatchSize x (Channel x Height x Width).
         :param args: additional positional arguments.
         :param kwargs: additional positional arguments.
         :return: Encoded result as `np.ndarray`.
         """
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
+            content = np.moveaxis(content, self.channel_axis, self._default_channel_axis)
         import torch
-        _input = torch.from_numpy(data.astype('float32'))
+        _input = torch.from_numpy(content.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()
         _feature = self._get_features(_input).detach()
