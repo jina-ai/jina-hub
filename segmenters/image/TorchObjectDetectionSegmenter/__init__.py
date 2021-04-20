@@ -110,10 +110,9 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
-        raw_img = np.copy(blob) # (2, 681, 1264, 3) when
+        raw_img = np.copy(blob) # (2, 681, 1264, 3) with imgs/cars.jpg
         # "Ensure the color channel axis is the default axis." i.e. c comes first
         # e.g. (h,w,c) -> (c,h,w) / (n,h,w,c) -> (c,n,h,w)
-
         raw_img = _move_channel_axis(raw_img, self.channel_axis, self._default_channel_axis)
         # raw_img = np.transpose(raw_img,[0,3,1,2]) # (n,h,w,c) -> (n,c,h,w)
         print(f"raw img n: {raw_img.shape[1]}")
@@ -132,6 +131,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
                 labels = labels.cpu()
             img = _load_image(raw_img[:, i, :, :] * 255, self._default_channel_axis)
 
+            batched = []
             for bbox, score, label in zip(bboxes.numpy(), scores.numpy(), labels.numpy()):
                 if score >= self.confidence_threshold:
                     x0, y0, x1, y1 = bbox
@@ -145,8 +145,10 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
                     label_name = self.label_name_map[label]
                     self.logger.debug(
                         f'detected {label_name} with confidence {score} at position {(top, left)} and size {target_size}')
-                    result.append(
+                    batched.append(
                         dict(offset=0, weight=1., blob=_img,
                              location=(top, left), tags={'label': label_name}))
+
+            result.append(batched)
 
         return result
