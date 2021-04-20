@@ -60,12 +60,12 @@ class VSETextEncoder(BaseTorchEncoder):
         del model.img_enc
 
     @batching
-    def encode(self, text):
+    def encode(self, content):
         """
-        Encodes data from a ndarray of texts into a ndarray of `B x D`.
+        Encodes ``Document`` content from a ndarray of texts into a ndarray of `B x D`.
 
-        :param text: ndarray with texts to be encoded
-        :type text: ndarray
+        :param content: ndarray with texts to be encoded
+        :type content: ndarray
         :return: Embedded sentences in ndarray of `B x D`.
         :rtype: ndarray
         """
@@ -74,7 +74,7 @@ class VSETextEncoder(BaseTorchEncoder):
         from torch.autograd import Variable
 
         captions = []
-        for sentence in text:
+        for sentence in content:
             tokens = nltk.tokenize.word_tokenize(str(sentence).lower())
             caption = []
             caption.append(self.vocab('<start>'))

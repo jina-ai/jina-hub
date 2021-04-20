@@ -5,7 +5,7 @@ It has been used in Jina multimodal retrieval example.
 The **TIRG** model uses `TirgImageEncoder` and encode images into embeddings.
 
 As a part of **TIRG** model,
-`TirgImageEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a BatchSize x d ndarray.
+`TirgImageEncoder` encodes `Document` content from a ndarray, potentially BatchSize x (Channel x Height x Width) into a BatchSize x d ndarray.
 
 Note: In the TIRG multimodal retrieval example, **TIRG** model takes `TirgMultimodalEncoder` and encode images together with it's associated texts into embeddings at query time.
 

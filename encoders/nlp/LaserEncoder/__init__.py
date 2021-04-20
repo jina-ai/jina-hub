@@ -55,15 +55,15 @@ class LaserEncoder(BaseTorchEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: "np.ndarray", *args, **kwargs) -> "np.ndarray":
+    def encode(self, content: "np.ndarray", *args, **kwargs) -> "np.ndarray":
         """
-         Encode data into an ndarray in size `B x D`.
+         Encode ``Document`` content into an ndarray in size `B x D`.
 
          B is the `Batch size` and `D` the dimension.
 
-        :param data: a 1d array of string type in size `B`
+        :param content: a 1d array of string type in size `B`
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
         :return: an ndarray in size `B x D`.
         """
-        return self.model.embed_sentences(data, lang=self.language)
+        return self.model.embed_sentences(content, lang=self.language)

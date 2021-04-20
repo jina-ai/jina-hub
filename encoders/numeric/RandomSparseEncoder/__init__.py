@@ -8,7 +8,7 @@ class RandomSparseEncoder(TransformEncoder):
     """
     Reduce dimensionality using sparse random projection.
 
-    Encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
+    Encodes ``Document`` content from an ndarray in size `B x T` into an ndarray in size `B x D`
     Where `B` is the batch's size and `T` and `D` are the dimensions pre (`T`)
     and after (`D`) the encoding.
 

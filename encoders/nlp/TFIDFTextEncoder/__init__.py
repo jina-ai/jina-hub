@@ -6,7 +6,7 @@ import numpy as np
 
 
 class TFIDFTextEncoder(BaseEncoder):
-    """Encode data from a `np.ndarray` (of strings) of length `BatchSize` into
+    """Encode ``Document`` content from a `np.ndarray` (of strings) of length `BatchSize` into
     a `csr_matrix` of shape `Batchsize x EmbeddingDimension`. 
 
     :param path_vectorizer: path containing the fitted tfidf encoder object
@@ -30,7 +30,7 @@ class TFIDFTextEncoder(BaseEncoder):
             self.tfidf_vectorizer = pickle.load(open(self.path_vectorizer, "rb"))
 
     def encode(self, content: np.ndarray, *args, **kwargs) -> 'scipy.sparse.csr_matrix':
-        """Encode the data creating a tf-idf feature vector of the input.
+        """Encode the ``Document`` content creating a tf-idf feature vector of the input.
 
         :param content: numpy array of strings containing the text data to be encoded
         :param args: not used

@@ -10,7 +10,7 @@ from jina.executors.encoders.frameworks import BaseTFEncoder
 
 class ImageKerasEncoder(BaseTFEncoder):
     """
-    :class:`ImageKerasEncoder` encodes data from a ndarray,
+    :class:`ImageKerasEncoder` encodes ``Document`` content from a ndarray,
     potentially B x (Channel x Height x Width) into a ndarray of `B x D`.
 
     Where `B` is the batch size and `D` is the Dimension.
@@ -35,7 +35,7 @@ class ImageKerasEncoder(BaseTFEncoder):
         - `max`: Means that global max pooling will be applied.
 
     :param channel_axis: the axis id of the channel, -1 indicate the color channel
-        info at the last axis. If given other, then ``np.moveaxis(data, channel_axis, -1)``
+        info at the last axis. If given other, then ``np.moveaxis(content, channel_axis, -1)``
         is performed before :meth:`encode`.
     :param args: additional positional arguments.
     :param kwargs: additional positional arguments.
@@ -69,12 +69,12 @@ class ImageKerasEncoder(BaseTFEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data into a ndarray of `B x D`. `
+        Encode document content into a ndarray of `B x D`. `
         B` is the batch size and `D` is the Dimension.
 
-        :param data: Image to be encoded, expected a `np.ndarray` of
+        :param content: Image to be encoded, expected a `np.ndarray` of
             BatchSize x (Channel x Height x Width).
         :param args: additional positional arguments.
         :param kwargs: additional positional arguments.
@@ -82,5 +82,5 @@ class ImageKerasEncoder(BaseTFEncoder):
             `D` is the output dimension
         """
         if self.channel_axis != -1:
-            data = np.moveaxis(data, self.channel_axis, -1)
-        return self.model(data)
+            content = np.moveaxis(content, self.channel_axis, -1)
+        return self.model(content)

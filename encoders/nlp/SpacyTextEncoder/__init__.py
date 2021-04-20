@@ -8,7 +8,7 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class SpacyTextEncoder(BaseTorchEncoder):
     """
-    :class:`SpacyTextEncoder` encodes data from a `np.ndarray` (of strings) of length `BatchSize` into
+    :class:`SpacyTextEncoder` encodes ``Document`` content from a `np.ndarray` (of strings) of length `BatchSize` into
     a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
 
     :param lang: pre-trained spaCy language pipeline (model name HashEmbedCNN by default for tok2vec), `en_core_web_sm`
@@ -77,20 +77,20 @@ class SpacyTextEncoder(BaseTorchEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
         Transform a `np.ndarray` of strings of length `BatchSize` into
         a `np.ndarray` of shape `Batchsize x EmbeddingDimension`.
         Calculate word embeddings by applying spacy's tok2vec component
         model in a sentence wise manner.
 
-        :param data: A `np.ndarray` of strings. Each string is a sentence.
+        :param content: A `np.ndarray` of strings. Each string is a sentence.
         :param args: Additional positional arguments.
         :param kwargs: Additional positional arguments.
         :return: A `BachSize x EmbeddingSize` numpy `ndarray`.
         """
         embedding = []
-        for sent_data in data:
+        for sent_data in content:
             processed_data = self.spacy_model(str(sent_data))
             result = [self.tensor2array(token.tensor) for token in processed_data]
             embedding.append(result)

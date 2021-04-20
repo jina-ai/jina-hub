@@ -15,7 +15,7 @@ class BigTransferEncoder(BaseTFEncoder):
     """
     :class:`BigTransferEncoder` is Big Transfer (BiT) presented by
     Google (https://github.com/google-research/big_transfer).
-    Uses pretrained BiT to encode data from a ndarray, potentially
+    Uses pretrained BiT to encode document content from a ndarray, potentially
     B x (Channel x Height x Width) into a ndarray of `B x D`.
     Internally, :class:`BigTransferEncoder` wraps the models from
     https://storage.googleapis.com/bit_models/.
@@ -46,7 +46,7 @@ class BigTransferEncoder(BaseTFEncoder):
 
         :param channel_axis: the axis id of the channel, -1 indicate the color
             channel info at the last axis. If given other, then `
-            `np.moveaxis(data, channel_axis, -1)`` is performed before :meth:`encode`.
+            `np.moveaxis(content, channel_axis, -1)`` is performed before :meth:`encode`.
     """
 
     def __init__(self,
@@ -72,15 +72,15 @@ class BigTransferEncoder(BaseTFEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data into a ndarray of `B x D`.
+        Encode content into a ndarray of `B x D`.
         Where `B` is the batch size and `D` is the Dimension.
 
-        :param data: an array in size `B`
+        :param content: an array in size `B`
         :return: an ndarray in size `B x D`.
         """
         if self.channel_axis != -1:
-            data = np.moveaxis(data, self.channel_axis, -1)
-        _output = self.model(self._get_input(data.astype(np.float32)))
+            content = np.moveaxis(content, self.channel_axis, -1)
+        _output = self.model(self._get_input(content.astype(np.float32)))
         return _output['output_1'].numpy()

@@ -10,9 +10,9 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
     """
-    Encode data from a ndarray, using the models from `torchvision.models`.
+    Encode `Document` content from a ndarray, using the models from `torchvision.models`.
 
-    :class:`VideoTorchEncoder` encodes data from a ndarray, potentially
+    :class:`VideoTorchEncoder` encodes content from a ndarray, potentially
     B x T x (Channel x Height x Width) into an ndarray of `B x D`.
     Internally, :class:`VideoTorchEncoder` wraps the models from
     `torchvision.models`: https://pytorch.org/docs/stable/torchvision/models.html
@@ -68,18 +68,18 @@ class VideoTorchEncoder(BaseTorchEncoder, BaseVideoEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-         Encode data from a ndarray.
+         Encode ``Document`` content from a ndarray.
 
-         :param data: a `B x T x (Channel x Height x Width)` numpy ``ndarray``,
+         :param content: a `B x T x (Channel x Height x Width)` numpy ``ndarray``,
             `B` is the size of the batch, `T` is the number of frames
          :return: a `B x D` numpy ``ndarray``, `D` is the output dimension
         """
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
+            content = np.moveaxis(content, self.channel_axis, self._default_channel_axis)
         import torch
-        _input = torch.from_numpy(data.astype('float32'))
+        _input = torch.from_numpy(content.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()
         _feature = self._get_features(_input).detach()

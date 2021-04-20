@@ -76,12 +76,12 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
         Encode an array of string in size `B` into an ndarray in size `B x D`,
         where `B` is the batch size and `D` is the dimensionality of the encoding.
 
-        :param data: a 1d array of string type in size `B`
+        :param content: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
         import tensorflow as tf
@@ -91,7 +91,7 @@ class TransformerTFEncoder(TFDevice, BaseEncoder):
             self.model.resize_token_embeddings(len(self.tokenizer.vocab))
 
         input_tokens = self.tokenizer(
-            list(data),
+            list(content),
             max_length=self.max_length,
             padding='longest',
             truncation=True,

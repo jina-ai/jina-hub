@@ -13,7 +13,7 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 
 class CustomKerasImageEncoder(BaseTFEncoder):
     """
-    :class:`CustomImageKerasEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
+    :class:`CustomImageKerasEncoder` encodes ``Document`` content from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
     Internally, :class:`CustomImageKerasEncoder` wraps any custom tf.keras model not part of models from `tensorflow.keras.applications`.
     https://www.tensorflow.org/api_docs/python/tf/keras/applications
@@ -47,11 +47,11 @@ class CustomKerasImageEncoder(BaseTFEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        :param data: a `B x (Channel x Height x Width)` numpy ``ndarray``, `B` is the size of the batch
+        :param content: a `B x (Channel x Height x Width)` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``, `D` is the output dimension
         """
         if self.channel_axis != -1:
-            data = np.moveaxis(data, self.channel_axis, -1)
-        return self.model(data)
+            content = np.moveaxis(content, self.channel_axis, -1)
+        return self.model(content)

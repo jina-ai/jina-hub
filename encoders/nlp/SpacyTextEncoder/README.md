@@ -1,7 +1,7 @@
 # SpacyTextEncoder
 
 **SpacyTextEncoder** is a class that wraps the text embedding functionality from the **Spacy tok2vec** model.
-`SpacyTextEncoder` encodes data from a `np.ndarray` of strings and returns a `np.ndarray` of floating point values.
+`SpacyTextEncoder` encodes `Document` content from a `np.ndarray` of strings and returns a `np.ndarray` of floating point values.
 spaCy is a library for advanced Natural Language Processing in Python and Cython. It's built on the very latest research, and was designed from day one to be used in real products.
 
 - Input shape: `BatchSize `
