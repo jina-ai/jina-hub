@@ -1,6 +1,6 @@
 # UMAPEncoder
 
-`UMAPEncoder` encodes data from an `ndarray` of size `BatchSize x Dimension` into an `ndarray` of size `BatchSize x EmbeddingDimension` using [Uniform Manifold Approximation and Projection for Dimension Reduction](https://arxiv.org/abs/1802.03426).  UMAP is a dimension reduction technique that can be used for visualisation similarly to t-SNE, but also for general non-linear dimension reduction.
+`UMAPEncoder` encodes ``Document`` content from an `ndarray` of size `BatchSize x Dimension` into an `ndarray` of size `BatchSize x EmbeddingDimension` using [Uniform Manifold Approximation and Projection for Dimension Reduction](https://arxiv.org/abs/1802.03426).  UMAP is a dimension reduction technique that can be used for visualisation similarly to t-SNE, but also for general non-linear dimension reduction.
 
 For more information, refer to [UMAP](https://github.com/lmcinnes/umap) documentation.
 

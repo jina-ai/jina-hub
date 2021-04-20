@@ -18,7 +18,7 @@ class CompressionVaeEncoder(TFDevice, BaseNumericEncoder):
     :class:`CompressionVaeEncoder` is a dimensionality reduction tool.
 
     It is based on the idea of Variational Autoencoders.
-    It encodes data from an ndarray in size `B x T` into an ndarray
+    It encodes ``Document`` content from an ndarray in size `B x T` into an ndarray
     in size `B x D`. Where `B` is the batch's size and `T` and `D`
     are the dimensions pre (`T`) and after (`D`)the compression.
 
@@ -84,18 +84,18 @@ class CompressionVaeEncoder(TFDevice, BaseNumericEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data from an ndarray in size `B x T` into an ndarray
+        Encode `Document` content from an ndarray in size `B x T` into an ndarray
         in size `B x D`.
 
-        :param data: a `B x T` numpy ndarray
+        :param content: a `B x T` numpy ndarray
         :return: a `B x D` numpy ndarray
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         return self.sess.run([self.embeddings],
-                             feed_dict={self.data_feature_placeholder: data})[0]
+                             feed_dict={self.data_feature_placeholder: content})[0]
 
     def close(self) -> None:
         super().close()

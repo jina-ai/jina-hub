@@ -9,9 +9,9 @@ from jina.executors.encoders import BaseNumericEncoder
 
 class TSNEEncoder(BaseNumericEncoder):
     """
-    Encode data using t-distributed Stochastic Neighbor Embedding.
+    Encode ``Document`` content using t-distributed Stochastic Neighbor Embedding.
 
-    Encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
+    Encodes ``Document`` content from an ndarray in size `B x T` into an ndarray in size `B x D`
     Where `B` is the batch's size and `T` and `D` are the dimensions pre (`T`)
     and after (`D`) the encoding.
 
@@ -42,13 +42,13 @@ class TSNEEncoder(BaseNumericEncoder):
         self.model = TSNE(n_components=self.output_dim, random_state=self.random_state)
 
     @batching
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data from an ndarray in size `B x T` into an ndarray in size `B x D`
+        Encode ``Document`` content from an ndarray in size `B x T` into an ndarray in size `B x D`
 
-        :param data: a `B x T` numpy ``ndarray``, `B` is the size of the batch
+        :param content: a `B x T` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
-        return self.model.fit_transform(data)
+        return self.model.fit_transform(content)
