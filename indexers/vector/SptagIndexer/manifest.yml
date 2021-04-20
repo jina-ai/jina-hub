@@ -5,8 +5,8 @@ description: SPTAG powered vector indexer
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub/tree/master/indexers/vector/SptagIndexer/README.md
-version: 0.0.14
+documentation: https://github.com/jina-ai/jina-hub/blob/master/indexers/vector/SptagIndexer/README.md
+version: 0.0.15
 license: apache-2.0
 keywords: [sptag, indexer]
 type: pod

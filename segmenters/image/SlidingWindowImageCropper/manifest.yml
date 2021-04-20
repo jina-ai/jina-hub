@@ -6,7 +6,7 @@ description: crops the image with a sliding window.
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.13
+documentation: https://github.com/jina-ai/jina-hub/blob/master/segmenters/image/SlidingWindowImageCropper/README.md
+version: 0.0.14
 license: apache-2.0
 keywords: [Some keywords to describe the executor, separated by commas]
