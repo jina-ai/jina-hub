@@ -6,7 +6,7 @@ description: Evaluates the distance embeddings computing the L1 Norm between the
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://gitub.com/jina-ai/jina-hub
-version: 0.0.7
+documentation: https://github.com/jina-ai/jina-hub/blob/master/evaluators/embedding/L1NormEvaluator/README.md
+version: 0.0.8
 license: apache-2.0
 keywords: [l1, evaluator, embedding, information retrieval evaluation]

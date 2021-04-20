@@ -6,8 +6,8 @@ description: |
      The encoding is produced with a TFIDF feature representation
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.4
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/nlp/TFIDFTextEncoder/README.md
+version: 0.0.5
 license: apache-2.0
 keywords: [nlp, text retrieval]
 type: pod

@@ -39,7 +39,7 @@ class MockModel:
             'boxes': torch.Tensor([bbox_1, bbox_2, bbox_3]),
             'scores': torch.Tensor([score_1, score_2, score_3]),
             'labels': torch.Tensor([label_1, label_2, label_3])
-        }]
+        } for _ in input_ids]
         return predictions
 
     def eval(self):

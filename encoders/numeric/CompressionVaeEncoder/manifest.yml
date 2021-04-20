@@ -7,8 +7,8 @@ description:
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.6
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/numeric/CompressionVaeEncoder/README.md
+version: 0.0.7
 license: apache-2.0
 keywords: [Tensorflow,Computer Vision,Variational Autoencoders, encoder, numeric]
 type: pod
