@@ -1,6 +1,6 @@
 # VideoTorchEncoder
 
-**`VideoTorchEncoder`** encodes data from a Numpy array containing batches of video captions to an embedding array.  Internally, VideoTorchEncoder` wraps the models from `torchvision.models`. https://pytorch.org/docs/stable/torchvision/models.html 
+**`VideoTorchEncoder`** encodes ``Document`` content from a Numpy array containing batches of video captions to an embedding array.  Internally, VideoTorchEncoder` wraps the models from `torchvision.models`. https://pytorch.org/docs/stable/torchvision/models.html 
 
 - Input shape:  `BatchSize x Time x (Channel x Height x Width)`
 
