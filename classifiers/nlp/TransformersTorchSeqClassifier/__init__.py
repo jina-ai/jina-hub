@@ -46,17 +46,17 @@ class TransformersTorchSeqClassifier(TorchDevice, BaseClassifier):
 
     @batching
     @as_ndarray
-    def predict(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def predict(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
         Performs prediction with sequence classification model
-        The size and type of output can be one of the follows (depending on the model used in initializing the class) ``B`` is ``data.shape[0]``:
+        The size and type of output can be one of the follows (depending on the model used in initializing the class) ``B`` is ``content.shape[0]``:
 
             - (B,) or (B, 1); float
             - (B, L): soft label for L-class multi-class classification
 
-        :param data: the input textual data to be classified, a 1 d
+        :param content: the input textual data to be classified, a 1 d
             array of string type in size `B`
-        :type data: np.ndarray
+        :type content: np.ndarray
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
         :return: logits
@@ -65,7 +65,7 @@ class TransformersTorchSeqClassifier(TorchDevice, BaseClassifier):
         import torch
 
         inputs = self.tokenizer(
-            list(data),
+            list(content),
             add_special_tokens=True,
             return_tensors='pt',
             padding='longest',

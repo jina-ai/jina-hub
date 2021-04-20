@@ -16,10 +16,10 @@ The following code snippets show how to use TransformersTorchSeqClassifier.
    
    model_name = 'distilbert-base-uncased-finetuned-sst-2-english'
    classifier = TransformersTorchSeqClassifier(model_name)
-   data =np.stack(['Today is a good day.',
+   content =np.stack(['Today is a good day.',
                    "Can't wait for tomorrow!",
                    "Today is a good day. Can't wait for tomorrow!"])
-   output = classifier.predict(data)
+   output = classifier.predict(content)
    print(output.shape)  # (3,2)
    print(output.argmax(axis=1)) # [1,1,1]
    print(classifier.model.config.id2label[output[2,:].argmax()]) # POSITIVE

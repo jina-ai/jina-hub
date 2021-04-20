@@ -4,7 +4,7 @@
 
 The **CLIP** model was originally proposed in  [Learning Transferable Visual Models From Natural Language Supervision](https://cdn.openai.com/papers/Learning_Transferable_Visual_Models_From_Natural_Language_Supervision.pdf).
 
-`CLIPZeroShotClassifier` classifies data from a `np.ndarray` of floats and returns a `np.ndarray`.
+`CLIPZeroShotClassifier` classifies ``Document`` content from a `np.ndarray` of floats and returns a `np.ndarray`.
 
 - Input shape: `BatchSize x (Channel x Height x Width)`
 
