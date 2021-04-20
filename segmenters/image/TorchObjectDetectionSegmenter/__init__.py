@@ -1,7 +1,6 @@
 from typing import Dict, List
 
 import numpy as np
-import tensorflow as tf
 
 from jina.executors.decorators import single,batching
 from jina.executors.segmenters import BaseSegmenter
@@ -78,26 +77,15 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         """
         import torch
         _input = torch.from_numpy(img.astype('float32'))
-        print(f"_input shape: {_input.shape}")
-        print(f"_input: {_input}")
+
         if self.on_gpu:
             _input = _input.cuda()
 
-        #_predictions = self.model([_input])[0]
         _predictions = []
         for i in range(_input.shape[0]):
             prediction = self.model([_input[i]])
             _predictions.extend(prediction)
 
-        '''
-        boxes = _predictions['boxes'].detach()
-        scores = _predictions['scores'].detach()
-        labels = _predictions['labels']
-        if self.on_gpu:
-            boxes = boxes.cpu()
-            scores = scores.cpu()
-            labels = labels.cpu()
-        return boxes, scores, labels'''
         return _predictions
 
     @batching
@@ -114,9 +102,8 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         # "Ensure the color channel axis is the default axis." i.e. c comes first
         # e.g. (h,w,c) -> (c,h,w) / (n,h,w,c) -> (c,n,h,w)
         raw_img = _move_channel_axis(raw_img, self.channel_axis, self._default_channel_axis)
-        # raw_img = np.transpose(raw_img,[0,3,1,2]) # (n,h,w,c) -> (n,c,h,w)
-        print(f"raw img n: {raw_img.shape[1]}")
-        batchedImgArr = np.asarray([raw_img[:, 0, :, :], raw_img[:, 1, :, :]])#raw_img[np.arange(raw_img.shape[1])[:,None,None], x,y]
+
+        batchedImgArr = np.asarray([raw_img[:, 0, :, :], raw_img[:, 1, :, :]])
         batchedPredictions = self._predict(batchedImgArr)
 
         result = []
