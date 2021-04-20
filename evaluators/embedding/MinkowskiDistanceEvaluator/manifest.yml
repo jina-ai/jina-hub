@@ -6,7 +6,7 @@ description: Evaluates Minkowski distance with parameter order
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.4
+documentation: https://github.com/jina-ai/jina-hub/blob/master/evaluators/embedding/MinkowskiDistanceEvaluator/README.md
+version: 0.0.5
 license: apache-2.0
 keywords: [Minkowski, evaluator, embedding, information retrieval evaluation]

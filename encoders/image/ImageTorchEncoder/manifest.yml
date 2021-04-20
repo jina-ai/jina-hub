@@ -7,7 +7,7 @@ description: '`ImageTorchEncoder` encodes data from a ndarray, potentially B x (
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/image/ImageTorchEncoder/README.md
 version: 0.0.8
 license: apache-2.0
 keywords: [CNN, pytorch, Computer Vision, alexnet, resnet, image, encode]
