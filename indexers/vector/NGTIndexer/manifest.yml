@@ -6,7 +6,7 @@ description: NGT powered vector indexer
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub/tree/master/indexers/vector/NGTIndexer/README.md
-version: 0.0.12
+documentation: https://github.com/jina-ai/jina-hub/blob/master/indexers/vector/NGTIndexer/README.md
+version: 0.0.13
 license: apache-2.0
 keywords: [ann, indexer, ngt, vector, hamming, jaccard]
