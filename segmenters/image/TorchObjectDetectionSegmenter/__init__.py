@@ -54,7 +54,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         if self.model_name is None:
             self.model_name = 'fasterrcnn_resnet50_fpn'
         self.channel_axis = channel_axis
-        self._default_channel_axis = 1
+        self._default_channel_axis = 0
         self.confidence_threshold = confidence_threshold
         self.label_name_map = label_name_map
         if self.label_name_map is None:
@@ -81,12 +81,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         if self.on_gpu:
             _input = _input.cuda()
 
-        batched_predictions = []
-        for i in range(_input.shape[0]):
-            predictions = self.model([_input[i]])[0]
-            batched_predictions.append(predictions)
-
-        return batched_predictions
+        return self.model(_input)
 
     @batching
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
@@ -101,12 +96,12 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
         batch = np.copy(blob) # (2, 681, 1264, 3) with imgs/cars.jpg
         # "Ensure the color channel axis is the default axis." i.e. c comes first
         # e.g. (h,w,c) -> (c,h,w) / (b,h,w,c) -> (b,c,h,w)
-        batch = _move_channel_axis(batch, self.channel_axis, self._default_channel_axis)
+        batch = _move_channel_axis(batch, self.channel_axis, self._default_channel_axis + 1) # take batching into account
 
         batched_predictions = self._predict(batch)
 
         result = []
-        for i, predictions in enumerate(batched_predictions):
+        for image, predictions in zip(batch, batched_predictions):
             bboxes = predictions['boxes'].detach()
             scores = predictions['scores'].detach()
             labels = predictions['labels']
@@ -114,7 +109,7 @@ class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
                 bboxes = bboxes.cpu()
                 scores = scores.cpu()
                 labels = labels.cpu()
-            img = _load_image(batch[i, :, :, :] * 255, self._default_channel_axis)
+            img = _load_image(image * 255, self._default_channel_axis)
 
             batched = []
             for bbox, score, label in zip(bboxes.numpy(), scores.numpy(), labels.numpy()):
