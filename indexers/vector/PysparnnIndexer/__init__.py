@@ -158,7 +158,7 @@ class PysparnnIndexer(BaseVectorIndexer):
         distances = []
         indices = []
         for record in index_distance_pairs:
-            sorted_record = sorted(record, key=lambda x: float(x[0]),reverse=False)
+            sorted_record = sorted(record, key=lambda x: float(x[0]), reverse=False)
             distance_list, index_list = zip(*sorted_record)
             distances.append(distance_list)
             indices.append(index_list)
