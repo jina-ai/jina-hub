@@ -1,0 +1,12 @@
+manifest_version: 1
+name: PostgreSQLDBMSIndexer
+kind: indexer
+description: An indexer wrapper around the PostgreSQL database system
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [SQL, database, PostgreSQLDBMSIndexer, indexer]
+type: pod
