@@ -1,19 +1,20 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import typing
+from typing import List
 import numpy as np
-from scipy.sparse import coo_matrix, csr_matrix, bsr_matrix, csc_matrix
-from pysparnn.matrix_distance import (
-    CosineDistance,
-    UnitCosineDistance,
-    SlowEuclideanDistance,
-    DenseCosineDistance,
-)
 
 from jina.executors.indexers.vector import BaseVectorIndexer
 
-SparseMatrixType = typing.Union[csr_matrix, coo_matrix, bsr_matrix, csc_matrix]
+if False:
+    from scipy.sparse import coo_matrix, csr_matrix, bsr_matrix, csc_matrix
+    from pysparnn.matrix_distance import (
+        CosineDistance,
+        UnitCosineDistance,
+        SlowEuclideanDistance,
+        DenseCosineDistance,
+    )
+    SparseMatrixType = typing.Union[csr_matrix, coo_matrix, bsr_matrix, csc_matrix]
 
 
 def check_indexer(func):
@@ -92,7 +93,12 @@ class PysparnnIndexer(BaseVectorIndexer):
         super().close()
 
     def _assign_distance_class(self, metric: str):
-
+        from pysparnn.matrix_distance import (
+            CosineDistance,
+            UnitCosineDistance,
+            SlowEuclideanDistance,
+            DenseCosineDistance,
+        )
         if metric == 'cosine':
             class_metric = CosineDistance
         elif metric == 'unit_cosine':
@@ -129,7 +135,7 @@ class PysparnnIndexer(BaseVectorIndexer):
             num_indexes=self.num_indexes,
         )
 
-    def query(self, vectors: SparseMatrixType, top_k: int, *args, **kwargs):
+    def query(self, vectors: 'SparseMatrixType', top_k: int, *args, **kwargs):
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
         :return: a tuple of two ndarrays.
@@ -159,7 +165,7 @@ class PysparnnIndexer(BaseVectorIndexer):
 
     @check_indexer
     def add(
-        self, keys: typing.List, vectors: SparseMatrixType, *args, **kwargs
+        self, keys: List[str], vectors: 'SparseMatrixType', *args, **kwargs
     ) -> None:
         """Add keys and vectors to the indexer.
 
@@ -173,7 +179,7 @@ class PysparnnIndexer(BaseVectorIndexer):
 
     @check_indexer
     def update(
-        self, keys: typing.List, vectors: SparseMatrixType, *args, **kwargs
+        self, keys: List[str], vectors: 'SparseMatrixType', *args, **kwargs
     ) -> None:
         """Update the embeddings on the index via document ids (keys).
 
@@ -187,7 +193,7 @@ class PysparnnIndexer(BaseVectorIndexer):
             self.index[key] = vector
 
     @check_indexer
-    def delete(self, keys: typing.List, *args, **kwargs) -> None:
+    def delete(self, keys: List[str], *args, **kwargs) -> None:
         """Delete the embeddings from the index via document ids (keys).
 
         :param keys: a list of ids
