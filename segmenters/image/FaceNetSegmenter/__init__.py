@@ -5,7 +5,7 @@ from typing import List, Dict
 
 import numpy as np
 import torch
-from jina.executors.decorators import single
+from jina.executors.decorators import single, batching
 
 from jina.executors.devices import TorchDevice
 from jina.executors.segmenters import BaseSegmenter
@@ -64,7 +64,7 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
                                    min_face_size=self.min_face_size,
                                    keep_all=self.keep_all).eval()
 
-    @single
+    @batching
     def segment(self, data: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """Transform a numpy `ndarray` of shape `(Height x Width x Channel)`
         into a list with dicts that contain cropped images.
@@ -75,15 +75,16 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         :return: A list with dicts that contain cropped images.
         """
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
-
+            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis+1)
+        data = np.asarray(data)
         with torch.no_grad():
+
             image = torch.from_numpy(data.astype('float32')).to(self.device)
-            # Create a batch of size 1
-            image = image.unsqueeze(0)
+
 
             faces, probabilities = self.face_detector(image, return_prob=True)
 
+            print(f"probabilities : {probabilities[0]}")
             if self.keep_all:
                 # All faces and probabilities are grouped in the first dimension of the first batch element
                 faces = faces[0]

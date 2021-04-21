@@ -66,7 +66,7 @@ def segmenter_multiface():
 def test_segment_face(segmenter_multiface, filename, n_faces):
     image = Image.open(os.path.join(SEGMENTER_DIR, 'imgs', filename))
 
-    result = segmenter_multiface.segment([np.array(image)])[0]
+    result = segmenter_multiface.segment([np.array(image)])
 
     assert_correct_output(result, n_faces=n_faces)
 
