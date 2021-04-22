@@ -5,7 +5,7 @@ from typing import List, Dict
 
 import numpy as np
 import torch
-from jina.executors.decorators import single, batching
+from jina.executors.decorators import batching
 
 from jina.executors.devices import TorchDevice
 from jina.executors.segmenters import BaseSegmenter
@@ -28,7 +28,6 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         "center_weighted_size": box size minus weighted squared offset from image center
     :param post_process: Flag for normalizing the output image. Required if you want to pass
         these face to the FaceNetEmbedder.
-    :param keep_all: Flag for keeping all detected faces rather than a single face.
     :param min_face_size: Minimum face size to search for.
     :param channel_axis: Axis of channels in the image. Default is 2 (channels-last), use 0 for channels-first.
     """
@@ -38,7 +37,6 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
                  margin: int = 0,
                  selection_method: str = 'largest',
                  post_process: bool = True,
-                 keep_all: bool = False,
                  min_face_size: int = 20,
                  channel_axis: int = 2,
                  *args, **kwargs):
@@ -47,7 +45,6 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         self.margin = margin
         self.selection_method = selection_method
         self.post_process = post_process
-        self.keep_all = keep_all
         self.min_face_size = min_face_size
         self.channel_axis = channel_axis
 
@@ -62,10 +59,10 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
                                    device=self.device,
                                    post_process=self.post_process,
                                    min_face_size=self.min_face_size,
-                                   keep_all=self.keep_all).eval()
+                                   keep_all=True)
 
     @batching
-    def segment(self, data: 'np.ndarray', *args, **kwargs) -> List[Dict]:
+    def segment(self, data: 'np.ndarray', *args, **kwargs) -> List[List[Dict]]:
         """Transform a numpy `ndarray` of shape `(Height x Width x Channel)`
         into a list with dicts that contain cropped images.
 
@@ -76,27 +73,23 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         """
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis+1)
-        data = np.asarray(data)
+
+        batch = np.copy(data)
+        results = []
         with torch.no_grad():
+            image_batch = torch.from_numpy(batch.astype('float32')).to(self.device)
+            facesBatch, probabilitiesBatch = self.face_detector(image_batch, return_prob=True)
+            for faces, probabilities in zip(facesBatch, probabilitiesBatch):
+                if faces is not None:
+                    batched = []
+                    for face, probability in zip(faces, probabilities):
+                        if face is not None:
+                            batched.append(dict(
+                                offset=0,
+                                weight=probability,
+                                blob=face.detach().numpy(),
+                            ))
 
-            image = torch.from_numpy(data.astype('float32')).to(self.device)
+                    results.append(batched)
 
-
-            faces, probabilities = self.face_detector(image, return_prob=True)
-
-            print(f"probabilities : {probabilities[0]}")
-            if self.keep_all:
-                # All faces and probabilities are grouped in the first dimension of the first batch element
-                faces = faces[0]
-                probabilities = probabilities[0]
-
-            results = [
-                dict(
-                    offset=0,
-                    weight=probability,
-                    blob=face.detach().numpy(),
-                )
-                for face, probability in zip(faces, probabilities)
-                if face is not None
-            ]
-            return results
+        return results

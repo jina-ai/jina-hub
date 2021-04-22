@@ -1,10 +1,12 @@
 import os
 from pathlib import Path
 from typing import List
+import logging
 
 import pytest
 
 from PIL import Image
+import cv2
 import numpy as np
 
 from .. import FaceNetSegmenter
@@ -19,26 +21,27 @@ def segmenter():
 
 
 def assert_correct_output(result, n_faces: int):
-    assert isinstance(result, list)
+    #assert isinstance(result, list)
     assert len(result) == n_faces
     for face in result:
         assert face['blob'].shape == (3, 160, 160)
 
-
 @pytest.mark.parametrize('filenames', [
-    ['one_face.jpg'],
-    ['three_faces.jpg', 'four_faces.jpg'],
-    ['one_face.jpg', 'three_faces.jpg', 'four_faces.jpg', 'five_faces.jpg'],
+    [('one_face.jpg', 1)],
+    [('three_faces.jpg', 3), ('four_faces.jpg', 4)],
+    [('one_face.jpg', 1), ('three_faces.jpg', 3), ('four_faces.jpg', 4), ('five_faces.jpg',5)],
 ])
-def test_segment_face(segmenter, filenames: List[str]):
+def test_segment_face_in_batch(segmenter_multiface, filenames):
     images = [
-        np.array(Image.open(os.path.join(SEGMENTER_DIR, 'imgs', filename)))
+        cv2.resize(np.array(Image.open(os.path.join(SEGMENTER_DIR, 'imgs', filename[0]))),dsize=(480, 320))
         for filename in filenames
     ]
 
-    results = segmenter.segment(images)
+    results = segmenter_multiface.segment(images) #[[dict1,dict2...],...] each image gets a list of dicts, which relates to the faces
+    i = 0
     for result in results:
-        assert_correct_output(result, n_faces=1)
+        assert_correct_output(result, n_faces=filenames[i][1])
+        i += 1
 
 
 @pytest.mark.parametrize('height', [128, 512])
@@ -65,8 +68,7 @@ def segmenter_multiface():
 ])
 def test_segment_face(segmenter_multiface, filename, n_faces):
     image = Image.open(os.path.join(SEGMENTER_DIR, 'imgs', filename))
-
-    result = segmenter_multiface.segment([np.array(image)])
+    result = segmenter_multiface.segment([np.array(image)])[0]
 
     assert_correct_output(result, n_faces=n_faces)
 
