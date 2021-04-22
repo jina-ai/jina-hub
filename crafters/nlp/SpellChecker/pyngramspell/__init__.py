@@ -44,7 +44,6 @@ class PyNgramSpell():
 
         return token_pattern.findall
 
-
     def fit(self, X):
         """
         X iterable of strings (corpus)        
@@ -57,11 +56,6 @@ class PyNgramSpell():
         self.bigram_freq_dict = dict(bigram_finder.ngram_fd.items())
         self.vocabulary = set(list(itertools.chain(*self.bigram_freq_dict.keys())))
 
-    #def get_candidates(self, token):
-    #    distance_token_to_words = {word:edit_distance(word,token.lower()) for word in self.vocabulary}
-    #    minimum_distance = min(distance_token_to_words.values())
-    #    return sorted([word for word, distance in distance_token_to_words.items() 
-    #                   if distance == minimum_distance], reverse=True)
     
     def get_candidates(self, token, max_dist):
         distance_token_to_words = {word:edit_distance(word,token.lower()) for word in self.vocabulary}
@@ -69,6 +63,10 @@ class PyNgramSpell():
         if minimum_distance < max_dist:
             return sorted([word for word, distance in distance_token_to_words.items() if distance == minimum_distance])
         return [token]
+
+    def filter_vocabulary(self, min_freq):
+        self.vocabulary = set(dict(filter(lambda x:x[1]>min_freq, self.unigram_freq_dict.items())).keys())
+
 
     def correct_with_bigrams(self, tokenized_sentence):
 
@@ -119,12 +117,6 @@ class PyNgramSpell():
 
         tokenized_sentence = self.correct_with_bigrams(tokenized_sentence)
 
-        #for index,word in enumerate(tokenized_sentence):
-        #    if word not in self.vocabulary:
-        #        candidates = {candidate:interpolation_probability(previous_word, candidate, bigram_freq_dict, n_vocabulary, self.lambda_interpolation=0.3) for candidate in self.get_candidates(word)}
-        #        best_candidate  = max(candidates, key=candidates.get)
-        #        tokenized_sentence[index] = best_candidate
-    
         return tokenized_sentence
 
 
