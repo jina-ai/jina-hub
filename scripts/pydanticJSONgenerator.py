@@ -4,21 +4,26 @@ from typing import List
 from pydantic import BaseModel
 from pydantic.fields import Field
 
+Types = enum.Enum(
+    'Types',
+    {
+        'pod': 'pod',
+        'app': 'app'
+    }
+)
 
-class Types(str, Enum):
-    pod = 'pod'
-    app = 'app'
-
-
-class Kinds(str, Enum):
-    encoder = 'encoder'
-    indexer = 'indexer'
-    ranker = 'ranker'
-    crafter = "crafter"
-    segmenter = "segmenter"
-    classifier = "classifier"
-    evaluator = "evaluator"
-
+Kinds = enum.Enum(
+    'Kinds',
+    {
+        'encoder' : 'encoder',
+        'indexer' : 'indexer',
+        'ranker' : 'ranker',
+        'crafter' : 'crafter',
+        'segmenter' : 'segmenter',
+        'classifier' : 'classifier',
+        'evaluator' : 'evaluator'
+    }
+)
 
 Platform = enum.Enum(
     'Platform',

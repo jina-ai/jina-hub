@@ -1,10 +1,11 @@
 name: Update JSON schema
 
-on: #workflow_dispatch
+on: 
   push
-
-    #paths:
-    #- '../../schemas/schema.json'
+    branches:
+    - master
+    paths:
+    - '../../scripts/pydanticJSONgenerator.py'
 
 jobs:
   update-schema:
