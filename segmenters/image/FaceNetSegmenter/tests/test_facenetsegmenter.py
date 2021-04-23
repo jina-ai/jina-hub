@@ -26,7 +26,7 @@ def assert_correct_output(result, n_faces: int):
     for face in result:
         assert face['blob'].shape == (3, 160, 160)
 
-@pytest.mark.parametrize('filenames', [
+@pytest.mark.parametrize('filenames_with_labels', [
     [('one_face.jpg', 1)],
     [('three_faces.jpg', 3), ('four_faces.jpg', 4)],
     [('one_face.jpg', 1), ('three_faces.jpg', 3), ('four_faces.jpg', 4), ('five_faces.jpg',5)],
