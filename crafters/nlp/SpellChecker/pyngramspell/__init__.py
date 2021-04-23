@@ -9,6 +9,57 @@ from editdistance import eval as edit_distance
 from collections import Counter
 
 
+
+class BKTree:
+    def __init__(self, distfn, words, sort_candidates=False):
+        self.distfn = distfn
+        self.sort_candidates = sort_candidates
+
+        it = iter(words)
+        root = next(it)
+        self.tree = (root, {})
+
+        for i in it:
+            self._add_word(self.tree, i)
+
+    def _add_word(self, parent, word):
+        pword, children = parent
+        d = self.distfn(word, pword)
+        if d in children:
+            self._add_word(children[d], word)
+        else:
+            children[d] = (word, {})
+       
+    def _search_descendants(self, parent, n, distance, query_word):
+        
+        node_word, children_dict = parent
+        dist_to_node = distance(query_word, node_word)
+        self.visited_nodes.append(node_word)
+        results = []
+        if dist_to_node <= n:
+            results.append((dist_to_node, node_word))
+        
+        for i in range(dist_to_node-n, dist_to_node+n+1):
+            child = children_dict.get(i) 
+            if child is not None:
+                results.extend(self._search_descendants(child, n, distance, query_word))
+                
+        return results
+            
+    def query(self, query_word, n, return_distances=False):
+        # sort by distance
+        self.visited_nodes = []
+        
+        distance_candidate_list = self._search_descendants(self.tree, n, self.distfn, query_word)
+        if self.sort_candidates:
+            distance_candidate_list = sorted(distance_candidate_list)
+
+        if return_distances:
+            return distance_candidate_list
+        else:
+            return [x[1] for x in distance_candidate_list]
+
+
 class PyNgramSpell():
 
 
@@ -18,7 +69,11 @@ class PyNgramSpell():
                  vocabulary={},
                  string_preprocessor_func=str.lower,
                  token_pattern=r"(?u)\b\w\w+\b",
-                 lambda_interpolation=0.3):
+                 lambda_interpolation=0.3,
+                 min_freq=5,
+                 max_dist=1,
+                 sort_candidates=False,
+                 bktree=True):
 
         self.ngram_range = ngram_range
         self.tokenizer = tokenizer
@@ -26,6 +81,10 @@ class PyNgramSpell():
         self.string_preprocessor_func = string_preprocessor_func
         self.token_pattern = token_pattern
         self.lambda_interpolation = lambda_interpolation
+        self.min_freq = min_freq
+        self.max_dist = max_dist
+        self.sort_candidates = sort_candidates
+        self.bktree = bktree
 
     def build_tokenizer(self):
         """Return a function that splits a string into a sequence of tokens.
@@ -51,18 +110,52 @@ class PyNgramSpell():
         self.tokenize_func = self.build_tokenizer()
         X_tokenized = [self.tokenize_func(self.string_preprocessor_func(x)) for x in X]
         self.unigram_freq_dict = dict(Counter(itertools.chain(*X_tokenized)))
-
         bigram_finder = BigramCollocationFinder.from_documents(X_tokenized)
         self.bigram_freq_dict = dict(bigram_finder.ngram_fd.items())
         self.vocabulary = set(list(itertools.chain(*self.bigram_freq_dict.keys())))
 
+        if self.min_freq>0:
+            self.filter_vocabulary(min_freq=self.min_freq)
     
+        if self.bktree:
+            self.bktree = BKTree(edit_distance, self.vocabulary, sort_candidates=self.sort_candidates)
+
+
     def get_candidates(self, token, max_dist):
-        distance_token_to_words = {word:edit_distance(word,token.lower()) for word in self.vocabulary}
-        minimum_distance = min(distance_token_to_words.values())
-        if minimum_distance < max_dist:
-            return sorted([word for word, distance in distance_token_to_words.items() if distance == minimum_distance])
-        return [token]
+        if self.bktree:
+            return self.get_candidates_bktree(token, max_dist)
+        else:
+            return self.get_candidates_exhaustive(token, max_dist)
+
+    def get_candidates_bktree(self, token, max_dist):
+        """Return a list of candidate words from the vocabulary at most `max_dist` away from the input token.
+        """
+        candidate_tokens = self.bktree.query(token, max_dist)
+
+        if len(candidate_tokens) >0:
+            return candidate_tokens
+        else:
+            return [token]
+
+    def get_candidates_exhaustive(self, token, max_dist):
+        """Return a list of candidate words from the vocabulary at most `max_dist` away from the input token.
+        This version of the function is private and kept for benchmarking pourposes. This function computes the
+        edit distance between the input token and all words in the vocabulary. Then it filters candidates by
+        the edit distance.
+        """
+        token = token.lower()
+        distance_token_to_words = {word:edit_distance(word, token) for word in self.vocabulary}
+        min_dist = min(distance_token_to_words.values())
+        if min_dist <= max_dist:
+
+            if self.sort_candidates:
+                result = sorted([(distance,word) for word, distance in distance_token_to_words.items() if distance <= max_dist])
+            else:
+                result = [word for word, distance in distance_token_to_words.items() if distance <= max_dist]
+
+            return result 
+        else:
+            return [token]
 
     def filter_vocabulary(self, min_freq):
         self.vocabulary = set(dict(filter(lambda x:x[1]>min_freq, self.unigram_freq_dict.items())).keys())
@@ -97,7 +190,7 @@ class PyNgramSpell():
                     previous_word = '.'
                 else:
                     previous_word = tokenized_sentence[index-1]
-                candidates = {candidate:interpolation_probability(previous_word, candidate) for candidate in self.get_candidates(word, max_dist=2)}
+                candidates = {candidate:interpolation_probability(previous_word, candidate) for candidate in self.get_candidates(word, max_dist=self.max_dist)}
                 
                 tokenized_sentence[index] = max(candidates, key=candidates.get)
         
