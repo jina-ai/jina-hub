@@ -62,7 +62,7 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
                                    keep_all=True)
 
     @batching
-    def segment(self, data: 'np.ndarray', *args, **kwargs) -> List[List[Dict]]:
+    def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[List[Dict]]:
         """Transform a numpy `ndarray` of shape `(Height x Width x Channel)`
         into a list with dicts that contain cropped images.
 
@@ -72,9 +72,9 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         :return: A list with dicts that contain cropped images.
         """
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis+1)
+            blob = np.moveaxis(blob, self.channel_axis, self._default_channel_axis+1)
 
-        batch = np.copy(data)
+        batch = np.copy(blob)
         results = []
         with torch.no_grad():
             image_batch = torch.from_numpy(batch.astype('float32')).to(self.device)
