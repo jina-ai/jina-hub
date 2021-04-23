@@ -83,7 +83,6 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
                 if faces is not None:
                     batched = []
                     for face, probability in zip(faces, probabilities):
-                        if face is not None:
                             batched.append(dict(
                                 offset=0,
                                 weight=probability,

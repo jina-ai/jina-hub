@@ -31,16 +31,16 @@ def assert_correct_output(result, n_faces: int):
     [('three_faces.jpg', 3), ('four_faces.jpg', 4)],
     [('one_face.jpg', 1), ('three_faces.jpg', 3), ('four_faces.jpg', 4), ('five_faces.jpg',5)],
 ])
-def test_segment_face_in_batch(segmenter_multiface, filenames):
+def test_segment_face_in_batch(segmenter_multiface, filenames_with_labels):
     images = [
         cv2.resize(np.array(Image.open(os.path.join(SEGMENTER_DIR, 'imgs', filename[0]))),dsize=(480, 320))
-        for filename in filenames
+        for filename in filenames_with_labels
     ]
 
     results = segmenter_multiface.segment(images) #[[dict1,dict2...],...] each image gets a list of dicts, which relates to the faces
     i = 0
     for result in results:
-        assert_correct_output(result, n_faces=filenames[i][1])
+        assert_correct_output(result, n_faces=filenames_with_labels[i][1])
         i += 1
 
 
