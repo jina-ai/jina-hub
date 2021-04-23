@@ -6,6 +6,7 @@ on:
     - master
     paths:
     - '../../scripts/pydanticJSONgenerator.py'
+  workflow_dispatch
 
 jobs:
   update-schema:
