@@ -66,7 +66,7 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         """Transform a numpy `ndarray` of shape `(Height x Width x Channel)`
         into a list with dicts that contain cropped images.
 
-        :param data: A numpy `ndarray` that represents a single image.
+        :param blob: A numpy `ndarray` that represents a single image.
         :param args: Additional positional arguments.
         :param kwargs: Additional positional arguments.
         :return: A list with dicts that contain cropped images.
@@ -74,14 +74,16 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         if self.channel_axis != self._default_channel_axis:
             blob = np.moveaxis(blob, self.channel_axis, self._default_channel_axis+1)
 
-        batch = np.copy(blob)
+        batch = blob
         results = []
+        batch = np.asarray(batch)
         with torch.no_grad():
             image_batch = torch.from_numpy(batch.astype('float32')).to(self.device)
             facesBatch, probabilitiesBatch = self.face_detector(image_batch, return_prob=True)
             for faces, probabilities in zip(facesBatch, probabilitiesBatch):
                 if faces is not None:
                     batched = []
+                    print(f"faces shape: {faces.shape}")
                     for face, probability in zip(faces, probabilities):
                             batched.append(dict(
                                 offset=0,
