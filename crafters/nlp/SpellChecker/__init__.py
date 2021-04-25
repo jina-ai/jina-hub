@@ -9,10 +9,8 @@ from jina.executors.crafters import BaseCrafter
 
 class SpellChecker(BaseCrafter):
 
-    # TODO: What about the tokenizer function option, should be passed to the transform?
-
     def __init__(self,
-                 model_path: str,
+                 model_path: str = 'model.pickle',
                  *args, **kwargs):
         super.__init__(*args, **kwargs)
         self.model_path = model_path
