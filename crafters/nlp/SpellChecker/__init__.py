@@ -9,22 +9,23 @@ from jina.executors.crafters import BaseCrafter
 
 class SpellChecker(BaseCrafter):
 
+    # TODO: What about the tokenizer function option, should be passed to the transform?
+
     def __init__(self,
-                 tika_ocr_strategy: str = 'ocr_only',
-                 tika_extract_inline_images: str = 'true',
-                 tika_ocr_language: str = 'eng',
-                 tika_request_timeout: int = 600,
+                 model_path: str,
                  *args, **kwargs):
-    super().__init__(*args, **kwargs)
+        super.__init__(*args, **kwargs)
+        self.model_path = model_path
 
     def post_init(self):
         super().post_init()
-        load_spellchecker()
+        import pickle
 
-    def load_spellchecker(self):
-    	import pickle
+        self.model = None
+        if self.model_path:
+            with open(self.model_path, 'rb') as model_file:
+                self.model = pickle.load(model_file)
 
-    	# load model
-    	pass
-
-
+    @single
+    def craft(self, text: str, *args, **kwargs):
+        return dict(text=self.model.transform(text))
