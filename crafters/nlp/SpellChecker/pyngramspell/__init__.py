@@ -4,11 +4,11 @@ __license__ = "Apache-2.0"
 import itertools
 import re
 from typing import Callable, List, Tuple
+from collections import Counter
 
 import nltk
 from nltk.collocations import BigramCollocationFinder
 from editdistance import eval as edit_distance
-from collections import Counter
 
 
 class BKTree:
