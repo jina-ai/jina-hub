@@ -22,7 +22,7 @@ def test_missing_path_vectorizer():
         cur_dir, '/model/tfidf_nonexistent_path.pickle'
     )
     with pytest.raises(PretrainedModelFileDoesNotExist):
-        encoder = TFIDFTextEncoder(wrong_path_vectorizer)
+        TFIDFTextEncoder(wrong_path_vectorizer)
 
 
 def test_tfidf_text_encoder():

@@ -1,14 +1,11 @@
 FROM jinaai/jina:1.1.6 as base
 
-# install git
-RUN apt-get -y update && apt-get install -y git
-
 # setup the workspace
 COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-RUN pip install -U scikit-learn
+RUN pip install -r requirements.txt
 
 # for testing the image
 FROM base
