@@ -1,0 +1,7 @@
+!PostgreSQLDBMSIndexer
+with:
+  hostname: '127.0.0.1'
+  port: 5432
+metas:
+  py_modules: 
+    - __init__.py

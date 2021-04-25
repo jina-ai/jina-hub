@@ -13,7 +13,7 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 
 class CustomImageTorchEncoder(BaseTorchEncoder):
     """
-    :class:`CustomImageTorchEncoder` encodes data from a ndarray,
+    :class:`CustomImageTorchEncoder` encodes ``Document`` content from a ndarray,
     potentially B x (Channel x Height x Width) into a ndarray of `B x D`.
 
     Internally, :class:`CustomImageTorchEncoder` wraps any custom torch
@@ -55,7 +55,7 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
         else:
             raise PretrainedModelFileDoesNotExist(f'model {self.model_path} does not exist')
 
-    def _get_features(self, data):
+    def _get_features(self, content):
         feature_map = None
 
         def get_activation(model, model_input, output):
@@ -63,7 +63,7 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
             feature_map = output.detach()
 
         handle = self.layer.register_forward_hook(get_activation)
-        self.model(data)
+        self.model(content)
         handle.remove()
         return feature_map
 
@@ -74,23 +74,23 @@ class CustomImageTorchEncoder(BaseTorchEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
         Encode input data into `np.ndarray` of size `B x D`.
         Where `B` is the batch size and `D` is the Dimension.
 
-        :param data: An array in size `B`.
+        :param content: An array in size `B`.
         :param args:  Additional positional arguments.
         :param kwargs: Additional keyword arguments.
         :return: An ndarray in size `B x D`.
         """
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
+            content = np.moveaxis(content, self.channel_axis, self._default_channel_axis)
         import torch
-        _input = torch.from_numpy(data.astype('float32'))
+        _input = torch.from_numpy(content.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()
-        _feature = self._get_features(_input).detach()
+        _feature = self._get_features(content=_input).detach()
         if self.on_gpu:
             _feature = _feature.cpu()
         _feature = _feature.numpy()

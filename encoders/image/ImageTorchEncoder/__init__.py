@@ -9,7 +9,7 @@ from jina.executors.encoders.frameworks import BaseTorchEncoder
 
 class ImageTorchEncoder(BaseTorchEncoder):
     """
-    :class:`ImageTorchEncoder` encodes data from a ndarray,
+    :class:`ImageTorchEncoder` encodes ``Document`` content from a ndarray,
     potentially B x (Channel x Height x Width) into a ndarray of `B x D`.
     Where B` is the batch size and `D` is the Dimension.
 
@@ -62,8 +62,8 @@ class ImageTorchEncoder(BaseTorchEncoder):
         self.model = model.features.eval()
         self.to_device(self.model)
 
-    def _get_features(self, data):
-        return self.model(data)
+    def _get_features(self, content):
+        return self.model(content)
 
     def _get_pooling(self, feature_map: 'np.ndarray') -> 'np.ndarray':
         if feature_map.ndim == 2 or self.pool_strategy is None:
@@ -72,13 +72,13 @@ class ImageTorchEncoder(BaseTorchEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data into a ndarray of `B x D`. `
+        Encode document content into a ndarray of `B x D`. `
 
         B` is the batch size and `D` is the Dimension.
 
-        :param data: A `B x (Channel x Height x Width)` ndarray, where
+        :param content: A `B x (Channel x Height x Width)` ndarray, where
             `B` is the size of the batch
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
@@ -86,10 +86,10 @@ class ImageTorchEncoder(BaseTorchEncoder):
         """
 
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
+            content = np.moveaxis(content, self.channel_axis, self._default_channel_axis)
         import torch
 
-        _input = torch.from_numpy(data.astype('float32'))
+        _input = torch.from_numpy(content.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()
         _feature = self._get_features(_input).detach()

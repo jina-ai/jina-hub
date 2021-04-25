@@ -19,7 +19,7 @@ class TirgImageEncoder(BaseTorchEncoder):
 
     :param model_path: the directory of the TIRG model.
     :param texts_path: the pickled training text of the TIRG model.
-    :param channel_axis: The axis of the channel, default -1, will move the axis of input data from -1 to 1.
+    :param channel_axis: The axis of the channel, default -1, will move the axis of input document content from -1 to 1.
     :param args: additional positional arguments.
     :param kwargs: additional positional arguments.
     """
@@ -55,25 +55,25 @@ class TirgImageEncoder(BaseTorchEncoder):
         else:
             raise PretrainedModelFileDoesNotExist(f'model {self.model_path} does not exist')
 
-    def _get_features(self, data):
-        return self.model.extract_img_feature(data)
+    def _get_features(self, content):
+        return self.model.extract_img_feature(content)
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode input data into `np.ndarray`.
+        Encode input document content into `np.ndarray`.
 
-        :param data: Image to be encoded, expected a `np.ndarray` of BatchSize x (Channel x Height x Width).
+        :param content: Image to be encoded, expected a `np.ndarray` of BatchSize x (Channel x Height x Width).
         :param args: additional positional arguments.
         :param kwargs: additional positional arguments.
         :return feature: Encoded result as `np.ndarray`.
         """
         import numpy as np
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
+            content = np.moveaxis(content, self.channel_axis, self._default_channel_axis)
         import torch
-        _input = torch.from_numpy(data.astype('float32'))
+        _input = torch.from_numpy(content.astype('float32'))
         if self.on_gpu:
             _input = _input.cuda()
         feature = self._get_features(_input).detach()

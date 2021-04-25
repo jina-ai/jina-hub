@@ -47,16 +47,16 @@ class FarmTextEncoder(BaseTorchEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
         Encode an array of string in size `B` into an ndarray in size `B x D`.
 
         The ndarray potentially is BatchSize x (Channel x Height x Width)
             into an ndarray in size `B x D`. Where `D` is the Dimension.
 
-        :param data: a 1d array of string type in size `B`
+        :param content: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`.
         """
-        basic_texts = [{'text': s} for s in data]
+        basic_texts = [{'text': s} for s in content]
         embeds = np.stack([k['vec'] for k in self.model.extract_vectors(dicts=basic_texts)])
         return embeds

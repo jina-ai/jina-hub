@@ -1,4 +1,4 @@
-FROM jinaai/jina:1.1.5
+FROM jinaai/jina:1.1.9 as base
 
 # setup the workspace
 COPY . /workspace
@@ -11,6 +11,7 @@ RUN apt-get update && \
 RUN pip install -r requirements.txt && pip uninstall -y pathlib
 
 # for testing the image
-RUN pip install pytest pytest-mock mock && JINA_TEST_PRETRAINED='true' pytest
+FROM base
+RUN pip install pytest pytest-mock mock && pytest -v -s
 
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]

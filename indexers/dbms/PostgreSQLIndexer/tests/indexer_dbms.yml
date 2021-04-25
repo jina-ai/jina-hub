@@ -1,0 +1,18 @@
+jtype: PostgreSQLDBMSIndexer
+metas:
+  workspace: $DBMS_WORKSPACE
+  name: psql
+requests:
+  on:
+    DumpRequest:
+      - jtype: DumpDriver
+        with:
+          executor: psql
+    [IndexRequest, UpdateRequest]:
+      - jtype: DBMSIndexDriver
+        with:
+          executor: psql
+    DeleteRequest:
+      - jtype: DeleteDriver
+        with:
+          executor: psql

@@ -7,8 +7,8 @@ description:
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub/tree/master/indexers/vector/ZarrIndexer/README.md
-version: 0.0.11
+documentation: https://github.com/jina-ai/jina-hub/blob/master/indexers/vector/ZarrIndexer/README.md
+version: 0.0.13
 license: apache-2.0
 keywords: [zarr, numpy, indexer]
 type: pod

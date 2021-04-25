@@ -9,7 +9,7 @@ from jina.executors.devices import TorchDevice
 
 
 class CLIPImageEncoder(BaseTorchEncoder):
-    """Encode data from a numpy `ndarray` of shape `BatchSize x (Channel x Height x Width)` into
+    """Encode document content from a numpy `ndarray` of shape `BatchSize x (Channel x Height x Width)` into
     a numpy `ndarray` of shape `Batchsize x EmbeddingDimension`.
 
     Internally, :class:`CLIPImageEncoder` wraps the `CLIP` modeL from https://github.com/openai/CLIP
@@ -36,23 +36,23 @@ class CLIPImageEncoder(BaseTorchEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """Transform a numpy `ndarray` of shape `BatchSize x (Channel x Height x Width)` 
         into a numpy `ndarray` of shape `Batchsize x EmbeddingDimension`.
 
-        :param data: A numpy `ndarray` of strings.
+        :param content: A numpy `ndarray` of strings.
         :param args: Additional positional arguments.
         :param kwargs: Additional positional arguments.
         :return: A `BatchSize x EmbeddingDimension` numpy array.
         """
         import torch
 
-        input_torchtensor = torch.from_numpy(data.astype('float32'))
+        input_torchtensor = torch.from_numpy(content.astype('float32'))
         if self.on_gpu:
             input_torchtensor = input_torchtensor.cuda()
 
         with torch.no_grad():
-            embedded_data = self.model.encode_image(input_torchtensor)
+            embeded_content = self.model.encode_image(input_torchtensor)
 
-        embedded_data = embedded_data.cpu().numpy()
+        embedded_data = embeded_content.cpu().numpy()
         return embedded_data

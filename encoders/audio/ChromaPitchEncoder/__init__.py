@@ -32,14 +32,14 @@ class ChromaPitchEncoder(BaseAudioEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: np.ndarray, *args, **kwargs) -> np.ndarray:
+    def encode(self, content: np.ndarray, *args, **kwargs) -> np.ndarray:
         """
         Craft audio signal of each Chunk into short chroma frames.
 
         Extract chromagrams for each frame and concatenates Chunk
         frame chromagrams into a single Chunk embedding.
 
-        :param data: a `Batch x Signal Length` ndarray, where
+        :param content: a `Batch x Signal Length` ndarray, where
             `Signal Length` is a number of samples
         :return: a `Batch x Concatenated Features` ndarray, where
             `Concatenated Features` is a 12-dimensional feature
@@ -49,7 +49,7 @@ class ChromaPitchEncoder(BaseAudioEncoder):
         """
         from librosa.feature import chroma_cqt
         embeds = []
-        for chunk_data in data:
+        for chunk_data in content:
             chromagrams = chroma_cqt(y=chunk_data, sr=self.input_sample_rate, n_chroma=12, hop_length=self.hop_length)
             embeds.append(chromagrams.flatten())
         return embeds

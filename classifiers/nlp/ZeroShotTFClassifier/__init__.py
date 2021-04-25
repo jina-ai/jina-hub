@@ -81,26 +81,26 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
     @as_ndarray
     @batching
     def predict(self,
-                data: 'np.ndarray',
+                content: 'np.ndarray',
                 *args,
                 **kwargs) -> 'np.ndarray':
         """
-         Perform zero shot classification on 'data', the predicted label
+         Perform zero shot classification on ``Document`` content, the predicted label
          for each sample in X is returned.
 
          The output is a zero/one one-hot label for L-class multi-class
-         classification of size (B, L) with 'B' being 'data.shape[0]'
+         classification of size (B, L) with 'B' being 'content.shape[0]'
          and 'L' being the number of potential classification labels.
 
-         :param data: the input textual data to be classified, a 1 d
+         :param content: the input textual data to be classified, a 1 d
             array of string type in size 'B'
-         :type data: np.ndarray
+         :type content: np.ndarray
          :return: zero/one one-hot predicted label of each sample
             in size '(B, L)'
          :rtype: np.ndarray
         """
 
-        data_encoded = self._encode(data)
+        data_encoded = self._encode(content)
 
         distances = self._evaluate(data_encoded, self.labels_encoded)
 
@@ -130,7 +130,7 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
 
         return _cosine(_ext_A(_norm(actual)), _ext_B(_norm(desired)))
 
-    def _encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def _encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
 
         import tensorflow as tf
 
@@ -139,7 +139,7 @@ class ZeroShotTFClassifier(TFDevice, BaseClassifier):
             self.model.resize_token_embeddings(len(self.tokenizer.vocab))
 
         input_tokens = self.tokenizer(
-            list(data),
+            list(content),
             max_length=self.max_length,
             padding='longest',
             truncation=True,

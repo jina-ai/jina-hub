@@ -1,4 +1,4 @@
-FROM jinaai/jina:1.1.5
+FROM jinaai/jina:1.1.9 as base
 
 # setup the workspace
 COPY . /workspace
@@ -8,6 +8,8 @@ WORKDIR /workspace
 RUN pip install -r requirements.txt
 
 # for testing the image
-RUN pip install pytest && pytest && rm -rf '/root/.cache/huggingface/transformers/' && rm -rf /tmp/{*,.*}
+FROM base
+RUN pip install pytest && pytest -v -s
 
+FROM base
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]

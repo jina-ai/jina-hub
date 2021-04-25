@@ -45,22 +45,22 @@ class UniversalSentenceEncoder(BaseTFEncoder):
             self.model_url = model_url
             self.model = hub.load(self.model_url)
 
-        def encode(self, data: 'np.ndarray') -> 'np.ndarray':
+        def encode(self, content: 'np.ndarray') -> 'np.ndarray':
             """
-            Encode data into an ndarray
+            Encode ``Document`` content into an ndarray
 
-            :param data: a 1d array of string type in size `B`
+            :param content: a 1d array of string type in size `B`
             :param args:  Additional positional arguments
             :param kwargs: Additional keyword arguments
             :return: an ndarray in size `B x D`
             """
-            return self.model(data)
+            return self.model(content)
 
     class CMLMEncoder:
         """
         Private class encoder to represent a CMLM universal Sentence Encoder family.
 
-        It encodes data from an 1d array of string in size `B`
+        It encodes ``Document`` content from an 1d array of string in size `B`
         into an ndarray in size `B x D`.
         (https://tfhub.dev/google/universal-sentence-encoder-cmlm/en-base/1).
         """
@@ -72,16 +72,16 @@ class UniversalSentenceEncoder(BaseTFEncoder):
             self.bert_preprocessor = hub.KerasLayer(PREPROCESOR_CMLM)
             self.encoder = hub.KerasLayer(MODEL_ENCODER_CMLM)
 
-        def encode(self, data: 'np.ndarray') -> 'np.ndarray':
+        def encode(self, content: 'np.ndarray') -> 'np.ndarray':
             """
-            Encode data into an ndarray
+            Encode ``Document`` content into an ndarray
 
-            :param data: a 1d array of string type in size `B`
+            :param content: a 1d array of string type in size `B`
             :param args:  Additional positional arguments
             :param kwargs: Additional keyword arguments
             :return: an ndarray in size `B x D`
             """
-            return self.encoder(self.bert_preprocessor(data))['default']
+            return self.encoder(self.bert_preprocessor(content))['default']
 
     def __init__(
             self,
@@ -103,15 +103,15 @@ class UniversalSentenceEncoder(BaseTFEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
         Encode an array of string in size `B` into an ndarray in size `B x D`
 
         The ndarray potentially is BatchSize x (Channel x Height x Width)
 
-        :param data: a 1d array of string type in size `B`
+        :param content: a 1d array of string type in size `B`
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
         :return: an ndarray in size `B x D`
         """
-        return self.sentence_encoder.encode(data)
+        return self.sentence_encoder.encode(content)

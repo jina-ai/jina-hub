@@ -25,6 +25,7 @@ def metas(tmpdir):
     os.environ['TEST_WORKSPACE'] = str(tmpdir)
     metas = get_default_metas()
     metas['workspace'] = os.environ['TEST_WORKSPACE']
+    metas['name'] = 'faiss_idx'
     yield metas
     del os.environ['TEST_WORKSPACE']
 
@@ -47,7 +48,6 @@ def test_faiss_indexer(metas):
         idx, dist = indexer.query(query, top_k=4)
         assert idx.shape == dist.shape
         assert idx.shape == (10, 4)
-        assert not indexer.is_trained
 
 
 @pytest.mark.parametrize('compression_level', [0, 1, 2, 3])
@@ -212,7 +212,7 @@ def test_indexer_train_from_index_different_compression_levels(metas, compressio
     elif train_data == 'none':
         train_filepath = None
     elif train_data == 'index':
-        train_filepath = os.path.join(metas['workspace'], 'faiss.test.gz')
+        train_filepath = os.path.join(metas['workspace'], f'{metas["name"]}-0', 'faiss.test.gz')
 
     with FaissIndexer(index_filename='faiss.test.gz',
                       index_key='IVF10,PQ4',

@@ -9,7 +9,7 @@ from jina.executors.encoders.frameworks import BasePaddleEncoder
 
 class ImagePaddlehubEncoder(BasePaddleEncoder):
     """
-    :class:`ImagePaddlehubEncoder` encodes data from a ndarray,
+    :class:`ImagePaddlehubEncoder` encodes ``Document`` content from a ndarray,
     potentially B x (Channel x Height x Width) into a ndarray of `B x D`.
 
     Internally, :class:`ImagePaddlehubEncoder` wraps the models from `paddlehub`.
@@ -77,28 +77,28 @@ class ImagePaddlehubEncoder(BasePaddleEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data into a ndarray of `B x D`. `
+        Encode document content into a ndarray of `B x D`. `
         B` is the batch size and `D` is the Dimension.
 
-        :param data: a `B x T x (Channel x Height x Width)` numpy ``ndarray``,
+        :param content: a `B x T x (Channel x Height x Width)` numpy ``ndarray``,
             `B` is the size of the batch, `T` is the number of frames
         :return: a `B x D` numpy ``ndarray``, `D` is the output dimension
         """
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
+            content = np.moveaxis(content, self.channel_axis, self._default_channel_axis)
         feature_map, *_ = self.exe.run(
             program=self.model,
             fetch_list=[self.outputs_name],
-            feed={self.inputs_name: data.astype('float32')},
+            feed={self.inputs_name: content.astype('float32')},
             return_numpy=True
         )
         if feature_map.ndim == 2 or self.pool_strategy is None:
             return feature_map
         return self.get_pooling(feature_map)
 
-    def get_pooling(self, data: 'np.ndarray') -> 'np.ndarray':
+    def get_pooling(self, content: 'np.ndarray') -> 'np.ndarray':
         """Get ndarray with selected pooling strategy"""
-        _reduce_axis = tuple((i for i in range(len(data.shape)) if i > 1))
-        return getattr(np, self.pool_strategy)(data, axis=_reduce_axis)
+        _reduce_axis = tuple((i for i in range(len(content.shape)) if i > 1))
+        return getattr(np, self.pool_strategy)(content, axis=_reduce_axis)

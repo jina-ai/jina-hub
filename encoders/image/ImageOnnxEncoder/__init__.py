@@ -10,7 +10,7 @@ from jina.executors.encoders.frameworks import BaseOnnxEncoder
 
 class ImageOnnxEncoder(BaseOnnxEncoder):
     """
-    :class:`ImageOnnxEncoder` encodes data from a ndarray,
+    :class:`ImageOnnxEncoder` encodes ``Document`` content from a ndarray,
     potentially B x (Channel x Height x Width) into a ndarray of `B x D`.
 
     Internally, :class:`OnnxImageEncoder` wraps the models from `onnxruntime`.
@@ -41,18 +41,18 @@ class ImageOnnxEncoder(BaseOnnxEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode data into a ndarray of `B x D`. `
+        Encode document content into a ndarray of `B x D`. `
         B` is the batch size and `D` is the Dimension.
 
-        :param data: A `B x (Channel x Height x Width)` numpy ``ndarray``,
+        :param content: A `B x (Channel x Height x Width)` numpy ``ndarray``,
             `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``, `D` is the output dimension
         """
         results = []
-        for idx in range(data.shape[0]):
-            img = np.expand_dims(data[idx, :, :, :], axis=0).astype('float32')
+        for idx in range(content.shape[0]):
+            img = np.expand_dims(content[idx, :, :, :], axis=0).astype('float32')
             data_encoded, *_ = self.model.run([self.outputs_name, ], {self.inputs_name: img})
             results.append(data_encoded)
         feature_map = np.concatenate(results, axis=0)

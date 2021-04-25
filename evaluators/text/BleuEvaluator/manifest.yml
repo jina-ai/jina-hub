@@ -7,7 +7,7 @@ description: Bilingual Evaluation Understudy Score. Evaluates the generated sent
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.5
+documentation: https://github.com/jina-ai/jina-hub/blob/master/evaluators/text/BleuEvaluator/README.md
+version: 0.0.6
 license: apache-2.0
 keywords: [bleu, evaluator, text]

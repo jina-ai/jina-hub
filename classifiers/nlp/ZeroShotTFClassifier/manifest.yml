@@ -7,7 +7,7 @@ description: :class:`ZeroShotTFClassifier` wraps tensorflow transformers from hu
 author: julianpetrich
 url: https://jina.ai
 vendor: Jina AI Limited
-documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.1
+documentation: https://github.com/jina-ai/jina-hub/blob/master/classifiers/nlp/ZeroShotTFClassifier/README.md
+version: 0.0.2
 license: apache-2.0
 keywords: [classifier, zeroshot, nlp, tf]

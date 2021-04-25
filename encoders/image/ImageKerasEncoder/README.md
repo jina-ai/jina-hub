@@ -1,6 +1,6 @@
 # ImageKerasEncoder
 
-`ImageKerasEncoder` encodes data from a ndarray, potentially BatchSize x (Channel x Height x Width) into a ndarray of `BatchSize * d`. Internally, :class:`ImageKerasEncoder` wraps the models from `tensorflow.keras.applications`. https://keras.io/applications/
+`ImageKerasEncoder` encodes ``Document`` content from a ndarray, potentially BatchSize x (Channel x Height x Width) into a ndarray of `BatchSize * d`. Internally, :class:`ImageKerasEncoder` wraps the models from `tensorflow.keras.applications`. https://keras.io/applications/
 
 
 ## Usage:

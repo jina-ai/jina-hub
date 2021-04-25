@@ -1,12 +1,12 @@
 manifest_version: 1
-name: MilvusIndexer
+name: PostgreSQLDBMSIndexer
 kind: indexer
-type: pod
-description: Milvus powered vector indexer
+description: An indexer wrapper around the PostgreSQL database system
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.6
+version: 0.0.1
 license: apache-2.0
-keywords: [milvus, vector, ANN, index]
+keywords: [SQL, database, PostgreSQLDBMSIndexer, indexer]
+type: pod
