@@ -15,7 +15,7 @@ class SpellChecker(BaseCrafter):
     def __init__(self,
                  model_path: str = os.path.join(cur_dir, 'model/model.pickle'),
                  *args, **kwargs):
-        super.__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.model_path = model_path
 
     def post_init(self):
