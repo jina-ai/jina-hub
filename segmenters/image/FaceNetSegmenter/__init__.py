@@ -78,12 +78,12 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         results = []
         batch = np.asarray(batch)
         with torch.no_grad():
-            image_batch = torch.from_numpy(batch.astype('float32')).to(self.device)
+            image_batch = batch.astype('float32')
+            image_batch = torch.from_numpy(image_batch).to(self.device)
             facesBatch, probabilitiesBatch = self.face_detector(image_batch, return_prob=True)
             for faces, probabilities in zip(facesBatch, probabilitiesBatch):
+                batched = []
                 if faces is not None:
-                    batched = []
-                    print(f"faces shape: {faces.shape}")
                     for face, probability in zip(faces, probabilities):
                             batched.append(dict(
                                 offset=0,
@@ -91,6 +91,6 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
                                 blob=face.detach().numpy(),
                             ))
 
-                    results.append(batched)
+                results.append(batched)
 
         return results
