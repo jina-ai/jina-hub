@@ -21,6 +21,7 @@ class SpellChecker(BaseCrafter):
     def post_init(self):
         super().post_init()
         import pickle
+        from .pyngramspell import PyNgramSpell, BKTree
 
         self.model = None
         if os.path.exists(self.model_path):
