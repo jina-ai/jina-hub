@@ -101,7 +101,7 @@ class PyNgramSpell:
                  min_freq: int = 5,
                  max_dist: int = 1,
                  sort_candidates: bool = False,
-                 bktree: bool = True,
+                 use_bktree: bool = True,
                  tokenizer: Optional[Callable] = None,
                  string_preprocessor_func: Callable = str.lower
                  ):
@@ -113,9 +113,10 @@ class PyNgramSpell:
         self.min_freq = min_freq
         self.max_dist = max_dist
         self.sort_candidates = sort_candidates
-        self.bktree = bktree
+        self.use_bktree = use_bktree
         self.tokenizer = tokenizer
         self.vocabulary = None
+        self.bktree = None
 
     def _build_tokenizer(self):
         """Return a function that splits a string into a sequence of tokens.
@@ -172,7 +173,7 @@ class PyNgramSpell:
         :param token : token to be corrected.
         :param max_dist : maximum allowed edit distance.
         """
-        if self.bktree:
+        if self.bktree is not None:
             return self._get_candidates_bktree(token, max_dist)
         else:
             return self._get_candidates_exhaustive(token, max_dist)
@@ -227,7 +228,7 @@ class PyNgramSpell:
         if self.min_freq > 0:
             self._filter_vocabulary(min_freq=self.min_freq)
 
-        if self.bktree:
+        if self.use_bktree:
             self.bktree = BKTree(edit_distance, self.vocabulary, sort_candidates=self.sort_candidates)
 
     def transform(self, x: str, tokenize: bool = True) -> str:
