@@ -1,0 +1,12 @@
+manifest_version: 1
+name: PySpellChecker
+kind: crafter
+description: Does word by word correction of input texts
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub/blob/master/crafters/nlp/PySpellChecker/README.md
+version: 0.0.1
+license: apache-2.0
+keywords: [nlp, spell correction]
+type: pod
