@@ -21,7 +21,7 @@ def segmenter():
 
 
 def assert_correct_output(result, n_faces: int):
-    # assert isinstance(result, list)
+    assert isinstance(result, list)
     assert len(result) == n_faces
     for face in result:
         assert face['blob'].shape == (3, 160, 160)
