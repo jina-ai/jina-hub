@@ -33,4 +33,4 @@ class SpellChecker(BaseCrafter):
 
     @single
     def craft(self, text: str, *args, **kwargs):
-        return dict(text=self.model.transform(text))
+        return dict(text=' '.join(self.model.transform(text)))
