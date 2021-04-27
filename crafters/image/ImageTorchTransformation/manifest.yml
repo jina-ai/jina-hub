@@ -1,0 +1,12 @@
+manifest_version: 1
+name: ImageTorchTransformation
+kind: crafter
+description: Apply torchvision tranforms on image batches.
+author: Sri Datta (@bsridatta)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [transform, image, torchvision]
+type: pod

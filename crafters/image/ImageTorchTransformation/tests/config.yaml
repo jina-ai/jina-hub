@@ -1,0 +1,5 @@
+!ImageTorchTransformation
+with:
+  transforms:
+    - RandomVerticalFlip:
+        p: 1.0
