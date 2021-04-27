@@ -1,0 +1,2 @@
+nltk==3.6.2
+editdistance==0.5.3
