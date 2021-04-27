@@ -95,10 +95,6 @@ class ImageTorchTransformation(BaseCrafter):
                 )
                 raise ValueError
 
-            if "p" in tr_class.__init__.__code__.co_varnames:
-                # does not handle inherently random transform like `RandomErasing`
-                tr_kwargs.update({"p": 1.0})
-
             try:
                 transform_instance = tr_class(**tr_kwargs)
             except:
@@ -108,6 +104,10 @@ class ImageTorchTransformation(BaseCrafter):
                 )
                 raise ValueError
 
+            # Removes randomness in transforms
+            # does not handle inherently random transform like `RandomErasing`
+            # where p is probabilty of being random
+            transform_instance.__dict__.update({"p": 1.0})
             transforms_list.append(transform_instance)
         self.transforms = T.Compose(transforms_list)
 
