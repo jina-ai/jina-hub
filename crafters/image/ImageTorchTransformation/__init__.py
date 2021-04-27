@@ -21,10 +21,10 @@ class ImageTorchTransformation(BaseCrafter):
             import numpy
 
             transforms = [
-                {"CenterCrop": dict(size=(300))},
-                {"Resize": dict(size=(244, 244))},
-                "RandomVerticalFlip",
-                {"Normalize": dict(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))},
+                {'CenterCrop': dict(size=(300))},
+                {'Resize': dict(size=(244, 244))},
+                'RandomVerticalFlip',
+                {'Normalize': dict(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))},
             ]
 
             crafter = ImageTorchTransformation(transforms)
@@ -57,8 +57,8 @@ class ImageTorchTransformation(BaseCrafter):
     def __init__(
         self,
         transforms: List[Union[str, Dict[str, Dict]]] = [
-            {"Resize": dict(size=(224, 224))},
-            {"Normalize": dict(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))},
+            {'Resize': dict(size=(224, 224))},
+            {'Normalize': dict(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))},
         ],
         *args,
         **kwargs,
@@ -66,7 +66,7 @@ class ImageTorchTransformation(BaseCrafter):
         """Set constructor."""
         super().__init__(*args, **kwargs)
         if not isinstance(transforms, list):
-            self.logger.error("The `transforms` argument has to be a list.")
+            self.logger.error('The `transforms` argument has to be a list.')
             raise ValueError
 
         self.transforms_specification = transforms
@@ -82,7 +82,7 @@ class ImageTorchTransformation(BaseCrafter):
                 tr_name, tr_kwargs = next(iter(transform.items()))
             else:
                 self.logger.error(
-                    "Each element of the `transform` has to be either a dict or  a string"
+                    'Each element of the `transform` has to be either a dict or  a string'
                 )
                 raise ValueError
 
@@ -90,8 +90,8 @@ class ImageTorchTransformation(BaseCrafter):
                 tr_class = getattr(T, tr_name)
             except AttributeError:
                 self.logger.error(
-                    f"The transform class `{tr_name}` does not seem to exist,"
-                    "check that you have not made a typo."
+                    f'The transform class `{tr_name}` does not seem to exist,'
+                    'check that you have not made a typo.'
                 )
                 raise ValueError
 
@@ -99,20 +99,20 @@ class ImageTorchTransformation(BaseCrafter):
                 transform_instance = tr_class(**tr_kwargs)
             except:
                 self.logger.error(
-                    f"Error instantiating torchvision transforms class `{tr_name}`,"
-                    " check if all kwargs are valid and if transform is valid for tensors."
+                    f'Error instantiating torchvision transforms class `{tr_name}`,'
+                    ' check if all kwargs are valid and if transform is valid for tensors.'
                 )
                 raise ValueError
 
             # Removes randomness in transforms
             # does not handle inherently random transform like `RandomErasing`
             # where p is probabilty of being random
-            transform_instance.__dict__.update({"p": 1.0})
+            transform_instance.__dict__.update({'p': 1.0})
             transforms_list.append(transform_instance)
         self.transforms = T.Compose(transforms_list)
 
     def craft(
-        self, blob: Union[List["np.ndarray"], "np.ndarray"], *args, **kwargs
+        self, blob: Union[List['np.ndarray'], 'np.ndarray'], *args, **kwargs
     ) -> List[Dict]:
         """Apply the transforms to a batch of numpy images
         Note: The numpy arrays are standardize to range [0, 1] before applying transforms
@@ -127,11 +127,11 @@ class ImageTorchTransformation(BaseCrafter):
             if blob.ndim == 3:
                 blob = np.stack([blob])
         else:
-            self.logger.error(f"Expected numpy array or list of numpy arrays")
+            self.logger.error(f'Expected numpy array or list of numpy arrays')
             raise ValueError
         assert (
             blob.ndim == 4
-        ), "numpy should be of shape (..., H, W, C) or list[(H, W, C)]"
+        ), 'numpy should be of shape (..., H, W, C) or list[(H, W, C)]'
 
         blob_ = self._ToTensor(blob)
         blob_ = self.transforms(blob_)
@@ -139,11 +139,11 @@ class ImageTorchTransformation(BaseCrafter):
 
         dict_list = []
         for sample in blob_:
-            dict_list.append({"blob": sample})
+            dict_list.append({'blob': sample})
         return dict_list
 
     @staticmethod
-    def _ToTensor(array: "np.ndarray") -> "torch.Tensor":
+    def _ToTensor(array: 'np.ndarray') -> 'torch.Tensor':
         """Convert numpy to tensor
         Replaces `transforms.ToTensor` to allow batching
 
@@ -153,11 +153,11 @@ class ImageTorchTransformation(BaseCrafter):
         array = np.transpose(array, (0, 3, 1, 2))
         if not array.data.contiguous:
             array = np.ascontiguousarray(array)
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         return torch.from_numpy(array).float().to(device).div(255)
 
     @staticmethod
-    def _ToNumpy(tensor: "torch.Tensor") -> "np.ndarray":
+    def _ToNumpy(tensor: 'torch.Tensor') -> 'np.ndarray':
         """Convert tensor to numpy
 
         :param tensor: tensor in the format `[B, C, H, W]`
