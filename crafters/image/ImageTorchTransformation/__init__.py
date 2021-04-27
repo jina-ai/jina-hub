@@ -56,7 +56,10 @@ class ImageTorchTransformation(BaseCrafter):
 
     def __init__(
         self,
-        transforms: List[Union[str, Dict[str, Dict]]],
+        transforms: List[Union[str, Dict[str, Dict]]] = [
+            {"Resize": dict(size=(224, 224))},
+            {"Normalize": dict(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))},
+        ],
         *args,
         **kwargs,
     ):

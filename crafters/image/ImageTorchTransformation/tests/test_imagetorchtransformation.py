@@ -81,6 +81,12 @@ def test_allowed_argument_types(transforms, inputs):
         assert crafted_img["blob"].ndim == 3
 
 
+def test_default_transform():
+    crafter = ImageTorchTransformation()
+    crafted_imgs = crafter.craft(org_img())
+    assert crafted_imgs[0]["blob"].shape == (224, 224, 3)
+
+
 @pytest.mark.parametrize(
     "transforms, input, expected",
     [
