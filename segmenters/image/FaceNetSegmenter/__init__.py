@@ -5,7 +5,7 @@ from typing import List, Dict
 
 import numpy as np
 import torch
-from jina.executors.decorators import single
+from jina.executors.decorators import batching
 
 from jina.executors.devices import TorchDevice
 from jina.executors.segmenters import BaseSegmenter
@@ -28,7 +28,6 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         "center_weighted_size": box size minus weighted squared offset from image center
     :param post_process: Flag for normalizing the output image. Required if you want to pass
         these face to the FaceNetEmbedder.
-    :param keep_all: Flag for keeping all detected faces rather than a single face.
     :param min_face_size: Minimum face size to search for.
     :param channel_axis: Axis of channels in the image. Default is 2 (channels-last), use 0 for channels-first.
     """
@@ -38,7 +37,6 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
                  margin: int = 0,
                  selection_method: str = 'largest',
                  post_process: bool = True,
-                 keep_all: bool = False,
                  min_face_size: int = 20,
                  channel_axis: int = 2,
                  *args, **kwargs):
@@ -47,7 +45,6 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         self.margin = margin
         self.selection_method = selection_method
         self.post_process = post_process
-        self.keep_all = keep_all
         self.min_face_size = min_face_size
         self.channel_axis = channel_axis
 
@@ -62,40 +59,38 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
                                    device=self.device,
                                    post_process=self.post_process,
                                    min_face_size=self.min_face_size,
-                                   keep_all=self.keep_all).eval()
+                                   keep_all=True)
 
-    @single
-    def segment(self, data: 'np.ndarray', *args, **kwargs) -> List[Dict]:
+    @batching
+    def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[List[Dict]]:
         """Transform a numpy `ndarray` of shape `(Height x Width x Channel)`
         into a list with dicts that contain cropped images.
 
-        :param data: A numpy `ndarray` that represents a single image.
+        :param blob: A numpy `ndarray` that represents a single image.
         :param args: Additional positional arguments.
         :param kwargs: Additional positional arguments.
         :return: A list with dicts that contain cropped images.
         """
         if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
+            blob = np.moveaxis(blob, self.channel_axis, self._default_channel_axis+1)
 
+        batch = blob
+        results = []
+        batch = np.asarray(batch)
         with torch.no_grad():
-            image = torch.from_numpy(data.astype('float32')).to(self.device)
-            # Create a batch of size 1
-            image = image.unsqueeze(0)
+            image_batch = batch.astype('float32')
+            image_batch = torch.from_numpy(image_batch).to(self.device)
+            facesBatch, probabilitiesBatch = self.face_detector(image_batch, return_prob=True)
+            for faces, probabilities in zip(facesBatch, probabilitiesBatch):
+                batched = []
+                if faces is not None:
+                    for face, probability in zip(faces, probabilities):
+                            batched.append(dict(
+                                offset=0,
+                                weight=probability,
+                                blob=face.detach().numpy(),
+                            ))
 
-            faces, probabilities = self.face_detector(image, return_prob=True)
+                results.append(batched)
 
-            if self.keep_all:
-                # All faces and probabilities are grouped in the first dimension of the first batch element
-                faces = faces[0]
-                probabilities = probabilities[0]
-
-            results = [
-                dict(
-                    offset=0,
-                    weight=probability,
-                    blob=face.detach().numpy(),
-                )
-                for face, probability in zip(faces, probabilities)
-                if face is not None
-            ]
-            return results
+        return results
