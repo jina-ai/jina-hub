@@ -5,7 +5,8 @@ COPY . /workspace
 WORKDIR /workspace
 
 # install the third-party requirements
-RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # for testing the image
 FROM base
