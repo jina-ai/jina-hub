@@ -1,10 +1,13 @@
 import io
 from typing import Dict, List
-from pdftitle import get_title_from_file, get_title_from_io
-import numpy as np
 
+import fitz
+import numpy as np
+import pdfplumber
 from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
+from pdftitle import get_title_from_file, get_title_from_io
+
 
 class PDFPlumberSegmenter(BaseSegmenter):
     """
@@ -35,8 +38,6 @@ class PDFPlumberSegmenter(BaseSegmenter):
         chunks = []
         if mime_type != 'application/pdf':
             return chunks
-        import fitz  # fitz is a library used in `PyMuPDF` to read pdf and images
-        import pdfplumber
 
         if uri:
             try:
@@ -49,7 +50,7 @@ class PDFPlumberSegmenter(BaseSegmenter):
         elif buffer:
             try:
                 pdf_img = fitz.open(stream=buffer, filetype='pdf')
-                pdf_content = pdfplumber.open(io.BytesIO(buffer),password=b"")
+                pdf_content = pdfplumber.open(io.BytesIO(buffer), password=b"")
                 title = get_title_from_io(io.BytesIO(buffer))
             except Exception as ex:
                 self.logger.error(f'Failed to load from buffer')
@@ -59,7 +60,6 @@ class PDFPlumberSegmenter(BaseSegmenter):
             return chunks
 
         # Extract images
-        # raw_img = Image.open(io.BytesIO(buffer)
         with pdf_img:
             for page in range(len(pdf_img)):
                 for img in pdf_img.getPageImageList(page):
@@ -68,10 +68,10 @@ class PDFPlumberSegmenter(BaseSegmenter):
                     # read data from buffer and reshape the array into 3-d format
                     np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
                     if pix.n - pix.alpha < 4:  # if gray or RGB
-                        if pix.n == 1: #convert gray to rgb
-                            np_arr_rgb = np.concatenate((np_arr,)*3,-1)
+                        if pix.n == 1:  # convert gray to rgb
+                            np_arr_rgb = np.concatenate((np_arr,) * 3, -1)
                             chunks.append(dict(blob=np_arr_rgb, weight=1.0, mime_type='image/png'))
-                        elif pix.n == 4: # remove transparency layer
+                        elif pix.n == 4:  # remove transparency layer
                             np_arr_rgb = np_arr[..., :3]
                             chunks.append(dict(blob=np_arr_rgb, weight=1.0, mime_type='image/png'))
                         else:
