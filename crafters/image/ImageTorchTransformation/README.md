@@ -2,11 +2,12 @@
 
 Apply torchvision transforms on image batches.
 
-This crafter creates a `Compose` transform using the list of transforms provided.
-The numpy input is converted to tensor before applying the transform. Hence `ToTensor()` is not required.
+This crafter creates a `Compose()` transform using the list of transforms provided.
+The Numpy input is converted to tensor before applying the transform. Hence `ToTensor()` transform is not required.
 
-Note: Not recommended to use inherently random transforms and
-make sure not to use transforms that do not support tensor inputs.
+Note: 
+- The input images are required to be of the same dimensions to enable creating a batch of shape, `[B, H, W, C]`
+- It is not recommended to use inherently random transforms and, the transforms should support tensor inputs
 
 ## Usage
 Users can use Pod images in several ways:
