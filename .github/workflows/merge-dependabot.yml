@@ -2,11 +2,10 @@ name: auto-merge
 
 on:
   pull_request:
-    types: [ labeled ]
 
 jobs:
   auto-merge:
-    if: ${{ github.event.label.name == 'dependencies' && github.event.pull_request.user.login == 'dependabot[bot]'}}
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' && contains(github.event.pull_request.title, 'bump jina')}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
