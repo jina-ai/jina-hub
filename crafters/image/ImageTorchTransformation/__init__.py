@@ -1,10 +1,10 @@
 from typing import Dict, List, Union
 
+import numpy as np
 from jina.executors.crafters import BaseCrafter
 
 if False:
     import torch
-    import numpy as np
 
 
 class ImageTorchTransformation(BaseCrafter):
@@ -122,8 +122,6 @@ class ImageTorchTransformation(BaseCrafter):
             with value [0, 255] range
         :return: list of dictionaries, each containing a transformed image
         """
-        import numpy as np
-
         if isinstance(blob, list):
             blob = np.stack(blob)
         elif isinstance(blob, np.ndarray):
@@ -154,7 +152,6 @@ class ImageTorchTransformation(BaseCrafter):
         :return: standardized tensor in the format `[B, C, H, W]` as required by torchvision transforms
         """
         import torch
-        import numpy as np
 
         array = np.transpose(array, (0, 3, 1, 2))
         if not array.data.contiguous:
@@ -169,7 +166,6 @@ class ImageTorchTransformation(BaseCrafter):
         :param tensor: tensor in the format `[B, C, H, W]`
         :return: numpy array of format `[B, H, W, C]`
         """
-        import numpy as np
 
         array = tensor.detach().cpu().numpy()
         array = np.transpose(array, (0, 2, 3, 1))
