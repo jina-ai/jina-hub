@@ -1,6 +1,6 @@
 import io
 from typing import Dict, List
-
+from pdftitle import get_title_from_file, get_title_from_io
 import numpy as np
 
 from jina.executors.decorators import single
@@ -40,15 +40,17 @@ class PDFPlumberSegmenter(BaseSegmenter):
 
         if uri:
             try:
-                pdf_img = fitz.open(uri)
+                pdf_img = fitz.open(str(uri))
                 pdf_content = pdfplumber.open(uri)
+                title = get_title_from_file(uri)
             except Exception as ex:
                 self.logger.error(f'Failed to open {uri}: {ex}')
                 return chunks
         elif buffer:
             try:
                 pdf_img = fitz.open(stream=buffer, filetype='pdf')
-                pdf_content = pdfplumber.open(io.BytesIO(buffer))
+                pdf_content = pdfplumber.open(io.BytesIO(buffer),password=b"")
+                title = get_title_from_io(io.BytesIO(buffer))
             except Exception as ex:
                 self.logger.error(f'Failed to load from buffer')
                 return chunks
@@ -88,6 +90,8 @@ class PDFPlumberSegmenter(BaseSegmenter):
                 page = pdf_content.pages[i]
                 text_page = page.extract_text(x_tolerance=1, y_tolerance=1)
                 text_page = text_page.replace(u'\xa0', u'')
+                if title:
+                    chunks.append(dict(text=title, weight=1.0, mime_type='text/plain', tags={'title': True}))
                 if text_page:
                     chunks.append(dict(text=text_page, weight=1.0, mime_type='text/plain'))
         return chunks

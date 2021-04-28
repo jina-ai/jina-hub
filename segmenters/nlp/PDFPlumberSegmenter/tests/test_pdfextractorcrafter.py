@@ -35,10 +35,10 @@ def test_io_images_and_text(inputs):
     assert len(docs_chunks) == 2
     for chunks in docs_chunks:
 
-        assert len(chunks) == 3
+        assert len(chunks) == 4
 
         # Check images
-        for idx, c in enumerate(chunks[:-1]):
+        for idx, c in enumerate(chunks[:2]):
             with Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg')) as img:
                 blob = chunks[idx]['blob']
                 assert chunks[idx]['mime_type'] == 'image/png'
@@ -49,8 +49,11 @@ def test_io_images_and_text(inputs):
                     assert blob.shape == (626, 1191, 3)
 
         # Check text
-        assert chunks[2]['text'] == expected_text
+        assert chunks[2]['text'] == 'A cat poem'
+        assert chunks[2]['tags']['title']
         assert chunks[2]['mime_type'] == 'text/plain'
+        assert chunks[3]['text'] == expected_text
+        assert chunks[3]['mime_type'] == 'text/plain'
 
 
 @pytest.mark.parametrize('inputs', [
@@ -62,10 +65,13 @@ def test_io_text(inputs):
     docs_chunks = segmenter.segment(*inputs)
     assert len(docs_chunks) == 2
     for chunks in docs_chunks:
-        assert len(chunks) == 1
+        assert len(chunks) == 2
         # Check test
-        assert chunks[0]['text'] == expected_text
+        assert chunks[0]['text'] == 'A cat poem'
+        assert chunks[0]['tags']['title']
         assert chunks[0]['mime_type'] == 'text/plain'
+        assert chunks[1]['text'] == expected_text
+        assert chunks[1]['mime_type'] == 'text/plain'
 
 
 @pytest.mark.parametrize('inputs', [
@@ -80,7 +86,7 @@ def test_io_img(inputs):
         assert len(chunks) == 2
         # Check images
         for idx, c in enumerate(chunks):
-            with Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg')) as im:
+            with Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg')) as img:
                 blob = chunks[idx]['blob']
                 assert chunks[idx]['mime_type'] == 'image/png'
                 assert blob.shape[1], blob.shape[0] == img.size
