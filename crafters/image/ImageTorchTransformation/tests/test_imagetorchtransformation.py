@@ -4,9 +4,6 @@ import cv2
 import numpy as np
 import pytest
 
-from jina.executors import BaseExecutor
-from jina.executors.metas import get_default_metas
-
 from .. import ImageTorchTransformation
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -205,6 +202,9 @@ def test_example():
 
 
 def test_save_load_config(tmp_path):
+    from jina.executors import BaseExecutor
+    from jina.executors.metas import get_default_metas
+
     transforms = [{'RandomVerticalFlip': dict(p=1.0)}]
 
     metas = get_default_metas()
