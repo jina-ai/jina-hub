@@ -133,9 +133,9 @@ class ImageTorchTransformation(BaseCrafter):
             blob.ndim == 4
         ), 'numpy should be of shape (..., H, W, C) or list[(H, W, C)]'
 
-        blob_ = self._ToTensor(blob)
+        blob_ = self._to_tensor(blob)
         blob_ = self.transforms(blob_)
-        blob_ = self._ToNumpy(blob_)
+        blob_ = self._to_numpy(blob_)
 
         dict_list = []
         for sample in blob_:
@@ -143,7 +143,7 @@ class ImageTorchTransformation(BaseCrafter):
         return dict_list
 
     @staticmethod
-    def _ToTensor(array: 'np.ndarray') -> 'torch.Tensor':
+    def _to_tensor(array: 'np.ndarray') -> 'torch.Tensor':
         """Convert numpy to tensor
         Replaces `transforms.ToTensor` to allow batching
 
@@ -157,7 +157,7 @@ class ImageTorchTransformation(BaseCrafter):
         return torch.from_numpy(array).float().to(device).div(255)
 
     @staticmethod
-    def _ToNumpy(tensor: 'torch.Tensor') -> 'np.ndarray':
+    def _to_numpy(tensor: 'torch.Tensor') -> 'np.ndarray':
         """Convert tensor to numpy
 
         :param tensor: tensor in the format `[B, C, H, W]`
