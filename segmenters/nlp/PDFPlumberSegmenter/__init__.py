@@ -17,6 +17,42 @@ class PDFPlumberSegmenter(BaseSegmenter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def _extract_img(self, pdf_img, chunks):
+        with pdf_img:
+            for page in range(len(pdf_img)):
+                for img in pdf_img.getPageImageList(page):
+                    xref = img[0]
+                    pix = fitz.Pixmap(pdf_img, xref)
+                    # read data from buffer and reshape the array into 3-d format
+                    np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
+                    if pix.n - pix.alpha < 4:  # if gray or RGB
+                        if pix.n == 1:  # convert gray to rgb
+                            np_arr_rgb = np.concatenate((np_arr,) * 3, -1)
+                            chunks.append(dict(blob=np_arr_rgb, weight=1.0, mime_type='image/png'))
+                        elif pix.n == 4:  # remove transparency layer
+                            np_arr_rgb = np_arr[..., :3]
+                            chunks.append(dict(blob=np_arr_rgb, weight=1.0, mime_type='image/png'))
+                        else:
+                            chunks.append(dict(blob=np_arr, weight=1.0, mime_type='image/png'))
+                    else:  # if CMYK:
+                        pix = fitz.Pixmap(fitz.csRGB, pix)  # Convert to RGB
+                        np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype(
+                            'float32')
+                        chunks.append(
+                            dict(blob=np_arr, weight=1.0, mime_type='image/png'))
+
+    def _extract_text(self, pdf_content, chunks, title):
+        with pdf_content:
+            count = len(pdf_content.pages)
+            for i in range(count):
+                page = pdf_content.pages[i]
+                text_page = page.extract_text(x_tolerance=1, y_tolerance=1)
+                text_page = text_page.replace(u'\xa0', u'')
+                if title:
+                    chunks.append(dict(text=title, weight=1.0, mime_type='text/plain', tags={'title': True}))
+                if text_page:
+                    chunks.append(dict(text=text_page, weight=1.0, mime_type='text/plain'))
+
     @single(slice_nargs=3)
     def segment(self, uri: str, buffer: bytes, mime_type: str, *args, **kwargs) -> List[Dict]:
         """
@@ -58,40 +94,8 @@ class PDFPlumberSegmenter(BaseSegmenter):
         else:
             self.logger.warning('No value found in `buffer` or `uri`')
             return chunks
-
         # Extract images
-        with pdf_img:
-            for page in range(len(pdf_img)):
-                for img in pdf_img.getPageImageList(page):
-                    xref = img[0]
-                    pix = fitz.Pixmap(pdf_img, xref)
-                    # read data from buffer and reshape the array into 3-d format
-                    np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype('float32')
-                    if pix.n - pix.alpha < 4:  # if gray or RGB
-                        if pix.n == 1:  # convert gray to rgb
-                            np_arr_rgb = np.concatenate((np_arr,) * 3, -1)
-                            chunks.append(dict(blob=np_arr_rgb, weight=1.0, mime_type='image/png'))
-                        elif pix.n == 4:  # remove transparency layer
-                            np_arr_rgb = np_arr[..., :3]
-                            chunks.append(dict(blob=np_arr_rgb, weight=1.0, mime_type='image/png'))
-                        else:
-                            chunks.append(dict(blob=np_arr, weight=1.0, mime_type='image/png'))
-                    else:  # if CMYK:
-                        pix = fitz.Pixmap(fitz.csRGB, pix)  # Convert to RGB
-                        np_arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n).astype(
-                            'float32')
-                        chunks.append(
-                            dict(blob=np_arr, weight=1.0, mime_type='image/png'))
-
+        self._extract_img(pdf_img, chunks)
         # Extract text
-        with pdf_content:
-            count = len(pdf_content.pages)
-            for i in range(count):
-                page = pdf_content.pages[i]
-                text_page = page.extract_text(x_tolerance=1, y_tolerance=1)
-                text_page = text_page.replace(u'\xa0', u'')
-                if title:
-                    chunks.append(dict(text=title, weight=1.0, mime_type='text/plain', tags={'title': True}))
-                if text_page:
-                    chunks.append(dict(text=text_page, weight=1.0, mime_type='text/plain'))
+        self._extract_text(pdf_content, chunks, title)
         return chunks
