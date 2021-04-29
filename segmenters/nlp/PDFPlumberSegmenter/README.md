@@ -8,7 +8,7 @@ We use Pod images in several ways:
 
 1. Run with Docker: `docker run`
    ```bash
-    docker run jinahub/pod.segmenter.pdfplumbersegmenter:0.0.1-1.0.1 --port-in 55555 --port-out 55556
+    docker run jinahub/pod.segmenter.pdfplumbersegmenter:0.0.1-1.1.5 --port-in 55555 --port-out 55556
     ```
     
 2. Run with Flow API
