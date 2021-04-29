@@ -1,45 +1,49 @@
 import os
-import pytest
 
-import numpy as np
+import pytest
 from PIL import Image
 
 from .. import PDFPlumberSegmenter
 
-expected_text = "A cat poem\nI love cats, I love every kind of cat,\nI just wanna hug all of them, but I can't," \
-                "\nI'm thinking about cats again\nI think about how cute they are\nAnd their whiskers and their " \
-                "nose"
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
-path_img_text = os.path.join(cur_dir, 'cats_are_awesome.pdf')
-path_text = os.path.join(cur_dir, 'cats_are_awesome_text.pdf')
-path_img = os.path.join(cur_dir, 'cats_are_awesome_img.pdf')
-
-with open(path_text, 'rb') as pdf:
-    input_bytes_text = pdf.read()
-
-with open(path_img, 'rb') as pdf:
-    input_bytes_image = open(path_img, 'rb').read()
-
-with open(path_img_text, 'rb') as pdf:
-    input_bytes_images_text = pdf.read()
+CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.mark.parametrize('inputs', [
-    [np.stack([path_img_text, path_img_text]), [None, None], ['application/pdf', 'application/pdf']],
-    [[None, None], [input_bytes_images_text, input_bytes_images_text], ['application/pdf', 'application/pdf']],
-])
-def test_io_images_and_text(inputs):
+@pytest.fixture
+def expected_text():
+    expected_text = "A cat poem\nI love cats, I love every kind of cat,\nI just wanna hug all of them, but I can't," \
+                    "\nI'm thinking about cats again\nI think about how cute they are\nAnd their whiskers and their " \
+                    "nose"
+    return expected_text
+
+
+@pytest.fixture
+def input_pdf():
+    path_img_text = os.path.join(CUR_DIR, 'cats_are_awesome.pdf')
+    path_text = os.path.join(CUR_DIR, 'cats_are_awesome_text.pdf')
+    path_img = os.path.join(CUR_DIR, 'cats_are_awesome_img.pdf')
+
+    with open(path_text, 'rb') as pdf:
+        input_bytes_text = pdf.read()
+
+    with open(path_img, 'rb') as pdf:
+        input_bytes_image = pdf.read()
+
+    with open(path_img_text, 'rb') as pdf:
+        input_bytes_images_text = pdf.read()
+
+    return {'img_text': [(path_img_text, None), (None, input_bytes_images_text)],
+            'text': [(path_text, None), (None, input_bytes_text)],
+            'img': [(path_img, None), (None, input_bytes_image)]}
+
+
+def test_io_images_and_text(input_pdf, expected_text):
     segmenter = PDFPlumberSegmenter()
-    docs_chunks = segmenter.segment(*inputs)
-    assert len(docs_chunks) == 2
-    for chunks in docs_chunks:
-
+    for uri, buffer in input_pdf['img_text']:
+        chunks = segmenter.segment(uri, buffer, 'application/pdf')
         assert len(chunks) == 4
-
         # Check images
         for idx, c in enumerate(chunks[:2]):
-            with Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg')) as img:
+            with Image.open(os.path.join(CUR_DIR, f'test_img_{idx}.jpg')) as img:
                 blob = chunks[idx]['blob']
                 assert chunks[idx]['mime_type'] == 'image/png'
                 assert blob.shape[1], blob.shape[0] == img.size
@@ -48,23 +52,18 @@ def test_io_images_and_text(inputs):
                 if idx == 1:
                     assert blob.shape == (626, 1191, 3)
 
-        # Check text
-        assert chunks[2]['text'] == 'A cat poem'
-        assert chunks[2]['tags']['title']
-        assert chunks[2]['mime_type'] == 'text/plain'
-        assert chunks[3]['text'] == expected_text
-        assert chunks[3]['mime_type'] == 'text/plain'
+            # Check text
+            assert chunks[2]['text'] == 'A cat poem'
+            assert chunks[2]['tags']['title']
+            assert chunks[2]['mime_type'] == 'text/plain'
+            assert chunks[3]['text'] == expected_text
+            assert chunks[3]['mime_type'] == 'text/plain'
 
 
-@pytest.mark.parametrize('inputs', [
-    [np.stack([path_text, path_text]), [None, None], ['application/pdf', 'application/pdf']],
-    [[None, None], [input_bytes_text, input_bytes_text], ['application/pdf', 'application/pdf']],
-])
-def test_io_text(inputs):
+def test_io_text(input_pdf, expected_text):
     segmenter = PDFPlumberSegmenter()
-    docs_chunks = segmenter.segment(*inputs)
-    assert len(docs_chunks) == 2
-    for chunks in docs_chunks:
+    for uri, buffer in input_pdf['text']:
+        chunks = segmenter.segment(uri, buffer, 'application/pdf')
         assert len(chunks) == 2
         # Check test
         assert chunks[0]['text'] == 'A cat poem'
@@ -74,19 +73,14 @@ def test_io_text(inputs):
         assert chunks[1]['mime_type'] == 'text/plain'
 
 
-@pytest.mark.parametrize('inputs', [
-    [np.stack([path_img, path_img]), [None, None], ['application/pdf', 'application/pdf']],
-    [[None, None], [input_bytes_image, input_bytes_image], ['application/pdf', 'application/pdf']],
-])
-def test_io_img(inputs):
+def test_io_img(input_pdf):
     segmenter = PDFPlumberSegmenter()
-    docs_chunks = segmenter.segment(*inputs)
-    assert len(docs_chunks) == 2
-    for chunks in docs_chunks:
+    for uri, buffer in input_pdf['img']:
+        chunks = segmenter.segment(uri, buffer, 'application/pdf')
         assert len(chunks) == 2
         # Check images
         for idx, c in enumerate(chunks):
-            with Image.open(os.path.join(cur_dir, f'test_img_{idx}.jpg')) as img:
+            with Image.open(os.path.join(CUR_DIR, f'test_img_{idx}.jpg')) as img:
                 blob = chunks[idx]['blob']
                 assert chunks[idx]['mime_type'] == 'image/png'
                 assert blob.shape[1], blob.shape[0] == img.size
