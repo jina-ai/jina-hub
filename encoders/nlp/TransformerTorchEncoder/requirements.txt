@@ -1,2 +1,2 @@
-jina==1.1.9
+jina==1.2.0
 requests
