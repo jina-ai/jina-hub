@@ -30,18 +30,16 @@ class LevelDBIndexer(BinaryPbIndexer):
         import plyvel
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, keys: Iterable[str], *args, **kwargs) -> Optional[bytes]:
         """Find the serialized protobuf documents via id.
 
         :param key: ``id``
         :return: serialized document
         """
         from google.protobuf.json_format import Parse
-        v = self.query_handler.get(bytes(key))
-        value = None
-        if v is not None:
-            value = Parse(v.decode('utf8'), Document())
-        return value
+
+        vs = [Parse(self.query_handler.get(bytes(key)).decode('utf8'), Document()) for key in keys]
+        return vs
 
     def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Add JSON-friendly serialized documents to the index.
