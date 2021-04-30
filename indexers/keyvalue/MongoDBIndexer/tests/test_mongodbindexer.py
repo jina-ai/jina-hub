@@ -61,10 +61,9 @@ def test_mongodbindexer():
         mongo_indexer.update(keys=keys, values=new_values)
 
     with MongoDBIndexer() as mongo_query:
-        results = [mongo_query.query([key]) for key in keys]
+        results = mongo_query.query(keys)
 
         for key, new_value, result in zip(keys, new_texts, results):
-            result = result[0]
             assert result['_id'] == key
             new_doc = Document()
             new_doc.ParseFromString(result['values'])
