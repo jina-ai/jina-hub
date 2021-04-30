@@ -7,10 +7,6 @@ import re
 from typing import Callable, List, Tuple, Optional, Iterable
 from collections import Counter
 
-import nltk
-from nltk.collocations import BigramCollocationFinder
-from editdistance import eval as edit_distance
-
 
 class BKTree:
     """
@@ -153,6 +149,8 @@ class PyNgramSpell:
         :param token : word to be corrected.
         :param max_dist : maximum distance allowed for candidates.
         """
+        from editdistance import eval as edit_distance
+
         token = token.lower()
         distance_token_to_words = {word: edit_distance(word, token) for word in self.vocabulary}
         min_dist = min(distance_token_to_words.values())
@@ -218,6 +216,9 @@ class PyNgramSpell:
         """Fit the ngram model and the vocabulary from the training data.
         :param X : Iterable over strings containing the corpus used to train the spellcheker.
         """
+        from nltk.collocations import BigramCollocationFinder
+        from editdistance import eval as edit_distance
+
         self.tokenize_func = self._build_tokenizer()
         X_tokenized = [self.tokenize_func(self.string_preprocessor_func(x)) for x in X]
         self.unigram_freq_dict = dict(Counter(itertools.chain(*X_tokenized)))
