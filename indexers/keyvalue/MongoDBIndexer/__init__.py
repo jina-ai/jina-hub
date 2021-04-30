@@ -83,14 +83,16 @@ class MongoDBIndexer(BinaryPbIndexer):
         """Get the handler to MongoDB."""
         return self.get_query_handler()
 
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, keys: Iterable[str], *args, **kwargs) -> Optional[bytes]:
         """Query the serialized documents by document id.
 
         :param key: document id
         :return: serialized document
         """
+        result = []
         with self.query_handler as mongo_handler:
-            result = mongo_handler.query(key)
+            for key in keys:
+                result.append(mongo_handler.query(key))
 
         if result:
             return result
