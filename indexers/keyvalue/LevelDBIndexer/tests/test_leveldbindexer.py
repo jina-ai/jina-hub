@@ -67,16 +67,18 @@ def validate_positive_results(keys, documents, searcher):
 
     for key, query_doc in zip(keys, documents):
         result_doc = searcher.query([key])
-        assert result_doc.id == str(query_doc[0][0])
+        result_doc = result_doc[0]
+        assert result_doc.id == str(query_doc[0])
         assert result_doc.buffer == query_doc[1].encode('utf8')
         assert round(result_doc.weight, 5) == query_doc[2]
 
 
 def validate_negative_results(keys, searcher):
     assert len(keys) > 0
+
     for key in keys:
         result_doc = searcher.query([key])
-        assert result_doc is None
+        assert result_doc == []
 
 
 def validate_results(save_abspath, results, negative_results):

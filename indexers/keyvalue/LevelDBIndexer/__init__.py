@@ -38,7 +38,12 @@ class LevelDBIndexer(BinaryPbIndexer):
         """
         from google.protobuf.json_format import Parse
 
-        vs = [Parse(self.query_handler.get(bytes(key)).decode('utf8'), Document()) for key in keys]
+        vs = []
+        for key in keys:
+            aux = self.query_handler.get(bytes(key))
+            if aux is not None:
+                vs.append(Parse(aux.decode('utf8'), Document()))
+
         return vs
 
     def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
