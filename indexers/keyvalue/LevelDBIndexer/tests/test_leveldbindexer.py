@@ -77,9 +77,7 @@ def validate_negative_results(keys, searcher):
     assert len(keys) > 0
 
     result_docs = searcher.query(keys)
-
-    for key, result_doc in zip(keys,result_docs):
-        assert result_doc == []
+    assert result_docs == [None]*len(keys)
 
 
 def validate_results(save_abspath, results, negative_results):

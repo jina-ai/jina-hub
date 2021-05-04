@@ -43,6 +43,8 @@ class LevelDBIndexer(BinaryPbIndexer):
             aux = self.query_handler.get(bytes(key))
             if aux is not None:
                 vs.append(Parse(aux.decode('utf8'), Document()))
+            else:
+                vs.append(None)
 
         return vs
 
