@@ -38,13 +38,17 @@ class RedisDBIndexer(BinaryPbIndexer):
             self.logger.error('Redis connection error: ', r_con_error)
             raise
 
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, keys: Iterable[str], *args, **kwargs) -> Optional[bytes]:
         """Find the protobuf document via id.
         :param key: ``id``
         :return: matching document
         """
+        results = []
         with self.get_query_handler() as redis_handler:
-            return redis_handler.get(key)
+            for key in keys:
+                results.append(redis_handler.get(key))
+
+        return results
 
     def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Add JSON-friendly serialized documents to the index.
@@ -65,10 +69,9 @@ class RedisDBIndexer(BinaryPbIndexer):
         :param keys: document ids to update
         :param values: JSON-friendly serialized documents
         """
-        missed = []
-        for key in keys:
-            if self.query(key) is None:
-                missed.append(key)
+        results = self.query(keys)
+        missed = [key for key, result in zip(keys, results) if result==None]
+
         if missed:
             raise KeyError(f'Key(s) {missed} were not found in redis')
 
