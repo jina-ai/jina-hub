@@ -89,7 +89,6 @@ class MongoDBIndexer(BinaryPbIndexer):
         :param key: document id
         :return: serialized document
         """
-        result = []
         with self.query_handler as mongo_handler:
             result = mongo_handler.query(key)
 
