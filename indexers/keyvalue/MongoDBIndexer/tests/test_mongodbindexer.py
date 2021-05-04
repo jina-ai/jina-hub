@@ -74,6 +74,4 @@ def test_mongodbindexer():
         mongo_query.delete(keys)
 
     with MongoDBIndexer() as mongo_query:
-        for key in keys:
-            result = mongo_query.query([key])
-            assert result == [None]
+        assert mongo_query.query(keys) == [None] * len(keys)

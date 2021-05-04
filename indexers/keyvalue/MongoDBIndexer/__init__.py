@@ -94,8 +94,7 @@ class MongoDBIndexer(BinaryPbIndexer):
             for key in keys:
                 result.append(mongo_handler.query(key))
 
-        if result:
-            return result
+        return result
 
     def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Update the document at the given key in the database.
