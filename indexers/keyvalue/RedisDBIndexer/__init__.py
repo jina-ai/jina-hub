@@ -69,7 +69,6 @@ class RedisDBIndexer(BinaryPbIndexer):
         :param keys: document ids to update
         :param values: JSON-friendly serialized documents
         """
-        missed = []
         results = self.query(keys)
         missed = [key for key, result in zip(keys, results) if result==None]
 
