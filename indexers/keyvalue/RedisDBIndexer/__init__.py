@@ -70,9 +70,9 @@ class RedisDBIndexer(BinaryPbIndexer):
         :param values: JSON-friendly serialized documents
         """
         missed = []
-        for key in keys:
-            if self.query([key]) is None:
-                missed.append(key)
+        results = self.query(keys)
+        missed = [key for key, result in zip(keys, results) if result==None]
+
         if missed:
             raise KeyError(f'Key(s) {missed} were not found in redis')
 
