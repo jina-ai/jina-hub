@@ -43,7 +43,8 @@ def test_mongodbindexer():
         mongo_indexer.add(keys=keys, values=values)
 
     with MongoDBIndexer() as mongo_query:
-        result = mongo_query.query(key=query_key)
+        results = mongo_query.query(keys=[query_key])
+        result = results[0]
         assert result['_id'] == query_key
         d = Document()
         d.ParseFromString(result['values'])
@@ -60,8 +61,9 @@ def test_mongodbindexer():
         mongo_indexer.update(keys=keys, values=new_values)
 
     with MongoDBIndexer() as mongo_query:
-        for key, new_value in zip(keys, new_texts):
-            result = mongo_query.query(key)
+        results = mongo_query.query(keys)
+
+        for key, new_value, result in zip(keys, new_texts, results):
             assert result['_id'] == key
             new_doc = Document()
             new_doc.ParseFromString(result['values'])
@@ -72,6 +74,4 @@ def test_mongodbindexer():
         mongo_query.delete(keys)
 
     with MongoDBIndexer() as mongo_query:
-        for key in keys:
-            result = mongo_query.query(key)
-            assert result is None
+        assert mongo_query.query(keys) == [None] * len(keys)
