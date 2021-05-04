@@ -38,7 +38,7 @@ class RedisDBIndexer(BinaryPbIndexer):
             self.logger.error('Redis connection error: ', r_con_error)
             raise
 
-    def query(self, keys: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, keys: Iterable[str], *args, **kwargs) -> Optional[bytes]:
         """Find the protobuf document via id.
         :param key: ``id``
         :return: matching document
