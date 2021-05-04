@@ -75,4 +75,3 @@ def test_mongodbindexer():
         for key in keys:
             result = mongo_query.query(key)
             assert result is None
-            
