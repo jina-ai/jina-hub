@@ -80,8 +80,7 @@ def validate_negative_results(keys, searcher):
     results_docs = searcher.query(keys)
 
     for key, result in zip(keys, results_docs):
-        assert result == []
-
+        assert result == None
 
 def validate_results(save_abspath, results, negative_results):
     with BaseIndexer.load(save_abspath) as searcher:

@@ -71,7 +71,7 @@ class RedisDBIndexer(BinaryPbIndexer):
         """
         missed = []
         for key in keys:
-            if self.query(key) is None:
+            if self.query([key]) is None:
                 missed.append(key)
         if missed:
             raise KeyError(f'Key(s) {missed} were not found in redis')
