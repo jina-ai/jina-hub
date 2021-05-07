@@ -33,13 +33,15 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
     def __init__(
         self,
         index_filename: Optional[str] = None,
+        dump_path: Optional[str] = None,
         key_length: int = 36,
         dump_on_exit: str = True,
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.index_filename = index_filename or self.metas.name
+        self._index_filename = index_filename or self.metas.name
+        self._dump_path = dump_path or self.default_dump_path
 
         self.key_length = key_length
 
@@ -89,7 +91,7 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
     @property
     def is_exist(self) -> bool:
         """
-        Check if the database is exist or not
+        Check if the database exist or not
 
         :return: true if the absolute index path exists, else false
         """
@@ -97,7 +99,7 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
 
     @cached_property
     def write_handler(self):
-        """A writable and indexable object, could be dict, map, list, numpy array etc.
+        """A writable and indexable object.
 
         :return: write handler
 
@@ -123,7 +125,7 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
     @property
     def size(self) -> int:
         """
-        The number of vectors or documents indexed.
+        The number of documents indexed.
 
         :return: size
         """
@@ -131,6 +133,11 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
 
     @property
     def default_dump_path(self):
+        """
+        Path to dump to, if none is given to the constructor.
+
+        :return: default dump path
+        """
         return os.path.join(self.workspace, 'default_dump')
 
     def close(self):
@@ -139,8 +146,8 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
             f'indexer size: {self.size} physical size: {get_readable_size(physical_size(self.workspace))}'
         )
         if self._dump_on_exit:
-            shutil.rmtree(self.default_dump_path, ignore_errors=True)
-            self.dump({'dump_path': self.default_dump_path})
+            shutil.rmtree(self._dump_path, ignore_errors=True)
+            self.dump({'dump_path': self._dump_path})
         call_obj_fn(self.write_handler, 'close')
         call_obj_fn(self.query_handler, 'close')
         super().close()
@@ -167,7 +174,7 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
         :return: absolute path
         """
         os.makedirs(self.workspace, exist_ok=True)
-        return os.path.join(self.workspace, self.index_filename)
+        return os.path.join(self.workspace, self._index_filename)
 
     def _get_generator(
         self, ids: List[str]

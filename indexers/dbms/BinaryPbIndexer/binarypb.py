@@ -1,5 +1,3 @@
-__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
@@ -81,19 +79,6 @@ class _ReadHandler:
                         del self.header[r[0]]
                     else:
                         self.header[r[0]] = signature
-
-                # self.header = {
-                #     r[0]: (r[1], r[2], r[3])
-                #     if np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY)
-                #     else (r[1], r[2], r[3])
-                #     for r in tmp
-                # }
-
-                # self.header = {
-                #     key: value
-                #     for key, value in self.header.items()
-                #     if not np.array_equal(value, HEADER_NONE_ENTRY)
-                # }
 
             if os.path.exists(self.path):
                 self._body = open(self.path, 'r+b')
