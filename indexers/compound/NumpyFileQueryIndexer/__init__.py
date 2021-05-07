@@ -1,13 +1,18 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import copy
 from typing import Dict
 
 from jina import requests, DocumentArray
+from jina.hub.indexers.keyvalue.FileQueryIndexer import FileQueryIndexer
+from jina.hub.indexers.vector.NumpyIndexer import NumpyIndexer
 
 
-class CompoundIndexer:
-    def __init__(self, vector_indexer_class, kv_indexer_class, *args, **kwargs):
-        self._vec_indexer = vector_indexer_class(*args, **kwargs)
-        self._kv_indexer = kv_indexer_class(*args, **kwargs)
+class NumpyFileQueryIndexer:
+    def __init__(self, *args, **kwargs):
+        self._vec_indexer = NumpyIndexer(*args, **kwargs)
+        self._kv_indexer = FileQueryIndexer(*args, **kwargs)
 
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', parameters: Dict = None, **kwargs):

@@ -1,9 +1,12 @@
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from typing import Tuple, Dict
 
 import numpy as np
 
 from jina import Executor, requests, DocumentArray, Document
-from jina.executors.indexers.dump import import_vectors
+from jina.types.dump import import_vectors
 
 
 """
@@ -15,7 +18,7 @@ potential TODO:
 """
 
 
-class NumpyQueryIndexer(Executor):
+class NumpyIndexer(Executor):
     def __init__(self, dump_path: str, **kwargs):
         super().__init__(**kwargs)
         ids, vecs = import_vectors(dump_path, str(self.metas.pea_id))

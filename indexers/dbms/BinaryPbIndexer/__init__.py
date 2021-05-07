@@ -10,7 +10,7 @@ import os
 from jina import Executor, requests, DocumentArray, Document
 from jina.logging import JinaLogger
 
-from jina.executors.indexers.dump import export_dump_streaming
+from jina.types.dump import export_dump_streaming
 from jina.helper import call_obj_fn, cached_property, get_readable_size
 from jina.executors.helper import physical_size
 from .binarypb import BinaryPbWriterMixin

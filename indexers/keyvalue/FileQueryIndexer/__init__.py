@@ -5,15 +5,16 @@ import os
 from jina import Executor, requests, DocumentArray, Document
 from jina.logging import JinaLogger
 
-from jina.executors.indexers.dump import import_metas
+from jina.types.dump import import_metas
 from jina.helper import get_readable_size
-from .binarypb import BinaryPbWriterMixin
 from jina.executors.helper import physical_size
+
+from .file_writer import FileWriterMixin
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 
 
-class BinaryPbQueryIndexer(Executor, BinaryPbWriterMixin):
+class FileQueryIndexer(Executor, FileWriterMixin):
     """
     A DBMS Indexer (no query method)
 
@@ -98,10 +99,9 @@ class BinaryPbQueryIndexer(Executor, BinaryPbWriterMixin):
         """
         if parameters is None:
             parameters = {}
-        to_be_searched_docs = docs.traverse_flatten(
-            parameters.get('traversal_paths', ['r'])
-        )
-        self._search(to_be_searched_docs, parameters.get('is_update', True))
+
+        for docs_array in docs.traverse(parameters.get('traversal_paths', ['r'])):
+            self._search(docs_array, parameters.get('is_update', True))
 
     def _search(self, docs, is_update):
         miss_idx = (
