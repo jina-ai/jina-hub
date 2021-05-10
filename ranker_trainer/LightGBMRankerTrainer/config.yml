@@ -1,0 +1,6 @@
+jtype: LightGBMRankerTrainer
+with:
+  {}
+metas:
+  py_modules:
+    - __init__.py
