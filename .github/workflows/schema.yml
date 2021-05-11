@@ -1,0 +1,39 @@
+name: Update JSON schema
+
+on: 
+  push
+    branches:
+    - master
+    paths:
+    - '../../scripts/pydanticJSONgenerator.py'
+  workflow_dispatch
+
+jobs:
+  update-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: generate-schema
+        run: |
+          pwd
+          pip install -r scripts/requirements.txt
+          touch scripts/hub_executor_schema.json
+          output=$(python scripts/pydanticJSONgenerator.py)
+          echo ${output} > scripts/hub_executor_schema.json
+      - name: copy-schema-to-api-repo
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.JINA_DEV_BOT }}
+        with:
+          source_file: 'scripts/hub_executor_schema.json'
+          destination_repo: 'jina-ai/api'
+          destination_folder: 'schemas'
+          destination_branch: 'master'
+          user_email: 'dev-bot@jina.ai'
+          user_name: 'Jina Dev Bot'
+          commit_message: 'update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}'
