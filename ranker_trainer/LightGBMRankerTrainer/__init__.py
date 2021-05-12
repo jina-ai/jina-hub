@@ -1,5 +1,5 @@
 import os
-from typing import Tuple, List, Dict
+from typing import List, Dict, Union
 
 import lightgbm as lgb
 
@@ -7,20 +7,34 @@ from jina.executors.rankers.trainer import RankerTrainer
 
 
 class LightGBMRankerTrainer(RankerTrainer):
-    """Ranker trainer to train the `LightGBMRanker` to enable offline/online-learning."""
+    """Ranker trainer to train the `LightGBMRanker` to enable offline/online-learning.
+
+    :param model_path: Path to the pretrained model previously trained using LightGBM.
+    :param param: Parameters for training.
+    :param train_set: Data to be trained on.
+    :param num_boost_round: Number of boosting iterations.
+    :param valid_sets: List of data to be evaluated on during training.
+    :param valid_names: Names of valid_sets.
+    """
 
     def __init__(
         self,
         model_path: str,
-        param: Dict,
-        query_feature_names: Tuple[str],
-        match_feature_names: Tuple[str],
+        params: Dict,
+        train_set: lgb.Dataset,
+        num_boost_round: int = 100,
+        valid_sets: Union[None, List[lgb.Dataset]] = None,
+        valid_names: List[str] = None,
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.model = None
-        self.param = param
+        self.params = params
+        self.train_set = train_set
+        self.num_boost_round = num_boost_round
+        self.valid_sets = valid_sets
+        self.valid_names = valid_names
         self.model_path = model_path
         self._is_trained = False
 
@@ -38,7 +52,13 @@ class LightGBMRankerTrainer(RankerTrainer):
         :param args: Additional arguments.
         :param kwargs: Additional key value arguments.
         """
-        # self.model = lgb.train(self.param, train_data, 2, valid_sets=[validation_data])
+        self.model = lgb.train(
+            params=self.params,
+            train_set=self.train_set,
+            num_boost_round=self.num_boost_round,
+            valid_sets=self.valid_sets,
+            valid_names=self.valid_names,
+        )
         self._is_trained = True
 
     def save(self):
