@@ -1,4 +1,4 @@
-FROM jinaai/jina:1.2.1
+FROM jinaai/jina:1.2.3
 
 # build sptag
 WORKDIR /app
