@@ -38,7 +38,9 @@ class LightGBMRankerTrainer(RankerTrainer):
         if os.path.exists(self.model_path):
             self.model = lgb.Booster(model_file=self.model_path)
         else:
-            raise FileNotFoundError(f'The model path {self.model_path} not found.')
+            msg = f'The model path {self.model_path} not found.'
+            msg += 'Will train from scratch once you call `train` method!'
+            self.logger.info(msg)
 
     def train(self, *args, **kwargs):
         """Train ranker based on user feedback, updating ranker in an incremental fashion.
@@ -52,7 +54,7 @@ class LightGBMRankerTrainer(RankerTrainer):
         """
         self.model = lgb.train(
             train_set=self.train_set,
-            init_model=self.model_path,
+            init_model=self.model,
             keep_training_booster=True,
             params=self.param,
         )
