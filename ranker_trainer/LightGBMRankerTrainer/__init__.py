@@ -12,9 +12,6 @@ class LightGBMRankerTrainer(RankerTrainer):
     :param model_path: Path to the pretrained model previously trained using LightGBM.
     :param param: Parameters for training.
     :param train_set: Data to be trained on.
-    :param num_boost_round: Number of boosting iterations.
-    :param valid_sets: List of data to be evaluated on during training.
-    :param valid_names: Names of valid_sets.
     """
 
     def __init__(
@@ -50,7 +47,6 @@ class LightGBMRankerTrainer(RankerTrainer):
 
         :param args: Additional arguments.
         :param kwargs: Additional key value arguments.
-        :return: Whether the update was successfully finished, 0 succeed, 1 failed.
         """
         self.model = lgb.train(
             train_set=self.train_set,
@@ -61,7 +57,7 @@ class LightGBMRankerTrainer(RankerTrainer):
         self._is_trained = True
 
     def save(self):
-        """Save the of the ranker model."""
+        """Save the trained lightgbm ranker model."""
         if not self.is_trained:
             msg = 'The model has not been trained.'
             msg += 'Will skip the save since the model is the same as the original one.'
@@ -70,4 +66,5 @@ class LightGBMRankerTrainer(RankerTrainer):
 
     @property
     def is_trained(self):
+        """If the model is trained."""
         return self._is_trained
