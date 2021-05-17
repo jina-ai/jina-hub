@@ -4,6 +4,7 @@ import mmap
 
 import pickle
 import shutil
+from pathlib import Path
 from typing import List, Tuple, Generator, Optional, Iterable
 import numpy as np
 import os
@@ -12,7 +13,6 @@ from jina.logging import JinaLogger
 
 from jina.types.dump import export_dump_streaming
 from jina.helper import call_obj_fn, cached_property, get_readable_size
-from jina.executors.helper import physical_size
 from .binarypb import BinaryPbWriterMixin
 
 # from .query import BinaryPbQueryIndexer
@@ -143,7 +143,7 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
     def close(self):
         """Close all file-handlers and release all resources. """
         self.logger.info(
-            f'indexer size: {self.size} physical size: {get_readable_size(physical_size(self.workspace))}'
+            f'indexer size: {self.size} physical size: {get_readable_size(BinaryPbDBMSIndexer.physical_size(self.workspace))}'
         )
         if self._dump_on_exit:
             shutil.rmtree(self._dump_path, ignore_errors=True)
@@ -278,3 +278,12 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
                 f'BinaryPbDBMSIndexer allows only keys of length {self.key_length}, '
                 f'but yours is {m_val}.'
             )
+
+    @staticmethod
+    def physical_size(directory: str) -> int:
+        """Return the size of the given directory in bytes
+        :param directory: directory as :str:
+        :return: byte size of the given directory
+        """
+        root_directory = Path(directory)
+        return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())

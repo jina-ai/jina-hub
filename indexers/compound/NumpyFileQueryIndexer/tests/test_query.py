@@ -7,8 +7,7 @@ from .. import NumpyFileQueryIndexer
 def test_query_compound(tmpdir):
     metas = {'workspace': str(tmpdir), 'name': 'dbms', 'pea_id': 0, 'replica_id': 0}
     indexer = NumpyFileQueryIndexer(
-        dump_path='tests/dump1',
-        index_filename='dbms',
+        source_path='tests/dump1',
         metas=metas,
     )
     docs = DocumentArray([Document(embedding=np.random.random(7))])

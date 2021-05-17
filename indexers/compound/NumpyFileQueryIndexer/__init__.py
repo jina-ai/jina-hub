@@ -4,15 +4,15 @@ __license__ = "Apache-2.0"
 import copy
 from typing import Dict
 
-from jina import requests, DocumentArray
+from jina import requests, DocumentArray, Executor
 from jina.hub.indexers.keyvalue.FileQueryIndexer import FileQueryIndexer
 from jina.hub.indexers.vector.NumpyIndexer import NumpyIndexer
 
 
-class NumpyFileQueryIndexer:
-    def __init__(self, *args, **kwargs):
-        self._vec_indexer = NumpyIndexer(*args, **kwargs)
-        self._kv_indexer = FileQueryIndexer(*args, **kwargs)
+class NumpyFileQueryIndexer(Executor):
+    def __init__(self, source_path, *args, **kwargs):
+        self._vec_indexer = NumpyIndexer(source_path=source_path, *args, **kwargs)
+        self._kv_indexer = FileQueryIndexer(source_path=source_path, *args, **kwargs)
 
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', parameters: Dict = None, **kwargs):

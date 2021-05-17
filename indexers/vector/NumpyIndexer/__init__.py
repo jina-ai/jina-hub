@@ -19,9 +19,9 @@ potential TODO:
 
 
 class NumpyIndexer(Executor):
-    def __init__(self, dump_path: str, **kwargs):
+    def __init__(self, source_path: str, **kwargs):
         super().__init__(**kwargs)
-        ids, vecs = import_vectors(dump_path, str(self.metas.pea_id))
+        ids, vecs = import_vectors(source_path, str(self.metas.pea_id))
         self._ids = np.array(list(ids))
         self._vecs = np.array(list(vecs))
         self._ids_to_idx = {}
@@ -30,7 +30,8 @@ class NumpyIndexer(Executor):
     def search(self, docs: 'DocumentArray', parameters: Dict = None, **kwargs):
         if parameters is None:
             parameters = {'top_k': 5}
-        q_emb = _ext_A(_norm(docs.all_embeddings[0]))
+        doc_embeddings = np.stack(docs.get_attributes('embedding'))
+        q_emb = _ext_A(_norm(doc_embeddings))
         d_emb = _ext_B(_norm(self._vecs))
         dists = _cosine(q_emb, d_emb)
         positions, dist = self._get_sorted_top_k(dists, int(parameters['top_k']))

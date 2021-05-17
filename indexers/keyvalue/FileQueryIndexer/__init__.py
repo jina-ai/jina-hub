@@ -1,13 +1,12 @@
 import mmap
-
-from typing import Optional, Dict
 import os
+from pathlib import Path
+from typing import Optional, Dict
 from jina import Executor, requests, DocumentArray, Document
 from jina.logging import JinaLogger
 
 from jina.types.dump import import_metas
 from jina.helper import get_readable_size
-from jina.executors.helper import physical_size
 
 from .file_writer import FileWriterMixin
 
@@ -26,7 +25,7 @@ class FileQueryIndexer(Executor, FileWriterMixin):
 
     def __init__(
         self,
-        dump_path: str,
+        source_path: str,
         index_filename: Optional[str] = None,
         key_length: int = 36,
         *args,
@@ -42,7 +41,7 @@ class FileQueryIndexer(Executor, FileWriterMixin):
         self._page_size = mmap.ALLOCATIONGRANULARITY
         self.logger = JinaLogger(self.__class__.__name__)
 
-        self._load_dump(dump_path)
+        self._load_dump(source_path)
         self.query_handler = self.get_query_handler()
 
     def __enter__(self):
@@ -63,7 +62,7 @@ class FileQueryIndexer(Executor, FileWriterMixin):
     def close(self):
         """Close all file-handlers and release all resources. """
         self.logger.info(
-            f'indexer size: {self.size} physical size: {get_readable_size(physical_size(self.workspace))}'
+            f'indexer size: {self.size} physical size: {get_readable_size(FileQueryIndexer.physical_size(self.workspace))}'
         )
         self.query_handler.close()
         super().close()
@@ -78,11 +77,11 @@ class FileQueryIndexer(Executor, FileWriterMixin):
         os.makedirs(self.workspace, exist_ok=True)
         return os.path.join(self.workspace, self.index_filename)
 
-    def _load_dump(self, dump_path):
+    def _load_dump(self, path):
         """Load the dump at the path
 
-        :param dump_path: the path of the dump"""
-        ids, metas = import_metas(dump_path, str(self.metas.pea_id))
+        :param path: the path of the dump"""
+        ids, metas = import_metas(path, str(self.metas.pea_id))
         with self.get_create_handler() as write_handler:
             self._add(list(ids), list(metas), write_handler)
 
@@ -125,3 +124,12 @@ class FileQueryIndexer(Executor, FileWriterMixin):
         # delete non-existed matches in reverse
         for j in reversed(miss_idx):
             del docs[j]
+
+    @staticmethod
+    def physical_size(directory: str) -> int:
+        """Return the size of the given directory in bytes
+        :param directory: directory as :str:
+        :return: byte size of the given directory
+        """
+        root_directory = Path(directory)
+        return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
