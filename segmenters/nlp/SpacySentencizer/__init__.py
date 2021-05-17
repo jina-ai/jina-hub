@@ -95,5 +95,7 @@ class SpacySentencizer(BaseSegmenter):
 
         """
         sentences = self.spacy_model(str(text)).sents
-        results = [dict(text=sent) for sent in sentences]
+
+        results = [dict(text=sent, location=[sent.start_char, sent.end_char]) for sent in sentences]
+
         return results

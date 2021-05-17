@@ -1,0 +1,12 @@
+manifest_version: 1
+name: PDFPlumberSegmenter
+kind: segmenter
+description: Extracts data (text and images) from PDF
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.1
+license: apache-2.0
+keywords: [PDF, nlp, images]
+type: pod
