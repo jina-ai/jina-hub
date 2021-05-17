@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict, Union
+from typing import Dict
 
 import lightgbm as lgb
 
@@ -20,44 +20,41 @@ class LightGBMRankerTrainer(RankerTrainer):
     def __init__(
         self,
         model_path: str,
-        params: Dict,
         train_set: lgb.Dataset,
-        num_boost_round: int = 100,
-        valid_sets: Union[None, List[lgb.Dataset]] = None,
-        valid_names: List[str] = None,
+        param: Dict,
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.model = None
-        self.params = params
+        self.param = param
         self.train_set = train_set
-        self.num_boost_round = num_boost_round
-        self.valid_sets = valid_sets
-        self.valid_names = valid_names
         self.model_path = model_path
         self._is_trained = False
 
     def post_init(self):
         """Load the model."""
+        super().post_init()
         if os.path.exists(self.model_path):
             self.model = lgb.Booster(model_file=self.model_path)
         else:
             raise FileNotFoundError(f'The model path {self.model_path} not found.')
 
     def train(self, *args, **kwargs):
-        """Train ranker based on user feedback, updating ranker weights based on
-        the `loss` function.
+        """Train ranker based on user feedback, updating ranker in an incremental fashion.
+
+        This function make use of lightgbm `train` to update the tree structure through continued
+        training.
 
         :param args: Additional arguments.
         :param kwargs: Additional key value arguments.
+        :return: Whether the update was successfully finished, 0 succeed, 1 failed.
         """
         self.model = lgb.train(
-            params=self.params,
             train_set=self.train_set,
-            num_boost_round=self.num_boost_round,
-            valid_sets=self.valid_sets,
-            valid_names=self.valid_names,
+            init_model=self.model_path,
+            keep_training_booster=True,
+            params=self.param,
         )
         self._is_trained = True
 
