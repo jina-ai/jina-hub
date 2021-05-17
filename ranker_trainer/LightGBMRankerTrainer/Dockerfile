@@ -1,6 +1,6 @@
 FROM jinaai/jina:1.2.3 as base
 
-RUN apt-get update
+RUN apt-get update && apt-get install libgomp1
 
 # setup the workspace
 COPY . /workspace
@@ -11,8 +11,6 @@ RUN pip install -r requirements.txt
 
 # for testing the image
 FROM base
-RUN pip install pytest && pytest -v -s
+RUN pip install pytest && pytest -s -v
 
-FROM base
-RUN pip install pytest &&
 ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
