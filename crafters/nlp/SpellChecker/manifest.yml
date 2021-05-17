@@ -1,0 +1,12 @@
+manifest_version: 1
+name: SpellChecker
+kind: crafter
+type: pod
+description: Crafter using a pretrained spelling correcting model to correct input text
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub/blob/master/crafters/nlp/SpellChecker/README.md
+version: 0.0.2
+license: apache-2.0
+keywords: [nlp, spell correction]

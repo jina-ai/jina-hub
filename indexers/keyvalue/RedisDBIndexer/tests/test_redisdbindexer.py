@@ -67,8 +67,8 @@ def apply_actions(save_abspath, index_abspath, actions):
 
 def validate_positive_results(keys, documents, searcher: RedisDBIndexer):
     print('validate_positive_results')
-    for key, query_doc in zip(keys, documents):
-        result = searcher.query(key)
+    results = searcher.query(keys)
+    for key, query_doc, result in zip(keys, documents, results):
         result_doc = Document()
         result_doc.proto.ParseFromString(result)
         assert result_doc.id == str(query_doc[0])
@@ -77,10 +77,10 @@ def validate_positive_results(keys, documents, searcher: RedisDBIndexer):
 
 
 def validate_negative_results(keys, searcher):
-    for key in keys:
-        result_docs = searcher.query(key)
-        assert result_docs is None
+    results_docs = searcher.query(keys)
 
+    for key, result in zip(keys, results_docs):
+        assert result == None
 
 def validate_results(save_abspath, results, negative_results):
     with BaseIndexer.load(save_abspath) as searcher:
