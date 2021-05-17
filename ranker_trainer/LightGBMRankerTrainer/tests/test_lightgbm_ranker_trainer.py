@@ -12,21 +12,27 @@ from .. import LightGBMRankerTrainer
 def train_data():
     np.random.seed(0)
     data = np.random.rand(500, 10)  # 500 entities, each contains 10 features
-    label = np.random.randint(2, size=500)  # binary target
-    return lgb.Dataset(data, label=label)
+    label = np.random.randint(3, size=500)  # binary target
+    return lgb.Dataset(data, label=label, group=[100, 100, 300])
 
 
 @pytest.fixture
 def param():
-    return {'num_leaves': 31, 'objective': 'binary'}
+    return {
+        "task": "train",
+        "objective": "lambdarank",
+        "metric": "ndcg",
+        "ndcg_eval_at": [1, 3, 5, 10],
+        "learning_rate": 0.1,
+    }
 
 
 @pytest.fixture
 def train_data_online():
     np.random.seed(1)
     data = np.random.rand(100, 10)  # 100 entities, each contains 10 features
-    label = np.random.randint(2, size=100)  # binary target
-    return lgb.Dataset(data, label=label)
+    label = np.random.randint(3, size=100)  # binary target
+    return lgb.Dataset(data, label=label, group=[25, 25, 50])
 
 
 @pytest.fixture
@@ -37,12 +43,12 @@ def data_to_predict():
 
 @pytest.fixture
 def expected_result_before_training():
-    return np.array([0.3280431, 0.3768629])
+    return np.array([-0.9898187, -0.8011962])
 
 
 @pytest.fixture
 def expected_result_after_training():
-    return np.array([0.28399384, 0.54611499])
+    return np.array([-2.3192932, -0.4207596])
 
 
 def test_ranker_trainer(
