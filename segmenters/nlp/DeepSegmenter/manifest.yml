@@ -12,4 +12,4 @@ vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub/blob/master/segmenters/nlp/DeepSegmenter/README.md
 version: 0.0.11
 license: apache-2.0
-keywords: [text, nlp, segement]
+keywords: [text, nlp, segment]
