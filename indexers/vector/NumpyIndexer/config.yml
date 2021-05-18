@@ -1,0 +1,4 @@
+jtype: NumpyIndexer
+metas:
+  py_modules:
+    - __init__.py
