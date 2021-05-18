@@ -1,4 +1,4 @@
-FROM jinaai/jina:1.2.1 AS base
+FROM jinaai/jina:2.0 AS base
 
 # setup the workspace
 COPY . /workspace
