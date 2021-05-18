@@ -1,12 +1,10 @@
 import re
-import string
 from typing import Dict, List, Optional
 
-from jina.executors.decorators import single
-from jina.executors.segmenters import BaseSegmenter
+from jina import requests, Document, Executor
 
 
-class Sentencizer(BaseSegmenter):
+class Sentencizer(Executor):
     """
     :class:`Sentencizer` split the text on the doc-level
     into sentences on the chunk-level with a rule-base strategy.
@@ -48,30 +46,39 @@ class Sentencizer(BaseSegmenter):
                 self.min_sent_len, self.max_sent_len))
         self._slit_pat = re.compile('\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(self.punct_chars))))
 
-    @single
-    def segment(self, text: str, *args, **kwargs) -> List[Dict]:
+    @requests
+    def segment(self, docs: 'DocumentArray', **kwargs):
+
+        for doc in docs:
+            chunks = self._segment_one(doc.text)
+            for chunk in chunks:
+                if not chunk.mime_type:
+                    chunk.mime_type = doc.mime_type
+            doc.chunks.extend(chunks)
+
+        return docs
+
+    def _segment_one(self, text: str):
         """
         Split the text into sentences.
 
-        :param text: the raw text
-        :return: a list of chunk dicts with the split sentences
-        :param args:  Additional positional arguments
-        :param kwargs: Additional keyword arguments
+        :param text: the text to segment
+        :return: a list of chunks with the split sentences
 
         """
-        results = []
-        ret = [(m.group(0), m.start(), m.end()) for m in
+        chunks = []
+        splits = [(m.group(0), m.start(), m.end()) for m in
                re.finditer(self._slit_pat, text)]
-        if not ret:
-            ret = [(text, 0, len(text))]
-        for ci, (r, s, e) in enumerate(ret):
-            f = re.sub('\n+', ' ', r).strip()
-            f = f[:self.max_sent_len]
-            if len(f) > self.min_sent_len:
-                results.append(dict(
-                    text=f,
+        if not splits:
+            splits = [(text, 0, len(text))]
+        for ci, (r, start, end) in enumerate(splits):
+            chunk_text = re.sub('\n+', ' ', r).strip()
+            chunk_text = chunk_text[:self.max_sent_len]
+            if len(chunk_text) > self.min_sent_len:
+                chunks.append(Document(
+                    text=chunk_text,
                     offset=ci,
-                    weight=1.0 if self.uniform_weight else len(f) / len(text),
-                    location=[s, e]
+                    weight=1.0 if self.uniform_weight else len(chunk_text) / len(text),
+                    location=[start, end]
                 ))
-        return results
+        return chunks

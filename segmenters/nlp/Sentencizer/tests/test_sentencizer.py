@@ -3,15 +3,16 @@ import numpy as np
 import pytest
 
 from .. import Sentencizer
+from jina import Document, DocumentArray
 
 
 def test_sentencizer_en():
     segmenter = Sentencizer()
     text = 'It is a sunny day!!!! When Andy comes back, we are going to the zoo.'
-    docs_chunks = segmenter.segment(np.stack([text, text]))
+    docs_chunks = segmenter.segment(DocumentArray([Document(text=text), Document(text=text)]))
     assert len(docs_chunks) == 2
-    for chunks in docs_chunks:
-        assert len(chunks) == 2
+    for document in docs_chunks:
+        assert len(document.chunks) == 2
 
 
 def test_sentencizer_en_new_lines():
@@ -21,10 +22,10 @@ def test_sentencizer_en_new_lines():
     segmenter = Sentencizer()
     text = 'It is a sunny day!!!! When Andy comes back,\n' \
            'we are going to the zoo.'
-    docs_chunks = segmenter.segment(np.stack([text, text]))
+    docs_chunks = segmenter.segment(DocumentArray([Document(text=text), Document(text=text)]))
     assert len(docs_chunks) == 2
-    for chunks in docs_chunks:
-        assert len(chunks) == 3
+    for document in docs_chunks:
+        assert len(document.chunks) == 3
 
 
 def test_sentencizer_en_float_numbers():
@@ -35,10 +36,10 @@ def test_sentencizer_en_float_numbers():
     segmenter = Sentencizer()
     text = 'With a 0.99 probability this sentence will be ' \
            'tokenized in 2 sentences.'
-    docs_chunks = segmenter.segment(np.stack([text, text]))
+    docs_chunks = segmenter.segment(DocumentArray([Document(text=text), Document(text=text)]))
     assert len(docs_chunks) == 2
-    for chunks in docs_chunks:
-        assert len(chunks) == 2
+    for document in docs_chunks:
+        assert len(document.chunks) == 2
 
 
 @pytest.mark.parametrize(
@@ -73,9 +74,9 @@ def test_sentencizer_multi_lang(expected_len, expected_first_chunk, expected_sec
     Test multiple scenarios with various languages
     """
     segmenter = Sentencizer()
-    docs_chunks = segmenter.segment(np.stack([sentence, sentence]))
+    docs_chunks = segmenter.segment(DocumentArray([Document(text=sentence), Document(text=sentence)]))
     assert len(docs_chunks) == 2
-    for chunks in docs_chunks:
-        assert len(chunks) == expected_len
-        assert chunks[0]['text'] == expected_first_chunk
-        assert chunks[1]['text'] == expected_second_chunk
+    for document in docs_chunks:
+        assert len(document.chunks) == expected_len
+        assert document.chunks[0].text == expected_first_chunk
+        assert document.chunks[1].text == expected_second_chunk
