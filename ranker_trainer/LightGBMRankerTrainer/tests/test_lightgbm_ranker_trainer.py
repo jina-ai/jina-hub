@@ -15,6 +15,7 @@ match_features = [
     'tags__document_language',
     'tags__document_pagerank',
 ]
+label_column = 'tags__document_relevance'
 
 
 def _pretrained_model(model_path):
@@ -112,36 +113,42 @@ def matches_metas():
     return [
         [
             {
-                'tags__document_length': 0.0,
-                'tags__document_language': 0.0,
-                'tags__document_pagerank': 0.0,
-            },
-            {
-                'tags__document_length': 0.0,
+                'tags__document_length': 25.0,
                 'tags__document_language': 0.0,
                 'tags__document_pagerank': 1.0,
+                'tags__document_relevance': 0.8,
             },
             {
-                'tags__document_length': 0.0,
+                'tags__document_length': 4.0,
                 'tags__document_language': 0.0,
-                'tags__document_pagerank': 0.0,
+                'tags__document_pagerank': 3.0,
+                'tags__document_relevance': 0.4,
+            },
+            {
+                'tags__document_length': 10.0,
+                'tags__document_language': 0.0,
+                'tags__document_pagerank': 4.0,
+                'tags__document_relevance': 0.6,
             },
         ],
         [
             {
-                'tags__document_length': 0.0,
+                'tags__document_length': 12.0,
                 'tags__document_language': 0.0,
-                'tags__document_pagerank': 1.0,
+                'tags__document_pagerank': 2.0,
+                'tags__document_relevance': 0.7,
             },
             {
-                'tags__document_length': 0.0,
+                'tags__document_length': 2.0,
                 'tags__document_language': 0.0,
-                'tags__document_pagerank': 0.0,
+                'tags__document_pagerank': 8.0,
+                'tags__document_relevance': 0.1,
             },
             {
-                'tags__document_length': 0.0,
+                'tags__document_length': 6.0,
                 'tags__document_language': 0.0,
-                'tags__document_pagerank': 1.0,
+                'tags__document_pagerank': 5.0,
+                'tags__document_relevance': 0.3,
             },
         ],
     ]
@@ -158,7 +165,6 @@ def test_ranker_trainer(
         params=param,
         query_feature_names=query_features,
         match_feature_names=match_features,
-        query_groups=[3, 3],
-        match_groups=[3, 3],
+        label_feature_name=label_column,
     )
     ranker_trainer.train(query_metas, matches_metas)

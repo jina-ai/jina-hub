@@ -20,8 +20,7 @@ class LightGBMRankerTrainer(RankerTrainer):
         params: Dict,
         query_feature_names: Tuple[str],
         match_feature_names: Tuple[str],
-        query_groups: List[int],
-        match_groups: List[int],
+        label_feature_name: str = 'relevance',
         query_categorical_features: Optional[List[str]] = None,
         match_categorical_features: Optional[List[str]] = None,
         query_features_before: bool = True,
@@ -34,11 +33,10 @@ class LightGBMRankerTrainer(RankerTrainer):
         self.model_path = model_path
         self.query_feature_names = query_feature_names
         self.match_feature_names = match_feature_names
-        self.query_groups = query_groups
-        self.match_groups = match_groups
         self.query_categorical_features = query_categorical_features
         self.match_categorical_features = match_categorical_features
         self.query_features_before = query_features_before
+        self.label_feature_name = label_feature_name
 
     def post_init(self):
         """Load the model."""
@@ -59,7 +57,7 @@ class LightGBMRankerTrainer(RankerTrainer):
                 f'model {self.model_path} does not exist'
             )
 
-    def _get_features_dataset(self, query_meta, match_meta):
+    def _get_features_dataset(self, query_metas, matches_metas):
         def _get_features_per_query(q_meta, m_meta):
             query_features = np.array(
                 [
@@ -72,16 +70,18 @@ class LightGBMRankerTrainer(RankerTrainer):
             )
             return query_features, match_features
 
-        q_features, m_features = [], []
-        for q_meta, m_meta in zip(query_meta, match_meta):
+        q_features, m_features, groups = [], [], []
+        for q_meta, m_meta in zip(query_metas, matches_metas):
             q_f, m_f = _get_features_per_query(q_meta, m_meta)
+            groups.append(len(m_meta))
             q_features.append(q_f)
             m_features.append(m_f)
 
         query_features = np.vstack(q_features)
+        labels = self._get_labels(matches_metas)
         query_dataset = lgb.Dataset(
             data=query_features,
-            group=self.query_groups,
+            group=groups,
             feature_name=self.query_feature_names,
             categorical_feature=self.query_categorical_features,
             free_raw_data=False,
@@ -89,7 +89,8 @@ class LightGBMRankerTrainer(RankerTrainer):
         match_features = np.vstack(m_features)
         match_dataset = lgb.Dataset(
             data=match_features,
-            group=self.match_groups,
+            group=groups,
+            label=labels,
             feature_name=self.match_feature_names,
             categorical_feature=self.match_categorical_features,
             free_raw_data=False,
@@ -102,6 +103,13 @@ class LightGBMRankerTrainer(RankerTrainer):
             return match_dataset.construct().add_features_from(
                 query_dataset.construct()
             )
+
+    def _get_labels(self, matches_metas):
+        rv = []
+        for m_meta in matches_metas:
+            labels = np.array([item[self.label_feature_name] for item in m_meta])
+            rv.extend(labels)
+        return rv
 
     def train(
         self,
