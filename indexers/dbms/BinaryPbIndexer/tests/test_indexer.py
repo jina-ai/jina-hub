@@ -2,7 +2,7 @@ import numpy as np
 import os
 
 from jina import Document, DocumentArray
-from jina.types.dump import import_vectors, import_metas
+from jina.hub.indexers.dump import import_vectors, import_metas
 from .. import BinaryPbDBMSIndexer
 
 np.random.seed(0)
@@ -89,7 +89,7 @@ def test_dbms_keyvalue(tmpdir):
         assert indexer.size == 2 * len(docs)
         dump_path = indexer.default_dump_path
 
-    assert_dump_data(dump_path, new_docs + docs2, 1, 0)
+    assert_dump_data(dump_path, docs2 + new_docs, 1, 0)
 
     # assert contents update
     with BinaryPbDBMSIndexer(index_filename='dbms', metas=metas) as indexer:
