@@ -20,7 +20,7 @@ class LightGBMRankerTrainer(RankerTrainer):
         params: Dict,
         query_feature_names: Tuple[str],
         match_feature_names: Tuple[str],
-        label_feature_name: str = 'relevance',
+        label_feature_name: str = 'tags__relevance',
         query_categorical_features: Optional[List[str]] = None,
         match_categorical_features: Optional[List[str]] = None,
         query_features_before: bool = True,
@@ -59,15 +59,14 @@ class LightGBMRankerTrainer(RankerTrainer):
 
     def _get_features_dataset(self, query_metas, matches_metas):
         def _get_features_per_query(q_meta, m_meta):
-            query_features = np.array(
-                [
-                    [q_meta[feat] for feat in self.query_feature_names]
-                    for _ in range(0, len(m_meta))
-                ]
-            )
-            match_features = np.array(
-                [[meta[feat] for feat in self.match_feature_names] for meta in m_meta]
-            )
+            query_features = [
+                [q_meta[feat] for feat in self.query_feature_names]
+                for _ in range(0, len(m_meta))
+            ]
+
+            match_features = [
+                [meta[feat] for feat in self.match_feature_names] for meta in m_meta
+            ]
             return query_features, match_features
 
         q_features, m_features, groups = [], [], []
