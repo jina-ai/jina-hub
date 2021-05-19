@@ -27,7 +27,12 @@ def _pretrained_model(model_path):
         y_train,
         group=q_train,
         free_raw_data=False,
-        feature_name=query_features + match_features,
+        feature_name=['tags__query_length', 'tags__query_language']
+        + [
+            'tags__document_length',
+            'tags__document_language',
+            'tags__document_pagerank',
+        ],
         params={
             'min_data_in_bin': 1,
             'verbose': 1,
