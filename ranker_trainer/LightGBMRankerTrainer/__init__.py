@@ -18,7 +18,9 @@ class LightGBMRankerTrainer(RankerTrainer):
         self,
         model_path: str,
         train_set: lgb.Dataset,
+        valid_set: lgb.Dataset,
         param: Dict,
+        verbose_eval: int = 10,
         *args,
         **kwargs,
     ):
@@ -26,8 +28,9 @@ class LightGBMRankerTrainer(RankerTrainer):
         self.model = None
         self.param = param
         self.train_set = train_set
+        self.valid_set = valid_set
         self.model_path = model_path
-        self._is_trained = False
+        self.verbose_eval = verbose_eval
 
     def post_init(self):
         """Load the model."""
@@ -48,23 +51,18 @@ class LightGBMRankerTrainer(RankerTrainer):
         :param args: Additional arguments.
         :param kwargs: Additional key value arguments.
         """
+        eval_res = {}
         self.model = lgb.train(
             train_set=self.train_set,
+            valid_sets=[self.valid_set],
             init_model=self.model,
-            keep_training_booster=True,
+            evals_result=eval_res,
+            verbose_eval=self.verbose_eval,
             params=self.param,
+            keep_training_booster=True,
         )
-        self._is_trained = True
+        return eval_res
 
     def save(self):
         """Save the trained lightgbm ranker model."""
-        if not self.is_trained:
-            msg = 'The model has not been trained.'
-            msg += 'Will skip the save since the model is the same as the original one.'
-            raise ValueError(msg)
         self.model.save_model(self.model_path)
-
-    @property
-    def is_trained(self):
-        """If the model is trained."""
-        return self._is_trained
