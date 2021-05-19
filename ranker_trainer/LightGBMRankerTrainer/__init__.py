@@ -11,7 +11,18 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 class LightGBMRankerTrainer(RankerTrainer):
     """Ranker trainer to train the `LightGBMRanker` to enable offline/online-learning.
 
-    :param model_path: Path to the pretrained model previously trained using LightGBM.
+    :param model_path: path to the pretrained model previously trained using LightGBM。
+    :param params: parameter to retrain the lightgbm ranker.
+    :param query_feature_names: name of the features to extract from query Documents and used to compute relevance scores by the model loaded
+    from model_path
+    :param match_feature_names: name of the features to extract from match Documents and used to compute relevance scores by the model loaded
+    from model_path
+    :param label_feature_name: The column name for labels/groundtruth for ranker training.
+    :param query_categorical_features: name of features contained in `query_feature_names` corresponding to categorical features.
+    :param match_categorical_features: name of features contained in `match_feature_names` corresponding to categorical features.
+    :param query_features_before: True if `query_feature_names` must be placed before the `match` ones in the `dataset` used for prediction.
+    :param args: Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(
@@ -106,7 +117,7 @@ class LightGBMRankerTrainer(RankerTrainer):
     def _get_labels(self, matches_metas):
         rv = []
         for m_meta in matches_metas:
-            labels = np.array([item[self.label_feature_name] for item in m_meta])
+            labels = [item[self.label_feature_name] for item in m_meta]
             rv.extend(labels)
         return rv
 
