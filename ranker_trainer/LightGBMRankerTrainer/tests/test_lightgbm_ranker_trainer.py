@@ -9,14 +9,6 @@ from .. import LightGBMRankerTrainer
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-query_features = ['tags__query_length', 'tags__query_language']
-match_features = [
-    'tags__document_length',
-    'tags__document_language',
-    'tags__document_pagerank',
-]
-label_column = 'tags__document_relevance'
-
 
 def _pretrained_model(model_path):
     from sklearn.datasets import load_svmlight_file
@@ -163,8 +155,12 @@ def test_ranker_trainer(
     ranker_trainer = LightGBMRankerTrainer(
         model_path=model,
         params=param,
-        query_feature_names=query_features,
-        match_feature_names=match_features,
-        label_feature_name=label_column,
+        query_feature_names=['tags__query_length', 'tags__query_language'],
+        match_feature_names=[
+            'tags__document_length',
+            'tags__document_language',
+            'tags__document_pagerank',
+        ],
+        label_feature_name='tags__document_relevance',
     )
     ranker_trainer.train(query_metas, matches_metas)
