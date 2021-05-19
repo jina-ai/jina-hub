@@ -6,7 +6,7 @@ from typing import Tuple, Dict
 import numpy as np
 
 from jina import Executor, requests, DocumentArray, Document
-from jina.types.dump import import_vectors
+from jina.hub.indexers.dump import import_vectors
 
 
 """

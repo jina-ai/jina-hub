@@ -11,7 +11,7 @@ import os
 from jina import Executor, requests, DocumentArray, Document
 from jina.logging import JinaLogger
 
-from jina.types.dump import export_dump_streaming
+from jina.hub.indexers.dump import export_dump_streaming
 from jina.helper import call_obj_fn, cached_property, get_readable_size
 from .binarypb import BinaryPbWriterMixin
 

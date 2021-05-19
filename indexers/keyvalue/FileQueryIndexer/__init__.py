@@ -5,7 +5,7 @@ from typing import Optional, Dict
 from jina import Executor, requests, DocumentArray, Document
 from jina.logging import JinaLogger
 
-from jina.types.dump import import_metas
+from jina.hub.indexers.dump import import_metas
 from jina.helper import get_readable_size
 
 from .file_writer import FileWriterMixin
