@@ -2,7 +2,6 @@ import os
 
 import pytest
 import numpy as np
-import numpy.testing as npt
 import lightgbm as lgb
 
 from .. import LightGBMRankerTrainer
@@ -12,7 +11,6 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def _pretrained_model(model_path):
     from sklearn.datasets import load_svmlight_file
-    import lightgbm as lgb
 
     X_train, y_train = load_svmlight_file(
         os.path.join(cur_dir, 'training_dataset.train')
@@ -169,3 +167,5 @@ def test_ranker_trainer(
         label_feature_name='tags__document_relevance',
     )
     ranker_trainer.train(query_metas, matches_metas)
+    ranker_trainer.save()
+    assert model
