@@ -68,10 +68,14 @@ class SlidingWindowSegmenter(BaseSegmenter):
         chunks = [''.join(filter(None, list(chunk))) for chunk in
                   sliding_window(self.window_size, self.step_size)]
         results = []
+        start = 0
         for idx, s in enumerate(chunks):
             if self.min_substring_len <= len(s):
                 results.append(dict(
                     text=s,
                     offset=idx,
-                    weight=1.0))
+                    weight=1.0,
+                    location=[start, start + len(s)]))
+            start += self.step_size
+
         return results

@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
+
 from .. import FaceNetSegmenter
 
 SEGMENTER_DIR = Path(__file__).parent.parent
@@ -30,13 +31,42 @@ def assert_correct_output(result, n_faces: int):
 ])
 def test_segment_face_single(segmenter, filenames: List[str]):
     images = [
-        np.array(Image.open(os.path.join(SEGMENTER_DIR, 'imgs', filename)))
-        for filename in filenames
+        cv2.resize(
+            np.array(Image.open(os.path.join(SEGMENTER_DIR, 'imgs', labelled_file))),
+            dsize=(480, 320),
+        )
+        for labelled_file, _ in filenames_with_labels
     ]
 
+    results = segmenter_multiface.segment(images)
+    # [[dict1,dict2...],...] each image gets a list of dicts, which relates to the faces
+
+    for result, (_, num_faces) in zip(results, filenames_with_labels):
+        assert_correct_output(result, n_faces=num_faces)
+
+
+@pytest.mark.parametrize(
+    'filenames_with_labels',
+    [
+        [('one_face.jpg', 1), (np.zeros((320, 480, 3)), 0), ('three_faces.jpg', 3)],
+    ],
+)
+def test_segment_mixed_batch(segmenter, filenames_with_labels):
+    images = []
+    for labelled_file, _ in filenames_with_labels:
+        if type(labelled_file) == str:
+            labelled_file = np.array(Image.open(os.path.join(SEGMENTER_DIR, 'imgs', labelled_file)))
+            labelled_file = cv2.resize(labelled_file, dsize=(480, 320),)
+            images.append(labelled_file)
+        else:
+            images.append(labelled_file)
+
+
     results = segmenter.segment(images)
-    for result in results:
-        assert_correct_output(result, n_faces=1)
+    # [[dict1,dict2...],...] each image gets a list of dicts, which relates to the faces
+
+    for result, (_, num_faces) in zip(results, filenames_with_labels):
+        assert_correct_output(result, n_faces=num_faces)
 
 
 @pytest.mark.parametrize('height', [128, 512])

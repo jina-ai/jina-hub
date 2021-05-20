@@ -4,8 +4,6 @@ __license__ = "Apache-2.0"
 import os
 from typing import Optional
 
-from spellchecker import SpellChecker
-
 from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 
@@ -44,6 +42,8 @@ class PySpellChecker(BaseCrafter):
         self.case_sensitive = case_sensitive
 
     def post_init(self):
+        from spellchecker import SpellChecker
+
         super().post_init()
         self.speller = SpellChecker(language=self.language,
                                     local_dictionary=self.local_dictionary,

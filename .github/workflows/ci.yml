@@ -12,7 +12,7 @@ jobs:
       - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
       - uses: wagoid/commitlint-github-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
 
   hub-build-test:
     runs-on: ubuntu-latest
@@ -43,4 +43,4 @@ jobs:
           dockerhub_username: ${{ secrets.JINAHUB_DOCKER_USER }}
           dockerhub_password: ${{ secrets.JINAHUB_DOCKER_PWD }}
           slack_webhook: ${{ secrets.JINAHUB_SLACK_WEBHOOK }}
-
+          jina_version: "git+https://github.com/jina-ai/jina.git@v1.2.3"
