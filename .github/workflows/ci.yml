@@ -43,5 +43,4 @@ jobs:
           dockerhub_username: ${{ secrets.JINAHUB_DOCKER_USER }}
           dockerhub_password: ${{ secrets.JINAHUB_DOCKER_PWD }}
           slack_webhook: ${{ secrets.JINAHUB_SLACK_WEBHOOK }}
-          jina_version: "1.2.2"
-
+          jina_version: "git+https://github.com/jina-ai/jina.git@v1.2.3"
