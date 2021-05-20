@@ -70,9 +70,10 @@ class ImageNormalizer(BaseCrafter):
         """
         # load the data with original channel_axis
         raw_img = _load_image(blob, self.channel_axis)
-        _img = self._normalize(raw_img)
+        img = self._normalize(raw_img)
         # move the channel_axis to target_channel_axis to better fit different models
-        img = _move_channel_axis(_img, -1, self.target_channel_axis)
+        if self.channel_axis != self.target_channel_axis:
+            img = _move_channel_axis(img, -1, self.target_channel_axis)
         return dict(offset=0, blob=img)
 
     def _normalize(self, img):
