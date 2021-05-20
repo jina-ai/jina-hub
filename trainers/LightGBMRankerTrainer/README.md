@@ -1,7 +1,7 @@
 # LightGBMRankerTrainer
 
-This ranker trainer allows the offline training of any learning-to-rank model trained using [LightGBM](https://lightgbm.readthedocs.io/en/latest/index.html) to rank a list of search results.
-The RankerTrainer is coreresponded to the [LightGBMRanker](https://github.com/jina-ai/jina-hub/tree/master/rankers/LightGBMRanker) in Jina Hub.
+This ranker trainer allows the incremental learning of any learning-to-rank model trained using [LightGBM](https://lightgbm.readthedocs.io/en/latest/index.html) to rank a list of search results.
+The RankerTrainer is corresponded to the [LightGBMRanker](https://github.com/jina-ai/jina-hub/tree/master/rankers/LightGBMRanker) in Jina Hub.
 
 
 ### Usage example.
