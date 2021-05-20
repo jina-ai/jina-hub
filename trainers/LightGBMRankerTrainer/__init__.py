@@ -5,7 +5,6 @@ import numpy as np
 import lightgbm as lgb
 
 from jina.executors.rankers.trainer import RankerTrainer
-from jina.excepts import PretrainedModelFileDoesNotExist
 
 
 class LightGBMRankerTrainer(RankerTrainer):
@@ -65,9 +64,7 @@ class LightGBMRankerTrainer(RankerTrainer):
                     f'than the ones provided in input {expected_num_features}'
                 )
         else:
-            raise PretrainedModelFileDoesNotExist(
-                f'model {self.model_path} does not exist'
-            )
+            self.model = lgb.Booster()
 
     def _get_features_dataset(self, query_metas, matches_metas):
         def _get_features_per_query(q_meta, m_meta):
