@@ -5,8 +5,7 @@ from typing import List, Dict
 
 import numpy as np
 import torch
-from jina.executors.decorators import batching
-
+from jina.executors.decorators import single
 from jina.executors.devices import TorchDevice
 from jina.executors.segmenters import BaseSegmenter
 
@@ -78,19 +77,34 @@ class FaceNetSegmenter(TorchDevice, BaseSegmenter):
         results = []
         batch = np.asarray(batch)
         with torch.no_grad():
-            image_batch = batch.astype('float32')
-            image_batch = torch.from_numpy(image_batch).to(self.device)
-            facesBatch, probabilitiesBatch = self.face_detector(image_batch, return_prob=True)
-            for faces, probabilities in zip(facesBatch, probabilitiesBatch):
-                batched = []
-                if faces is not None:
-                    for face, probability in zip(faces, probabilities):
-                            batched.append(dict(
-                                offset=0,
-                                weight=probability,
-                                blob=face.detach().numpy(),
-                            ))
+            image = torch.from_numpy(data.astype('float32')).to(self.device)
+            # Create a batch of size 1
+            image = image.unsqueeze(0)
 
-                results.append(batched)
+            # Detect faces
+            batch_boxes, batch_probs, _ = self.face_detector.detect(image, landmarks=True)
 
-        return results
+            # Select faces
+            if not self.keep_all:
+                batch_boxes, batch_probs, _ = self.face_detector.select_boxes(
+                    batch_boxes, batch_probs, _, image, method=self.selection_method
+                )
+
+            # Extract faces
+            faces = self.face_detector.extract(image, batch_boxes, save_path=None)
+            if faces[0] is not None:
+                faces = faces[0].view(-1, image.shape[-1], self.image_size, self.image_size)
+                batch_boxes = batch_boxes[0]
+                batch_probs = batch_probs[0]
+
+            results = [
+                dict(
+                    offset=0,
+                    weight=probability,
+                    blob=face.numpy(),
+                    location=bounding_box.tolist()
+                )
+                for face, probability, bounding_box in zip(faces, batch_probs, batch_boxes) if face is not None
+            ]
+
+            return results
