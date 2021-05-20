@@ -63,8 +63,6 @@ class LightGBMRankerTrainer(RankerTrainer):
                     f'The number of features expected by the LightGBM model {model_num_features} is different'
                     f'than the ones provided in input {expected_num_features}'
                 )
-        else:
-            self.model = lgb.Booster()
 
     def _get_features_dataset(self, query_metas, matches_metas):
         def _get_features_per_query(q_meta, m_meta):
@@ -148,4 +146,5 @@ class LightGBMRankerTrainer(RankerTrainer):
 
     def save(self):
         """Save the trained lightgbm ranker model."""
-        self.model.save_model(self.model_path)
+        if self.model:
+            self.model.save_model(self.model_path)
