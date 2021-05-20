@@ -27,10 +27,11 @@ class LightGBMRankerTrainer(RankerTrainer):
 
     def __init__(
         self,
-        model_path: str,
-        params: Dict,
-        query_feature_names: Tuple[str],
-        match_feature_names: Tuple[str],
+        model_path: Optional[str] = 'tmp/model.txt',
+        query_feature_names: Tuple[str] = ['tags__query_length', 'tags__query_language'],
+        match_feature_names: Tuple[str] = ['tags__document_length', 'tags__document_language',
+                                           'tags__document_pagerank'],
+        params: Dict = {'task': 'train', 'boosting_type': 'gbdt', 'objective': 'lambdarank',},
         label_feature_name: str = 'tags__relevance',
         query_categorical_features: Optional[List[str]] = None,
         match_categorical_features: Optional[List[str]] = None,
