@@ -1,2 +1,2 @@
-jina==1.2.1
+git+https://github.com/jina-ai/jina.git@v1.2.1
 pymongo==3.11.3
