@@ -1,0 +1,17 @@
+jtype: Flow
+version: '1'
+with:
+  rest_api: true
+  port_expose: 9000
+  return_results: true
+executors:
+  - name: cache
+    timeout_ready: '-1'
+    uses:
+      jtype: DocCache
+      metas:
+        workspace: $WORKSPACE
+  - name: indexer
+    timeout_ready: '-1'
+    uses:
+      jtype: MyIndexer
