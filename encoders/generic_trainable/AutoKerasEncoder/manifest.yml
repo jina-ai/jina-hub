@@ -1,0 +1,14 @@
+manifest_version: 1
+name: AutoKerasEncoder
+kind: encoder
+description: |
+:class:`AutoKerasEncoder` encodes data from a  `BatchSize x (Channel x Height x Width)` dimensional `ndarray` of images or text into a `ndarray` of `BatchSize x EmbeddingDimension`. Internally, :class:`AutoKerasEncoder` is a generic trainable encoder and is trained either via explicit train function before encoding or the encode method trains it if it was not called explicitly before. 
+:class:`AutoKerasEncoder` searches the best encoder neural network architecture using evolutionary algorithm and network morphing. The architecture search process is completely autonomous and all arguments except the :param:`model_type` argument is optional. The model_type argument decides if the encoder will be an image or text based encoder. The search process can be fully controlled via AutoKeras based arguments which can be directly passed through the :class:`AutoKerasEncoder` init method.
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+vendor: Jina AI Limited
+documentation: https://github.com/jina-ai/jina-hub/blob/master/encoders/generic_trainable/AutoKerasEncoder/README.md
+version: 0.0.9
+license: apache-2.0
+keywords: [Tensorflow, Computer Vision, image, text, NLP, bert, train, Autokeras, generic]
+type: pod
