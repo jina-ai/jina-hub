@@ -39,24 +39,22 @@ class AutoKerasEncoder(BaseTFEncoder):
     'vision' : ResNet(variants), Xception(variants), conv2d
     'bert' : Vanilla, Transformer, ngram
 
+
     """
 
     def __init__(
         self,
         model_type: Optional[
             str
-        ] = "vision",  #TODO infer data type automatically using metas if possible (investigate)
+        ] = "vision",  # TODO infer data type automatically using metas if possible (investigate)
         train_type: Optional[str] = "classifier",
         model_save_path: Optional[str] = "autokeras-encoder-tf",
         arch_save_path: Optional[str] = "AutoKerasEncoder-NeuralArchitecture.png",
         multi_label: bool = False,
-        # loss: types.LossType = None,                         # loss can be passed only if autokeras utils imported globally
-        # metrics: Optional[types.MetricsType] = None,         # metrics can be passed only if autokeras utils imported globally
         project_name: str = "image_classifier",
         max_trials: int = 50,
         directory: Union[str, Path, None] = None,
         objective: str = "val_loss",
-        # tuner: Union[str, Type[tuner.AutoTuner]] = None,     # keras tuner object can be passed only if autokeras utils imported globally
         overwrite: bool = False,
         seed: Optional[int] = None,
         max_model_size: Optional[int] = None,
@@ -85,10 +83,12 @@ class AutoKerasEncoder(BaseTFEncoder):
         :param seed: Optional[int]: Int. Random seed.
         :param max_model_size: Optional[int]: Int. Maximum number of scalars in the parameters of a model. Models larger than this are rejected.
 
+        Note: loss, metrics and tuner object can be passed as well but for that autokeras has to be imported globally
+
         """
         super().__init__(*args, **kwargs)
 
-        # The below parameters can be avoided by setting the model here directly - peformance fix for later : needs ak and tf available in init scope
+        # TODO: The below parameters can be avoided by setting the model here directly - peformance fix for later : needs ak and tf available in init scope
 
         self.model_type = model_type
         self.train_type = train_type
@@ -96,10 +96,7 @@ class AutoKerasEncoder(BaseTFEncoder):
         self.directory = directory
         self.project_name = project_name
         self.objective = objective
-        # self.tuner=tuner
         self.multi_label = (multi_label,)
-        # self.loss=loss,
-        # self.metrics=metrics,
         self.overwrite = overwrite
         self.seed = seed
         self.max_model_size = max_model_size
@@ -115,8 +112,8 @@ class AutoKerasEncoder(BaseTFEncoder):
         import tensorflow as tf
         import autokeras as ak
 
-        # build symbolic hypermodel 
-	#TODO - strcutured data and audio data
+        # build symbolic hypermodel
+        # TODO - strcutured data and audio data
         if self.model_type == "vision":
             input_node = ak.ImageInput()
             output_node = ak.ImageBlock()(input_node)
@@ -178,17 +175,14 @@ class AutoKerasEncoder(BaseTFEncoder):
         x_train = x_train.reshape(x_train.shape + (1,))
         x_test = x_test.reshape(x_test.shape + (1,))
 
-        # TODO - tf.data pipelining with cache, prefetch etc
-        # train_set = tf.data.Dataset.from_tensor_slices(((x_train,), (y_train,)))
-        # test_set = tf.data.Dataset.from_tensor_slices(((x_test,), (y_test,)))
+        # TODO - tf.data pipelining with cache, prefetch etc - future performance fix
 
         self.hypermodel.fit(
             x_train, y_train, validation_data=(x_test, y_test), epochs=epochs
-        )  # save model if nessecary to port with no coupling or find checkpoints in auto_model folder
+        )
         model = self.hypermodel.export_model()
         self.training_eval = self.hypermodel.evaluate(x_test, y_test)
         self.trained = True
-        # model.summary()
         encoder_model = tf.keras.Model(model.input, model.get_layer("dense_1").output)
         self.output_shape = encoder_model.layers[-1].output_shape
         print("best output dimension found: " + str(self.output_shape))
@@ -226,7 +220,7 @@ class AutoKerasEncoder(BaseTFEncoder):
             print(
                 "model not trained, training with available data [you can manually train on full data before calling 'encode' by 'calling train']"
             )
-            train(content)
+            self.train(content)
         (x, y) = content
 
         if self.model_save_path and os.path.exists(self.model_save_path):

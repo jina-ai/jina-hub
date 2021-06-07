@@ -8,7 +8,6 @@ import os
 def Mnist(train_method, num_trials=1, num_epochs=1):
     import pickle
 
-    # (x_train, y_train), (x_test, y_test) = np.load('mnist_min_data.npy')
     with open("mnist_min_data.pkl", "rb") as file:
         mnist_data = pickle.load(file)
     (x_train, y_train), (x_test, y_test) = mnist_data
@@ -27,7 +26,7 @@ def Mnist(train_method, num_trials=1, num_epochs=1):
     print(
         "testing encoder for vision mode trained with "
         + train_method
-        + " search, for "
+        + " architecture search, for "
         + str(num_trials)
         + "trials and "
         + str(num_epochs)
@@ -45,7 +44,6 @@ def Mnist(train_method, num_trials=1, num_epochs=1):
 def IMDB(train_method, num_trials=1, num_epochs=1):
     import pickle
 
-    # (x_train, y_train), (x_test, y_test) = np.load('imdb_min_data.npy')
     with open("imdb_min_data.pkl", "rb") as file:
         imdb_data = pickle.load(file)
     (x_train, y_train), (x_test, y_test) = imdb_data
@@ -66,7 +64,7 @@ def IMDB(train_method, num_trials=1, num_epochs=1):
     print(
         "testing encoder for bert mode trained with "
         + train_method
-        + " search, for "
+        + " architecture search, for "
         + str(num_trials)
         + "trials and "
         + str(num_epochs)
@@ -78,6 +76,78 @@ def IMDB(train_method, num_trials=1, num_epochs=1):
     )
     print("encoded feature shape(e.g.): " + str(encoded_data[0].shape[0]))
     print("encoded feature(e.g.): " + str(encoded_data[0]))
+    assert encoded_data[0].shape[0] == targetdims[1]
+
+
+def test_direct_encode_vision(train_method="classifier", num_trials=1, num_epochs=1):
+    import pickle
+
+    with open("mnist_min_data.pkl", "rb") as file:
+        mnist_data = pickle.load(file)
+    (x_train, y_train), (x_test, y_test) = mnist_data
+
+    model_type = "vision"  # may not be explicitly set and passed, the default model type is vision
+
+    # training with just 2 trail and 1 epoch for test purposes only, it can be controlled by time as well
+    encoder = AutoKerasEncoder(
+        model_type=model_type, train_type=train_method, max_trials=num_trials
+    )
+    print(
+        "#########################################################################################################################"
+    )
+    print(
+        "testing encoder for vision mode trained inside encode directly via "
+        + train_method
+        + " architecture search, for "
+        + str(num_trials)
+        + "trials and "
+        + str(num_epochs)
+        + " epochs each."
+    )
+    encoded_data = encoder.encode((x_train, y_train))
+    targetdims = encoder.output_shape
+    print(
+        "encoder evaluation [loss, accuracy]: " + str(encoder.get_training_inference())
+    )
+    print("encoded feature shape(e.g.): " + str(encoded_data[0].shape[0]))
+    print("example feature(e.g.): " + str(encoded_data[0]))
+    assert encoded_data[0].shape[0] == targetdims[1]
+
+
+def test_direct_encode_bert(train_method="classifier", num_trials=1, num_epochs=1):
+    import pickle
+
+    with open("imdb_min_data.pkl", "rb") as file:
+        imdb_data = pickle.load(file)
+    (x_train, y_train), (x_test, y_test) = imdb_data
+
+    model_type = (
+        "bert"  # needed to be explicitly specified as the default model_type is vision
+    )
+
+    # training with just 2 trail and 1 epoch for test purposes only, it can be controlled by time as well
+    encoder = AutoKerasEncoder(
+        model_type=model_type, train_type=train_method, max_trials=num_trials
+    )
+    print(
+        "#########################################################################################################################"
+    )
+    print(
+        "testing encoder for vision mode trained inside encode directly via "
+        + train_method
+        + " architecture search, for "
+        + str(num_trials)
+        + "trials and "
+        + str(num_epochs)
+        + " epochs each."
+    )
+    encoded_data = encoder.encode((x_train, y_train))
+    targetdims = encoder.output_shape
+    print(
+        "encoder evaluation [loss, accuracy]: " + str(encoder.get_training_inference())
+    )
+    print("encoded feature shape(e.g.): " + str(encoded_data[0].shape[0]))
+    print("example feature(e.g.): " + str(encoded_data[0]))
     assert encoded_data[0].shape[0] == targetdims[1]
 
 

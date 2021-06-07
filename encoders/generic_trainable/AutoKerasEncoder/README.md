@@ -2,9 +2,9 @@
 
 **`AutoKerasEncoder`** trains and encodes the documents with custom(best) encoder architecture suiting the dataset, using neural architectural search via AutoKeras.
     
-- data supported - image/text
+> data supported - image/text
     
-- Data Format: tuple of numpy.ndarray or tf.data.Dataset. The two elements are,
+> Data Format: tuple of numpy.ndarray or tf.data.Dataset. The two elements are,
     
     1. input data - x 
 	for vision (image) : The shape of the data should be should be (samples, width, height) or (samples, width, height, channels).
@@ -13,9 +13,9 @@
 	for classification based training : It can be raw labels, one-hot encoded if more than two classes, or binary encoded for binary classification. The raw labels will be encoded to one column if two classes were found, or one-hot encoded if more than two classes were found.
 	for regression based training : It can be single-column or multi-column. The values should all be numerical.
     
-- training types supported - classification/regression
+> training types supported - classification/regression
     
-- model architectures checked and tuned 
+> model architectures checked and tuned 
     
     'vision' : ResNet(variants), Xception(variants), conv2d
     'bert' : Vanilla, Transformer, ngram
