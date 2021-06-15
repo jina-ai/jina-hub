@@ -1,0 +1,8 @@
+!AutoKerasEncoder
+with:
+  # just for example, you may use bert as well
+  model_type: 'vision'
+metas:
+  py_modules:
+    # - you can put more dependencies here
+    - __init__.py
